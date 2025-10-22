@@ -108,23 +108,41 @@ class ProperfyService {
         throw new Error("Cliente não inicializado");
       }
 
-      const response = await this.client.get<ProperfyListResponse>(
-        "/property/property",
-        {
-          params: {
-            reference: reference,
-            size: 1,
-          },
-        }
-      );
+      // Tentar buscar por referência usando diferentes endpoints
+      try {
+        const response = await this.client.get<ProperfyListResponse>(
+          "/imovel",
+          {
+            params: {
+              referencia: reference,
+            },
+          }
+        );
 
-      if (response.data.data && response.data.data.length > 0) {
-        return response.data.data[0];
+        if (response.data.data && response.data.data.length > 0) {
+          return response.data.data[0];
+        }
+      } catch (e) {
+        console.warn("[Properfy] Endpoint /imovel falhou, tentando /property...");
+        
+        // Fallback para outro endpoint
+        const response = await this.client.get<ProperfyListResponse>(
+          "/property",
+          {
+            params: {
+              reference: reference,
+            },
+          }
+        );
+
+        if (response.data.data && response.data.data.length > 0) {
+          return response.data.data[0];
+        }
       }
 
       return null;
     } catch (error) {
-      console.error("[Properfy] Erro ao buscar imóvel:", error);
+      console.error("[Properfy] Erro ao buscar imóvel por referência:", error);
       return null;
     }
   }
@@ -140,17 +158,33 @@ class ProperfyService {
         throw new Error("Cliente não inicializado");
       }
 
-      const response = await this.client.get<ProperfyListResponse>(
-        "/property/property",
-        {
-          params: {
-            page,
-            size,
-          },
-        }
-      );
+      try {
+        const response = await this.client.get<ProperfyListResponse>(
+          "/imovel",
+          {
+            params: {
+              page,
+              limit: size,
+            },
+          }
+        );
 
-      return response.data;
+        return response.data;
+      } catch (e) {
+        console.warn("[Properfy] Endpoint /imovel falhou, tentando /property...");
+        
+        const response = await this.client.get<ProperfyListResponse>(
+          "/property",
+          {
+            params: {
+              page,
+              size,
+            },
+          }
+        );
+
+        return response.data;
+      }
     } catch (error) {
       console.error("[Properfy] Erro ao listar imóveis:", error);
       return null;
@@ -168,11 +202,21 @@ class ProperfyService {
         throw new Error("Cliente não inicializado");
       }
 
-      const response = await this.client.get<ProperfyProperty>(
-        `/property/property/${id}`
-      );
+      try {
+        const response = await this.client.get<ProperfyProperty>(
+          `/imovel/${id}`
+        );
 
-      return response.data;
+        return response.data;
+      } catch (e) {
+        console.warn("[Properfy] Endpoint /imovel falhou, tentando /property...");
+        
+        const response = await this.client.get<ProperfyProperty>(
+          `/property/${id}`
+        );
+
+        return response.data;
+      }
     } catch (error) {
       console.error("[Properfy] Erro ao buscar imóvel por ID:", error);
       return null;

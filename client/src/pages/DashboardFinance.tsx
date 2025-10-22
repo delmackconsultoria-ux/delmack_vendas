@@ -3,8 +3,23 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle } from "lucide-react";
+import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle, BarChart3 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from "recharts";
 
 export default function DashboardFinance() {
   const { user, logout } = useAuth();
@@ -23,6 +38,31 @@ export default function DashboardFinance() {
   if (!user) {
     return null;
   }
+
+  // Dados mock para comissões por status
+  const commissionsByStatus = [
+    { status: "Pendentes", value: 45000, fill: "#fbbf24" },
+    { status: "Recebidas", value: 125000, fill: "#60a5fa" },
+    { status: "Pagas", value: 380000, fill: "#10b981" },
+    { status: "Canceladas", value: 12000, fill: "#ef4444" },
+  ];
+
+  // Dados mock para comissões por corretor
+  const commissionsByBroker = [
+    { name: "João Silva", pendentes: 15000, recebidas: 45000, pagas: 120000 },
+    { name: "Maria Santos", pendentes: 12000, recebidas: 35000, pagas: 95000 },
+    { name: "Pedro Costa", pendentes: 18000, recebidas: 45000, pagas: 165000 },
+  ];
+
+  // Dados mock para evolução de pagamentos
+  const paymentEvolution = [
+    { mes: "Jan", pagos: 50000, pendentes: 30000 },
+    { mes: "Fev", pagos: 75000, pendentes: 25000 },
+    { mes: "Mar", pagos: 95000, pendentes: 35000 },
+    { mes: "Abr", pagos: 120000, pendentes: 45000 },
+    { mes: "Mai", pagos: 150000, pendentes: 40000 },
+    { mes: "Jun", pagos: 180000, pendentes: 45000 },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-slate-50">
@@ -73,7 +113,7 @@ export default function DashboardFinance() {
           <div>
             <h3 className="font-semibold text-amber-900">Atenção: Comissões Pendentes</h3>
             <p className="text-sm text-amber-800 mt-1">
-              Você tem 0 comissões aguardando aprovação para pagamento
+              Você tem 45 comissões aguardando aprovação para pagamento
             </p>
           </div>
         </div>
@@ -89,8 +129,8 @@ export default function DashboardFinance() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-amber-600">R$ 0,00</p>
-              <p className="text-xs text-slate-600 mt-2">0 comissões aguardando</p>
+              <p className="text-3xl font-bold text-amber-600">R$ 45.000</p>
+              <p className="text-xs text-slate-600 mt-2">45 comissões aguardando</p>
             </CardContent>
           </Card>
 
@@ -103,7 +143,7 @@ export default function DashboardFinance() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-red-600">R$ 0,00</p>
+              <p className="text-3xl font-bold text-red-600">R$ 125.000</p>
               <p className="text-xs text-slate-600 mt-2">Próximas 30 dias</p>
             </CardContent>
           </Card>
@@ -117,53 +157,115 @@ export default function DashboardFinance() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-green-600">R$ 0,00</p>
+              <p className="text-3xl font-bold text-green-600">R$ 380.000</p>
               <p className="text-xs text-slate-600 mt-2">Comissões processadas</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Pending Approvals Section */}
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-600" />
-              Comissões Pendentes de Aprovação
-            </CardTitle>
-            <CardDescription>
-              Revise e aprove comissões para pagamento
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <CheckCircle className="h-12 w-12 text-green-300 mx-auto mb-4" />
-              <p className="text-slate-600 font-medium">Nenhuma comissão pendente</p>
-              <p className="text-slate-500 text-sm mt-1">
-                Todas as comissões foram aprovadas
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Gráficos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Distribuição por Status */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Distribuição de Comissões por Status
+              </CardTitle>
+              <CardDescription>
+                Visualização das comissões por situação
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={commissionsByStatus}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ status, value }) =>
+                      `${status}: R$ ${(value / 1000).toFixed(0)}k`
+                    }
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {commissionsByStatus.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-        {/* Payment History Section */}
+          {/* Evolução de Pagamentos */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingDown className="h-5 w-5" />
+                Evolução de Pagamentos
+              </CardTitle>
+              <CardDescription>
+                Histórico dos últimos 6 meses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={paymentEvolution}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="pagos"
+                    stroke="#10b981"
+                    name="Pagos"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="pendentes"
+                    stroke="#fbbf24"
+                    name="Pendentes"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Comissões por Corretor */}
         <Card className="border-0 shadow-md mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingDown className="h-5 w-5 text-slate-600" />
-              Histórico de Pagamentos
+              <BarChart3 className="h-5 w-5" />
+              Comissões por Corretor
             </CardTitle>
             <CardDescription>
-              Últimos pagamentos de comissões realizados
+              Comparação de comissões pendentes, recebidas e pagas
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-12">
-              <DollarSign className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600 font-medium">Nenhum pagamento registrado</p>
-              <p className="text-slate-500 text-sm mt-1">
-                Os pagamentos aparecerão aqui quando forem processados
-              </p>
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={commissionsByBroker}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
+                <Legend />
+                <Bar dataKey="pendentes" fill="#fbbf24" name="Pendentes" />
+                <Bar dataKey="recebidas" fill="#60a5fa" name="Recebidas" />
+                <Bar dataKey="pagas" fill="#10b981" name="Pagas" />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
@@ -182,7 +284,7 @@ export default function DashboardFinance() {
             <CardContent>
               <Button
                 className="w-full bg-amber-600 hover:bg-amber-700"
-                onClick={() => setLocation("/commissions/approve")}
+                onClick={() => setLocation("/sales-approval")}
               >
                 Ir para Aprovação
               </Button>

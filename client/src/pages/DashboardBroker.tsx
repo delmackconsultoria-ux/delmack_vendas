@@ -5,6 +5,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, TrendingUp, Home, LogOut, Plus, Eye } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function DashboardBroker() {
   const { user, logout } = useAuth();
@@ -23,6 +36,18 @@ export default function DashboardBroker() {
   if (!user) {
     return null;
   }
+
+  const salesByType = [
+    { name: "Angariação", value: 0, fill: "#60a5fa" },
+    { name: "Venda", value: 0, fill: "#10b981" },
+    { name: "Parceria", value: 0, fill: "#f59e0b" },
+  ];
+
+  const commissionByType = [
+    { tipo: "Angariação", valor: 0 },
+    { tipo: "Venda", valor: 0 },
+    { tipo: "Parceria", valor: 0 },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -130,6 +155,65 @@ export default function DashboardBroker() {
           </Card>
         </div>
 
+        {/* Sales Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Minhas Vendas por Tipo
+              </CardTitle>
+              <CardDescription>
+                Distribuição das suas vendas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={salesByType}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {salesByType.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Comissões por Tipo
+              </CardTitle>
+              <CardDescription>
+                Ganhos por tipo de negócio
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={commissionByType}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="tipo" />
+                  <YAxis />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                  <Bar dataKey="valor" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Recent Sales Section */}
         <Card className="border-0 shadow-md mb-8">
           <CardHeader>
@@ -183,7 +267,7 @@ export default function DashboardBroker() {
             <CardContent>
               <Button
                 variant="outline"
-                onClick={() => setLocation("/commissions")}
+                onClick={() => setLocation("/reports")}
                 className="w-full"
               >
                 Ver Comissões
@@ -204,7 +288,7 @@ export default function DashboardBroker() {
             <CardContent>
               <Button
                 variant="outline"
-                onClick={() => setLocation("/performance")}
+                onClick={() => setLocation("/indicators")}
                 className="w-full"
               >
                 Ver Desempenho

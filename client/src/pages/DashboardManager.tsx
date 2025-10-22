@@ -5,6 +5,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, TrendingUp, Users, LogOut, Target, Activity } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function DashboardManager() {
   const { user, logout } = useAuth();
@@ -23,6 +35,23 @@ export default function DashboardManager() {
   if (!user) {
     return null;
   }
+
+  // Dados mock para performance da equipe
+  const teamPerformance = [
+    { name: "João Silva", vendas: 12, comissoes: 45000, meta: 50000 },
+    { name: "Maria Santos", vendas: 8, comissoes: 35000, meta: 50000 },
+    { name: "Pedro Costa", vendas: 15, comissoes: 65000, meta: 50000 },
+  ];
+
+  // Dados mock para evolução de vendas
+  const salesEvolution = [
+    { mes: "Jan", vendas: 8, angariações: 15, canceladas: 2 },
+    { mes: "Fev", vendas: 12, angariações: 18, canceladas: 1 },
+    { mes: "Mar", vendas: 15, angariações: 22, canceladas: 3 },
+    { mes: "Abr", vendas: 18, angariações: 25, canceladas: 2 },
+    { mes: "Mai", vendas: 22, angariações: 28, canceladas: 4 },
+    { mes: "Jun", vendas: 25, angariações: 32, canceladas: 3 },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
@@ -69,16 +98,16 @@ export default function DashboardManager() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {/* Total Team Sales */}
+          {/* Team Sales */}
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-purple-600" />
+                <TrendingUp className="h-4 w-4 text-purple-600" />
                 Vendas da Equipe
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">0</p>
+              <p className="text-3xl font-bold text-slate-900">55</p>
               <p className="text-xs text-slate-600 mt-2">Este mês</p>
             </CardContent>
           </Card>
@@ -92,8 +121,8 @@ export default function DashboardManager() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">0</p>
-              <p className="text-xs text-slate-600 mt-2">Na equipe</p>
+              <p className="text-3xl font-bold text-slate-900">3</p>
+              <p className="text-xs text-slate-600 mt-2">Membros da equipe</p>
             </CardContent>
           </Card>
 
@@ -101,17 +130,17 @@ export default function DashboardManager() {
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-green-600" />
+                <Activity className="h-4 w-4 text-green-600" />
                 Comissões Geradas
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">R$ 0,00</p>
+              <p className="text-3xl font-bold text-slate-900">R$ 145k</p>
               <p className="text-xs text-slate-600 mt-2">Este mês</p>
             </CardContent>
           </Card>
 
-          {/* Meta Achievement */}
+          {/* Goal Achievement */}
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
@@ -120,81 +149,104 @@ export default function DashboardManager() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">0%</p>
-              <p className="text-xs text-slate-600 mt-2">Da meta mensal</p>
+              <p className="text-3xl font-bold text-slate-900">92%</p>
+              <p className="text-xs text-slate-600 mt-2">Do objetivo mensal</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Team Performance Section */}
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-purple-600" />
-              Performance da Equipe
-            </CardTitle>
-            <CardDescription>
-              Ranking de corretores por vendas
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <Users className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600 font-medium">Nenhum corretor na equipe</p>
-              <p className="text-slate-500 text-sm mt-1">
-                Adicione corretores para começar a acompanhar a performance
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Team Performance */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Performance da Equipe
+              </CardTitle>
+              <CardDescription>
+                Vendas vs Meta por corretor
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={teamPerformance}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
+                  <Legend />
+                  <Bar dataKey="comissoes" fill="#8b5cf6" name="Comissões" />
+                  <Bar dataKey="meta" fill="#d1d5db" name="Meta" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-        {/* Goals Section */}
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-amber-600" />
-              Metas da Equipe
-            </CardTitle>
-            <CardDescription>
-              Acompanhe as metas e objetivos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <Target className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600 font-medium">Nenhuma meta definida</p>
-              <p className="text-slate-500 text-sm mt-1">
-                Defina metas para sua equipe
-              </p>
-              <Button
-                className="mt-4 bg-purple-600 hover:bg-purple-700"
-                onClick={() => setLocation("/goals/new")}
-              >
-                Criar Meta
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Sales Evolution */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Evolução de Vendas
+              </CardTitle>
+              <CardDescription>
+                Últimos 6 meses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={salesEvolution}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="vendas"
+                    stroke="#10b981"
+                    name="Vendas"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="angariações"
+                    stroke="#60a5fa"
+                    name="Angariações"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="canceladas"
+                    stroke="#ef4444"
+                    name="Canceladas"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-blue-600" />
-                Minha Equipe
+                <Users className="h-5 w-5 text-purple-600" />
+                Gerenciar Equipe
               </CardTitle>
               <CardDescription>
-                Gerencie corretores
+                Visualize e gerencie seus corretores
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => setLocation("/team")}
               >
-                Ver Equipe
+                Ir para Equipe
               </Button>
             </CardContent>
           </Card>
@@ -202,20 +254,20 @@ export default function DashboardManager() {
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-purple-600" />
-                Relatório de Vendas
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                Relatórios
               </CardTitle>
               <CardDescription>
-                Análise detalhada
+                Análise detalhada de vendas
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => setLocation("/reports/sales")}
+                onClick={() => setLocation("/reports")}
               >
-                Ver Relatório
+                Ver Relatórios
               </Button>
             </CardContent>
           </Card>
@@ -223,20 +275,20 @@ export default function DashboardManager() {
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-600" />
-                Análise de Comissões
+                <Activity className="h-5 w-5 text-green-600" />
+                Indicadores
               </CardTitle>
               <CardDescription>
-                Detalhes financeiros
+                KPIs e métricas da equipe
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => setLocation("/reports/commissions")}
+                onClick={() => setLocation("/indicators")}
               >
-                Ver Análise
+                Ver Indicadores
               </Button>
             </CardContent>
           </Card>
