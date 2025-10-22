@@ -9,6 +9,10 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import DashboardBroker from "./pages/DashboardBroker";
+import DashboardFinance from "./pages/DashboardFinance";
+import DashboardManager from "./pages/DashboardManager";
+import NewSale from "./pages/NewSale";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -35,8 +39,32 @@ function Router() {
       {/* Protected routes */}
       {user ? (
         <>
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/" component={Dashboard} />
+          {/* Role-based dashboards */}
+          {user.role === "broker" && (
+            <>
+              <Route path="/sales/new" component={NewSale} />
+              <Route path="/dashboard" component={DashboardBroker} />
+              <Route path="/" component={DashboardBroker} />
+            </>
+          )}
+          {user.role === "finance" && (
+            <>
+              <Route path="/dashboard" component={DashboardFinance} />
+              <Route path="/" component={DashboardFinance} />
+            </>
+          )}
+          {user.role === "manager" && (
+            <>
+              <Route path="/dashboard" component={DashboardManager} />
+              <Route path="/" component={DashboardManager} />
+            </>
+          )}
+          {user.role === "admin" && (
+            <>
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/" component={Dashboard} />
+            </>
+          )}
         </>
       ) : (
         <Route path="/" component={Login} />
