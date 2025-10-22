@@ -18,6 +18,7 @@ import Indicators from "./pages/Indicators";
 import Ranking from "./pages/Ranking";
 import SalesApproval from "./pages/SalesApproval";
 import DocumentUpload from "./pages/DocumentUpload";
+import GoalsManagement from "./pages/GoalsManagement";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -74,6 +75,7 @@ function Router() {
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
+              <Route path="/goals" component={GoalsManagement} />
               <Route path="/dashboard" component={DashboardManager} />
               <Route path="/" component={DashboardManager} />
             </>

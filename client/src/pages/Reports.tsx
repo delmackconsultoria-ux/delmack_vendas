@@ -2,328 +2,451 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Download } from "lucide-react";
-import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, LogOut, Download } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useState } from "react";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function Reports() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
-  const [filterType, setFilterType] = useState<"team" | "broker">("team");
+  const [reportType, setReportType] = useState("sales-engagement");
+  const [selectedBroker, setSelectedBroker] = useState("all");
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  if (!user || !["manager", "finance", "broker"].includes(user.role)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <p className="text-red-600 mb-4">Acesso restrito</p>
-            <Button onClick={() => setLocation("/")} className="w-full">
-              Voltar
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/login");
+    },
+  });
+
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+  };
+
+  if (!user) {
+    return null;
   }
 
-  const canViewTeamData = ["manager", "finance"].includes(user.role);
-  const canViewBrokerData = ["manager", "finance"].includes(user.role);
-
-  // Mock data - será substituído por dados reais da API
-  const brokerData = [
-    { name: "João Silva", angariações: "R$ 2.500.000", vendas: "R$ 1.800.000", total: "R$ 4.300.000" },
-    { name: "Maria Santos", angariações: "R$ 1.900.000", vendas: "R$ 2.100.000", total: "R$ 4.000.000" },
-    { name: "Pedro Costa", angariações: "R$ 2.100.000", vendas: "R$ 1.600.000", total: "R$ 3.700.000" },
-    { name: "Ana Oliveira", angariações: "R$ 1.800.000", vendas: "R$ 2.200.000", total: "R$ 4.000.000" },
+  // Mock data - corretores
+  const brokers = [
+    { id: "1", name: "João Silva" },
+    { id: "2", name: "Maria Santos" },
+    { id: "3", name: "Pedro Costa" },
+    { id: "4", name: "Ana Oliveira" },
   ];
 
-  const brokerAngariações = [
-    { name: "João Silva", angariações: "R$ 2.500.000" },
-    { name: "Maria Santos", angariações: "R$ 1.900.000" },
-    { name: "Pedro Costa", angariações: "R$ 2.100.000" },
-    { name: "Ana Oliveira", angariações: "R$ 1.800.000" },
+  // Mock data - vendas e angariações por corretor
+  const salesEngagementData = [
+    { name: "João Silva", vendas: 1800000, angariações: 2500000 },
+    { name: "Maria Santos", vendas: 2100000, angariações: 1900000 },
+    { name: "Pedro Costa", vendas: 1600000, angariações: 2100000 },
+    { name: "Ana Oliveira", vendas: 2200000, angariações: 1800000 },
   ];
 
-  const brokerAngariationsCount = [
-    { name: "João Silva", quantidade: 25 },
-    { name: "Maria Santos", quantidade: 19 },
-    { name: "Pedro Costa", quantidade: 21 },
-    { name: "Ana Oliveira", quantidade: 18 },
+  // Mock data - quantidade de angariações
+  const engagementQtyData = [
+    { name: "João Silva", quantidade: 45 },
+    { name: "Maria Santos", quantidade: 38 },
+    { name: "Pedro Costa", quantidade: 42 },
+    { name: "Ana Oliveira", quantidade: 50 },
   ];
 
-  const brokerBaixas = [
-    { name: "João Silva", quantidade: 3 },
+  // Mock data - quantidade de baixas
+  const cancellationsQtyData = [
+    { name: "João Silva", quantidade: 8 },
     { name: "Maria Santos", quantidade: 5 },
-    { name: "Pedro Costa", quantidade: 2 },
-    { name: "Ana Oliveira", quantidade: 4 },
+    { name: "Pedro Costa", quantidade: 7 },
+    { name: "Ana Oliveira", quantidade: 6 },
   ];
 
-  const brokerBaixasValue = [
-    { name: "João Silva", valor: "R$ 450.000" },
-    { name: "Maria Santos", valor: "R$ 750.000" },
-    { name: "Pedro Costa", valor: "R$ 320.000" },
-    { name: "Ana Oliveira", valor: "R$ 600.000" },
+  // Mock data - valor de baixas
+  const cancellationsValueData = [
+    { name: "João Silva", valor: 450000 },
+    { name: "Maria Santos", valor: 320000 },
+    { name: "Pedro Costa", valor: 380000 },
+    { name: "Ana Oliveira", valor: 410000 },
   ];
+
+  // Mock data - evolução mensal
+  const monthlyEvolutionData = [
+    { mes: "Jan", vendas: 8500000, angariações: 9200000 },
+    { mes: "Fev", vendas: 9100000, angariações: 8800000 },
+    { mes: "Mar", vendas: 7700000, angariações: 8100000 },
+    { mes: "Abr", vendas: 10200000, angariações: 9500000 },
+  ];
+
+  // Determinar dados a exibir baseado no filtro
+  const getChartData = () => {
+    if (selectedBroker !== "all") {
+      const brokerData = brokers.find((b) => b.id === selectedBroker);
+      if (reportType === "sales-engagement") {
+        return [salesEngagementData.find((d) => d.name === brokerData?.name)];
+      } else if (reportType === "engagement-qty") {
+        return [engagementQtyData.find((d) => d.name === brokerData?.name)];
+      } else if (reportType === "cancellations-qty") {
+        return [cancellationsQtyData.find((d) => d.name === brokerData?.name)];
+      } else if (reportType === "cancellations-value") {
+        return [cancellationsValueData.find((d) => d.name === brokerData?.name)];
+      }
+    }
+
+    // Retornar todos os dados se "all" estiver selecionado
+    if (reportType === "sales-engagement") {
+      return salesEngagementData;
+    } else if (reportType === "engagement-qty") {
+      return engagementQtyData;
+    } else if (reportType === "cancellations-qty") {
+      return cancellationsQtyData;
+    } else if (reportType === "cancellations-value") {
+      return cancellationsValueData;
+    }
+    return [];
+  };
+
+  const getChartTitle = () => {
+    switch (reportType) {
+      case "sales-engagement":
+        return "Vendas + Angariações por Corretor";
+      case "engagement-qty":
+        return "Quantidade de Angariações por Corretor";
+      case "cancellations-qty":
+        return "Quantidade de Baixas por Corretor";
+      case "cancellations-value":
+        return "Valor de Baixas por Corretor";
+      default:
+        return "Relatório";
+    }
+  };
+
+  const getChartDescription = () => {
+    switch (reportType) {
+      case "sales-engagement":
+        return "Mostra o valor total de vendas e angariações por corretor";
+      case "engagement-qty":
+        return "Mostra a quantidade de angariações realizadas por corretor";
+      case "cancellations-qty":
+        return "Mostra a quantidade de cancelamentos/baixas por corretor";
+      case "cancellations-value":
+        return "Mostra o valor total de cancelamentos/baixas por corretor";
+      default:
+        return "";
+    }
+  };
+
+  const chartData = getChartData();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center text-white font-bold">
+              D
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Delmack</h1>
+              <p className="text-xs text-slate-600">Relatórios e Análises</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm font-medium text-slate-900">{user.name}</p>
+              <Badge variant="outline" className="text-xs">
+                {user.role === "manager" ? "Gerente" : user.role === "finance" ? "Financeiro" : "Corretor"}
+              </Badge>
+            </div>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              onClick={() => setLocation("/")}
+              onClick={handleLogout}
               className="gap-2"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Voltar
+              <LogOut className="h-4 w-4" />
+              Sair
             </Button>
-            <h1 className="text-xl font-bold text-slate-900">Relatórios</h1>
           </div>
-          <Button variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            Exportar
-          </Button>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filter Section */}
-        {(canViewTeamData || canViewBrokerData) && (
-          <Card className="border-0 shadow-md mb-8">
-            <CardHeader>
-              <CardTitle>Filtros</CardTitle>
+        {/* Title Section */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+            <BarChart3 className="h-8 w-8 text-blue-600" />
+            Relatórios e Análises
+          </h2>
+          <p className="text-slate-600 mt-2">
+            Acompanhe o desempenho de vendas, angariações e indicadores
+          </p>
+        </div>
+
+        {/* Filters */}
+        <Card className="border-0 shadow-md mb-8 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <CardHeader>
+            <CardTitle>Filtros</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Tipo de Relatório */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Tipo de Relatório
+                </label>
+                <select
+                  value={reportType}
+                  onChange={(e) => setReportType(e.target.value)}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="sales-engagement">Vendas + Angariações</option>
+                  <option value="engagement-qty">Qtd Angariações</option>
+                  <option value="cancellations-qty">Qtd Baixas</option>
+                  <option value="cancellations-value">Valor Baixas</option>
+                </select>
+              </div>
+
+              {/* Corretor */}
+              {(user.role === "manager" || user.role === "finance") && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Corretor
+                  </label>
+                  <select
+                    value={selectedBroker}
+                    onChange={(e) => setSelectedBroker(e.target.value)}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="all">Todos</option>
+                    {brokers.map((broker) => (
+                      <option key={broker.id} value={broker.id}>
+                        {broker.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Mês */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Mês
+                </label>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {new Date(2025, i).toLocaleString("pt-BR", {
+                        month: "long",
+                      })}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Ano */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Ano
+                </label>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {Array.from({ length: 5 }, (_, i) => {
+                    const year = new Date().getFullYear() - 2 + i;
+                    return (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="border-0 shadow-md">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">
+                Total Vendas
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4">
-                {canViewTeamData && (
-                  <div className="flex-1">
-                    <label className="text-sm font-medium text-slate-700 block mb-2">
-                      Visualizar por
-                    </label>
-                    <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="team">Equipe</SelectItem>
-                        <SelectItem value="broker">Corretor</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                {user.role === "broker" && (
-                  <div className="flex-1">
-                    <label className="text-sm font-medium text-slate-700 block mb-2">
-                      Período
-                    </label>
-                    <Select defaultValue="month">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="week">Esta Semana</SelectItem>
-                        <SelectItem value="month">Este Mês</SelectItem>
-                        <SelectItem value="quarter">Este Trimestre</SelectItem>
-                        <SelectItem value="year">Este Ano</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              </div>
+              <p className="text-3xl font-bold text-slate-900">
+                R$ {(7700000 / 1000000).toFixed(1)}M
+              </p>
+              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
             </CardContent>
           </Card>
-        )}
 
-        {/* Reports Tabs */}
-        <Tabs defaultValue="table1" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white border border-slate-200 p-1 rounded-lg shadow-sm">
-            <TabsTrigger value="table1" className="text-xs sm:text-sm">
-              Vendas + Angariações
-            </TabsTrigger>
-            <TabsTrigger value="table2" className="text-xs sm:text-sm">
-              Angariações
-            </TabsTrigger>
-            <TabsTrigger value="table3" className="text-xs sm:text-sm">
-              Qtd Angariações
-            </TabsTrigger>
-            <TabsTrigger value="table4" className="text-xs sm:text-sm">
-              Qtd Baixas
-            </TabsTrigger>
-            <TabsTrigger value="table5" className="text-xs sm:text-sm">
-              Valor Baixas
-            </TabsTrigger>
-          </TabsList>
+          <Card className="border-0 shadow-md">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">
+                Total Angariações
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">
+                R$ {(8100000 / 1000000).toFixed(1)}M
+              </p>
+              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+            </CardContent>
+          </Card>
 
-          {/* Table 1: Vendas + Angariações */}
-          <TabsContent value="table1">
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Valor por Corretor - Vendas e Angariações</CardTitle>
-                <CardDescription>
-                  Mostra o valor total de vendas e angariações por corretor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-900">Corretor</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-900">Angariações</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-900">Vendas</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-900">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {brokerData.map((row, idx) => (
-                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                          <td className="py-3 px-4 text-slate-900 font-medium">{row.name}</td>
-                          <td className="py-3 px-4 text-right text-slate-600">{row.angariações}</td>
-                          <td className="py-3 px-4 text-right text-slate-600">{row.vendas}</td>
-                          <td className="py-3 px-4 text-right text-slate-900 font-semibold">{row.total}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <Card className="border-0 shadow-md">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">
+                Qtd Angariações
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">175</p>
+              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+            </CardContent>
+          </Card>
 
-          {/* Table 2: Angariações */}
-          <TabsContent value="table2">
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Valor por Corretor - Angariações</CardTitle>
-                <CardDescription>
-                  Mostra apenas o valor de angariações por corretor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-900">Corretor</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-900">Angariações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {brokerAngariações.map((row, idx) => (
-                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                          <td className="py-3 px-4 text-slate-900 font-medium">{row.name}</td>
-                          <td className="py-3 px-4 text-right text-slate-600">{row.angariações}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <Card className="border-0 shadow-md">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">
+                Valor Baixas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">
+                R$ {(1560000 / 1000000).toFixed(1)}M
+              </p>
+              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Table 3: Quantidade de Angariações */}
-          <TabsContent value="table3">
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Quantidade de Angariações por Corretor</CardTitle>
-                <CardDescription>
-                  Mostra a quantidade de angariações por corretor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-900">Corretor</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-900">Quantidade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {brokerAngariationsCount.map((row, idx) => (
-                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                          <td className="py-3 px-4 text-slate-900 font-medium">{row.name}</td>
-                          <td className="py-3 px-4 text-right text-slate-600">{row.quantidade}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+        {/* Main Chart */}
+        <Card className="border-0 shadow-md mb-8">
+          <CardHeader>
+            <CardTitle>{getChartTitle()}</CardTitle>
+            <CardDescription>{getChartDescription()}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={400}>
+              {reportType === "sales-engagement" ? (
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value: any) =>
+                      `R$ ${(value / 1000000).toFixed(2)}M`
+                    }
+                  />
+                  <Legend />
+                  <Bar dataKey="vendas" fill="#3b82f6" name="Vendas" />
+                  <Bar dataKey="angariações" fill="#10b981" name="Angariações" />
+                </BarChart>
+              ) : reportType === "engagement-qty" ? (
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="quantidade" fill="#8b5cf6" name="Quantidade" />
+                </BarChart>
+              ) : reportType === "cancellations-qty" ? (
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="quantidade" fill="#ef4444" name="Quantidade" />
+                </BarChart>
+              ) : (
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value: any) =>
+                      `R$ ${(value / 1000000).toFixed(2)}M`
+                    }
+                  />
+                  <Legend />
+                  <Bar dataKey="valor" fill="#f59e0b" name="Valor" />
+                </BarChart>
+              )}
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-          {/* Table 4: Quantidade de Baixas */}
-          <TabsContent value="table4">
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Quantidade de Baixas por Corretor</CardTitle>
-                <CardDescription>
-                  Mostra a quantidade de baixas/cancelamentos por corretor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-900">Corretor</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-900">Quantidade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {brokerBaixas.map((row, idx) => (
-                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                          <td className="py-3 px-4 text-slate-900 font-medium">{row.name}</td>
-                          <td className="py-3 px-4 text-right text-slate-600">{row.quantidade}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+        {/* Monthly Evolution Chart */}
+        <Card className="border-0 shadow-md mb-8">
+          <CardHeader>
+            <CardTitle>Evolução Mensal</CardTitle>
+            <CardDescription>
+              Acompanhe a evolução de vendas e angariações ao longo dos meses
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={monthlyEvolutionData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mes" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value: any) =>
+                    `R$ ${(value / 1000000).toFixed(2)}M`
+                  }
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="vendas"
+                  stroke="#3b82f6"
+                  name="Vendas"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="angariações"
+                  stroke="#10b981"
+                  name="Angariações"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-          {/* Table 5: Valor de Baixas */}
-          <TabsContent value="table5">
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Valor de Baixas por Corretor</CardTitle>
-                <CardDescription>
-                  Mostra o valor total de baixas/cancelamentos por corretor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-900">Corretor</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-900">Valor</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {brokerBaixasValue.map((row, idx) => (
-                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                          <td className="py-3 px-4 text-slate-900 font-medium">{row.name}</td>
-                          <td className="py-3 px-4 text-right text-slate-600">{row.valor}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* Export Button */}
+        <div className="flex justify-end">
+          <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+            <Download className="h-4 w-4" />
+            Exportar Relatório
+          </Button>
+        </div>
       </main>
     </div>
   );
