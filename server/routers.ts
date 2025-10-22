@@ -2,6 +2,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { authRouter } from "./authRouter";
 import { properfyRouter } from "./properfyRouter";
 import { salesRouter } from "./salesRouter";
+import { utilRouter } from "./utilRouter";
 import { router } from "./_core/trpc";
 
 export const appRouter = router({
@@ -9,6 +10,7 @@ export const appRouter = router({
   auth: authRouter,
   properfy: properfyRouter,
   sales: salesRouter,
+  util: utilRouter,
   // TODO: add feature routers here
 });
 

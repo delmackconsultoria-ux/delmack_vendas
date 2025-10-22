@@ -15,6 +15,8 @@ import DashboardManager from "./pages/DashboardManager";
 import NewSale from "./pages/NewSale";
 import Reports from "./pages/Reports";
 import Indicators from "./pages/Indicators";
+import SalesApproval from "./pages/SalesApproval";
+import DocumentUpload from "./pages/DocumentUpload";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -47,6 +49,7 @@ function Router() {
               <Route path="/sales/new" component={NewSale} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/dashboard" component={DashboardBroker} />
               <Route path="/" component={DashboardBroker} />
             </>
@@ -55,6 +58,8 @@ function Router() {
             <>
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/sales-approval" component={SalesApproval} />
+              <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/dashboard" component={DashboardFinance} />
               <Route path="/" component={DashboardFinance} />
             </>
@@ -63,6 +68,8 @@ function Router() {
             <>
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/sales-approval" component={SalesApproval} />
+              <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/dashboard" component={DashboardManager} />
               <Route path="/" component={DashboardManager} />
             </>
