@@ -42,7 +42,7 @@ export default function DashboardFinance() {
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="text-sm font-medium text-slate-900">{user.name}</p>
-              <Badge variant="outline" className="text-xs">💰 Financeiro</Badge>
+              <Badge variant="outline" className="text-xs">Financeiro</Badge>
             </div>
             <Button
               variant="outline"
@@ -61,7 +61,7 @@ export default function DashboardFinance() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900">Painel Financeiro 💰</h2>
+          <h2 className="text-3xl font-bold text-slate-900">Painel Financeiro</h2>
           <p className="text-slate-600 mt-2">
             Gerencie pagamentos de comissões e acompanhe o fluxo financeiro
           </p>
