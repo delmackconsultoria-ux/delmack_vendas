@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, AlertCircle } from "lucide-react";
+import { ArrowLeft, Save, AlertCircle, Search } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 
@@ -15,29 +15,100 @@ export default function NewSale() {
   const [, setLocation] = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingProperty, setLoadingProperty] = useState(false);
+  const [propertyError, setPropertyError] = useState("");
 
   const [formData, setFormData] = useState({
-    propertyType: "baggio", // "baggio" ou "external"
+    propertyType: "baggio",
     propertyReference: "",
     propertyAddress: "",
     propertyCity: "",
     propertyState: "",
-    propertyCEP: "",
+    propertyZipCode: "",
     propertyValue: "",
+    saleValue: "",
+    commissionType: "standard",
+    commissionValue: "",
     buyerName: "",
     buyerEmail: "",
     buyerPhone: "",
-    commissionType: "standard",
-    notes: "",
+    observations: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSearchProperty = async () => {
+    if (!formData.propertyReference.trim()) {
+      setPropertyError("Informe a referência do imóvel");
+      return;
+    }
+
+    setLoadingProperty(true);
+    setPropertyError("");
+
+    try {
+      const response = await fetch(
+        "/api/trpc/properfy.searchPropertyByReference?input=" +
+          encodeURIComponent(JSON.stringify({ reference: formData.propertyReference }))
+      );
+      const apiResult = await response.json();
+
+      if (apiResult.error) {
+        throw new Error(apiResult.error.message);
+      }
+
+      if (apiResult.result?.data?.success && apiResult.result?.data?.data) {
+        const propData = apiResult.result.data.data;
+        setFormData((prev) => ({
+          ...prev,
+          propertyAddress: propData.address || "",
+          propertyCity: propData.city || "",
+          propertyState: propData.state || "",
+          propertyZipCode: propData.zipCode || "",
+          propertyValue: propData.value?.toString() || "",
+        }));
+        setPropertyError("");
+      } else {
+        setPropertyError(
+          apiResult.result?.data?.error || "Imóvel não encontrado"
+        );
+      }
+    } catch (error) {
+      setPropertyError("Erro ao buscar imóvel no Properfy");
+      console.error(error);
+    } finally {
+      setLoadingProperty(false);
+    }
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const calculateCommission = () => {
+    const saleValue = parseFloat(formData.saleValue) || 0;
+    let percentage = 0;
+
+    switch (formData.commissionType) {
+      case "standard":
+        percentage = 5;
+        break;
+      case "reduced":
+        percentage = 3;
+        break;
+      case "premium":
+        percentage = 7;
+        break;
+      default:
+        percentage = 5;
+    }
+
+    return (saleValue * percentage) / 100;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,12 +117,14 @@ export default function NewSale() {
     setError(null);
 
     try {
-      // Validações
       if (!formData.propertyAddress) {
         throw new Error("Endereço do imóvel é obrigatório");
       }
       if (!formData.propertyValue) {
         throw new Error("Valor do imóvel é obrigatório");
+      }
+      if (!formData.saleValue) {
+        throw new Error("Valor da venda é obrigatório");
       }
       if (!formData.buyerName) {
         throw new Error("Nome do comprador é obrigatório");
@@ -60,10 +133,13 @@ export default function NewSale() {
         throw new Error("Email do comprador é obrigatório");
       }
 
-      // TODO: Chamar API para salvar venda
-      console.log("Venda a ser salva:", formData);
+      const commission = calculateCommission();
 
-      // Simular sucesso
+      console.log("Venda a ser salva:", {
+        ...formData,
+        commissionValue: commission.toString(),
+      });
+
       alert("Venda registrada com sucesso!");
       setLocation("/dashboard");
     } catch (err) {
@@ -91,9 +167,10 @@ export default function NewSale() {
     );
   }
 
+  const commission = calculateCommission();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
           <Button
@@ -105,267 +182,258 @@ export default function NewSale() {
             <ArrowLeft className="h-4 w-4" />
             Voltar
           </Button>
-          <h1 className="text-xl font-bold text-slate-900">Nova Venda</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Nova Venda</h1>
+            <p className="text-sm text-slate-600">
+              Registre uma nova venda de imóvel
+            </p>
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Error Alert */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-red-900">Erro</h3>
-                <p className="text-sm text-red-800 mt-1">{error}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Property Type Selection */}
-          <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle>Tipo de Imóvel</CardTitle>
-              <CardDescription>
-                Selecione se o imóvel é da Baggio ou externo
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => handleSelectChange("propertyType", "baggio")}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    formData.propertyType === "baggio"
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
-                >
-                  <p className="font-semibold text-slate-900">🏢 Baggio</p>
-                  <p className="text-sm text-slate-600 mt-1">Imóvel cadastrado no Properfy</p>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSelectChange("propertyType", "external")}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    formData.propertyType === "external"
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
-                >
-                  <p className="font-semibold text-slate-900">🏠 Externo</p>
-                  <p className="text-sm text-slate-600 mt-1">Imóvel de terceiros</p>
-                </button>
+        {error && (
+          <Card className="mb-6 border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3 text-red-600">
+                <AlertCircle className="h-5 w-5" />
+                <p>{error}</p>
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {/* Property Information */}
-          <Card className="border-0 shadow-md">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card>
             <CardHeader>
               <CardTitle>Informações do Imóvel</CardTitle>
               <CardDescription>
-                Preencha os dados do imóvel
+                Selecione o tipo de imóvel e preencha os dados
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              <div>
+                <Label htmlFor="propertyType">Tipo de Imóvel</Label>
+                <Select
+                  value={formData.propertyType}
+                  onValueChange={(value) =>
+                    handleSelectChange("propertyType", value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="baggio">
+                      Imóvel Baggio (com referência)
+                    </SelectItem>
+                    <SelectItem value="external">
+                      Imóvel Externo (sem referência)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {formData.propertyType === "baggio" && (
                 <div>
-                  <Label htmlFor="propertyReference">Referência Properfy *</Label>
-                  <Input
-                    id="propertyReference"
-                    name="propertyReference"
-                    placeholder="Ex: PROP-12345"
-                    value={formData.propertyReference}
-                    onChange={handleInputChange}
-                    className="mt-2"
-                  />
-                  <p className="text-xs text-slate-600 mt-1">
-                    Insira a referência do imóvel no Properfy para puxar os dados automaticamente
-                  </p>
+                  <Label htmlFor="propertyReference">
+                    Referência do Imóvel
+                  </Label>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      id="propertyReference"
+                      name="propertyReference"
+                      placeholder="Ex: REF-001"
+                      value={formData.propertyReference}
+                      onChange={handleInputChange}
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleSearchProperty}
+                      disabled={loadingProperty}
+                      className="gap-2"
+                    >
+                      <Search className="h-4 w-4" />
+                      {loadingProperty ? "Buscando..." : "Buscar"}
+                    </Button>
+                  </div>
+                  {propertyError && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {propertyError}
+                    </p>
+                  )}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="propertyAddress">Endereço *</Label>
+                  <Label htmlFor="propertyAddress">Endereço</Label>
                   <Input
                     id="propertyAddress"
                     name="propertyAddress"
-                    placeholder="Rua, número"
                     value={formData.propertyAddress}
                     onChange={handleInputChange}
-                    className="mt-2"
+                    placeholder="Rua, número"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="propertyCEP">CEP *</Label>
-                  <Input
-                    id="propertyCEP"
-                    name="propertyCEP"
-                    placeholder="00000-000"
-                    value={formData.propertyCEP}
-                    onChange={handleInputChange}
-                    className="mt-2"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="propertyCity">Cidade *</Label>
+                  <Label htmlFor="propertyCity">Cidade</Label>
                   <Input
                     id="propertyCity"
                     name="propertyCity"
-                    placeholder="São Paulo"
                     value={formData.propertyCity}
                     onChange={handleInputChange}
-                    className="mt-2"
+                    placeholder="Cidade"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="propertyState">Estado *</Label>
-                  <Input
-                    id="propertyState"
-                    name="propertyState"
-                    placeholder="SP"
-                    value={formData.propertyState}
-                    onChange={handleInputChange}
-                    className="mt-2"
-                    maxLength={2}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="propertyValue">Valor do Imóvel *</Label>
-                <div className="relative mt-2">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600">R$</span>
-                  <Input
-                    id="propertyValue"
-                    name="propertyValue"
-                    type="number"
-                    placeholder="0,00"
-                    value={formData.propertyValue}
-                    onChange={handleInputChange}
-                    className="pl-10"
-                    step="0.01"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Buyer Information */}
-          <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle>Informações do Comprador</CardTitle>
-              <CardDescription>
-                Dados de contato do comprador
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="buyerName">Nome Completo *</Label>
-                <Input
-                  id="buyerName"
-                  name="buyerName"
-                  placeholder="João Silva"
-                  value={formData.buyerName}
-                  onChange={handleInputChange}
-                  className="mt-2"
-                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="buyerEmail">Email *</Label>
+                  <Label htmlFor="propertyState">Estado</Label>
                   <Input
-                    id="buyerEmail"
-                    name="buyerEmail"
-                    type="email"
-                    placeholder="joao@email.com"
-                    value={formData.buyerEmail}
+                    id="propertyState"
+                    name="propertyState"
+                    value={formData.propertyState}
                     onChange={handleInputChange}
-                    className="mt-2"
+                    placeholder="UF"
+                    maxLength={2}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="buyerPhone">Telefone</Label>
+                  <Label htmlFor="propertyZipCode">CEP</Label>
                   <Input
-                    id="buyerPhone"
-                    name="buyerPhone"
-                    placeholder="(11) 99999-9999"
-                    value={formData.buyerPhone}
+                    id="propertyZipCode"
+                    name="propertyZipCode"
+                    value={formData.propertyZipCode}
                     onChange={handleInputChange}
-                    className="mt-2"
+                    placeholder="00000-000"
                   />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="propertyValue">Valor do Imóvel (R$)</Label>
+                <Input
+                  id="propertyValue"
+                  name="propertyValue"
+                  type="number"
+                  value={formData.propertyValue}
+                  onChange={handleInputChange}
+                  placeholder="0.00"
+                  step="0.01"
+                />
               </div>
             </CardContent>
           </Card>
 
-          {/* Commission Information */}
-          <Card className="border-0 shadow-md">
+          <Card>
             <CardHeader>
-              <CardTitle>Informações de Comissão</CardTitle>
+              <CardTitle>Informações da Venda</CardTitle>
               <CardDescription>
-                Tipo de negociação e comissão
+                Preencha os dados da venda e do comprador
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div>
-                <Label htmlFor="commissionType">Tipo de Comissão *</Label>
-                <Select value={formData.commissionType} onValueChange={(value) => handleSelectChange("commissionType", value)}>
-                  <SelectTrigger id="commissionType" className="mt-2">
+                <Label htmlFor="saleValue">Valor da Venda (R$)</Label>
+                <Input
+                  id="saleValue"
+                  name="saleValue"
+                  type="number"
+                  value={formData.saleValue}
+                  onChange={handleInputChange}
+                  placeholder="0.00"
+                  step="0.01"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="commissionType">Tipo de Comissão</Label>
+                <Select
+                  value={formData.commissionType}
+                  onValueChange={(value) =>
+                    handleSelectChange("commissionType", value)
+                  }
+                >
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="standard">Padrão (5%)</SelectItem>
                     <SelectItem value="reduced">Reduzida (3%)</SelectItem>
                     <SelectItem value="premium">Premium (7%)</SelectItem>
-                    <SelectItem value="custom">Customizada</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              {commission > 0 && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-slate-600">Comissão Estimada</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    R$ {commission.toFixed(2).replace(".", ",")}
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="buyerName">Nome do Comprador</Label>
+                  <Input
+                    id="buyerName"
+                    name="buyerName"
+                    value={formData.buyerName}
+                    onChange={handleInputChange}
+                    placeholder="Nome completo"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="buyerEmail">Email do Comprador</Label>
+                  <Input
+                    id="buyerEmail"
+                    name="buyerEmail"
+                    type="email"
+                    value={formData.buyerEmail}
+                    onChange={handleInputChange}
+                    placeholder="email@exemplo.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="buyerPhone">Telefone do Comprador</Label>
+                <Input
+                  id="buyerPhone"
+                  name="buyerPhone"
+                  value={formData.buyerPhone}
+                  onChange={handleInputChange}
+                  placeholder="(11) 99999-9999"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="observations">Observações</Label>
+                <Textarea
+                  id="observations"
+                  name="observations"
+                  value={formData.observations}
+                  onChange={handleInputChange}
+                  placeholder="Adicione observações sobre a venda..."
+                  rows={4}
+                />
               </div>
             </CardContent>
           </Card>
 
-          {/* Additional Notes */}
-          <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle>Observações</CardTitle>
-              <CardDescription>
-                Informações adicionais sobre a venda
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                name="notes"
-                placeholder="Adicione qualquer informação relevante sobre a venda..."
-                value={formData.notes}
-                onChange={handleInputChange}
-                rows={4}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Submit Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => setLocation("/dashboard")}
-              className="flex-1"
             >
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 gap-2"
-            >
+            <Button type="submit" disabled={loading} className="gap-2">
               <Save className="h-4 w-4" />
               {loading ? "Salvando..." : "Registrar Venda"}
             </Button>
