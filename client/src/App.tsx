@@ -15,6 +15,7 @@ import DashboardManager from "./pages/DashboardManager";
 import NewSale from "./pages/NewSale";
 import Reports from "./pages/Reports";
 import Indicators from "./pages/Indicators";
+import Ranking from "./pages/Ranking";
 import SalesApproval from "./pages/SalesApproval";
 import DocumentUpload from "./pages/DocumentUpload";
 
@@ -49,6 +50,7 @@ function Router() {
               <Route path="/sales/new" component={NewSale} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/ranking" component={Ranking} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/dashboard" component={DashboardBroker} />
               <Route path="/" component={DashboardBroker} />
@@ -58,6 +60,7 @@ function Router() {
             <>
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/dashboard" component={DashboardFinance} />
@@ -68,6 +71,7 @@ function Router() {
             <>
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/dashboard" component={DashboardManager} />

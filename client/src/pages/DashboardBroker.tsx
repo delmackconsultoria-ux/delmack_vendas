@@ -1,9 +1,9 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, TrendingUp, Home, LogOut, Plus, Eye } from "lucide-react";
+import { BarChart3, TrendingUp, Home, LogOut, Plus, Eye, Trophy } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import {
   BarChart,
@@ -69,6 +69,12 @@ export default function DashboardBroker() {
               <p className="text-sm font-medium text-slate-900">{user.name}</p>
               <Badge variant="outline" className="text-xs">Corretor</Badge>
             </div>
+            <Link href="/ranking">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Trophy className="h-4 w-4" />
+                Ranking
+              </Button>
+            </Link>
             <Button
               variant="outline"
               size="sm"
