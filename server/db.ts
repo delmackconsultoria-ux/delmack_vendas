@@ -1,7 +1,8 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, InsertSale, users, companies, sales, commissions, properties, commissionRules, type Company, type Sale, type Commission, type Property, type CommissionRule } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import bcrypt from 'bcryptjs';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -18,6 +19,82 @@ export async function getDb() {
   return _db;
 }
 
+/**
+ * Hash a password using bcrypt
+ */
+export async function hashPassword(password: string): Promise<string> {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
+}
+
+/**
+ * Compare a password with its hash
+ */
+export async function comparePassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
+
+/**
+ * Authenticate user with email and password
+ */
+export async function authenticateUser(email: string, password: string) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  const user = result.length > 0 ? result[0] : null;
+
+  if (!user || !user.password) {
+    return null;
+  }
+
+  const isPasswordValid = await comparePassword(password, user.password);
+  if (!isPasswordValid) {
+    return null;
+  }
+
+  // Update last signed in
+  await db.update(users).set({ lastSignedIn: new Date() }).where(eq(users.id, user.id));
+
+  return user;
+}
+
+/**
+ * Create a new user with email and password
+ */
+export async function createUser(data: {
+  email: string;
+  password: string;
+  name: string;
+  role: 'admin' | 'manager' | 'broker' | 'finance';
+  companyId?: string;
+}) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const hashedPassword = await hashPassword(data.password);
+  const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  await db.insert(users).values({
+    id: userId,
+    email: data.email,
+    password: hashedPassword,
+    name: data.name,
+    role: data.role,
+    companyId: data.companyId,
+    loginMethod: 'email',
+  });
+
+  return { id: userId, email: data.email, name: data.name, role: data.role };
+}
+
+/**
+ * Upsert user (for OAuth compatibility)
+ */
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.id) {
     throw new Error("User ID is required for upsert");
@@ -85,4 +162,144 @@ export async function getUser(id: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+/**
+ * Get user by email
+ */
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) {
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Get company by ID
+ */
+export async function getCompany(id: string): Promise<Company | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(companies).where(eq(companies.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Create a new company
+ */
+export async function createCompany(data: {
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  logo?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const companyId = `company_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  await db.insert(companies).values({
+    id: companyId,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    address: data.address,
+    logo: data.logo,
+  });
+
+  return { id: companyId, ...data };
+}
+
+/**
+ * Get all users for a company
+ */
+export async function getCompanyUsers(companyId: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(users).where(eq(users.companyId, companyId));
+}
+
+/**
+ * Get all sales for a company
+ */
+export async function getCompanySales(companyId: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(sales).where(eq(sales.companyId, companyId));
+}
+
+/**
+ * Get sale by ID with related data
+ */
+export async function getSaleWithDetails(saleId: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db.select().from(sales).where(eq(sales.id, saleId)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+/**
+ * Create a new sale
+ */
+export async function createSale(data: Omit<InsertSale, 'id'>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const saleId = `sale_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  await db.insert(sales).values({
+    ...data,
+    id: saleId,
+  } as InsertSale);
+
+  return { id: saleId, ...data };
+}
+
+/**
+ * Update sale status
+ */
+export async function updateSaleStatus(saleId: string, status: 'pending' | 'received' | 'paid' | 'cancelled', observation?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const updateData: any = { status, updatedAt: new Date() };
+  if (observation) {
+    updateData.observation = observation;
+  }
+
+  await db.update(sales).set(updateData).where(eq(sales.id, saleId));
+}
+
+/**
+ * Get commissions for a broker
+ */
+export async function getBrokerCommissions(brokerId: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(commissions).where(eq(commissions.brokerId, brokerId));
+}
+
+/**
+ * Create commission
+ */
+export async function createCommission(data: any) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const commissionId = `commission_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  await db.insert(commissions).values({
+    ...data,
+    id: commissionId,
+  });
+
+  return { id: commissionId, ...data };
+}
+
