@@ -1,12 +1,14 @@
 import { systemRouter } from "./_core/systemRouter";
 import { authRouter } from "./authRouter";
 import { properfyRouter } from "./properfyRouter";
+import { salesRouter } from "./salesRouter";
 import { router } from "./_core/trpc";
 
 export const appRouter = router({
   system: systemRouter,
   auth: authRouter,
   properfy: properfyRouter,
+  sales: salesRouter,
   // TODO: add feature routers here
 });
 
