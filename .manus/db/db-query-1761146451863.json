@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, email, name, role, isActive FROM users ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, name, role, isActive FROM users ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "user_1761145861200_m414lv33p",
+      "email": "evelize@baggioimoveis.com.br",
+      "name": "Evelize - Corretora",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "user_1761145861084_tcomrpyb1",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "name": "Camila Pires - Gerente",
+      "role": "manager",
+      "isActive": "1"
+    },
+    {
+      "id": "user_1761145860968_fdz1m9qc4",
+      "email": "darlan@baggioimoveis.com.br",
+      "name": "Darlan - Financeiro",
+      "role": "finance",
+      "isActive": "1"
+    },
+    {
+      "id": "user_1761145860851_bho7t50cf",
+      "email": "admin@delmack.com.br",
+      "name": "Administrador Delmack",
+      "role": "admin",
+      "isActive": "1"
+    },
+    {
+      "id": "WGxQeeqMJJfugkqAYm7pZC",
+      "email": "agoraintermediacoes@gmail.com",
+      "name": "Àgora Intermediações",
+      "role": "admin",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\trole\tisActive\nuser_1761145861200_m414lv33p\tevelize@baggioimoveis.com.br\tEvelize - Corretora\tbroker\t1\nuser_1761145861084_tcomrpyb1\tcamila.pires@baggioimoveis.com.br\tCamila Pires - Gerente\tmanager\t1\nuser_1761145860968_fdz1m9qc4\tdarlan@baggioimoveis.com.br\tDarlan - Financeiro\tfinance\t1\nuser_1761145860851_bho7t50cf\tadmin@delmack.com.br\tAdministrador Delmack\tadmin\t1\nWGxQeeqMJJfugkqAYm7pZC\tagoraintermediacoes@gmail.com\tÀgora Intermediações\tadmin\t1\n",
+  "stderr": "",
+  "execution_time_ms": 229
+}
