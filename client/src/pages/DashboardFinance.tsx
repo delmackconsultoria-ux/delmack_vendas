@@ -3,8 +3,9 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle, BarChart3 } from "lucide-react";
+import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle, BarChart3, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useState, useRef } from "react";
 import {
   BarChart,
   Bar,
@@ -24,6 +25,9 @@ import {
 export default function DashboardFinance() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
+  const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const mainRef = useRef<HTMLDivElement>(null);
 
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
@@ -33,6 +37,34 @@ export default function DashboardFinance() {
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
+  };
+
+  const scrollToTop = () => {
+    if (mainRef.current) {
+      mainRef.current.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const years = ["2024", "2025"];
+
+  const toggleMonth = (month: string) => {
+    setSelectedMonths(prev =>
+      prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month]
+    );
+  };
+
+  const toggleYear = (year: string) => {
+    setSelectedYears(prev =>
+      prev.includes(year) ? prev.filter(y => y !== year) : [...prev, year]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedMonths([]);
+    setSelectedYears([]);
   };
 
   if (!user) {
@@ -98,7 +130,7 @@ export default function DashboardFinance() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" ref={mainRef}>
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-slate-900">Painel Financeiro</h2>
@@ -117,6 +149,106 @@ export default function DashboardFinance() {
             </p>
           </div>
         </div>
+
+        {/* Advanced Filters */}
+        <Card className="border-0 shadow-md mb-8">
+          <CardHeader>
+            <CardTitle>Filtros Avançados de Comissões</CardTitle>
+            <CardDescription>Selecione múltiplos meses e anos para filtrar os dados</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Months Filter */}
+              <div>
+                <label className="text-sm font-medium text-slate-700 block mb-3">Meses</label>
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                  {months.map((month) => (
+                    <button
+                      key={month}
+                      onClick={() => toggleMonth(month)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        selectedMonths.includes(month)
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {month.substring(0, 3)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Years Filter */}
+              <div>
+                <label className="text-sm font-medium text-slate-700 block mb-3">Anos</label>
+                <div className="flex gap-2">
+                  {years.map((year) => (
+                    <button
+                      key={year}
+                      onClick={() => toggleYear(year)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        selectedYears.includes(year)
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filter Actions */}
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={scrollToTop}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  disabled={selectedMonths.length === 0 && selectedYears.length === 0}
+                >
+                  Aplicar Filtros
+                </Button>
+                {(selectedMonths.length > 0 || selectedYears.length > 0) && (
+                  <Button
+                    onClick={clearFilters}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Limpar
+                  </Button>
+                )}
+              </div>
+
+              {/* Active Filters Display */}
+              {(selectedMonths.length > 0 || selectedYears.length > 0) && (
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-900 font-medium mb-2">Filtros Ativos:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedMonths.map((month) => (
+                      <Badge key={month} variant="secondary" className="bg-blue-200 text-blue-900">
+                        {month}
+                      </Badge>
+                    ))}
+                    {selectedYears.map((year) => (
+                      <Badge key={year} variant="secondary" className="bg-blue-200 text-blue-900">
+                        {year}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Filtered Data Info */}
+        {(selectedMonths.length > 0 || selectedYears.length > 0) && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm text-green-900">
+              <span className="font-semibold">Dados filtrados por:</span> {selectedMonths.length > 0 && `${selectedMonths.length} mês(es)`} {selectedYears.length > 0 && `e ${selectedYears.length} ano(s)`}
+            </p>
+          </div>
+        )}
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

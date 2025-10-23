@@ -100,6 +100,34 @@ export default function Indicators() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Summary Card - MOVED TO TOP */}
+        <Card className="border-0 shadow-md mb-8">
+          <CardHeader>
+            <CardTitle>Resumo de Performance</CardTitle>
+            <CardDescription>
+              {user.role === "broker"
+                ? "Seus dados e comparação com a média da equipe"
+                : "Dados da equipe e análise de performance"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-sm text-green-700 font-medium mb-1">Indicadores Positivos</p>
+                <p className="text-2xl font-bold text-green-600">14</p>
+              </div>
+              <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                <p className="text-sm text-red-700 font-medium mb-1">Indicadores Negativos</p>
+                <p className="text-2xl font-bold text-red-600">8</p>
+              </div>
+              <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-700 font-medium mb-1">Indicadores Indefinidos</p>
+                <p className="text-2xl font-bold text-slate-600">5</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Filter Section */}
         {canViewTeamData && (
           <Card className="border-0 shadow-md mb-8">
@@ -163,34 +191,6 @@ export default function Indicators() {
             </Card>
           ))}
         </div>
-
-        {/* Summary Card */}
-        <Card className="border-0 shadow-md mt-8">
-          <CardHeader>
-            <CardTitle>Resumo de Performance</CardTitle>
-            <CardDescription>
-              {user.role === "broker"
-                ? "Seus dados e comparação com a média da equipe"
-                : "Dados da equipe e análise de performance"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-sm text-green-700 font-medium mb-1">Indicadores Positivos</p>
-                <p className="text-2xl font-bold text-green-600">14</p>
-              </div>
-              <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
-                <p className="text-sm text-red-700 font-medium mb-1">Indicadores Negativos</p>
-                <p className="text-2xl font-bold text-red-600">8</p>
-              </div>
-              <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-sm text-slate-700 font-medium mb-1">Indicadores Indefinidos</p>
-                <p className="text-2xl font-bold text-slate-600">5</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );
