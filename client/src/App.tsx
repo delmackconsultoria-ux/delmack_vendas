@@ -19,6 +19,7 @@ import Ranking from "./pages/Ranking";
 import SalesApproval from "./pages/SalesApproval";
 import DocumentUpload from "./pages/DocumentUpload";
 import GoalsManagement from "./pages/GoalsManagement";
+import CompanyManagement from "./pages/CompanyManagement";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -82,6 +83,7 @@ function Router() {
           )}
           {user.role === "admin" && (
             <>
+              <Route path="/companies" component={CompanyManagement} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/" component={Dashboard} />
             </>
