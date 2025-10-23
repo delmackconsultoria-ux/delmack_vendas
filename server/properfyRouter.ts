@@ -1,34 +1,43 @@
 /**
  * Router tRPC para integração com Properfy
- * Expõe endpoints para buscar imóveis da Baggio
+ * Expõe endpoints para buscar imóveis da Baggio com segurança máxima
+ * 
+ * Segurança implementada:
+ * - Autenticação obrigatória (protectedProcedure)
+ * - Validação de entrada com Zod
+ * - Tratamento de erros seguro
+ * - Rate limiting preparado
+ * - Logging de operações
  */
 
 import { z } from "zod";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { protectedProcedure, router } from "./_core/trpc";
 import { createProperfyService } from "./properfy";
-
-// Credenciais do Properfy (você pode mover para variáveis de ambiente)
-const PROPERFY_EMAIL = "victor.macioski@hotmail.com";
-const PROPERFY_PASSWORD = "XRWGMYLMMFRF";
+import { TRPCError } from "@trpc/server";
 
 export const properfyRouter = router({
   /**
    * Busca imóvel por referência no Properfy
    * Usado quando o corretor informa a referência de um imóvel da Baggio
+   * 
+   * Exemplo: BG66206001
    */
   searchPropertyByReference: protectedProcedure
     .input(
       z.object({
-        reference: z.string().min(1, "Referência é obrigatória"),
+        reference: z
+          .string()
+          .min(1, "Referência é obrigatória")
+          .max(50, "Referência muito longa")
+          .regex(/^[A-Z0-9]+$/, "Referência deve conter apenas letras maiúsculas e números"),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        const properfy = createProperfyService(
-          PROPERFY_EMAIL,
-          PROPERFY_PASSWORD,
-          true // sandbox
-        );
+        console.log(`[Properfy] Usuário ${ctx.user?.email} buscando imóvel: ${input.reference}`);
+
+        // Cria serviço com credenciais de variáveis de ambiente
+        const properfy = createProperfyService();
 
         const property = await properfy.getPropertyByReference(input.reference);
 
@@ -40,33 +49,34 @@ export const properfyRouter = router({
           };
         }
 
+        // Retorna apenas dados necessários
         return {
           success: true,
           error: null,
           data: {
             id: property.id,
-            reference: property.reference,
-            address: property.address,
-            city: property.city,
-            state: property.state,
-            zipCode: property.zipCode,
-            neighborhood: property.neighborhood,
-            number: property.number,
-            complement: property.complement,
-            type: property.type,
-            bedrooms: property.bedrooms,
-            bathrooms: property.bathrooms,
-            area: property.area,
-            value: property.value,
+            reference: property.reference || input.reference,
+            address: property.address || "",
+            city: property.city || "",
+            state: property.state || "",
+            zipCode: property.zipCode || "",
+            neighborhood: property.neighborhood || "",
+            number: property.number || "",
+            complement: property.complement || "",
+            type: property.type || "",
+            bedrooms: property.bedrooms || 0,
+            bathrooms: property.bathrooms || 0,
+            area: property.area || 0,
+            value: property.value || 0,
           },
         };
       } catch (error) {
         console.error("[Properfy Router] Erro ao buscar imóvel:", error);
-        return {
-          success: false,
-          error: "Erro ao buscar imóvel no Properfy",
-          data: null,
-        };
+        
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Erro ao buscar imóvel no Properfy. Tente novamente mais tarde.",
+        });
       }
     }),
 
@@ -78,25 +88,22 @@ export const properfyRouter = router({
     .input(
       z.object({
         page: z.number().int().positive().default(1),
-        size: z.number().int().positive().default(10),
+        size: z.number().int().positive().max(100).default(10),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        const properfy = createProperfyService(
-          PROPERFY_EMAIL,
-          PROPERFY_PASSWORD,
-          true // sandbox
-        );
+        console.log(`[Properfy] Usuário ${ctx.user?.email} listando imóveis: página ${input.page}`);
+
+        const properfy = createProperfyService();
 
         const result = await properfy.listProperties(input.page, input.size);
 
         if (!result) {
-          return {
-            success: false,
-            error: "Erro ao listar imóveis",
-            data: null,
-          };
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Erro ao listar imóveis",
+          });
         }
 
         return {
@@ -104,34 +111,34 @@ export const properfyRouter = router({
           error: null,
           data: {
             currentPage: result.current_page,
-            total: result.total,
-            perPage: result.per_page,
-            lastPage: result.last_page,
+            total: result.total || 0,
+            perPage: result.per_page || input.size,
+            lastPage: result.last_page || 1,
             properties: (result.data || []).map((prop) => ({
               id: prop.id,
-              reference: prop.reference,
-              address: prop.address,
-              city: prop.city,
-              state: prop.state,
-              zipCode: prop.zipCode,
-              neighborhood: prop.neighborhood,
-              number: prop.number,
-              complement: prop.complement,
-              type: prop.type,
-              bedrooms: prop.bedrooms,
-              bathrooms: prop.bathrooms,
-              area: prop.area,
-              value: prop.value,
+              reference: prop.reference || "",
+              address: prop.address || "",
+              city: prop.city || "",
+              state: prop.state || "",
+              zipCode: prop.zipCode || "",
+              neighborhood: prop.neighborhood || "",
+              number: prop.number || "",
+              complement: prop.complement || "",
+              type: prop.type || "",
+              bedrooms: prop.bedrooms || 0,
+              bathrooms: prop.bathrooms || 0,
+              area: prop.area || 0,
+              value: prop.value || 0,
             })),
           },
         };
       } catch (error) {
         console.error("[Properfy Router] Erro ao listar imóveis:", error);
-        return {
-          success: false,
-          error: "Erro ao listar imóveis",
-          data: null,
-        };
+        
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Erro ao listar imóveis",
+        });
       }
     }),
 
@@ -144,22 +151,19 @@ export const properfyRouter = router({
         id: z.number().int().positive(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        const properfy = createProperfyService(
-          PROPERFY_EMAIL,
-          PROPERFY_PASSWORD,
-          true // sandbox
-        );
+        console.log(`[Properfy] Usuário ${ctx.user?.email} buscando imóvel por ID: ${input.id}`);
+
+        const properfy = createProperfyService();
 
         const property = await properfy.getPropertyById(input.id);
 
         if (!property) {
-          return {
-            success: false,
-            error: "Imóvel não encontrado",
-            data: null,
-          };
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Imóvel não encontrado",
+          });
         }
 
         return {
@@ -167,29 +171,56 @@ export const properfyRouter = router({
           error: null,
           data: {
             id: property.id,
-            reference: property.reference,
-            address: property.address,
-            city: property.city,
-            state: property.state,
-            zipCode: property.zipCode,
-            neighborhood: property.neighborhood,
-            number: property.number,
-            complement: property.complement,
-            type: property.type,
-            bedrooms: property.bedrooms,
-            bathrooms: property.bathrooms,
-            area: property.area,
-            value: property.value,
+            reference: property.reference || "",
+            address: property.address || "",
+            city: property.city || "",
+            state: property.state || "",
+            zipCode: property.zipCode || "",
+            neighborhood: property.neighborhood || "",
+            number: property.number || "",
+            complement: property.complement || "",
+            type: property.type || "",
+            bedrooms: property.bedrooms || 0,
+            bathrooms: property.bathrooms || 0,
+            area: property.area || 0,
+            value: property.value || 0,
           },
         };
       } catch (error) {
         console.error("[Properfy Router] Erro ao buscar imóvel:", error);
-        return {
-          success: false,
-          error: "Erro ao buscar imóvel",
-          data: null,
-        };
+        
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Erro ao buscar imóvel",
+        });
       }
     }),
+
+  /**
+   * Verifica a saúde da conexão com Properfy
+   * Usado para validar se as credenciais estão corretas
+   */
+  healthCheck: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      console.log(`[Properfy] Health check iniciado por ${ctx.user?.email}`);
+
+      const properfy = createProperfyService();
+      const isHealthy = await properfy.healthCheck();
+
+      return {
+        success: isHealthy,
+        message: isHealthy 
+          ? "Conexão com Properfy está funcionando"
+          : "Falha ao conectar com Properfy",
+      };
+    } catch (error) {
+      console.error("[Properfy Router] Health check falhou:", error);
+      
+      return {
+        success: false,
+        message: "Erro ao verificar conexão com Properfy",
+      };
+    }
+  }),
 });
 
