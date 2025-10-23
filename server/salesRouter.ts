@@ -38,6 +38,11 @@ export const salesRouter = router({
           throw new Error("Database not available");
         }
 
+        // Verificar permissão: apenas corretores e gerentes podem cadastrar vendas
+        if (ctx.user.role !== "broker" && ctx.user.role !== "manager") {
+          throw new Error("Permissão negada. Apenas corretores e gerentes podem cadastrar vendas.");
+        }
+
         // Calcular comissão baseado no tipo
         let commissionPercentage = 5; // padrão
         if (input.commissionType === "angariacao") {

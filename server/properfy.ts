@@ -9,6 +9,7 @@
  * - Validação de entrada
  * - Tratamento de erros seguro
  * - Logging de operações
+ * - Status real do imóvel (disponível, vendido, alugado, etc)
  */
 
 import axios, { AxiosInstance, AxiosError } from "axios";
@@ -40,6 +41,8 @@ interface ProperfyProperty {
   bathrooms?: number;
   area?: number;
   value?: number;
+  status?: string; // Status do imóvel
+  statusId?: number; // ID do status no Properfy
   [key: string]: any;
 }
 
@@ -58,6 +61,28 @@ interface ProperfyServiceConfig {
   timeout?: number;
   retries?: number;
 }
+
+// Mapeamento de status do Properfy para português
+const STATUS_MAP: { [key: string]: string } = {
+  "disponível": "Disponível",
+  "available": "Disponível",
+  "1": "Disponível",
+  "vendido": "Vendido",
+  "sold": "Vendido",
+  "2": "Vendido",
+  "alugado": "Alugado",
+  "rented": "Alugado",
+  "3": "Alugado",
+  "bloqueado": "Bloqueado",
+  "blocked": "Bloqueado",
+  "4": "Bloqueado",
+  "em_negociacao": "Em Negociação",
+  "negotiating": "Em Negociação",
+  "5": "Em Negociação",
+  "indisponível": "Indisponível",
+  "unavailable": "Indisponível",
+  "6": "Indisponível",
+};
 
 class ProperfyService {
   private apiUrl: string;
@@ -147,7 +172,28 @@ class ProperfyService {
   }
 
   /**
-   * Busca imóvel por referência com validação
+   * Normaliza o status do imóvel
+   */
+  private normalizeStatus(property: ProperfyProperty): string {
+    if (!property) return "Desconhecido";
+
+    // Tenta diferentes campos que podem conter o status
+    const statusValue = property.status || property.statusId || property.chrStatus || "";
+    const statusString = String(statusValue).toLowerCase().trim();
+
+    // Procura no mapa de status
+    for (const [key, value] of Object.entries(STATUS_MAP)) {
+      if (statusString.includes(key) || key.includes(statusString)) {
+        return value;
+      }
+    }
+
+    // Se não encontrou, retorna o status original ou padrão
+    return statusString || "Desconhecido";
+  }
+
+  /**
+   * Busca imóvel por referência com validação e status
    */
   async getPropertyByReference(reference: string): Promise<ProperfyProperty | null> {
     try {
@@ -176,8 +222,13 @@ class ProperfyService {
       );
 
       if (response.data.data && response.data.data.length > 0) {
-        console.log(`[Properfy] Imóvel encontrado: ${sanitizedReference}`);
-        return response.data.data[0];
+        const property = response.data.data[0];
+        
+        // Adiciona status normalizado
+        property.status = this.normalizeStatus(property);
+        
+        console.log(`[Properfy] Imóvel encontrado: ${sanitizedReference}, Status: ${property.status}`);
+        return property;
       }
 
       console.log(`[Properfy] Imóvel não encontrado: ${sanitizedReference}`);
@@ -225,6 +276,14 @@ class ProperfyService {
         }
       );
 
+      // Normaliza status de todos os imóveis
+      if (response.data.data) {
+        response.data.data = response.data.data.map(property => ({
+          ...property,
+          status: this.normalizeStatus(property),
+        }));
+      }
+
       console.log(`[Properfy] Imóveis listados com sucesso`);
       return response.data;
     } catch (error) {
@@ -240,7 +299,7 @@ class ProperfyService {
   }
 
   /**
-   * Busca imóvel por ID com validação
+   * Busca imóvel por ID com validação e status
    */
   async getPropertyById(id: number): Promise<ProperfyProperty | null> {
     try {
@@ -261,7 +320,10 @@ class ProperfyService {
         `/property/property/${id}`
       );
 
-      console.log(`[Properfy] Imóvel encontrado: ID ${id}`);
+      // Adiciona status normalizado
+      response.data.status = this.normalizeStatus(response.data);
+
+      console.log(`[Properfy] Imóvel encontrado: ID ${id}, Status: ${response.data.status}`);
       return response.data;
     } catch (error) {
       const message = error instanceof AxiosError 

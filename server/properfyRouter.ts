@@ -8,6 +8,7 @@
  * - Tratamento de erros seguro
  * - Rate limiting preparado
  * - Logging de operações
+ * - Status real do imóvel (disponível, vendido, alugado, etc)
  */
 
 import { z } from "zod";
@@ -21,6 +22,10 @@ export const properfyRouter = router({
    * Usado quando o corretor informa a referência de um imóvel da Baggio
    * 
    * Exemplo: BG66206001
+   * 
+   * Retorna:
+   * - Dados do imóvel
+   * - Status real (Disponível, Vendido, Alugado, Em Negociação, etc)
    */
   searchPropertyByReference: protectedProcedure
     .input(
@@ -44,15 +49,23 @@ export const properfyRouter = router({
         if (!property) {
           return {
             success: false,
-            error: "Imóvel não encontrado no Properfy",
+            error: "Imóvel não encontrado no Properfy. Verifique a referência e tente novamente.",
             data: null,
           };
         }
 
+        // Verifica se o imóvel está disponível
+        const status = property.status || "Desconhecido";
+        const isAvailable = status === "Disponível";
+        const statusMessage = !isAvailable 
+          ? `Este imóvel está ${status.toLowerCase()}. Não é possível registrar uma venda.`
+          : null;
+
         // Retorna apenas dados necessários
         return {
           success: true,
-          error: null,
+          error: statusMessage,
+          isAvailable,
           data: {
             id: property.id,
             reference: property.reference || input.reference,
@@ -68,6 +81,7 @@ export const properfyRouter = router({
             bathrooms: property.bathrooms || 0,
             area: property.area || 0,
             value: property.value || 0,
+            status: property.status || "Desconhecido",
           },
         };
       } catch (error) {
@@ -129,6 +143,7 @@ export const properfyRouter = router({
               bathrooms: prop.bathrooms || 0,
               area: prop.area || 0,
               value: prop.value || 0,
+              status: prop.status || "Desconhecido",
             })),
           },
         };
@@ -166,9 +181,16 @@ export const properfyRouter = router({
           });
         }
 
+        const status = property.status || "Desconhecido";
+        const isAvailable = status === "Disponível";
+        const statusMessage = !isAvailable 
+          ? `Este imóvel está ${status.toLowerCase()}. Não é possível registrar uma venda.`
+          : null;
+
         return {
           success: true,
-          error: null,
+          error: statusMessage,
+          isAvailable,
           data: {
             id: property.id,
             reference: property.reference || "",
@@ -184,6 +206,7 @@ export const properfyRouter = router({
             bathrooms: property.bathrooms || 0,
             area: property.area || 0,
             value: property.value || 0,
+            status: status,
           },
         };
       } catch (error) {
