@@ -1,10 +1,11 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { useState } from "react";
+import React from "react";
 
 interface Indicator {
   name: string;
@@ -18,6 +19,11 @@ export default function Indicators() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [filterType, setFilterType] = useState<"team" | "broker">("team");
+
+  // Scroll para topo ao entrar na página
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   if (!user || !["manager", "finance", "broker"].includes(user.role)) {
     return (

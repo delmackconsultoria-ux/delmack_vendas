@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle, BarChart3, X } from "lucide-react";
+import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle, BarChart3, X, ChevronDown } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef } from "react";
 import {
@@ -27,6 +27,7 @@ export default function DashboardFinance() {
   const [, setLocation] = useLocation();
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
 
   const logoutMutation = trpc.auth.logout.useMutation({
@@ -65,6 +66,12 @@ export default function DashboardFinance() {
   const clearFilters = () => {
     setSelectedMonths([]);
     setSelectedYears([]);
+    setShowFilters(false);
+  };
+
+  const handleApplyFilters = () => {
+    scrollToTop();
+    setShowFilters(false);
   };
 
   if (!user) {
@@ -101,13 +108,21 @@ export default function DashboardFinance() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setLocation("/")}>
             <img src="/delmack-logo.png" alt="Delmack" className="h-10 w-auto" />
             <div>
               <h1 className="text-xl font-bold text-slate-900">Delmack</h1>
               <p className="text-xs text-slate-600">Gestão Financeira</p>
             </div>
           </div>
+
+          {/* Navigation Menu */}
+          <nav className="hidden md:flex items-center gap-6">
+            <button onClick={() => setLocation("/")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Dashboard</button>
+            <button onClick={() => setLocation("/indicators")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Indicadores</button>
+            <button onClick={() => setLocation("/analytics")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Gráficos</button>
+            <button onClick={() => setLocation("/reports")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Relatórios</button>
+          </nav>
 
           <div className="flex items-center gap-4">
             <div className="text-right">
@@ -148,23 +163,74 @@ export default function DashboardFinance() {
           </div>
         </div>
 
-        {/* Advanced Filters */}
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle>Filtros Avançados de Comissões</CardTitle>
-            <CardDescription>Selecione múltiplos meses e anos para filtrar os dados</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Pendentes de Aprovação</p>
+                  <p className="text-2xl font-bold text-amber-600">R$ 45.000</p>
+                </div>
+                <AlertCircle className="h-8 w-8 text-amber-600 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">A Pagar Este Mês</p>
+                  <p className="text-2xl font-bold text-blue-600">R$ 125.000</p>
+                </div>
+                <DollarSign className="h-8 w-8 text-blue-600 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Já Pagos Este Mês</p>
+                  <p className="text-2xl font-bold text-green-600">R$ 380.000</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-600 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Compact Filters */}
+        <div className="mb-6 bg-white rounded-lg border border-slate-200 shadow-sm">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50"
+          >
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-slate-600" />
+              <span className="text-sm font-medium text-slate-900">Filtros de Comissões</span>
+              {(selectedMonths.length > 0 || selectedYears.length > 0) && (
+                <Badge variant="secondary" className="text-xs">
+                  {selectedMonths.length + selectedYears.length} ativos
+                </Badge>
+              )}
+            </div>
+            <ChevronDown className={`h-4 w-4 text-slate-600 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showFilters && (
+            <div className="border-t border-slate-200 px-4 py-4 space-y-4">
               {/* Months Filter */}
               <div>
-                <label className="text-sm font-medium text-slate-700 block mb-3">Meses</label>
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                <label className="text-xs font-semibold text-slate-700 block mb-2">MESES</label>
+                <div className="grid grid-cols-6 gap-1">
                   {months.map((month) => (
                     <button
                       key={month}
                       onClick={() => toggleMonth(month)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${
                         selectedMonths.includes(month)
                           ? "bg-blue-600 text-white"
                           : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -178,13 +244,13 @@ export default function DashboardFinance() {
 
               {/* Years Filter */}
               <div>
-                <label className="text-sm font-medium text-slate-700 block mb-3">Anos</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-2">ANOS</label>
                 <div className="flex gap-2">
                   {years.map((year) => (
                     <button
                       key={year}
                       onClick={() => toggleYear(year)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`px-3 py-1 rounded text-xs font-medium transition-all ${
                         selectedYears.includes(year)
                           ? "bg-blue-600 text-white"
                           : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -199,8 +265,9 @@ export default function DashboardFinance() {
               {/* Filter Actions */}
               <div className="flex gap-2 pt-2">
                 <Button
-                  onClick={scrollToTop}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  onClick={handleApplyFilters}
+                  size="sm"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-xs"
                   disabled={selectedMonths.length === 0 && selectedYears.length === 0}
                 >
                   Aplicar Filtros
@@ -209,102 +276,24 @@ export default function DashboardFinance() {
                   <Button
                     onClick={clearFilters}
                     variant="outline"
-                    className="gap-2"
+                    size="sm"
+                    className="gap-1 text-xs"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3 w-3" />
                     Limpar
                   </Button>
                 )}
               </div>
-
-              {/* Active Filters Display */}
-              {(selectedMonths.length > 0 || selectedYears.length > 0) && (
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-900 font-medium mb-2">Filtros Ativos:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedMonths.map((month) => (
-                      <Badge key={month} variant="secondary" className="bg-blue-200 text-blue-900">
-                        {month}
-                      </Badge>
-                    ))}
-                    {selectedYears.map((year) => (
-                      <Badge key={year} variant="secondary" className="bg-blue-200 text-blue-900">
-                        {year}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Filtered Data Info */}
-        {(selectedMonths.length > 0 || selectedYears.length > 0) && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-900">
-              <span className="font-semibold">Dados filtrados por:</span> {selectedMonths.length > 0 && `${selectedMonths.length} mês(es)`} {selectedYears.length > 0 && `e ${selectedYears.length} ano(s)`}
-            </p>
-          </div>
-        )}
-
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Pending Commissions */}
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all border-l-4 border-l-amber-600">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-600" />
-                Pendentes de Aprovação
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-amber-600">R$ 45.000</p>
-              <p className="text-xs text-slate-600 mt-2">45 comissões aguardando</p>
-            </CardContent>
-          </Card>
-
-          {/* To Pay */}
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all border-l-4 border-l-red-600">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-red-600" />
-                A Pagar Este Mês
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-red-600">R$ 125.000</p>
-              <p className="text-xs text-slate-600 mt-2">Próximas 30 dias</p>
-            </CardContent>
-          </Card>
-
-          {/* Already Paid */}
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all border-l-4 border-l-green-600">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                Já Pagos Este Mês
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-green-600">R$ 380.000</p>
-              <p className="text-xs text-slate-600 mt-2">Comissões processadas</p>
-            </CardContent>
-          </Card>
+          )}
         </div>
 
-        {/* Gráficos */}
+        {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Distribuição por Status */}
+          {/* Commissions by Status */}
           <Card className="border-0 shadow-md">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Distribuição de Comissões por Status
-              </CardTitle>
-              <CardDescription>
-                Visualização das comissões por situação
-              </CardDescription>
+              <CardTitle className="text-lg">Comissões por Status</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -314,9 +303,7 @@ export default function DashboardFinance() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ status, value }) =>
-                      `${status}: R$ ${(value / 1000).toFixed(0)}k`
-                    }
+                    label={({ status, value }) => `${status}: R$ ${(value / 1000).toFixed(0)}k`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -325,123 +312,53 @@ export default function DashboardFinance() {
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip
-                    formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`}
-                  />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* Evolução de Pagamentos */}
+          {/* Commissions by Broker */}
           <Card className="border-0 shadow-md">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingDown className="h-5 w-5" />
-                Evolução de Pagamentos
-              </CardTitle>
-              <CardDescription>
-                Histórico dos últimos 6 meses
-              </CardDescription>
+              <CardTitle className="text-lg">Comissões por Corretor</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={paymentEvolution}>
+                <BarChart data={commissionsByBroker}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="mes" />
+                  <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
                   <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="pagos"
-                    stroke="#10b981"
-                    name="Pagos"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="pendentes"
-                    stroke="#fbbf24"
-                    name="Pendentes"
-                    strokeWidth={2}
-                  />
-                </LineChart>
+                  <Bar dataKey="pendentes" fill="#fbbf24" />
+                  <Bar dataKey="recebidas" fill="#60a5fa" />
+                  <Bar dataKey="pagas" fill="#10b981" />
+                </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
         </div>
 
-        {/* Comissões por Corretor */}
+        {/* Payment Evolution */}
         <Card className="border-0 shadow-md mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Comissões por Corretor
-            </CardTitle>
-            <CardDescription>
-              Comparação de comissões pendentes, recebidas e pagas
-            </CardDescription>
+            <CardTitle className="text-lg">Evolução de Pagamentos</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={commissionsByBroker}>
+              <LineChart data={paymentEvolution}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="mes" />
                 <YAxis />
-                <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
+                <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
                 <Legend />
-                <Bar dataKey="pendentes" fill="#fbbf24" name="Pendentes" />
-                <Bar dataKey="recebidas" fill="#60a5fa" name="Recebidas" />
-                <Bar dataKey="pagas" fill="#10b981" name="Pagas" />
-              </BarChart>
+                <Line type="monotone" dataKey="pagos" stroke="#10b981" strokeWidth={2} />
+                <Line type="monotone" dataKey="pendentes" stroke="#fbbf24" strokeWidth={2} />
+              </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-amber-600" />
-                Aprovar Comissões
-              </CardTitle>
-              <CardDescription>
-                Revise e aprove comissões pendentes
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                className="w-full bg-amber-600 hover:bg-amber-700"
-                onClick={() => setLocation("/sales-approval")}
-              >
-                Ir para Aprovação
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-green-600" />
-                Relatório Financeiro
-              </CardTitle>
-              <CardDescription>
-                Visualize relatórios e análises
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setLocation("/reports")}
-              >
-                Ver Relatórios
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
       </main>
     </div>
   );

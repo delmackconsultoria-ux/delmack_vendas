@@ -1,15 +1,19 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useLocation, Link } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, TrendingUp, Users, LogOut, Target, Activity, Trophy } from "lucide-react";
+import { BarChart3, TrendingUp, Users, LogOut, Target, Activity, DollarSign } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useEffect } from "react";
 import {
   BarChart,
   Bar,
   LineChart,
   Line,
+  PieChart,
+  Pie,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -18,9 +22,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export default function DashboardManager() {
+export default function Analytics() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Scroll para topo ao entrar na página
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
@@ -53,8 +62,16 @@ export default function DashboardManager() {
     { mes: "Jun", vendas: 25, angariações: 32, canceladas: 3 },
   ];
 
+  // Dados mock para comissões por status
+  const commissionsByStatus = [
+    { status: "Pendentes", value: 45000, fill: "#fbbf24" },
+    { status: "Recebidas", value: 125000, fill: "#60a5fa" },
+    { status: "Pagas", value: 380000, fill: "#10b981" },
+    { status: "Canceladas", value: 12000, fill: "#ef4444" },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -62,7 +79,7 @@ export default function DashboardManager() {
             <img src="/delmack-logo.png" alt="Delmack" className="h-10 w-auto" />
             <div>
               <h1 className="text-xl font-bold text-slate-900">Delmack</h1>
-              <p className="text-xs text-slate-600">Gestão de Equipe</p>
+              <p className="text-xs text-slate-600">Análise de Dados</p>
             </div>
           </div>
 
@@ -70,23 +87,15 @@ export default function DashboardManager() {
           <nav className="hidden md:flex items-center gap-6">
             <button onClick={() => setLocation("/")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Dashboard</button>
             <button onClick={() => setLocation("/indicators")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Indicadores</button>
-            <button onClick={() => setLocation("/analytics")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Gráficos</button>
+            <button onClick={() => setLocation("/analytics")} className="text-sm font-medium text-blue-600 font-semibold">Gráficos</button>
             <button onClick={() => setLocation("/reports")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Relatórios</button>
-            <button onClick={() => setLocation("/ranking")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Ranking</button>
-            <button onClick={() => setLocation("/goals")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Metas</button>
           </nav>
 
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="text-sm font-medium text-slate-900">{user.name}</p>
-              <Badge variant="outline" className="text-xs">Gerente</Badge>
+              <Badge variant="outline" className="text-xs">Financeiro</Badge>
             </div>
-            <Link href="/ranking">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Trophy className="h-4 w-4" />
-                Ranking
-              </Button>
-            </Link>
             <Button
               variant="outline"
               size="sm"
@@ -104,9 +113,9 @@ export default function DashboardManager() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900">Painel de Gestão</h2>
+          <h2 className="text-3xl font-bold text-slate-900">Análise de Dados</h2>
           <p className="text-slate-600 mt-2">
-            Acompanhe a performance da sua equipe e evolução das vendas
+            Visualize gráficos detalhados de vendas, comissões e performance da equipe
           </p>
         </div>
 
@@ -116,7 +125,7 @@ export default function DashboardManager() {
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-purple-600" />
+                <TrendingUp className="h-4 w-4 text-blue-600" />
                 Vendas da Equipe
               </CardTitle>
             </CardHeader>
@@ -130,7 +139,7 @@ export default function DashboardManager() {
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Users className="h-4 w-4 text-blue-600" />
+                <Users className="h-4 w-4 text-green-600" />
                 Corretores Ativos
               </CardTitle>
             </CardHeader>
@@ -144,7 +153,7 @@ export default function DashboardManager() {
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Activity className="h-4 w-4 text-green-600" />
+                <Activity className="h-4 w-4 text-amber-600" />
                 Comissões Geradas
               </CardTitle>
             </CardHeader>
@@ -158,7 +167,7 @@ export default function DashboardManager() {
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Target className="h-4 w-4 text-amber-600" />
+                <Target className="h-4 w-4 text-purple-600" />
                 Meta Realizada
               </CardTitle>
             </CardHeader>
@@ -190,7 +199,7 @@ export default function DashboardManager() {
                   <YAxis />
                   <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
                   <Legend />
-                  <Bar dataKey="comissoes" fill="#8b5cf6" name="Comissões" />
+                  <Bar dataKey="comissoes" fill="#3b82f6" name="Comissões" />
                   <Bar dataKey="meta" fill="#d1d5db" name="Meta" />
                 </BarChart>
               </ResponsiveContainer>
@@ -216,94 +225,45 @@ export default function DashboardManager() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="vendas"
-                    stroke="#10b981"
-                    name="Vendas"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="angariações"
-                    stroke="#60a5fa"
-                    name="Angariações"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="canceladas"
-                    stroke="#ef4444"
-                    name="Canceladas"
-                    strokeWidth={2}
-                  />
+                  <Line type="monotone" dataKey="vendas" stroke="#3b82f6" strokeWidth={2} name="Vendas" />
+                  <Line type="monotone" dataKey="angariações" stroke="#10b981" strokeWidth={2} name="Angariações" />
+                  <Line type="monotone" dataKey="canceladas" stroke="#ef4444" strokeWidth={2} name="Canceladas" />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+          {/* Commissions by Status */}
+          <Card className="border-0 shadow-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-600" />
-                Gerenciar Equipe
+                <DollarSign className="h-5 w-5" />
+                Comissões por Status
               </CardTitle>
               <CardDescription>
-                Visualize e gerencie seus corretores
+                Distribuição de comissões
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button
-                variant="outline"
-                className="w-full"
-              >
-                Ir para Equipe
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-blue-600" />
-                Relatórios
-              </CardTitle>
-              <CardDescription>
-                Análise detalhada de vendas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setLocation("/reports")}
-              >
-                Ver Relatórios
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-green-600" />
-                Indicadores
-              </CardTitle>
-              <CardDescription>
-                KPIs e métricas da equipe
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setLocation("/indicators")}
-              >
-                Ver Indicadores
-              </Button>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={commissionsByStatus}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ status, value }) => `${status}: R$ ${(value / 1000).toFixed(0)}k`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {commissionsByStatus.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                </PieChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
         </div>

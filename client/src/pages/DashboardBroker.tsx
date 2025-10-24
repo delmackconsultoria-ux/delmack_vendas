@@ -54,13 +54,22 @@ export default function DashboardBroker() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setLocation("/")}>
             <img src="/delmack-logo.png" alt="Delmack" className="h-10 w-auto" />
             <div>
               <h1 className="text-xl font-bold text-slate-900">Delmack</h1>
               <p className="text-xs text-slate-600">Plataforma de Vendas</p>
             </div>
           </div>
+
+          {/* Navigation Menu */}
+          <nav className="hidden md:flex items-center gap-6">
+            <button onClick={() => setLocation("/")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Dashboard</button>
+            <button onClick={() => setLocation("/sales/new")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Nova Venda</button>
+            <button onClick={() => setLocation("/indicators")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Indicadores</button>
+            <button onClick={() => setLocation("/reports")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Relatórios</button>
+            <button onClick={() => setLocation("/ranking")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Ranking</button>
+          </nav>
 
           <div className="flex items-center gap-4">
             <div className="text-right">
