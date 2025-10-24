@@ -42,11 +42,8 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="inline-block mb-4">
-            <img src="/delmack-logo.png" alt="Delmack" className="h-16 w-auto" />
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900">Delmack</h1>
-          <p className="text-slate-600 mt-2">Sistema de Gestão de Vendas Imobiliárias</p>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Delmack</h1>
+          <p className="text-slate-600">Sistema de Gestão de Vendas Imobiliárias</p>
         </div>
 
         {/* Login Card */}

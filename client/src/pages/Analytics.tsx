@@ -75,12 +75,8 @@ export default function Analytics() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setLocation("/")}>
-            <img src="/delmack-logo.png" alt="Delmack" className="h-10 w-auto" />
-            <div>
-              <h1 className="text-xl font-bold text-slate-900">Delmack</h1>
-              <p className="text-xs text-slate-600">Análise de Dados</p>
-            </div>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/")}>
+            <h1 className="text-2xl font-bold text-slate-900">Delmack</h1>
           </div>
 
           {/* Navigation Menu */}
