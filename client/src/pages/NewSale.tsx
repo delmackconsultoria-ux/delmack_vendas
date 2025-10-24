@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import ErrorModal from "@/components/ErrorModal";
+import AppHeader from "@/components/AppHeader";
 import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP } from "@/lib/validators";
 
 // Complete lists from Excel
@@ -469,8 +470,9 @@ export default function NewSale() {
       : { name: formData.brokerVendedor, email: formData.brokerVendedor };
 
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <AppHeader />
+        <div className="max-w-4xl mx-auto p-4">
           <Button
             variant="ghost"
             className="mb-6"
@@ -699,7 +701,8 @@ export default function NewSale() {
 
   // Edit Mode
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50">
+      <AppHeader />
       <ErrorModal
         isOpen={errorModal.isOpen}
         title={errorModal.title}
@@ -708,15 +711,7 @@ export default function NewSale() {
         onClose={() => setErrorModal({ ...errorModal, isOpen: false })}
       />
 
-      <div className="max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-6"
-          onClick={() => setLocation("/")}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Voltar
-        </Button>
+      <div className="max-w-4xl mx-auto px-4 py-8">
 
         <Card>
           <CardHeader>

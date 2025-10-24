@@ -2,22 +2,15 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Users, FileText, LogOut } from "lucide-react";
+import { BarChart3, TrendingUp, Users, FileText } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import AppHeader from "@/components/AppHeader";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
 
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      setLocation("/login");
-    },
-  });
 
-  const handleLogout = async () => {
-    await logoutMutation.mutateAsync();
-  };
 
   if (!user) {
     return null;
@@ -25,34 +18,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logo-delmack.png" alt="Delmack" className="h-10 w-auto" />
-            <div>
-              <h1 className="text-xl font-bold text-slate-900">Delmack</h1>
-              <p className="text-xs text-slate-600">Sistema de Vendas Imobiliárias</p>
-            </div>
-          </div>
+      <AppHeader />
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium text-slate-900">{user.name}</p>
-              <p className="text-xs text-slate-600 capitalize">{user.role}</p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
-          </div>
-        </div>
-      </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
