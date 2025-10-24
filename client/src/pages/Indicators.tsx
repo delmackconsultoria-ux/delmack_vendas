@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import React from "react";
+import IndicatorDetailModal from "@/components/IndicatorDetailModal";
 
 interface Indicator {
   name: string;
@@ -19,6 +20,34 @@ export default function Indicators() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [filterType, setFilterType] = useState<"team" | "broker">("team");
+  const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // Mock data for monthly evolution (replace with real data from API)
+  const mockMonthlyData = [
+    { month: "Jan", value: 5200000, prontos: 3000000, lancamentos: 2200000, todos: 5200000 },
+    { month: "Fev", value: 5800000, prontos: 3200000, lancamentos: 2600000, todos: 5800000 },
+    { month: "Mar", value: 6100000, prontos: 3500000, lancamentos: 2600000, todos: 6100000 },
+    { month: "Abr", value: 5900000, prontos: 3300000, lancamentos: 2600000, todos: 5900000 },
+    { month: "Mai", value: 6500000, prontos: 3800000, lancamentos: 2700000, todos: 6500000 },
+    { month: "Jun", value: 7200000, prontos: 4200000, lancamentos: 3000000, todos: 7200000 },
+    { month: "Jul", value: 6800000, prontos: 3900000, lancamentos: 2900000, todos: 6800000 },
+    { month: "Ago", value: 7500000, prontos: 4400000, lancamentos: 3100000, todos: 7500000 },
+    { month: "Set", value: 7100000, prontos: 4100000, lancamentos: 3000000, todos: 7100000 },
+    { month: "Out", value: 8000000, prontos: 4600000, lancamentos: 3400000, todos: 8000000 },
+  ];
+
+  const mockBrokers = [
+    { id: "1", name: "João Silva" },
+    { id: "2", name: "Maria Santos" },
+    { id: "3", name: "Pedro Costa" },
+    { id: "4", name: "Ana Oliveira" },
+  ];
+
+  const handleIndicatorClick = (indicatorName: string) => {
+    setSelectedIndicator(indicatorName);
+    setModalOpen(true);
+  };
 
   // Scroll para topo ao entrar na página
   React.useEffect(() => {
@@ -164,7 +193,11 @@ export default function Indicators() {
         {/* Indicators Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {indicators.map((indicator, idx) => (
-            <Card key={idx} className="border-0 shadow-md hover:shadow-lg transition-all">
+            <Card
+              key={idx}
+              className="border-0 shadow-md hover:shadow-lg transition-all cursor-pointer"
+              onClick={() => handleIndicatorClick(indicator.name)}
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-700">
                   {indicator.name}
@@ -198,6 +231,21 @@ export default function Indicators() {
           ))}
         </div>
       </main>
+
+      {/* Indicator Detail Modal */}
+      {selectedIndicator && (
+        <IndicatorDetailModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedIndicator(null);
+          }}
+          indicatorName={selectedIndicator}
+          indicatorType="value"
+          monthlyData={mockMonthlyData}
+          brokers={mockBrokers}
+        />
+      )}
     </div>
   );
 }
