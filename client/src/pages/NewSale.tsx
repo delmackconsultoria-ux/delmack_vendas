@@ -4,13 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, AlertCircle, Search, CheckCircle, Loader, Eye, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Save, Search, CheckCircle, Loader, Eye, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
+import ErrorModal from "@/components/ErrorModal";
+import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP } from "@/lib/validators";
 
-// Mock data for dropdowns - in production these would come from the database
+// Complete lists from Excel
 const BUSINESS_TYPES = [
   { value: "venda_interna", label: "Venda Interna" },
   { value: "parceria_una", label: "Parceria UNA" },
@@ -24,6 +26,7 @@ const PAYMENT_METHODS = [
   { value: "financiado", label: "Financiado" },
   { value: "consorcio", label: "Consórcio" },
   { value: "permuta", label: "Permuta" },
+  { value: "bonificacao_construtora", label: "Bonificação Construtora" },
 ];
 
 const CLIENT_ORIGINS = [
@@ -41,15 +44,7 @@ const STORES = [
   { value: "rede_una", label: "Rede UNA" },
 ];
 
-const WALLET_SITUATIONS = [
-  { value: "disponivel", label: "Disponível" },
-  { value: "em_negociacao", label: "Em Negociação" },
-  { value: "sob_analise", label: "Sob Análise" },
-  { value: "em_contato", label: "Em Contato" },
-];
-
 interface FormData {
-  // Property Information
   propertyType: "baggio" | "external";
   propertyReference: string;
   propertyAddress: string;
@@ -61,40 +56,48 @@ interface FormData {
   propertyZipCode: string;
   advertisementValue: string;
 
-  // Sale Information
   saleDate: string;
   angariationDate: string;
   saleValue: string;
 
-  // Client Information
   buyerName: string;
   buyerCpfCnpj: string;
   clientOrigin: string;
   paymentMethod: string;
 
-  // Commission Information
   storeAngariador: string;
   storeVendedor: string;
   brokerAngariador: string;
   brokerVendedor: string;
   businessType: string;
-  walletSituation: string;
 
-  // Observations
   observations: string;
 
-  // Preview state
   showPreview: boolean;
+}
+
+interface ErrorState {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  errors: string[];
 }
 
 export default function NewSale() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorModal, setErrorModal] = useState<ErrorState>({
+    isOpen: false,
+    title: "",
+    message: "",
+    errors: [],
+  });
   const [loadingProperty, setLoadingProperty] = useState(false);
   const [propertyError, setPropertyError] = useState("");
   const [propertySuccess, setPropertySuccess] = useState(false);
+  const [loadingCEP, setLoadingCEP] = useState(false);
+  const [cpfError, setCpfError] = useState("");
 
   const [formData, setFormData] = useState<FormData>({
     propertyType: "baggio",
@@ -116,15 +119,13 @@ export default function NewSale() {
     paymentMethod: "",
     storeAngariador: "baggio",
     storeVendedor: "baggio",
-    brokerAngariador: user?.id || "",
-    brokerVendedor: user?.id || "",
+    brokerAngariador: user?.name || "",
+    brokerVendedor: user?.name || "",
     businessType: "venda_interna",
-    walletSituation: "disponivel",
     observations: "",
     showPreview: false,
   });
 
-  // Mock commission rules - in production these would come from the database
   const commissionRules: Record<string, { angariador: number; vendedor: number }> = {
     venda_interna: { angariador: 0.03, vendedor: 0.05 },
     parceria_una: { angariador: 0.035, vendedor: 0.035 },
@@ -184,11 +185,70 @@ export default function NewSale() {
     }
   };
 
+  const handleCEPSearch = async (cep: string) => {
+    if (!validateCEP(cep)) {
+      setPropertyError("CEP inválido");
+      return;
+    }
+
+    setLoadingCEP(true);
+    setPropertyError("");
+
+    try {
+      const address = await fetchAddressFromCEP(cep);
+
+      if (!address) {
+        setPropertyError("CEP não encontrado");
+        setLoadingCEP(false);
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        propertyAddress: address.address,
+        propertyNeighborhood: address.neighborhood,
+        propertyCity: address.city,
+        propertyState: address.state,
+      }));
+
+      setPropertySuccess(true);
+      setTimeout(() => setPropertySuccess(false), 3000);
+    } catch (error) {
+      setPropertyError("Erro ao buscar CEP");
+    } finally {
+      setLoadingCEP(false);
+    }
+  };
+
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    // Clear CPF error when user starts typing
+    if (field === "buyerCpfCnpj") {
+      setCpfError("");
+    }
+  };
+
+  const handleCPFChange = (value: string) => {
+    handleInputChange("buyerCpfCnpj", value);
+  };
+
+  const validateCPF = () => {
+    if (!formData.buyerCpfCnpj.trim()) {
+      setCpfError("");
+      return true;
+    }
+
+    if (!validateCPFOrCNPJ(formData.buyerCpfCnpj)) {
+      setCpfError("CPF ou CNPJ inválido");
+      return false;
+    }
+
+    setCpfError("");
+    return true;
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, fieldName: string) => {
@@ -197,15 +257,15 @@ export default function NewSale() {
 
       if (fieldName === "propertyReference") {
         handleSearchProperty();
+      } else if (fieldName === "propertyZipCode" && formData.propertyType === "external") {
+        handleCEPSearch(formData.propertyZipCode);
       } else if (fieldName === "saleValue") {
-        // Move to next field or show preview
         const previewButton = document.querySelector("[data-action='preview']");
         if (previewButton) (previewButton as HTMLButtonElement).click();
       }
     }
   };
 
-  // Calculate commissions based on business type and sale value
   const commissionCalculation = useMemo(() => {
     const saleValue = parseFloat(formData.saleValue) || 0;
     const rules = commissionRules[formData.businessType] || commissionRules.venda_interna;
@@ -226,27 +286,57 @@ export default function NewSale() {
 
   const createSaleMutation = trpc.sales.createSale.useMutation();
 
+  const validateForm = (): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    if (!formData.buyerName.trim()) {
+      errors.push("Nome do comprador é obrigatório");
+    }
+
+    if (!formData.saleValue) {
+      errors.push("Valor da venda é obrigatório");
+    }
+
+    if (!formData.propertyAddress.trim()) {
+      errors.push("Endereço do imóvel é obrigatório");
+    }
+
+    if (!formData.businessType) {
+      errors.push("Tipo de negócio é obrigatório");
+    }
+
+    if (formData.propertyType === "external" && !formData.propertyZipCode) {
+      errors.push("CEP é obrigatório para imóveis externos");
+    }
+
+    if (formData.buyerCpfCnpj && !validateCPFOrCNPJ(formData.buyerCpfCnpj)) {
+      errors.push("CPF ou CNPJ inválido");
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+
+    const validation = validateForm();
+
+    if (!validation.valid) {
+      setErrorModal({
+        isOpen: true,
+        title: "Erro ao Registrar Venda",
+        message: "Por favor, corrija os campos destacados abaixo:",
+        errors: validation.errors,
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
-      // Validate required fields
-      if (!formData.buyerName.trim()) {
-        throw new Error("Nome do comprador é obrigatório");
-      }
-      if (!formData.saleValue) {
-        throw new Error("Valor da venda é obrigatório");
-      }
-      if (!formData.propertyAddress.trim()) {
-        throw new Error("Endereço do imóvel é obrigatório");
-      }
-      if (!formData.businessType) {
-        throw new Error("Tipo de negócio é obrigatório");
-      }
-
-      // Call tRPC mutation to create sale
       const result = await createSaleMutation.mutateAsync({
         propertyType: formData.propertyType,
         propertyReference: formData.propertyReference,
@@ -272,17 +362,21 @@ export default function NewSale() {
         brokerAngariador: formData.brokerAngariador,
         brokerVendedor: formData.brokerVendedor,
         businessType: formData.businessType,
-        walletSituation: formData.walletSituation,
+        walletSituation: "disponivel",
         observations: formData.observations,
       });
 
       if (result.success) {
-        // Redirect to home or sales list
         setLocation("/");
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Erro ao criar venda";
-      setError(errorMsg);
+      setErrorModal({
+        isOpen: true,
+        title: "Erro ao Registrar Venda",
+        message: errorMsg,
+        errors: [],
+      });
     } finally {
       setLoading(false);
     }
@@ -465,10 +559,12 @@ export default function NewSale() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Situação da Carteira</p>
-                      <p className="font-semibold">
-                        {WALLET_SITUATIONS.find((w) => w.value === formData.walletSituation)?.label}
-                      </p>
+                      <p className="text-sm text-gray-600">Angariador</p>
+                      <p className="font-semibold">{formData.brokerAngariador}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Vendedor</p>
+                      <p className="font-semibold">{formData.brokerVendedor}</p>
                     </div>
                   </div>
                 </div>
@@ -522,6 +618,14 @@ export default function NewSale() {
   // Edit Mode
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        title={errorModal.title}
+        message={errorModal.message}
+        errors={errorModal.errors}
+        onClose={() => setErrorModal({ ...errorModal, isOpen: false })}
+      />
+
       <div className="max-w-4xl mx-auto">
         <Button
           variant="ghost"
@@ -540,16 +644,6 @@ export default function NewSale() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold text-red-900">Erro</h3>
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              )}
-
               {/* Section 1: Property Information */}
               <div>
                 <h3 className="text-lg font-semibold mb-4">1. Informações do Imóvel</h3>
@@ -642,6 +736,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyAddress", e.target.value)
                         }
+                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -675,6 +770,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyNeighborhood", e.target.value)
                         }
+                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -686,6 +782,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyCity", e.target.value)
                         }
+                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -698,18 +795,49 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyState", e.target.value)
                         }
+                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
                       <Label htmlFor="propertyZipCode">CEP</Label>
-                      <Input
-                        id="propertyZipCode"
-                        placeholder="00000-000"
-                        value={formData.propertyZipCode}
-                        onChange={(e) =>
-                          handleInputChange("propertyZipCode", e.target.value)
-                        }
-                      />
+                      <div className="flex gap-2">
+                        <Input
+                          id="propertyZipCode"
+                          placeholder="00000-000"
+                          value={formData.propertyZipCode}
+                          onChange={(e) =>
+                            handleInputChange("propertyZipCode", e.target.value)
+                          }
+                          onKeyPress={(e) => handleKeyPress(e, "propertyZipCode")}
+                          className={propertySuccess ? "bg-green-50 border-green-300" : ""}
+                        />
+                        {formData.propertyType === "external" && (
+                          <Button
+                            type="button"
+                            onClick={() => handleCEPSearch(formData.propertyZipCode)}
+                            disabled={loadingCEP}
+                            className="gap-2 whitespace-nowrap"
+                          >
+                            {loadingCEP ? (
+                              <>
+                                <Loader className="w-4 h-4 animate-spin" />
+                                Buscando...
+                              </>
+                            ) : (
+                              <>
+                                <Search className="w-4 h-4" />
+                                Buscar
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                      {propertyError && formData.propertyType === "external" && (
+                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-red-700">{propertyError}</p>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="advertisementValue">Valor de Divulgação</Label>
@@ -721,6 +849,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("advertisementValue", e.target.value)
                         }
+                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                   </div>
@@ -798,15 +927,21 @@ export default function NewSale() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="buyerCpfCnpj">CPF/CNPJ</Label>
+                      <Label htmlFor="buyerCpfCnpj">
+                        CPF/CNPJ
+                        {cpfError && <span className="text-red-600 ml-2">*</span>}
+                      </Label>
                       <Input
                         id="buyerCpfCnpj"
                         placeholder="000.000.000-00"
                         value={formData.buyerCpfCnpj}
-                        onChange={(e) =>
-                          handleInputChange("buyerCpfCnpj", e.target.value)
-                        }
+                        onChange={(e) => handleCPFChange(e.target.value)}
+                        onBlur={validateCPF}
+                        className={cpfError ? "border-red-500 bg-red-50" : ""}
                       />
+                      {cpfError && (
+                        <p className="text-sm text-red-600 mt-1">{cpfError}</p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="clientOrigin">Origem do Cliente</Label>
@@ -906,7 +1041,10 @@ export default function NewSale() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="brokerAngariador">Angariador</Label>
+                      <Label htmlFor="brokerAngariador">
+                        Angariador
+                        <CheckCircle className="w-4 h-4 inline ml-2 text-green-600" />
+                      </Label>
                       <Input
                         id="brokerAngariador"
                         placeholder="Nome do angariador"
@@ -914,10 +1052,15 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("brokerAngariador", e.target.value)
                         }
+                        className="bg-green-50 border-green-300"
                       />
+                      <p className="text-xs text-gray-500 mt-1">Preenchido automaticamente</p>
                     </div>
                     <div>
-                      <Label htmlFor="brokerVendedor">Vendedor</Label>
+                      <Label htmlFor="brokerVendedor">
+                        Vendedor
+                        <CheckCircle className="w-4 h-4 inline ml-2 text-green-600" />
+                      </Label>
                       <Input
                         id="brokerVendedor"
                         placeholder="Nome do vendedor"
@@ -925,51 +1068,31 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("brokerVendedor", e.target.value)
                         }
+                        className="bg-green-50 border-green-300"
                       />
+                      <p className="text-xs text-gray-500 mt-1">Preenchido automaticamente</p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="businessType">Tipo de Negócio</Label>
-                      <Select
-                        value={formData.businessType}
-                        onValueChange={(value) =>
-                          handleInputChange("businessType", value)
-                        }
-                      >
-                        <SelectTrigger id="businessType">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {BUSINESS_TYPES.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="walletSituation">Situação da Carteira</Label>
-                      <Select
-                        value={formData.walletSituation}
-                        onValueChange={(value) =>
-                          handleInputChange("walletSituation", value)
-                        }
-                      >
-                        <SelectTrigger id="walletSituation">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {WALLET_SITUATIONS.map((situation) => (
-                            <SelectItem key={situation.value} value={situation.value}>
-                              {situation.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div>
+                    <Label htmlFor="businessType">Tipo de Negócio</Label>
+                    <Select
+                      value={formData.businessType}
+                      onValueChange={(value) =>
+                        handleInputChange("businessType", value)
+                      }
+                    >
+                      <SelectTrigger id="businessType">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BUSINESS_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
