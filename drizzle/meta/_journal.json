@@ -15,6 +15,13 @@
       "when": 1761144208332,
       "tag": "0001_dear_infant_terrible",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1761332933463,
+      "tag": "0002_loud_mongoose",
+      "breakpoints": true
     }
   ]
 }

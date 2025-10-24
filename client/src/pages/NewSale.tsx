@@ -4,11 +4,88 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, AlertCircle, Search, CheckCircle, Loader } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Save, AlertCircle, Search, CheckCircle, Loader, Eye, CheckCircle2 } from "lucide-react";
+import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
+
+// Mock data for dropdowns - in production these would come from the database
+const BUSINESS_TYPES = [
+  { value: "venda_interna", label: "Venda Interna" },
+  { value: "parceria_una", label: "Parceria UNA" },
+  { value: "parceria_externa", label: "Parceria Externa" },
+  { value: "lancamento", label: "Lançamento" },
+  { value: "prontos", label: "Prontos" },
+];
+
+const PAYMENT_METHODS = [
+  { value: "a_vista", label: "À Vista" },
+  { value: "financiado", label: "Financiado" },
+  { value: "consorcio", label: "Consórcio" },
+  { value: "permuta", label: "Permuta" },
+];
+
+const CLIENT_ORIGINS = [
+  { value: "grupo_zap", label: "Grupo Zap" },
+  { value: "imovel_web", label: "Imóvel Web" },
+  { value: "indicacao", label: "Indicação" },
+  { value: "placa", label: "Placa" },
+  { value: "construtora", label: "Construtora" },
+  { value: "outro", label: "Outro" },
+];
+
+const STORES = [
+  { value: "baggio", label: "Baggio" },
+  { value: "outros", label: "Outros" },
+  { value: "rede_una", label: "Rede UNA" },
+];
+
+const WALLET_SITUATIONS = [
+  { value: "disponivel", label: "Disponível" },
+  { value: "em_negociacao", label: "Em Negociação" },
+  { value: "sob_analise", label: "Sob Análise" },
+  { value: "em_contato", label: "Em Contato" },
+];
+
+interface FormData {
+  // Property Information
+  propertyType: "baggio" | "external";
+  propertyReference: string;
+  propertyAddress: string;
+  propertyNumber: string;
+  propertyComplement: string;
+  propertyNeighborhood: string;
+  propertyCity: string;
+  propertyState: string;
+  propertyZipCode: string;
+  advertisementValue: string;
+
+  // Sale Information
+  saleDate: string;
+  angariationDate: string;
+  saleValue: string;
+
+  // Client Information
+  buyerName: string;
+  buyerCpfCnpj: string;
+  clientOrigin: string;
+  paymentMethod: string;
+
+  // Commission Information
+  storeAngariador: string;
+  storeVendedor: string;
+  brokerAngariador: string;
+  brokerVendedor: string;
+  businessType: string;
+  walletSituation: string;
+
+  // Observations
+  observations: string;
+
+  // Preview state
+  showPreview: boolean;
+}
 
 export default function NewSale() {
   const { user } = useAuth();
@@ -19,22 +96,42 @@ export default function NewSale() {
   const [propertyError, setPropertyError] = useState("");
   const [propertySuccess, setPropertySuccess] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     propertyType: "baggio",
     propertyReference: "",
     propertyAddress: "",
+    propertyNumber: "",
+    propertyComplement: "",
+    propertyNeighborhood: "",
     propertyCity: "",
     propertyState: "",
     propertyZipCode: "",
-    propertyValue: "",
+    advertisementValue: "",
+    saleDate: new Date().toISOString().split("T")[0],
+    angariationDate: "",
     saleValue: "",
-    commissionType: "standard",
-    commissionValue: "",
     buyerName: "",
-    buyerEmail: "",
-    buyerPhone: "",
+    buyerCpfCnpj: "",
+    clientOrigin: "",
+    paymentMethod: "",
+    storeAngariador: "baggio",
+    storeVendedor: "baggio",
+    brokerAngariador: user?.id || "",
+    brokerVendedor: user?.id || "",
+    businessType: "venda_interna",
+    walletSituation: "disponivel",
     observations: "",
+    showPreview: false,
   });
+
+  // Mock commission rules - in production these would come from the database
+  const commissionRules: Record<string, { angariador: number; vendedor: number }> = {
+    venda_interna: { angariador: 0.03, vendedor: 0.05 },
+    parceria_una: { angariador: 0.035, vendedor: 0.035 },
+    parceria_externa: { angariador: 0.04, vendedor: 0.04 },
+    lancamento: { angariador: 0.025, vendedor: 0.025 },
+    prontos: { angariador: 0.03, vendedor: 0.05 },
+  };
 
   const handleSearchProperty = async () => {
     if (!formData.propertyReference.trim()) {
@@ -48,9 +145,6 @@ export default function NewSale() {
     setPropertySuccess(false);
 
     try {
-      console.log("Iniciando busca do imóvel...");
-      
-      // Usar endpoint REST com credenciais reais
       const response = await fetch(
         `/api/rest/properfy/search?reference=${encodeURIComponent(
           formData.propertyReference.toUpperCase()
@@ -58,7 +152,6 @@ export default function NewSale() {
       );
 
       const data = await response.json();
-      console.log("Resposta da API:", data);
 
       if (!response.ok || !data.data) {
         setPropertyError("Referência não encontrada. Verifique e tente novamente.");
@@ -74,12 +167,11 @@ export default function NewSale() {
           propertyCity: data.data.city || "",
           propertyState: data.data.state || "",
           propertyZipCode: data.data.zipCode || "",
-          propertyValue: data.data.value?.toString() || "",
+          advertisementValue: data.data.value?.toString() || "",
         }));
         setPropertyError("");
         setPropertySuccess(true);
-        
-        // Limpar mensagem de sucesso após 3 segundos
+
         setTimeout(() => setPropertySuccess(false), 3000);
       }
     } catch (error) {
@@ -92,52 +184,47 @@ export default function NewSale() {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  // Lidar com Enter em diferentes campos
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, fieldName: string) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      
-      // Se estiver no campo de referência, buscar imóvel
+
       if (fieldName === "propertyReference") {
         handleSearchProperty();
-      }
-      // Se estiver em qualquer outro campo da seção de venda, registrar venda
-      else if (
-        fieldName === "saleValue" ||
-        fieldName === "buyerName" ||
-        fieldName === "buyerEmail" ||
-        fieldName === "buyerPhone"
-      ) {
-        handleSubmit(e as any);
+      } else if (fieldName === "saleValue") {
+        // Move to next field or show preview
+        const previewButton = document.querySelector("[data-action='preview']");
+        if (previewButton) (previewButton as HTMLButtonElement).click();
       }
     }
   };
 
-  const calculateCommission = () => {
+  // Calculate commissions based on business type and sale value
+  const commissionCalculation = useMemo(() => {
     const saleValue = parseFloat(formData.saleValue) || 0;
-    let commission = 0;
+    const rules = commissionRules[formData.businessType] || commissionRules.venda_interna;
 
-    switch (formData.commissionType) {
-      case "standard":
-        commission = saleValue * 0.05;
-        break;
-      case "reduced":
-        commission = saleValue * 0.03;
-        break;
-      case "premium":
-        commission = saleValue * 0.07;
-        break;
-    }
+    const totalCommission = saleValue * (rules.angariador + rules.vendedor);
+    const angariadorCommission = saleValue * rules.angariador;
+    const vendedorCommission = saleValue * rules.vendedor;
 
-    return commission.toFixed(2);
-  };
+    return {
+      totalCommission: totalCommission.toFixed(2),
+      angariadorCommission: angariadorCommission.toFixed(2),
+      vendedorCommission: vendedorCommission.toFixed(2),
+      angariadorPercentage: (rules.angariador * 100).toFixed(1),
+      vendedorPercentage: (rules.vendedor * 100).toFixed(1),
+      totalPercentage: ((rules.angariador + rules.vendedor) * 100).toFixed(1),
+    };
+  }, [formData.saleValue, formData.businessType]);
+
+  const createSaleMutation = trpc.sales.createSale.useMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,11 +232,54 @@ export default function NewSale() {
     setError(null);
 
     try {
-      // Aqui você faria a chamada para criar a venda
-      // await trpc.sales.createSale.mutate({...});
-      
-      // Por enquanto, apenas redireciona
-      setLocation("/");
+      // Validate required fields
+      if (!formData.buyerName.trim()) {
+        throw new Error("Nome do comprador é obrigatório");
+      }
+      if (!formData.saleValue) {
+        throw new Error("Valor da venda é obrigatório");
+      }
+      if (!formData.propertyAddress.trim()) {
+        throw new Error("Endereço do imóvel é obrigatório");
+      }
+      if (!formData.businessType) {
+        throw new Error("Tipo de negócio é obrigatório");
+      }
+
+      // Call tRPC mutation to create sale
+      const result = await createSaleMutation.mutateAsync({
+        propertyType: formData.propertyType,
+        propertyReference: formData.propertyReference,
+        propertyAddress: formData.propertyAddress,
+        propertyNumber: formData.propertyNumber,
+        propertyComplement: formData.propertyComplement,
+        propertyNeighborhood: formData.propertyNeighborhood,
+        propertyCity: formData.propertyCity,
+        propertyState: formData.propertyState,
+        propertyZipCode: formData.propertyZipCode,
+        advertisementValue: parseFloat(formData.advertisementValue) || 0,
+        saleDate: new Date(formData.saleDate).toISOString(),
+        angariationDate: formData.angariationDate
+          ? new Date(formData.angariationDate).toISOString()
+          : undefined,
+        saleValue: parseFloat(formData.saleValue),
+        buyerName: formData.buyerName,
+        buyerCpfCnpj: formData.buyerCpfCnpj,
+        clientOrigin: formData.clientOrigin,
+        paymentMethod: formData.paymentMethod,
+        storeAngariador: formData.storeAngariador,
+        storeVendedor: formData.storeVendedor,
+        brokerAngariador: formData.brokerAngariador,
+        brokerVendedor: formData.brokerVendedor,
+        businessType: formData.businessType,
+        walletSituation: formData.walletSituation,
+        observations: formData.observations,
+      });
+
+      if (result.success) {
+        // Redirect to home or sales list
+        setLocation("/");
+      }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Erro ao criar venda";
       setError(errorMsg);
@@ -166,6 +296,230 @@ export default function NewSale() {
     );
   }
 
+  // Preview Mode
+  if (formData.showPreview) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-4xl mx-auto">
+          <Button
+            variant="ghost"
+            className="mb-6"
+            onClick={() => handleInputChange("showPreview", false)}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar para Edição
+          </Button>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Resumo da Venda</CardTitle>
+              <CardDescription>Verifique todas as informações antes de confirmar</CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div className="space-y-8">
+                {/* Property Summary */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Informações do Imóvel</h3>
+                  <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                    <div>
+                      <p className="text-sm text-gray-600">Referência</p>
+                      <p className="font-semibold">{formData.propertyReference || "Externo"}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Endereço</p>
+                      <p className="font-semibold">{formData.propertyAddress}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Cidade/Estado</p>
+                      <p className="font-semibold">
+                        {formData.propertyCity}, {formData.propertyState}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">CEP</p>
+                      <p className="font-semibold">{formData.propertyZipCode}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Valor de Divulgação</p>
+                      <p className="font-semibold">
+                        R$ {parseFloat(formData.advertisementValue || "0").toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sale Summary */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Informações da Venda</h3>
+                  <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                    <div>
+                      <p className="text-sm text-gray-600">Data da Venda</p>
+                      <p className="font-semibold">
+                        {new Date(formData.saleDate).toLocaleDateString("pt-BR")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Data da Angariação</p>
+                      <p className="font-semibold">
+                        {formData.angariationDate
+                          ? new Date(formData.angariationDate).toLocaleDateString("pt-BR")
+                          : "Não informada"}
+                      </p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-sm text-gray-600">Valor da Venda</p>
+                      <p className="font-semibold text-lg">
+                        R$ {parseFloat(formData.saleValue || "0").toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Client Summary */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Informações do Comprador</h3>
+                  <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                    <div>
+                      <p className="text-sm text-gray-600">Nome</p>
+                      <p className="font-semibold">{formData.buyerName}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">CPF/CNPJ</p>
+                      <p className="font-semibold">{formData.buyerCpfCnpj || "Não informado"}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Origem do Cliente</p>
+                      <p className="font-semibold">
+                        {CLIENT_ORIGINS.find((o) => o.value === formData.clientOrigin)?.label ||
+                          formData.clientOrigin}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Forma de Pagamento</p>
+                      <p className="font-semibold">
+                        {PAYMENT_METHODS.find((m) => m.value === formData.paymentMethod)?.label ||
+                          formData.paymentMethod}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Commission Summary */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Cálculo de Comissões</h3>
+                  <div className="grid grid-cols-3 gap-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div>
+                      <p className="text-sm text-gray-600">Tipo de Negócio</p>
+                      <p className="font-semibold">
+                        {BUSINESS_TYPES.find((b) => b.value === formData.businessType)?.label}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">% Angariador</p>
+                      <p className="font-semibold">{commissionCalculation.angariadorPercentage}%</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">% Vendedor</p>
+                      <p className="font-semibold">{commissionCalculation.vendedorPercentage}%</p>
+                    </div>
+                    <div className="col-span-3 border-t border-blue-200 pt-4 mt-4">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Comissão Angariador</p>
+                          <p className="font-semibold text-lg">
+                            R$ {parseFloat(commissionCalculation.angariadorCommission).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Comissão Vendedor</p>
+                          <p className="font-semibold text-lg">
+                            R$ {parseFloat(commissionCalculation.vendedorCommission).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Total</p>
+                          <p className="font-semibold text-lg text-blue-600">
+                            R$ {parseFloat(commissionCalculation.totalCommission).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Commission Details */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Detalhes de Comissionamento</h3>
+                  <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                    <div>
+                      <p className="text-sm text-gray-600">Loja Angariadora</p>
+                      <p className="font-semibold">
+                        {STORES.find((s) => s.value === formData.storeAngariador)?.label}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Loja Vendedora</p>
+                      <p className="font-semibold">
+                        {STORES.find((s) => s.value === formData.storeVendedor)?.label}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Situação da Carteira</p>
+                      <p className="font-semibold">
+                        {WALLET_SITUATIONS.find((w) => w.value === formData.walletSituation)?.label}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Observations */}
+                {formData.observations && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Observações</h3>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-gray-700">{formData.observations}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleInputChange("showPreview", false)}
+                  >
+                    Voltar para Edição
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={loading || createSaleMutation.isPending}
+                    className="gap-2"
+                  >
+                    {loading || createSaleMutation.isPending ? (
+                      <>
+                        <Loader className="w-4 h-4 animate-spin" />
+                        Registrando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        Confirmar e Enviar
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Edit Mode
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
@@ -181,7 +535,7 @@ export default function NewSale() {
         <Card>
           <CardHeader>
             <CardTitle>Nova Venda</CardTitle>
-            <CardDescription>Registre uma nova venda de imóvel</CardDescription>
+            <CardDescription>Registre uma nova venda de imóvel com todos os detalhes</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -196,9 +550,9 @@ export default function NewSale() {
                 </div>
               )}
 
-              {/* Informações do Imóvel */}
+              {/* Section 1: Property Information */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">Informações do Imóvel</h3>
+                <h3 className="text-lg font-semibold mb-4">1. Informações do Imóvel</h3>
                 <p className="text-sm text-gray-600 mb-4">
                   Selecione o tipo de imóvel e preencha os dados
                 </p>
@@ -209,7 +563,7 @@ export default function NewSale() {
                     <Select
                       value={formData.propertyType}
                       onValueChange={(value) =>
-                        handleInputChange("propertyType", value)
+                        handleInputChange("propertyType", value as "baggio" | "external")
                       }
                     >
                       <SelectTrigger id="propertyType">
@@ -261,14 +615,14 @@ export default function NewSale() {
                           )}
                         </Button>
                       </div>
-                      
+
                       {propertyError && (
                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
                           <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
                           <p className="text-sm text-red-700">{propertyError}</p>
                         </div>
                       )}
-                      
+
                       {propertySuccess && (
                         <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg flex gap-2">
                           <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
@@ -287,6 +641,39 @@ export default function NewSale() {
                         value={formData.propertyAddress}
                         onChange={(e) =>
                           handleInputChange("propertyAddress", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="propertyNumber">Número</Label>
+                      <Input
+                        id="propertyNumber"
+                        placeholder="Número"
+                        value={formData.propertyNumber}
+                        onChange={(e) =>
+                          handleInputChange("propertyNumber", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label htmlFor="propertyComplement">Complemento</Label>
+                      <Input
+                        id="propertyComplement"
+                        placeholder="Apartamento, sala, etc (opcional)"
+                        value={formData.propertyComplement}
+                        onChange={(e) =>
+                          handleInputChange("propertyComplement", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="propertyNeighborhood">Bairro</Label>
+                      <Input
+                        id="propertyNeighborhood"
+                        placeholder="Bairro"
+                        value={formData.propertyNeighborhood}
+                        onChange={(e) =>
+                          handleInputChange("propertyNeighborhood", e.target.value)
                         }
                       />
                     </div>
@@ -324,31 +711,55 @@ export default function NewSale() {
                         }
                       />
                     </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="propertyValue">Valor do Imóvel</Label>
-                    <Input
-                      id="propertyValue"
-                      type="number"
-                      placeholder="0.00"
-                      value={formData.propertyValue}
-                      onChange={(e) =>
-                        handleInputChange("propertyValue", e.target.value)
-                      }
-                    />
+                    <div>
+                      <Label htmlFor="advertisementValue">Valor de Divulgação</Label>
+                      <Input
+                        id="advertisementValue"
+                        type="number"
+                        placeholder="0.00"
+                        value={formData.advertisementValue}
+                        onChange={(e) =>
+                          handleInputChange("advertisementValue", e.target.value)
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Informações da Venda */}
+              {/* Section 2: Sale Information */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">Informações da Venda</h3>
+                <h3 className="text-lg font-semibold mb-4">2. Informações da Venda</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  Preencha os dados da venda e comissão
+                  Datas e valores da transação
                 </p>
 
                 <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="saleDate">Data da Venda</Label>
+                      <Input
+                        id="saleDate"
+                        type="date"
+                        value={formData.saleDate}
+                        onChange={(e) =>
+                          handleInputChange("saleDate", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="angariationDate">Data da Angariação</Label>
+                      <Input
+                        id="angariationDate"
+                        type="date"
+                        value={formData.angariationDate}
+                        onChange={(e) =>
+                          handleInputChange("angariationDate", e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <Label htmlFor="saleValue">Valor da Venda</Label>
                     <Input
@@ -362,45 +773,14 @@ export default function NewSale() {
                       onKeyPress={(e) => handleKeyPress(e, "saleValue")}
                     />
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="commissionType">Tipo de Comissão</Label>
-                      <Select
-                        value={formData.commissionType}
-                        onValueChange={(value) =>
-                          handleInputChange("commissionType", value)
-                        }
-                      >
-                        <SelectTrigger id="commissionType">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="reduced">Reduzida (3%)</SelectItem>
-                          <SelectItem value="standard">Padrão (5%)</SelectItem>
-                          <SelectItem value="premium">Premium (7%)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="commissionValue">Valor da Comissão</Label>
-                      <Input
-                        id="commissionValue"
-                        type="number"
-                        placeholder="0.00"
-                        value={calculateCommission()}
-                        disabled
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              {/* Informações do Comprador */}
+              {/* Section 3: Client Information */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">Informações do Comprador</h3>
+                <h3 className="text-lg font-semibold mb-4">3. Informações do Comprador</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  Dados de contato do comprador
+                  Dados do cliente e origem da negociação
                 </p>
 
                 <div className="space-y-4">
@@ -413,43 +793,221 @@ export default function NewSale() {
                       onChange={(e) =>
                         handleInputChange("buyerName", e.target.value)
                       }
-                      onKeyPress={(e) => handleKeyPress(e, "buyerName")}
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="buyerEmail">Email</Label>
+                      <Label htmlFor="buyerCpfCnpj">CPF/CNPJ</Label>
                       <Input
-                        id="buyerEmail"
-                        type="email"
-                        placeholder="email@exemplo.com"
-                        value={formData.buyerEmail}
+                        id="buyerCpfCnpj"
+                        placeholder="000.000.000-00"
+                        value={formData.buyerCpfCnpj}
                         onChange={(e) =>
-                          handleInputChange("buyerEmail", e.target.value)
+                          handleInputChange("buyerCpfCnpj", e.target.value)
                         }
-                        onKeyPress={(e) => handleKeyPress(e, "buyerEmail")}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="buyerPhone">Telefone</Label>
-                      <Input
-                        id="buyerPhone"
-                        placeholder="(00) 00000-0000"
-                        value={formData.buyerPhone}
-                        onChange={(e) =>
-                          handleInputChange("buyerPhone", e.target.value)
+                      <Label htmlFor="clientOrigin">Origem do Cliente</Label>
+                      <Select
+                        value={formData.clientOrigin}
+                        onValueChange={(value) =>
+                          handleInputChange("clientOrigin", value)
                         }
-                        onKeyPress={(e) => handleKeyPress(e, "buyerPhone")}
+                      >
+                        <SelectTrigger id="clientOrigin">
+                          <SelectValue placeholder="Selecione..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CLIENT_ORIGINS.map((origin) => (
+                            <SelectItem key={origin.value} value={origin.value}>
+                              {origin.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="paymentMethod">Forma de Pagamento</Label>
+                    <Select
+                      value={formData.paymentMethod}
+                      onValueChange={(value) =>
+                        handleInputChange("paymentMethod", value)
+                      }
+                    >
+                      <SelectTrigger id="paymentMethod">
+                        <SelectValue placeholder="Selecione..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PAYMENT_METHODS.map((method) => (
+                          <SelectItem key={method.value} value={method.value}>
+                            {method.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Commission Information */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">4. Informações de Comissionamento</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Dados de lojas, corretores e tipo de negócio
+                </p>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="storeAngariador">Loja Angariadora</Label>
+                      <Select
+                        value={formData.storeAngariador}
+                        onValueChange={(value) =>
+                          handleInputChange("storeAngariador", value)
+                        }
+                      >
+                        <SelectTrigger id="storeAngariador">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {STORES.map((store) => (
+                            <SelectItem key={store.value} value={store.value}>
+                              {store.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="storeVendedor">Loja Vendedora</Label>
+                      <Select
+                        value={formData.storeVendedor}
+                        onValueChange={(value) =>
+                          handleInputChange("storeVendedor", value)
+                        }
+                      >
+                        <SelectTrigger id="storeVendedor">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {STORES.map((store) => (
+                            <SelectItem key={store.value} value={store.value}>
+                              {store.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="brokerAngariador">Angariador</Label>
+                      <Input
+                        id="brokerAngariador"
+                        placeholder="Nome do angariador"
+                        value={formData.brokerAngariador}
+                        onChange={(e) =>
+                          handleInputChange("brokerAngariador", e.target.value)
+                        }
                       />
+                    </div>
+                    <div>
+                      <Label htmlFor="brokerVendedor">Vendedor</Label>
+                      <Input
+                        id="brokerVendedor"
+                        placeholder="Nome do vendedor"
+                        value={formData.brokerVendedor}
+                        onChange={(e) =>
+                          handleInputChange("brokerVendedor", e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="businessType">Tipo de Negócio</Label>
+                      <Select
+                        value={formData.businessType}
+                        onValueChange={(value) =>
+                          handleInputChange("businessType", value)
+                        }
+                      >
+                        <SelectTrigger id="businessType">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BUSINESS_TYPES.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="walletSituation">Situação da Carteira</Label>
+                      <Select
+                        value={formData.walletSituation}
+                        onValueChange={(value) =>
+                          handleInputChange("walletSituation", value)
+                        }
+                      >
+                        <SelectTrigger id="walletSituation">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {WALLET_SITUATIONS.map((situation) => (
+                            <SelectItem key={situation.value} value={situation.value}>
+                              {situation.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Observações */}
+              {/* Section 5: Commission Preview */}
+              {formData.saleValue && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">5. Prévia de Comissões</h3>
+                  <div className="grid grid-cols-3 gap-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div>
+                      <p className="text-sm text-gray-600">% Angariador</p>
+                      <p className="font-semibold text-lg">{commissionCalculation.angariadorPercentage}%</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        R$ {parseFloat(commissionCalculation.angariadorCommission).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">% Vendedor</p>
+                      <p className="font-semibold text-lg">{commissionCalculation.vendedorPercentage}%</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        R$ {parseFloat(commissionCalculation.vendedorCommission).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Total</p>
+                      <p className="font-semibold text-lg text-blue-600">{commissionCalculation.totalPercentage}%</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        R$ {parseFloat(commissionCalculation.totalCommission).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Section 6: Observations */}
               <div>
-                <Label htmlFor="observations">Observações</Label>
+                <h3 className="text-lg font-semibold mb-4">6. Observações</h3>
+                <Label htmlFor="observations">Observações (opcional)</Label>
                 <Textarea
                   id="observations"
                   placeholder="Adicione observações sobre a venda"
@@ -461,7 +1019,7 @@ export default function NewSale() {
                 />
               </div>
 
-              {/* Botões de Ação */}
+              {/* Action Buttons */}
               <div className="flex gap-4 pt-4">
                 <Button
                   type="button"
@@ -469,6 +1027,16 @@ export default function NewSale() {
                   onClick={() => setLocation("/")}
                 >
                   Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => handleInputChange("showPreview", true)}
+                  className="gap-2"
+                  data-action="preview"
+                >
+                  <Eye className="w-4 h-4" />
+                  Visualizar Resumo
                 </Button>
                 <Button
                   type="submit"

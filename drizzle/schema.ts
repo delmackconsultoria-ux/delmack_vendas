@@ -184,3 +184,222 @@ export const commissionRulesRelations = relations(commissionRules, ({ one }) => 
     references: [companies.id],
   }),
 }));
+
+/**
+ * Proposals/Propostas
+ */
+export const proposals = mysqlTable("proposals", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  propertyReference: varchar("propertyReference", { length: 64 }).notNull(),
+  brokerAngariadorId: varchar("brokerAngariadorId", { length: 64 }).notNull(),
+  status: mysqlEnum("status", ["proposta", "vendido", "recusado", "outro"]).default("proposta").notNull(),
+  customStatus: varchar("customStatus", { length: 255 }), // For "outro" status
+  rejectionReason: varchar("rejectionReason", { length: 255 }), // Motivo da recusa
+  rejectionDate: timestamp("rejectionDate"),
+  rejectionObservation: text("rejectionObservation"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type Proposal = typeof proposals.$inferSelect;
+export type InsertProposal = typeof proposals.$inferInsert;
+
+/**
+ * Commission History/Histórico de Comissões
+ */
+export const commissionHistory = mysqlTable("commissionHistory", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  commissionId: varchar("commissionId", { length: 64 }).notNull(),
+  previousValue: decimal("previousValue", { precision: 15, scale: 2 }),
+  newValue: decimal("newValue", { precision: 15, scale: 2 }).notNull(),
+  previousStatus: varchar("previousStatus", { length: 64 }),
+  newStatus: varchar("newStatus", { length: 64 }).notNull(),
+  changedBy: varchar("changedBy", { length: 64 }).notNull(),
+  approvedBy: varchar("approvedBy", { length: 64 }), // Approved by finance
+  approvalDate: timestamp("approvalDate"),
+  reason: text("reason"),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type CommissionHistory = typeof commissionHistory.$inferSelect;
+export type InsertCommissionHistory = typeof commissionHistory.$inferInsert;
+
+/**
+ * Property History/Histórico de Imóveis
+ */
+export const propertyHistory = mysqlTable("propertyHistory", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  propertyReference: varchar("propertyReference", { length: 64 }).notNull(),
+  previousValue: decimal("previousValue", { precision: 15, scale: 2 }),
+  newValue: decimal("newValue", { precision: 15, scale: 2 }),
+  previousStatus: varchar("previousStatus", { length: 255 }),
+  newStatus: varchar("newStatus", { length: 255 }),
+  reason: text("reason"),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type PropertyHistory = typeof propertyHistory.$inferSelect;
+export type InsertPropertyHistory = typeof propertyHistory.$inferInsert;
+
+/**
+ * Bonuses/Bonificações e Prêmios
+ */
+export const bonuses = mysqlTable("bonuses", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  bonusValue: decimal("bonusValue", { precision: 15, scale: 2 }),
+  bonusPercentage: decimal("bonusPercentage", { precision: 5, scale: 2 }),
+  type: mysqlEnum("type", ["bonificacao", "premio", "outro"]).notNull(),
+  linkedTo: mysqlEnum("linkedTo", ["referencia", "equipe", "meta", "nenhum"]).default("nenhum"),
+  linkedValue: varchar("linkedValue", { length: 255 }), // Reference, team type, etc
+  applicableTo: varchar("applicableTo", { length: 255 }), // Comma-separated broker IDs or "all"
+  startDate: timestamp("startDate"),
+  endDate: timestamp("endDate"),
+  isActive: boolean("isActive").default(true),
+  createdBy: varchar("createdBy", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type Bonus = typeof bonuses.$inferSelect;
+export type InsertBonus = typeof bonuses.$inferInsert;
+
+/**
+ * Models/Modelos Configuráveis
+ */
+export const models = mysqlTable("models", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }), // null for global/super admin models
+  modelType: mysqlEnum("modelType", ["paymentMethod", "clientOrigin", "carteiraSituation", "teamType", "rejectionReason", "businessType"]).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  isDefault: boolean("isDefault").default(false), // Is this a default/suggested model
+  isActive: boolean("isActive").default(true),
+  createdBy: varchar("createdBy", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type Model = typeof models.$inferSelect;
+export type InsertModel = typeof models.$inferInsert;
+
+/**
+ * Commission Approvals/Aprovações de Comissões
+ */
+export const commissionApprovals = mysqlTable("commissionApprovals", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  commissionId: varchar("commissionId", { length: 64 }).notNull(),
+  saleId: varchar("saleId", { length: 64 }).notNull(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  status: mysqlEnum("status", ["proposta", "enviado_gerente", "aprovado_gerente", "enviado_financeiro", "aprovado_financeiro", "recusado", "pago"]).default("proposta").notNull(),
+  sentToManagerAt: timestamp("sentToManagerAt"),
+  approvedByManagerAt: timestamp("approvedByManagerAt"),
+  approvedByManagerId: varchar("approvedByManagerId", { length: 64 }),
+  sentToFinanceAt: timestamp("sentToFinanceAt"),
+  approvedByFinanceAt: timestamp("approvedByFinanceAt"),
+  approvedByFinanceId: varchar("approvedByFinanceId", { length: 64 }),
+  paidAt: timestamp("paidAt"),
+  rejectionReason: text("rejectionReason"),
+  rejectedAt: timestamp("rejectedAt"),
+  rejectedBy: varchar("rejectedBy", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type CommissionApproval = typeof commissionApprovals.$inferSelect;
+export type InsertCommissionApproval = typeof commissionApprovals.$inferInsert;
+
+/**
+ * Relations for new tables
+ */
+export const proposalsRelations = relations(proposals, ({ one }) => ({
+  company: one(companies, {
+    fields: [proposals.companyId],
+    references: [companies.id],
+  }),
+  brokerAngariador: one(users, {
+    fields: [proposals.brokerAngariadorId],
+    references: [users.id],
+  }),
+}));
+
+export const bonusesRelations = relations(bonuses, ({ one }) => ({
+  company: one(companies, {
+    fields: [bonuses.companyId],
+    references: [companies.id],
+  }),
+  createdByUser: one(users, {
+    fields: [bonuses.createdBy],
+    references: [users.id],
+  }),
+}));
+
+export const modelsRelations = relations(models, ({ one }) => ({
+  company: one(companies, {
+    fields: [models.companyId],
+    references: [companies.id],
+  }),
+  createdByUser: one(users, {
+    fields: [models.createdBy],
+    references: [users.id],
+  }),
+}));
+
+export const commissionApprovalsRelations = relations(commissionApprovals, ({ one }) => ({
+  commission: one(commissions, {
+    fields: [commissionApprovals.commissionId],
+    references: [commissions.id],
+  }),
+  sale: one(sales, {
+    fields: [commissionApprovals.saleId],
+    references: [sales.id],
+  }),
+  company: one(companies, {
+    fields: [commissionApprovals.companyId],
+    references: [companies.id],
+  }),
+  approvedByManager: one(users, {
+    fields: [commissionApprovals.approvedByManagerId],
+    references: [users.id],
+  }),
+  approvedByFinance: one(users, {
+    fields: [commissionApprovals.approvedByFinanceId],
+    references: [users.id],
+  }),
+}));
+
+export const commissionHistoryRelations = relations(commissionHistory, ({ one }) => ({
+  changedByUser: one(users, {
+    fields: [commissionHistory.changedBy],
+    references: [users.id],
+  }),
+  approvedByUser: one(users, {
+    fields: [commissionHistory.approvedBy],
+    references: [users.id],
+  }),
+}));
+
+export const propertyHistoryRelations = relations(propertyHistory, ({ one }) => ({
+  company: one(companies, {
+    fields: [propertyHistory.companyId],
+    references: [companies.id],
+  }),
+}));
+
+// Update companies relations to include new tables
+export const companiesRelationsUpdated = relations(companies, ({ many }) => ({
+  users: many(users),
+  properties: many(properties),
+  sales: many(sales),
+  commissions: many(commissions),
+  commissionRules: many(commissionRules),
+  proposals: many(proposals),
+  bonuses: many(bonuses),
+  models: many(models),
+  commissionApprovals: many(commissionApprovals),
+  propertyHistory: many(propertyHistory),
+}));

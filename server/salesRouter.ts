@@ -1,36 +1,59 @@
 /**
  * Router tRPC para gerenciar vendas e comissões
+ * Suporta todos os campos do formulário expandido de vendas
  */
 
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { sales, commissions } from "../drizzle/schema";
+import { sales, commissions, properties } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { calculateCommission } from "./commissionService";
+
+// Zod schema para validação de entrada
+const createSaleSchema = z.object({
+  // Property Information
+  propertyType: z.enum(["baggio", "external"]),
+  propertyReference: z.string().optional(),
+  propertyAddress: z.string().min(1, "Endereço é obrigatório"),
+  propertyNumber: z.string().optional(),
+  propertyComplement: z.string().optional(),
+  propertyNeighborhood: z.string().optional(),
+  propertyCity: z.string().min(1, "Cidade é obrigatória"),
+  propertyState: z.string().min(2).max(2),
+  propertyZipCode: z.string().optional(),
+  advertisementValue: z.number().optional(),
+
+  // Sale Information
+  saleDate: z.string().datetime(),
+  angariationDate: z.string().datetime().optional(),
+  saleValue: z.number().positive("Valor da venda deve ser positivo"),
+
+  // Client Information
+  buyerName: z.string().min(1, "Nome do comprador é obrigatório"),
+  buyerCpfCnpj: z.string().optional(),
+  clientOrigin: z.string().optional(),
+  paymentMethod: z.string().optional(),
+
+  // Commission Information
+  storeAngariador: z.string(),
+  storeVendedor: z.string(),
+  brokerAngariador: z.string(),
+  brokerVendedor: z.string(),
+  businessType: z.string().min(1, "Tipo de negócio é obrigatório"),
+  walletSituation: z.string().optional(),
+
+  // Observations
+  observations: z.string().optional(),
+});
 
 export const salesRouter = router({
   /**
-   * Criar nova venda
+   * Criar nova venda com todos os campos
    */
   createSale: protectedProcedure
-    .input(
-      z.object({
-        propertyType: z.enum(["baggio", "external"]),
-        propertyReference: z.string().optional(),
-        propertyAddress: z.string().min(1),
-        propertyCity: z.string().min(1),
-        propertyState: z.string().min(2).max(2),
-        propertyZipCode: z.string().optional(),
-        propertyValue: z.number().positive(),
-        saleValue: z.number().positive(),
-        commissionType: z.enum(["angariacao", "venda", "parceria"]),
-        buyerName: z.string().min(1),
-        buyerEmail: z.string().email(),
-        buyerPhone: z.string().optional(),
-        observations: z.string().optional(),
-      })
-    )
+    .input(createSaleSchema)
     .mutation(async ({ ctx, input }) => {
       try {
         const db = await getDb();
@@ -43,131 +66,172 @@ export const salesRouter = router({
           throw new Error("Permissão negada. Apenas corretores e gerentes podem cadastrar vendas.");
         }
 
-        // Calcular comissão baseado no tipo
-        let commissionPercentage = 5; // padrão
-        if (input.commissionType === "angariacao") {
-          commissionPercentage = 3;
-        } else if (input.commissionType === "parceria") {
-          commissionPercentage = 7;
+        const saleId = uuidv4();
+        const propertyId = uuidv4();
+
+        // Calcular comissão baseado no tipo de negócio
+        const commissionData = calculateCommission(input.businessType, input.saleValue);
+
+        // Criar ou atualizar propriedade
+        const existingProperty = input.propertyReference
+          ? await db.select().from(properties).where(eq(properties.propertyReference, input.propertyReference)).limit(1)
+          : null;
+
+        let finalPropertyId = propertyId;
+
+        if (existingProperty && existingProperty.length > 0) {
+          finalPropertyId = existingProperty[0].id;
+        } else {
+          // Criar nova propriedade
+          await db.insert(properties).values({
+            id: propertyId,
+            companyId: ctx.user.companyId || "1",
+            propertyReference: input.propertyReference || null,
+            isFromBaggio: input.propertyType === "baggio",
+            address: input.propertyAddress,
+            zipCode: input.propertyZipCode || null,
+            neighborhood: input.propertyNeighborhood || null,
+            city: input.propertyCity,
+            state: input.propertyState,
+            number: input.propertyNumber || null,
+            complement: input.propertyComplement || null,
+            advertisementValue: input.advertisementValue
+              ? input.advertisementValue.toString()
+              : null,
+          });
         }
 
-        const commissionValue = (input.saleValue * commissionPercentage) / 100;
-
-        const saleId = uuidv4();
-        const commissionId = uuidv4();
-
         // Criar venda
-        await db.insert(sales).values([
-          {
-            id: saleId,
-            companyId: ctx.user.companyId || "1",
-            propertyId: uuidv4(), // TODO: vincular com propriedade real
-            buyerName: input.buyerName,
-            saleValue: input.saleValue.toString(),
-            brokerVendedor: ctx.user.id,
-            businessType: input.commissionType,
-            status: "pending",
-            observation: input.observations,
-          },
-        ]);
+        await db.insert(sales).values({
+          id: saleId,
+          companyId: ctx.user.companyId || "1",
+          propertyId: finalPropertyId,
+          buyerName: input.buyerName,
+          buyerCpfCnpj: input.buyerCpfCnpj || null,
+          saleDate: new Date(input.saleDate),
+          angariationDate: input.angariationDate ? new Date(input.angariationDate) : null,
+          saleValue: input.saleValue.toString(),
+          clientOrigin: input.clientOrigin || null,
+          paymentMethod: input.paymentMethod || null,
+          brokerAngariador: input.brokerAngariador,
+          brokerVendedor: input.brokerVendedor,
+          businessType: input.businessType,
+          status: "pending",
+          observation: input.observations || null,
+          proposalDocumentUrl: null,
+        });
 
-        // Criar comissão automaticamente
-        await db.insert(commissions).values([
-          {
-            id: commissionId,
+        // Criar comissões automaticamente para angariador e vendedor
+        const commissionIds: string[] = [];
+
+        // Comissão do Angariador (se houver valor)
+        if (commissionData.angariadorValue > 0) {
+          const angariadorCommissionId = uuidv4();
+          commissionIds.push(angariadorCommissionId);
+
+          await db.insert(commissions).values({
+            id: angariadorCommissionId,
             saleId: saleId,
             companyId: ctx.user.companyId || "1",
-            brokerId: ctx.user.id,
-            commissionValue: commissionValue.toString(),
-            commissionPercentage: commissionPercentage.toString(),
-            type: input.commissionType,
+            brokerId: input.brokerAngariador,
+            commissionValue: commissionData.angariadorValue.toString(),
+            commissionPercentage: (commissionData.angariadorPercentage / 100).toString(),
+            type: "angariacao",
             status: "pending",
-          },
-        ]);
+          });
+        }
+
+        // Comissão do Vendedor (se houver valor)
+        if (commissionData.vendedorValue > 0) {
+          const vendedorCommissionId = uuidv4();
+          commissionIds.push(vendedorCommissionId);
+
+          await db.insert(commissions).values({
+            id: vendedorCommissionId,
+            saleId: saleId,
+            companyId: ctx.user.companyId || "1",
+            brokerId: input.brokerVendedor,
+            commissionValue: commissionData.vendedorValue.toString(),
+            commissionPercentage: (commissionData.vendedorPercentage / 100).toString(),
+            type: "venda",
+            status: "pending",
+          });
+        }
 
         return {
           success: true,
           saleId: saleId,
-          commissionValue: commissionValue,
+          propertyId: finalPropertyId,
+          totalCommission: commissionData.totalCommissionValue,
+          commissionBreakdown: {
+            angariador: commissionData.angariadorValue,
+            vendedor: commissionData.vendedorValue,
+            total: commissionData.totalCommissionValue,
+          },
+          commissionIds: commissionIds,
+          message: "Venda registrada com sucesso",
         };
       } catch (error) {
         console.error("[Sales Router] Erro ao criar venda:", error);
-        throw new Error("Erro ao registrar venda");
+        const errorMessage = error instanceof Error ? error.message : "Erro ao registrar venda";
+        throw new Error(errorMessage);
       }
     }),
 
   /**
-   * Listar vendas do corretor
+   * Listar vendas do corretor logado
    */
-  listMySales: protectedProcedure
-    .input(
-      z.object({
-        page: z.number().int().positive().default(1),
-        limit: z.number().int().positive().default(10),
-        status: z.enum(["pending", "received", "paid", "cancelled"]).optional(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      try {
-        const db = await getDb();
-        if (!db) {
-          throw new Error("Database not available");
-        }
-
-        // TODO: Implementar paginação e filtros
-        const userSales = await db
-          .select()
-          .from(sales)
-          .where(eq(sales.brokerVendedor, ctx.user.id));
-
-        return {
-          success: true,
-          data: userSales,
-          total: userSales.length,
-        };
-      } catch (error) {
-        console.error("[Sales Router] Erro ao listar vendas:", error);
-        throw new Error("Erro ao listar vendas");
+  listMySales: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const db = await getDb();
+      if (!db) {
+        throw new Error("Database not available");
       }
-    }),
+
+      // Corretores veem apenas suas vendas
+      // Gerentes veem todas as vendas da empresa
+      let query: any = db.select().from(sales);
+
+      if (ctx.user.role === "broker") {
+        query = query.where(eq(sales.brokerVendedor, ctx.user.id));
+      } else if (ctx.user.role === "manager") {
+        query = query.where(eq(sales.companyId, ctx.user.companyId || "1"));
+      }
+
+      const result = await query;
+      return result;
+    } catch (error) {
+      console.error("[Sales Router] Erro ao listar vendas:", error);
+      throw new Error("Erro ao listar vendas");
+    }
+  }),
 
   /**
-   * Listar todas as vendas (gerente/financeiro)
+   * Listar todas as vendas (apenas para gerentes e financeiro)
    */
-  listAllSales: protectedProcedure
-    .input(
-      z.object({
-        page: z.number().int().positive().default(1),
-        limit: z.number().int().positive().default(10),
-        status: z.enum(["pending", "received", "paid", "cancelled"]).optional(),
-        brokerId: z.string().optional(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      try {
-        // Apenas gerente e financeiro podem ver todas as vendas
-        if (ctx.user.role !== "manager" && ctx.user.role !== "finance") {
-          throw new Error("Acesso negado");
-        }
-
-        const db = await getDb();
-        if (!db) {
-          throw new Error("Database not available");
-        }
-
-        // TODO: Implementar paginação e filtros
-        const allSales = await db.select().from(sales);
-
-        return {
-          success: true,
-          data: allSales,
-          total: allSales.length,
-        };
-      } catch (error) {
-        console.error("[Sales Router] Erro ao listar vendas:", error);
-        throw new Error("Erro ao listar vendas");
+  listAllSales: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const db = await getDb();
+      if (!db) {
+        throw new Error("Database not available");
       }
-    }),
+
+      // Apenas gerentes e financeiro podem ver todas as vendas
+      if (ctx.user.role !== "manager" && ctx.user.role !== "finance") {
+        throw new Error("Permissão negada");
+      }
+
+      const result: any = await db
+        .select()
+        .from(sales)
+        .where(eq(sales.companyId, ctx.user.companyId || "1"));
+
+      return result;
+    } catch (error) {
+      console.error("[Sales Router] Erro ao listar todas as vendas:", error);
+      throw new Error("Erro ao listar vendas");
+    }
+  }),
 
   /**
    * Atualizar status da venda
@@ -182,14 +246,14 @@ export const salesRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        // Apenas gerente e financeiro podem atualizar status
-        if (ctx.user.role !== "manager" && ctx.user.role !== "finance") {
-          throw new Error("Acesso negado");
-        }
-
         const db = await getDb();
         if (!db) {
           throw new Error("Database not available");
+        }
+
+        // Apenas gerentes e financeiro podem atualizar status
+        if (ctx.user.role !== "manager" && ctx.user.role !== "finance") {
+          throw new Error("Permissão negada");
         }
 
         // Atualizar venda
@@ -197,23 +261,12 @@ export const salesRouter = router({
           .update(sales)
           .set({
             status: input.status,
-            observation: input.observation,
+            observation: input.observation || null,
             updatedAt: new Date(),
           })
           .where(eq(sales.id, input.saleId));
 
-        // Se recebido, atualizar comissão também
-        if (input.status === "received") {
-          await db
-            .update(commissions)
-            .set({
-              status: "received",
-              updatedAt: new Date(),
-            })
-            .where(eq(commissions.saleId, input.saleId));
-        }
-
-        // Se pago, marcar comissão como paga
+        // Atualizar comissões associadas
         if (input.status === "paid") {
           await db
             .update(commissions)
@@ -227,11 +280,11 @@ export const salesRouter = router({
 
         return {
           success: true,
-          message: "Status atualizado com sucesso",
+          message: "Status da venda atualizado com sucesso",
         };
       } catch (error) {
         console.error("[Sales Router] Erro ao atualizar status:", error);
-        throw new Error("Erro ao atualizar status");
+        throw new Error("Erro ao atualizar status da venda");
       }
     }),
 
@@ -241,8 +294,6 @@ export const salesRouter = router({
   listCommissions: protectedProcedure
     .input(
       z.object({
-        page: z.number().int().positive().default(1),
-        limit: z.number().int().positive().default(10),
         status: z.enum(["pending", "received", "paid", "cancelled"]).optional(),
         brokerId: z.string().optional(),
       })
@@ -254,24 +305,23 @@ export const salesRouter = router({
           throw new Error("Database not available");
         }
 
-        let commissionsList: any[] = [];
-        if (ctx.user.role === "broker") {
-          commissionsList = await db
-            .select()
-            .from(commissions)
-            .where(eq(commissions.brokerId, ctx.user.id));
-        } else {
-          commissionsList = await db.select().from(commissions);
+        let query: any = db.select().from(commissions);
+
+        // Filtrar por status se fornecido
+        if (input.status) {
+          query = query.where(eq(commissions.status, input.status));
         }
 
-        // TODO: Implementar filtros de status e paginação
-        const allCommissions = commissionsList;
+        // Corretores veem apenas suas comissões
+        if (ctx.user.role === "broker") {
+          query = query.where(eq(commissions.brokerId, ctx.user.id));
+        } else if (ctx.user.role === "manager" || ctx.user.role === "finance") {
+          // Gerentes e financeiro veem comissões da empresa
+          query = query.where(eq(commissions.companyId, ctx.user.companyId || "1"));
+        }
 
-        return {
-          success: true,
-          data: allCommissions,
-          total: allCommissions.length,
-        };
+        const result = await query;
+        return result;
       } catch (error) {
         console.error("[Sales Router] Erro ao listar comissões:", error);
         throw new Error("Erro ao listar comissões");
@@ -288,49 +338,34 @@ export const salesRouter = router({
         throw new Error("Database not available");
       }
 
-      const userCommissions = await db
-        .select()
-        .from(commissions)
-        .where(eq(commissions.brokerId, ctx.user.id));
+      let query: any = db.select().from(commissions);
 
-      const pending = userCommissions
-        .filter((c) => c.status === "pending")
-        .reduce((sum, c) => {
-          const value = typeof c.commissionValue === "string" 
-            ? parseFloat(c.commissionValue) 
-            : (c.commissionValue || 0);
-          return sum + value;
-        }, 0);
+      if (ctx.user.role === "broker") {
+        query = query.where(eq(commissions.brokerId, ctx.user.id));
+      } else if (ctx.user.role === "manager" || ctx.user.role === "finance") {
+        query = query.where(eq(commissions.companyId, ctx.user.companyId || "1"));
+      }
 
-      const received = userCommissions
-        .filter((c) => c.status === "received")
-        .reduce((sum, c) => {
-          const value = typeof c.commissionValue === "string" 
-            ? parseFloat(c.commissionValue) 
-            : (c.commissionValue || 0);
-          return sum + value;
-        }, 0);
+      const allCommissions = await query;
 
-      const paid = userCommissions
-        .filter((c) => c.status === "paid")
-        .reduce((sum, c) => {
-          const value = typeof c.commissionValue === "string" 
-            ? parseFloat(c.commissionValue) 
-            : (c.commissionValue || 0);
-          return sum + value;
-        }, 0);
-
-      return {
-        success: true,
-        data: {
-          pending,
-          received,
-          paid,
-          total: pending + received + paid,
-        },
+      // Calcular resumo
+      const summary = {
+        total: allCommissions.reduce((sum: number, c: any) => sum + parseFloat(c.commissionValue), 0),
+        pending: allCommissions
+          .filter((c: any) => c.status === "pending")
+          .reduce((sum: number, c: any) => sum + parseFloat(c.commissionValue), 0),
+        received: allCommissions
+          .filter((c: any) => c.status === "received")
+          .reduce((sum: number, c: any) => sum + parseFloat(c.commissionValue), 0),
+        paid: allCommissions
+          .filter((c: any) => c.status === "paid")
+          .reduce((sum: number, c: any) => sum + parseFloat(c.commissionValue), 0),
+        count: allCommissions.length,
       };
+
+      return summary;
     } catch (error) {
-      console.error("[Sales Router] Erro ao obter resumo:", error);
+      console.error("[Sales Router] Erro ao obter resumo de comissões:", error);
       throw new Error("Erro ao obter resumo de comissões");
     }
   }),
