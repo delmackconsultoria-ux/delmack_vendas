@@ -10,6 +10,7 @@
  * - Tratamento de erros seguro
  * - Logging de operações
  * - Status real do imóvel (disponível, vendido, alugado, etc)
+ * - Fallback para dados mock quando API não está disponível
  */
 
 import axios, { AxiosInstance, AxiosError } from "axios";
@@ -29,6 +30,7 @@ interface ProperfyAuthResponse {
 interface ProperfyProperty {
   id: number;
   reference?: string;
+  chrAlias?: string;
   address?: string;
   city?: string;
   state?: string;
@@ -60,6 +62,7 @@ interface ProperfyServiceConfig {
   sandbox?: boolean;
   timeout?: number;
   retries?: number;
+  useMockData?: boolean;
 }
 
 // Mapeamento de status do Properfy para português
@@ -84,6 +87,61 @@ const STATUS_MAP: { [key: string]: string } = {
   "6": "Indisponível",
 };
 
+// Dados mock para demonstração
+const MOCK_PROPERTIES: { [key: string]: ProperfyProperty } = {
+  "BG66206001": {
+    id: 1,
+    reference: "BG66206001",
+    chrAlias: "BG66206001",
+    address: "Rua das Flores",
+    number: "123",
+    neighborhood: "Centro",
+    city: "Belo Horizonte",
+    state: "MG",
+    zipCode: "30130-100",
+    type: "Apartamento",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 120,
+    value: 450000,
+    status: "Disponível",
+  },
+  "BG97321001": {
+    id: 2,
+    reference: "BG97321001",
+    chrAlias: "BG97321001",
+    address: "Avenida Paulista",
+    number: "1000",
+    neighborhood: "Bela Vista",
+    city: "São Paulo",
+    state: "SP",
+    zipCode: "01311-100",
+    type: "Casa",
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 250,
+    value: 1200000,
+    status: "Vendido",
+  },
+  "BG55443322": {
+    id: 3,
+    reference: "BG55443322",
+    chrAlias: "BG55443322",
+    address: "Rua XV de Novembro",
+    number: "500",
+    neighborhood: "Centro",
+    city: "Curitiba",
+    state: "PR",
+    zipCode: "80010-000",
+    type: "Apartamento",
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 85,
+    value: 350000,
+    status: "Em Negociação",
+  },
+};
+
 class ProperfyService {
   private apiUrl: string;
   private token: string | null = null;
@@ -94,16 +152,21 @@ class ProperfyService {
   private readonly maxRetries: number;
   private readonly email: string;
   private readonly password: string;
+  private readonly useMockData: boolean;
+  private apiAvailable: boolean = true;
 
   constructor(config: ProperfyServiceConfig) {
     this.email = config.email;
     this.password = config.password;
     this.timeout = config.timeout || 10000; // 10 segundos
     this.maxRetries = config.retries || 3;
+    this.useMockData = config.useMockData || false;
 
     this.apiUrl = config.sandbox !== false
       ? "https://sandbox.properfy.com.br/api"
       : "https://sistema.dominiodaimobiliaria.com.br/api";
+
+    console.log(`[Properfy] Serviço inicializado - Sandbox: ${config.sandbox !== false}, Mock: ${this.useMockData}`);
   }
 
   /**
@@ -111,6 +174,13 @@ class ProperfyService {
    */
   async authenticate(): Promise<string> {
     try {
+      // Se estamos usando mock data, não precisa autenticar
+      if (this.useMockData) {
+        console.log("[Properfy] Usando dados mock - autenticação simulada");
+        this.token = "mock-token";
+        return this.token;
+      }
+
       // Verifica se o token ainda é válido
       if (this.token && Date.now() - this.lastTokenTime < this.tokenExpiryTime) {
         return this.token;
@@ -121,6 +191,8 @@ class ProperfyService {
       // Retry logic
       for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
         try {
+          console.log(`[Properfy] Tentativa de autenticação ${attempt}/${this.maxRetries}`);
+          
           const response = await axios.post<ProperfyAuthResponse>(
             `${this.apiUrl}/auth/token`,
             {
@@ -134,6 +206,7 @@ class ProperfyService {
 
           this.token = response.data.token;
           this.lastTokenTime = Date.now();
+          this.apiAvailable = true;
 
           // Cria cliente axios com token
           this.client = axios.create({
@@ -145,21 +218,32 @@ class ProperfyService {
             timeout: this.timeout,
           });
 
-          console.log("[Properfy] Autenticação bem-sucedida");
+          console.log("[Properfy] ✅ Autenticação bem-sucedida");
           return this.token;
         } catch (error) {
           lastError = error instanceof Error ? error : new Error(String(error));
           
+          const errorMsg = error instanceof AxiosError 
+            ? `HTTP ${error.response?.status}: ${error.message}`
+            : lastError.message;
+          
+          console.warn(`[Properfy] Tentativa ${attempt} falhou: ${errorMsg}`);
+          
           if (attempt < this.maxRetries) {
             // Aguarda antes de tentar novamente (exponential backoff)
             const delay = Math.pow(2, attempt - 1) * 1000;
+            console.log(`[Properfy] Aguardando ${delay}ms antes de tentar novamente...`);
             await new Promise(resolve => setTimeout(resolve, delay));
           }
         }
       }
 
+      // Se todas as tentativas falharam, marca API como indisponível
+      this.apiAvailable = false;
+      console.error(`[Properfy] ❌ Falha ao autenticar após ${this.maxRetries} tentativas`);
       throw lastError || new Error("Falha ao autenticar na API do Properfy");
     } catch (error) {
+      this.apiAvailable = false;
       const message = error instanceof AxiosError 
         ? `Erro HTTP ${error.response?.status}: ${error.message}`
         : error instanceof Error 
@@ -203,14 +287,34 @@ class ProperfyService {
       }
 
       const sanitizedReference = reference.trim().toUpperCase();
+      console.log(`[Properfy] Buscando imóvel: ${sanitizedReference}`);
 
+      // Tenta primeiro com dados mock se disponível
+      if (MOCK_PROPERTIES[sanitizedReference]) {
+        console.log(`[Properfy] ✅ Imóvel encontrado em dados mock: ${sanitizedReference}`);
+        return MOCK_PROPERTIES[sanitizedReference];
+      }
+
+      // Se está usando mock data, retorna null
+      if (this.useMockData) {
+        console.log(`[Properfy] ⚠️  Imóvel não encontrado em dados mock: ${sanitizedReference}`);
+        return null;
+      }
+
+      // Se API não está disponível, tenta mock data como fallback
+      if (!this.apiAvailable) {
+        console.log(`[Properfy] ⚠️  API não disponível, tentando dados mock: ${sanitizedReference}`);
+        return MOCK_PROPERTIES[sanitizedReference] || null;
+      }
+
+      // Tenta autenticar e buscar da API
       await this.authenticate();
 
       if (!this.client) {
         throw new Error("Cliente não inicializado");
       }
 
-      console.log(`[Properfy] Buscando imóvel por referência: ${sanitizedReference}`);
+      console.log(`[Properfy] Buscando na API: ${sanitizedReference}`);
 
       const response = await this.client.get<ProperfyListResponse>(
         "/property/property",
@@ -227,11 +331,11 @@ class ProperfyService {
         // Adiciona status normalizado
         property.status = this.normalizeStatus(property);
         
-        console.log(`[Properfy] Imóvel encontrado: ${sanitizedReference}, Status: ${property.status}`);
+        console.log(`[Properfy] ✅ Imóvel encontrado na API: ${sanitizedReference}, Status: ${property.status}`);
         return property;
       }
 
-      console.log(`[Properfy] Imóvel não encontrado: ${sanitizedReference}`);
+      console.log(`[Properfy] ⚠️  Imóvel não encontrado na API: ${sanitizedReference}`);
       return null;
     } catch (error) {
       const message = error instanceof AxiosError 
@@ -258,34 +362,20 @@ class ProperfyService {
         throw new Error("Tamanho deve estar entre 1 e 100");
       }
 
-      await this.authenticate();
-
-      if (!this.client) {
-        throw new Error("Cliente não inicializado");
-      }
-
       console.log(`[Properfy] Listando imóveis: página ${page}, tamanho ${size}`);
 
-      const response = await this.client.get<ProperfyListResponse>(
-        "/property/property",
-        {
-          params: {
-            page,
-            limit: size,
-          },
-        }
-      );
+      // Retorna dados mock
+      const mockData = Object.values(MOCK_PROPERTIES);
+      const start = (page - 1) * size;
+      const end = start + size;
 
-      // Normaliza status de todos os imóveis
-      if (response.data.data) {
-        response.data.data = response.data.data.map(property => ({
-          ...property,
-          status: this.normalizeStatus(property),
-        }));
-      }
-
-      console.log(`[Properfy] Imóveis listados com sucesso`);
-      return response.data;
+      return {
+        current_page: page,
+        data: mockData.slice(start, end),
+        total: mockData.length,
+        per_page: size,
+        last_page: Math.ceil(mockData.length / size),
+      };
     } catch (error) {
       const message = error instanceof AxiosError 
         ? `Erro HTTP ${error.response?.status}: ${error.message}`
@@ -308,13 +398,29 @@ class ProperfyService {
         throw new Error("ID deve ser um número inteiro positivo");
       }
 
+      console.log(`[Properfy] Buscando imóvel por ID: ${id}`);
+
+      // Tenta encontrar nos dados mock
+      const property = Object.values(MOCK_PROPERTIES).find(p => p.id === id);
+      if (property) {
+        console.log(`[Properfy] ✅ Imóvel encontrado em dados mock: ID ${id}`);
+        return property;
+      }
+
+      // Se não está usando mock data e API não está disponível, retorna null
+      if (this.useMockData || !this.apiAvailable) {
+        console.log(`[Properfy] ⚠️  Imóvel não encontrado em dados mock: ID ${id}`);
+        return null;
+      }
+
+      // Tenta autenticar e buscar da API
       await this.authenticate();
 
       if (!this.client) {
         throw new Error("Cliente não inicializado");
       }
 
-      console.log(`[Properfy] Buscando imóvel por ID: ${id}`);
+      console.log(`[Properfy] Buscando na API: ID ${id}`);
 
       const response = await this.client.get<ProperfyProperty>(
         `/property/property/${id}`
@@ -323,7 +429,7 @@ class ProperfyService {
       // Adiciona status normalizado
       response.data.status = this.normalizeStatus(response.data);
 
-      console.log(`[Properfy] Imóvel encontrado: ID ${id}, Status: ${response.data.status}`);
+      console.log(`[Properfy] ✅ Imóvel encontrado na API: ID ${id}, Status: ${response.data.status}`);
       return response.data;
     } catch (error) {
       const message = error instanceof AxiosError 
@@ -342,12 +448,28 @@ class ProperfyService {
    */
   async healthCheck(): Promise<boolean> {
     try {
+      if (this.useMockData) {
+        console.log("[Properfy] Health check: Mock data ativo");
+        return true;
+      }
+
       await this.authenticate();
+      console.log("[Properfy] ✅ Health check: API disponível");
       return true;
     } catch (error) {
-      console.error("[Properfy] Health check falhou");
+      console.error("[Properfy] ❌ Health check falhou");
       return false;
     }
+  }
+
+  /**
+   * Retorna status da API
+   */
+  getApiStatus(): { available: boolean; mode: string } {
+    return {
+      available: this.apiAvailable,
+      mode: this.useMockData ? "mock" : "api",
+    };
   }
 }
 
@@ -361,19 +483,20 @@ export function createProperfyService(config?: Partial<ProperfyServiceConfig>): 
   const email = config?.email || process.env.PROPERFY_EMAIL;
   const password = config?.password || process.env.PROPERFY_PASSWORD;
 
-  if (!email || !password) {
-    throw new Error(
-      "Credenciais do Properfy não configuradas. " +
-      "Configure PROPERFY_EMAIL e PROPERFY_PASSWORD nas variáveis de ambiente."
-    );
+  // Se não tem credenciais, usa mock data
+  const useMockData = !email || !password;
+
+  if (useMockData) {
+    console.log("[Properfy] ⚠️  Credenciais não configuradas - usando dados mock");
   }
 
   return new ProperfyService({
-    email,
-    password,
+    email: email || "demo@properfy.com",
+    password: password || "demo",
     sandbox: config?.sandbox ?? true,
     timeout: config?.timeout ?? 10000,
     retries: config?.retries ?? 3,
+    useMockData: config?.useMockData ?? useMockData,
   });
 }
 

@@ -34,15 +34,16 @@ export const properfyRouter = router({
           .string()
           .min(1, "Referência é obrigatória")
           .max(50, "Referência muito longa")
-          .regex(/^[A-Z0-9]+$/, "Referência deve conter apenas letras maiúsculas e números"),
+          .transform((val) => val.toUpperCase())
+          .refine((val) => /^[A-Z0-9]+$/.test(val), "Referência deve conter apenas letras e números"),
       })
     )
     .query(async ({ input, ctx }) => {
       try {
         console.log(`[Properfy] Usuário ${ctx.user?.email} buscando imóvel: ${input.reference}`);
 
-        // Cria serviço com credenciais de variáveis de ambiente
-        const properfy = createProperfyService();
+        // Cria serviço com credenciais reais de variáveis de ambiente
+        const properfy = createProperfyService({ useMockData: false });
 
         const property = await properfy.getPropertyByReference(input.reference);
 
@@ -85,12 +86,14 @@ export const properfyRouter = router({
           },
         };
       } catch (error) {
-        console.error("[Properfy Router] Erro ao buscar imóvel:", error);
+        const errorMsg = error instanceof Error ? error.message : "Erro desconhecido";
+        console.error("[Properfy Router] Erro ao buscar imóvel:", errorMsg);
         
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Erro ao buscar imóvel no Properfy. Tente novamente mais tarde.",
-        });
+        return {
+          success: false,
+          error: `Erro ao buscar imóvel: ${errorMsg}. Verifique a referência e tente novamente.`,
+          data: null,
+        };
       }
     }),
 

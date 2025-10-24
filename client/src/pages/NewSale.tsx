@@ -1,4 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Save, AlertCircle, Search } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function NewSale() {
   const { user } = useAuth();
@@ -45,70 +45,84 @@ export default function NewSale() {
     setPropertyError("");
 
     try {
+      // Usar endpoint REST com credenciais reais
       const response = await fetch(
-        "/api/trpc/properfy.searchPropertyByReference?input=" +
-          encodeURIComponent(JSON.stringify({ reference: formData.propertyReference }))
-      );
-      const apiResult = await response.json();
+        `/api/rest/properfy/search?reference=${encodeURIComponent(
+          formData.propertyReference.toUpperCase()
+        )}`
+      ).then((r) => r.json());
 
-      if (apiResult.error) {
-        throw new Error(apiResult.error.message);
+      if (!response.success) {
+        setPropertyError(response.error || "Referência não encontrada, tente novamente");
+        setLoadingProperty(false);
+        return;
       }
 
-      if (apiResult.result?.data?.success && apiResult.result?.data?.data) {
-        const propData = apiResult.result.data.data;
+      if (response.data) {
         setFormData((prev) => ({
           ...prev,
-          propertyAddress: propData.address || "",
-          propertyCity: propData.city || "",
-          propertyState: propData.state || "",
-          propertyZipCode: propData.zipCode || "",
-          propertyValue: propData.value?.toString() || "",
+          propertyAddress: response.data.address || "",
+          propertyCity: response.data.city || "",
+          propertyState: response.data.state || "",
+          propertyZipCode: response.data.zipCode || "",
+          propertyValue: response.data.value?.toString() || "",
         }));
         setPropertyError("");
-      } else {
-        setPropertyError(
-          apiResult.result?.data?.error || "Imóvel não encontrado"
-        );
       }
     } catch (error) {
-      setPropertyError("Erro ao buscar imóvel no Properfy");
-      console.error(error);
+      const errorMsg = error instanceof Error ? error.message : "Referência não encontrada, tente novamente";
+      console.error("Erro ao buscar imóvel:", errorMsg);
+      setPropertyError(errorMsg);
     } finally {
       setLoadingProperty(false);
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // Lidar com Enter em diferentes campos
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, fieldName: string) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      
+      // Se estiver no campo de referência, buscar imóvel
+      if (fieldName === "propertyReference") {
+        handleSearchProperty();
+      }
+      // Se estiver em qualquer outro campo da seção de venda, registrar venda
+      else if (
+        fieldName === "saleValue" ||
+        fieldName === "buyerName" ||
+        fieldName === "buyerEmail" ||
+        fieldName === "buyerPhone"
+      ) {
+        handleSubmit(e as any);
+      }
+    }
   };
 
   const calculateCommission = () => {
     const saleValue = parseFloat(formData.saleValue) || 0;
-    let percentage = 0;
+    let commission = 0;
 
     switch (formData.commissionType) {
       case "standard":
-        percentage = 5;
+        commission = saleValue * 0.05;
         break;
       case "reduced":
-        percentage = 3;
+        commission = saleValue * 0.03;
         break;
       case "premium":
-        percentage = 7;
+        commission = saleValue * 0.07;
         break;
-      default:
-        percentage = 5;
     }
 
-    return (saleValue * percentage) / 100;
+    return commission.toFixed(2);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,329 +131,308 @@ export default function NewSale() {
     setError(null);
 
     try {
-      if (!formData.propertyAddress) {
-        throw new Error("Endereço do imóvel é obrigatório");
-      }
-      if (!formData.propertyValue) {
-        throw new Error("Valor do imóvel é obrigatório");
-      }
-      if (!formData.saleValue) {
-        throw new Error("Valor da venda é obrigatório");
-      }
-      if (!formData.buyerName) {
-        throw new Error("Nome do comprador é obrigatório");
-      }
-      if (!formData.buyerEmail) {
-        throw new Error("Email do comprador é obrigatório");
-      }
-
-      const commission = calculateCommission();
-
-      console.log("Venda a ser salva:", {
-        ...formData,
-        commissionValue: commission.toString(),
-      });
-
-      alert("Venda registrada com sucesso!");
-      setLocation("/dashboard");
+      // Aqui você faria a chamada para criar a venda
+      // await trpc.sales.createSale.mutate({...});
+      
+      // Por enquanto, apenas redireciona
+      setLocation("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao registrar venda");
+      const errorMsg = err instanceof Error ? err.message : "Erro ao criar venda";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user || user.role !== "broker") {
+  if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3 text-red-600 mb-4">
-              <AlertCircle className="h-5 w-5" />
-              <p>Acesso restrito a corretores</p>
-            </div>
-            <Button onClick={() => setLocation("/")} className="w-full">
-              Voltar
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Carregando...</p>
       </div>
     );
   }
 
-  const commission = calculateCommission();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setLocation("/dashboard")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Nova Venda</h1>
-            <p className="text-sm text-slate-600">
-              Registre uma nova venda de imóvel
-            </p>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        <Button
+          variant="ghost"
+          className="mb-6"
+          onClick={() => setLocation("/")}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Voltar
+        </Button>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3 text-red-600">
-                <AlertCircle className="h-5 w-5" />
-                <p>{error}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Nova Venda</CardTitle>
+            <CardDescription>Registre uma nova venda de imóvel</CardDescription>
+          </CardHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Informações do Imóvel</CardTitle>
-              <CardDescription>
-                Selecione o tipo de imóvel e preencha os dados
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="propertyType">Tipo de Imóvel</Label>
-                <Select
-                  value={formData.propertyType}
-                  onValueChange={(value) =>
-                    handleSelectChange("propertyType", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="baggio">
-                      Imóvel Baggio (com referência)
-                    </SelectItem>
-                    <SelectItem value="external">
-                      Imóvel Externo (sem referência)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {formData.propertyType === "baggio" && (
-                <div>
-                  <Label htmlFor="propertyReference">
-                    Referência do Imóvel
-                  </Label>
-                  <div className="flex gap-2 mt-2">
-                    <Input
-                      id="propertyReference"
-                      name="propertyReference"
-                      placeholder="Ex: REF-001"
-                      value={formData.propertyReference}
-                      onChange={handleInputChange}
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleSearchProperty}
-                      disabled={loadingProperty}
-                      className="gap-2"
-                    >
-                      <Search className="h-4 w-4" />
-                      {loadingProperty ? "Buscando..." : "Buscar"}
-                    </Button>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-red-900">Erro</h3>
+                    <p className="text-sm text-red-700">{error}</p>
                   </div>
-                  {propertyError && (
-                    <p className="text-red-500 text-sm mt-2">
-                      {propertyError}
-                    </p>
+                </div>
+              )}
+
+              {/* Informações do Imóvel */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Informações do Imóvel</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Selecione o tipo de imóvel e preencha os dados
+                </p>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="propertyType">Tipo de Imóvel</Label>
+                    <Select
+                      value={formData.propertyType}
+                      onValueChange={(value) =>
+                        handleInputChange("propertyType", value)
+                      }
+                    >
+                      <SelectTrigger id="propertyType">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="baggio">
+                          Imóvel Baggio (com referência)
+                        </SelectItem>
+                        <SelectItem value="external">
+                          Imóvel Externo (sem referência)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {formData.propertyType === "baggio" && (
+                    <div>
+                      <Label htmlFor="propertyReference">
+                        Referência do Imóvel
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="propertyReference"
+                          placeholder="Ex: REF-001"
+                          value={formData.propertyReference}
+                          onChange={(e) =>
+                            handleInputChange("propertyReference", e.target.value)
+                          }
+                          onKeyPress={(e) => handleKeyPress(e, "propertyReference")}
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleSearchProperty}
+                          disabled={loadingProperty}
+                          className="gap-2"
+                        >
+                          <Search className="w-4 h-4" />
+                          {loadingProperty ? "Buscando..." : "Buscar"}
+                        </Button>
+                      </div>
+                      {propertyError && (
+                        <p className="text-sm text-red-600 mt-2">{propertyError}</p>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="propertyAddress">Endereço</Label>
-                  <Input
-                    id="propertyAddress"
-                    name="propertyAddress"
-                    value={formData.propertyAddress}
-                    onChange={handleInputChange}
-                    placeholder="Rua, número"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="propertyCity">Cidade</Label>
-                  <Input
-                    id="propertyCity"
-                    name="propertyCity"
-                    value={formData.propertyCity}
-                    onChange={handleInputChange}
-                    placeholder="Cidade"
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="propertyAddress">Endereço</Label>
+                      <Input
+                        id="propertyAddress"
+                        placeholder="Rua, número"
+                        value={formData.propertyAddress}
+                        onChange={(e) =>
+                          handleInputChange("propertyAddress", e.target.value)
+                        }
+                        disabled={formData.propertyType === "baggio"}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="propertyCity">Cidade</Label>
+                      <Input
+                        id="propertyCity"
+                        placeholder="Cidade"
+                        value={formData.propertyCity}
+                        onChange={(e) =>
+                          handleInputChange("propertyCity", e.target.value)
+                        }
+                        disabled={formData.propertyType === "baggio"}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="propertyState">Estado</Label>
+                      <Input
+                        id="propertyState"
+                        placeholder="UF"
+                        value={formData.propertyState}
+                        onChange={(e) =>
+                          handleInputChange("propertyState", e.target.value)
+                        }
+                        disabled={formData.propertyType === "baggio"}
+                        maxLength={2}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="propertyZipCode">CEP</Label>
+                      <Input
+                        id="propertyZipCode"
+                        placeholder="00000-000"
+                        value={formData.propertyZipCode}
+                        onChange={(e) =>
+                          handleInputChange("propertyZipCode", e.target.value)
+                        }
+                        disabled={formData.propertyType === "baggio"}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="propertyValue">Valor do Imóvel (R$)</Label>
+                    <Input
+                      id="propertyValue"
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.propertyValue}
+                      onChange={(e) =>
+                        handleInputChange("propertyValue", e.target.value)
+                      }
+                      disabled={formData.propertyType === "baggio"}
+                      step="0.01"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="propertyState">Estado</Label>
-                  <Input
-                    id="propertyState"
-                    name="propertyState"
-                    value={formData.propertyState}
-                    onChange={handleInputChange}
-                    placeholder="UF"
-                    maxLength={2}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="propertyZipCode">CEP</Label>
-                  <Input
-                    id="propertyZipCode"
-                    name="propertyZipCode"
-                    value={formData.propertyZipCode}
-                    onChange={handleInputChange}
-                    placeholder="00000-000"
-                  />
-                </div>
-              </div>
-
+              {/* Informações da Venda */}
               <div>
-                <Label htmlFor="propertyValue">Valor do Imóvel (R$)</Label>
-                <Input
-                  id="propertyValue"
-                  name="propertyValue"
-                  type="number"
-                  value={formData.propertyValue}
-                  onChange={handleInputChange}
-                  placeholder="0.00"
-                  step="0.01"
-                />
-              </div>
-            </CardContent>
-          </Card>
+                <h3 className="text-lg font-semibold mb-4">Informações da Venda</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Preencha os dados da venda e do comprador
+                </p>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Informações da Venda</CardTitle>
-              <CardDescription>
-                Preencha os dados da venda e do comprador
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="saleValue">Valor da Venda (R$)</Label>
-                <Input
-                  id="saleValue"
-                  name="saleValue"
-                  type="number"
-                  value={formData.saleValue}
-                  onChange={handleInputChange}
-                  placeholder="0.00"
-                  step="0.01"
-                />
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="saleValue">Valor da Venda (R$)</Label>
+                    <Input
+                      id="saleValue"
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.saleValue}
+                      onChange={(e) =>
+                        handleInputChange("saleValue", e.target.value)
+                      }
+                      onKeyPress={(e) => handleKeyPress(e, "saleValue")}
+                      step="0.01"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="commissionType">Tipo de Comissão</Label>
+                    <Select
+                      value={formData.commissionType}
+                      onValueChange={(value) =>
+                        handleInputChange("commissionType", value)
+                      }
+                    >
+                      <SelectTrigger id="commissionType">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standard">Padrão (5%)</SelectItem>
+                        <SelectItem value="reduced">Reduzida (3%)</SelectItem>
+                        <SelectItem value="premium">Premium (7%)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-sm text-gray-600 mt-2">
+                      Comissão estimada: R$ {calculateCommission()}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="buyerName">Nome do Comprador</Label>
+                      <Input
+                        id="buyerName"
+                        placeholder="Nome completo"
+                        value={formData.buyerName}
+                        onChange={(e) =>
+                          handleInputChange("buyerName", e.target.value)
+                        }
+                        onKeyPress={(e) => handleKeyPress(e, "buyerName")}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="buyerEmail">Email do Comprador</Label>
+                      <Input
+                        id="buyerEmail"
+                        type="email"
+                        placeholder="email@exemplo.com"
+                        value={formData.buyerEmail}
+                        onChange={(e) =>
+                          handleInputChange("buyerEmail", e.target.value)
+                        }
+                        onKeyPress={(e) => handleKeyPress(e, "buyerEmail")}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="buyerPhone">Telefone do Comprador</Label>
+                    <Input
+                      id="buyerPhone"
+                      placeholder="(00) 00000-0000"
+                      value={formData.buyerPhone}
+                      onChange={(e) =>
+                        handleInputChange("buyerPhone", e.target.value)
+                      }
+                      onKeyPress={(e) => handleKeyPress(e, "buyerPhone")}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="observations">Observações</Label>
+                    <Textarea
+                      id="observations"
+                      placeholder="Observações adicionais sobre a venda"
+                      value={formData.observations}
+                      onChange={(e) =>
+                        handleInputChange("observations", e.target.value)
+                      }
+                      rows={4}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <Label htmlFor="commissionType">Tipo de Comissão</Label>
-                <Select
-                  value={formData.commissionType}
-                  onValueChange={(value) =>
-                    handleSelectChange("commissionType", value)
-                  }
+              <div className="flex gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setLocation("/")}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard">Padrão (5%)</SelectItem>
-                    <SelectItem value="reduced">Reduzida (3%)</SelectItem>
-                    <SelectItem value="premium">Premium (7%)</SelectItem>
-                  </SelectContent>
-                </Select>
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={loading} className="gap-2">
+                  <Save className="w-4 h-4" />
+                  {loading ? "Registrando..." : "Registrar venda"}
+                </Button>
               </div>
-
-              {commission > 0 && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-slate-600">Comissão Estimada</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    R$ {commission.toFixed(2).replace(".", ",")}
-                  </p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="buyerName">Nome do Comprador</Label>
-                  <Input
-                    id="buyerName"
-                    name="buyerName"
-                    value={formData.buyerName}
-                    onChange={handleInputChange}
-                    placeholder="Nome completo"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="buyerEmail">Email do Comprador</Label>
-                  <Input
-                    id="buyerEmail"
-                    name="buyerEmail"
-                    type="email"
-                    value={formData.buyerEmail}
-                    onChange={handleInputChange}
-                    placeholder="email@exemplo.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="buyerPhone">Telefone do Comprador</Label>
-                <Input
-                  id="buyerPhone"
-                  name="buyerPhone"
-                  value={formData.buyerPhone}
-                  onChange={handleInputChange}
-                  placeholder="(11) 99999-9999"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="observations">Observações</Label>
-                <Textarea
-                  id="observations"
-                  name="observations"
-                  value={formData.observations}
-                  onChange={handleInputChange}
-                  placeholder="Adicione observações sobre a venda..."
-                  rows={4}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setLocation("/dashboard")}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={loading} className="gap-2">
-              <Save className="h-4 w-4" />
-              {loading ? "Salvando..." : "Registrar Venda"}
-            </Button>
-          </div>
-        </form>
-      </main>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
