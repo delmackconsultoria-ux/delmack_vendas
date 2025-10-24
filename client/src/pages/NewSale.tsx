@@ -1,14 +1,14 @@
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, AlertCircle, Search } from "lucide-react";
+import { ArrowLeft, Save, AlertCircle, Search, CheckCircle, Loader } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLocation } from "wouter";
 
 export default function NewSale() {
   const { user } = useAuth();
@@ -17,6 +17,7 @@ export default function NewSale() {
   const [error, setError] = useState<string | null>(null);
   const [loadingProperty, setLoadingProperty] = useState(false);
   const [propertyError, setPropertyError] = useState("");
+  const [propertySuccess, setPropertySuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     propertyType: "baggio",
@@ -38,41 +39,54 @@ export default function NewSale() {
   const handleSearchProperty = async () => {
     if (!formData.propertyReference.trim()) {
       setPropertyError("Informe a referência do imóvel");
+      setPropertySuccess(false);
       return;
     }
 
     setLoadingProperty(true);
     setPropertyError("");
+    setPropertySuccess(false);
 
     try {
+      console.log("Iniciando busca do imóvel...");
+      
       // Usar endpoint REST com credenciais reais
       const response = await fetch(
         `/api/rest/properfy/search?reference=${encodeURIComponent(
           formData.propertyReference.toUpperCase()
         )}`
-      ).then((r) => r.json());
+      );
 
-      if (!response.success) {
-        setPropertyError(response.error || "Referência não encontrada, tente novamente");
+      const data = await response.json();
+      console.log("Resposta da API:", data);
+
+      if (!response.ok || !data.data) {
+        setPropertyError("Referência não encontrada. Verifique e tente novamente.");
+        setPropertySuccess(false);
         setLoadingProperty(false);
         return;
       }
 
-      if (response.data) {
+      if (data.data) {
         setFormData((prev) => ({
           ...prev,
-          propertyAddress: response.data.address || "",
-          propertyCity: response.data.city || "",
-          propertyState: response.data.state || "",
-          propertyZipCode: response.data.zipCode || "",
-          propertyValue: response.data.value?.toString() || "",
+          propertyAddress: data.data.address || "",
+          propertyCity: data.data.city || "",
+          propertyState: data.data.state || "",
+          propertyZipCode: data.data.zipCode || "",
+          propertyValue: data.data.value?.toString() || "",
         }));
         setPropertyError("");
+        setPropertySuccess(true);
+        
+        // Limpar mensagem de sucesso após 3 segundos
+        setTimeout(() => setPropertySuccess(false), 3000);
       }
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Referência não encontrada, tente novamente";
+      const errorMsg = error instanceof Error ? error.message : "Erro ao conectar com o servidor";
       console.error("Erro ao buscar imóvel:", errorMsg);
-      setPropertyError(errorMsg);
+      setPropertyError("Referência não encontrada. Verifique e tente novamente.");
+      setPropertySuccess(false);
     } finally {
       setLoadingProperty(false);
     }
@@ -220,25 +234,46 @@ export default function NewSale() {
                       <div className="flex gap-2">
                         <Input
                           id="propertyReference"
-                          placeholder="Ex: REF-001"
+                          placeholder="Ex: BG66206001"
                           value={formData.propertyReference}
                           onChange={(e) =>
                             handleInputChange("propertyReference", e.target.value)
                           }
                           onKeyPress={(e) => handleKeyPress(e, "propertyReference")}
+                          disabled={loadingProperty}
                         />
                         <Button
                           type="button"
                           onClick={handleSearchProperty}
                           disabled={loadingProperty}
-                          className="gap-2"
+                          className="gap-2 whitespace-nowrap"
                         >
-                          <Search className="w-4 h-4" />
-                          {loadingProperty ? "Buscando..." : "Buscar"}
+                          {loadingProperty ? (
+                            <>
+                              <Loader className="w-4 h-4 animate-spin" />
+                              Buscando...
+                            </>
+                          ) : (
+                            <>
+                              <Search className="w-4 h-4" />
+                              Buscar
+                            </>
+                          )}
                         </Button>
                       </div>
+                      
                       {propertyError && (
-                        <p className="text-sm text-red-600 mt-2">{propertyError}</p>
+                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-red-700">{propertyError}</p>
+                        </div>
+                      )}
+                      
+                      {propertySuccess && (
+                        <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg flex gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-green-700">Imóvel encontrado com sucesso</p>
+                        </div>
                       )}
                     </div>
                   )}
@@ -248,12 +283,11 @@ export default function NewSale() {
                       <Label htmlFor="propertyAddress">Endereço</Label>
                       <Input
                         id="propertyAddress"
-                        placeholder="Rua, número"
+                        placeholder="Rua, avenida, etc"
                         value={formData.propertyAddress}
                         onChange={(e) =>
                           handleInputChange("propertyAddress", e.target.value)
                         }
-                        disabled={formData.propertyType === "baggio"}
                       />
                     </div>
                     <div>
@@ -265,23 +299,18 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyCity", e.target.value)
                         }
-                        disabled={formData.propertyType === "baggio"}
                       />
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="propertyState">Estado</Label>
                       <Input
                         id="propertyState"
                         placeholder="UF"
+                        maxLength={2}
                         value={formData.propertyState}
                         onChange={(e) =>
                           handleInputChange("propertyState", e.target.value)
                         }
-                        disabled={formData.propertyType === "baggio"}
-                        maxLength={2}
                       />
                     </div>
                     <div>
@@ -293,13 +322,12 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyZipCode", e.target.value)
                         }
-                        disabled={formData.propertyType === "baggio"}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="propertyValue">Valor do Imóvel (R$)</Label>
+                    <Label htmlFor="propertyValue">Valor do Imóvel</Label>
                     <Input
                       id="propertyValue"
                       type="number"
@@ -308,8 +336,6 @@ export default function NewSale() {
                       onChange={(e) =>
                         handleInputChange("propertyValue", e.target.value)
                       }
-                      disabled={formData.propertyType === "baggio"}
-                      step="0.01"
                     />
                   </div>
                 </div>
@@ -319,12 +345,12 @@ export default function NewSale() {
               <div>
                 <h3 className="text-lg font-semibold mb-4">Informações da Venda</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  Preencha os dados da venda e do comprador
+                  Preencha os dados da venda e comissão
                 </p>
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="saleValue">Valor da Venda (R$)</Label>
+                    <Label htmlFor="saleValue">Valor da Venda</Label>
                     <Input
                       id="saleValue"
                       type="number"
@@ -334,47 +360,66 @@ export default function NewSale() {
                         handleInputChange("saleValue", e.target.value)
                       }
                       onKeyPress={(e) => handleKeyPress(e, "saleValue")}
-                      step="0.01"
                     />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="commissionType">Tipo de Comissão</Label>
-                    <Select
-                      value={formData.commissionType}
-                      onValueChange={(value) =>
-                        handleInputChange("commissionType", value)
-                      }
-                    >
-                      <SelectTrigger id="commissionType">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="standard">Padrão (5%)</SelectItem>
-                        <SelectItem value="reduced">Reduzida (3%)</SelectItem>
-                        <SelectItem value="premium">Premium (7%)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-sm text-gray-600 mt-2">
-                      Comissão estimada: R$ {calculateCommission()}
-                    </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="buyerName">Nome do Comprador</Label>
-                      <Input
-                        id="buyerName"
-                        placeholder="Nome completo"
-                        value={formData.buyerName}
-                        onChange={(e) =>
-                          handleInputChange("buyerName", e.target.value)
+                      <Label htmlFor="commissionType">Tipo de Comissão</Label>
+                      <Select
+                        value={formData.commissionType}
+                        onValueChange={(value) =>
+                          handleInputChange("commissionType", value)
                         }
-                        onKeyPress={(e) => handleKeyPress(e, "buyerName")}
-                      />
+                      >
+                        <SelectTrigger id="commissionType">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="reduced">Reduzida (3%)</SelectItem>
+                          <SelectItem value="standard">Padrão (5%)</SelectItem>
+                          <SelectItem value="premium">Premium (7%)</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
-                      <Label htmlFor="buyerEmail">Email do Comprador</Label>
+                      <Label htmlFor="commissionValue">Valor da Comissão</Label>
+                      <Input
+                        id="commissionValue"
+                        type="number"
+                        placeholder="0.00"
+                        value={calculateCommission()}
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Informações do Comprador */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Informações do Comprador</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Dados de contato do comprador
+                </p>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="buyerName">Nome do Comprador</Label>
+                    <Input
+                      id="buyerName"
+                      placeholder="Nome completo"
+                      value={formData.buyerName}
+                      onChange={(e) =>
+                        handleInputChange("buyerName", e.target.value)
+                      }
+                      onKeyPress={(e) => handleKeyPress(e, "buyerName")}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="buyerEmail">Email</Label>
                       <Input
                         id="buyerEmail"
                         type="email"
@@ -386,37 +431,38 @@ export default function NewSale() {
                         onKeyPress={(e) => handleKeyPress(e, "buyerEmail")}
                       />
                     </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="buyerPhone">Telefone do Comprador</Label>
-                    <Input
-                      id="buyerPhone"
-                      placeholder="(00) 00000-0000"
-                      value={formData.buyerPhone}
-                      onChange={(e) =>
-                        handleInputChange("buyerPhone", e.target.value)
-                      }
-                      onKeyPress={(e) => handleKeyPress(e, "buyerPhone")}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="observations">Observações</Label>
-                    <Textarea
-                      id="observations"
-                      placeholder="Observações adicionais sobre a venda"
-                      value={formData.observations}
-                      onChange={(e) =>
-                        handleInputChange("observations", e.target.value)
-                      }
-                      rows={4}
-                    />
+                    <div>
+                      <Label htmlFor="buyerPhone">Telefone</Label>
+                      <Input
+                        id="buyerPhone"
+                        placeholder="(00) 00000-0000"
+                        value={formData.buyerPhone}
+                        onChange={(e) =>
+                          handleInputChange("buyerPhone", e.target.value)
+                        }
+                        onKeyPress={(e) => handleKeyPress(e, "buyerPhone")}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t">
+              {/* Observações */}
+              <div>
+                <Label htmlFor="observations">Observações</Label>
+                <Textarea
+                  id="observations"
+                  placeholder="Adicione observações sobre a venda"
+                  value={formData.observations}
+                  onChange={(e) =>
+                    handleInputChange("observations", e.target.value)
+                  }
+                  rows={4}
+                />
+              </div>
+
+              {/* Botões de Ação */}
+              <div className="flex gap-4 pt-4">
                 <Button
                   type="button"
                   variant="outline"
@@ -424,9 +470,22 @@ export default function NewSale() {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={loading} className="gap-2">
-                  <Save className="w-4 h-4" />
-                  {loading ? "Registrando..." : "Registrar venda"}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      Registrando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Registrar Venda
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
