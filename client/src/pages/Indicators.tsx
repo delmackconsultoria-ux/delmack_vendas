@@ -244,6 +244,7 @@ export default function Indicators() {
           indicatorType="value"
           monthlyData={mockMonthlyData}
           brokers={mockBrokers}
+          userRole={user?.role as "broker" | "manager" | "finance" | "admin"}
         />
       )}
     </div>

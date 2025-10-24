@@ -1,5 +1,7 @@
 /**
  * Router tRPC para gerenciar corretores
+ * Regra: Corretores veem apenas a si mesmos
+ *        Gerentes/Financeiro veem corretores da mesma empresa
  */
 
 import { z } from "zod";
@@ -10,7 +12,9 @@ import { eq } from "drizzle-orm";
 
 export const brokersRouter = router({
   /**
-   * Listar todos os corretores da empresa
+   * Listar corretores com controle de acesso por papel
+   * - Corretores: veem apenas a si mesmos
+   * - Gerentes/Financeiro: veem todos da mesma empresa
    */
   listBrokers: protectedProcedure.query(async ({ ctx }) => {
     try {
@@ -19,6 +23,19 @@ export const brokersRouter = router({
         throw new Error("Database not available");
       }
 
+      // Se for corretor, retorna apenas ele mesmo
+      if (ctx.user.role === "broker") {
+        return [
+          {
+            id: ctx.user.id,
+            name: ctx.user.name || "Sem nome",
+            email: ctx.user.email || "",
+            role: ctx.user.role,
+          },
+        ];
+      }
+
+      // Se for gerente ou financeiro, retorna todos da mesma empresa
       const brokers = await db
         .select()
         .from(users)

@@ -17,9 +17,10 @@ interface IndicatorDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   indicatorName: string;
-  indicatorType: "value" | "units" | "cancelled"; // tipo de indicador
+  indicatorType: "value" | "units" | "cancelled";
   monthlyData: MonthlyData[];
   brokers: Array<{ id: string; name: string }>;
+  userRole: "broker" | "manager" | "finance" | "admin";
 }
 
 const BUSINESS_TYPE_OPTIONS = [
@@ -36,6 +37,7 @@ export default function IndicatorDetailModal({
   indicatorType,
   monthlyData,
   brokers,
+  userRole,
 }: IndicatorDetailModalProps) {
   const [selectedBusinessType, setSelectedBusinessType] = useState("todos");
   const [selectedBroker, setSelectedBroker] = useState<string>("all");
@@ -130,24 +132,27 @@ export default function IndicatorDetailModal({
               </Select>
             </div>
 
-            <div className="flex-1 min-w-[200px]">
-              <label className="text-sm font-medium text-slate-700 block mb-2">
-                Corretor
-              </label>
-              <Select value={selectedBroker} onValueChange={setSelectedBroker}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Corretores</SelectItem>
-                  {brokers.map((broker) => (
-                    <SelectItem key={broker.id} value={broker.id}>
-                      {broker.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Filtro de Corretor - apenas para gerentes e financeiro */}
+            {userRole !== "broker" && (
+              <div className="flex-1 min-w-[200px]">
+                <label className="text-sm font-medium text-slate-700 block mb-2">
+                  Corretor
+                </label>
+                <Select value={selectedBroker} onValueChange={setSelectedBroker}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Corretores</SelectItem>
+                    {brokers.map((broker) => (
+                      <SelectItem key={broker.id} value={broker.id}>
+                        {broker.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           {/* Statistics Cards */}
