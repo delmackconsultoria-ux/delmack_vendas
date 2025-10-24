@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, Search, CheckCircle, Loader, Eye, CheckCircle2, AlertCircle } from "lucide-react";
-import { useState, useMemo } from "react";
+import { ArrowLeft, Save, Search, CheckCircle, Loader, Eye, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
@@ -44,6 +44,13 @@ const STORES = [
   { value: "rede_una", label: "Rede UNA" },
 ];
 
+interface Broker {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 interface FormData {
   propertyType: "baggio" | "external";
   propertyReference: string;
@@ -67,8 +74,10 @@ interface FormData {
 
   storeAngariador: string;
   storeVendedor: string;
-  brokerAngariador: string;
-  brokerVendedor: string;
+  brokerAngariadorType: "internal" | "external"; // internal = from system, external = email
+  brokerAngariador: string; // ID if internal, email if external
+  brokerVendedorType: "internal" | "external";
+  brokerVendedor: string; // ID if internal, email if external
   businessType: string;
 
   observations: string;
@@ -81,6 +90,10 @@ interface ErrorState {
   title: string;
   message: string;
   errors: string[];
+}
+
+interface CompletionStatus {
+  [key: string]: boolean;
 }
 
 export default function NewSale() {
@@ -98,6 +111,8 @@ export default function NewSale() {
   const [propertySuccess, setPropertySuccess] = useState(false);
   const [loadingCEP, setLoadingCEP] = useState(false);
   const [cpfError, setCpfError] = useState("");
+  const [brokers, setBrokers] = useState<Broker[]>([]);
+  const [loadingBrokers, setLoadingBrokers] = useState(true);
 
   const [formData, setFormData] = useState<FormData>({
     propertyType: "baggio",
@@ -119,12 +134,24 @@ export default function NewSale() {
     paymentMethod: "",
     storeAngariador: "baggio",
     storeVendedor: "baggio",
-    brokerAngariador: user?.name || "",
-    brokerVendedor: user?.name || "",
+    brokerAngariadorType: "internal",
+    brokerAngariador: "",
+    brokerVendedorType: "internal",
+    brokerVendedor: "",
     businessType: "venda_interna",
     observations: "",
     showPreview: false,
   });
+
+  // Fetch brokers list
+  const { data: brokersList } = trpc.brokers.listBrokers.useQuery();
+
+  useEffect(() => {
+    if (brokersList) {
+      setBrokers(brokersList);
+      setLoadingBrokers(false);
+    }
+  }, [brokersList]);
 
   const commissionRules: Record<string, { angariador: number; vendedor: number }> = {
     venda_interna: { angariador: 0.03, vendedor: 0.05 },
@@ -133,6 +160,33 @@ export default function NewSale() {
     lancamento: { angariador: 0.025, vendedor: 0.025 },
     prontos: { angariador: 0.03, vendedor: 0.05 },
   };
+
+  // Calculate completion status
+  const completionStatus = useMemo<CompletionStatus>(() => {
+    return {
+      propertyType: true, // Always has default value
+      propertyReference: formData.propertyType === "baggio" ? !!formData.propertyReference : true,
+      propertyAddress: !!formData.propertyAddress,
+      propertyCity: !!formData.propertyCity,
+      propertyState: !!formData.propertyState,
+      propertyZipCode: !!formData.propertyZipCode,
+      saleDate: !!formData.saleDate,
+      saleValue: !!formData.saleValue,
+      buyerName: !!formData.buyerName,
+      clientOrigin: !!formData.clientOrigin,
+      paymentMethod: !!formData.paymentMethod,
+      storeAngariador: true, // Always has default value
+      storeVendedor: true, // Always has default value
+      brokerAngariador: !!formData.brokerAngariador,
+      brokerVendedor: !!formData.brokerVendedor,
+      businessType: true, // Always has default value
+    };
+  }, [formData]);
+
+  // Check if all required fields are filled
+  const isFormComplete = useMemo(() => {
+    return Object.values(completionStatus).every((status) => status === true);
+  }, [completionStatus]);
 
   const handleSearchProperty = async () => {
     if (!formData.propertyReference.trim()) {
@@ -172,8 +226,6 @@ export default function NewSale() {
         }));
         setPropertyError("");
         setPropertySuccess(true);
-
-        setTimeout(() => setPropertySuccess(false), 3000);
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "Erro ao conectar com o servidor";
@@ -212,7 +264,6 @@ export default function NewSale() {
       }));
 
       setPropertySuccess(true);
-      setTimeout(() => setPropertySuccess(false), 3000);
     } catch (error) {
       setPropertyError("Erro ao buscar CEP");
     } finally {
@@ -226,7 +277,6 @@ export default function NewSale() {
       [field]: value,
     }));
 
-    // Clear CPF error when user starts typing
     if (field === "buyerCpfCnpj") {
       setCpfError("");
     }
@@ -259,9 +309,6 @@ export default function NewSale() {
         handleSearchProperty();
       } else if (fieldName === "propertyZipCode" && formData.propertyType === "external") {
         handleCEPSearch(formData.propertyZipCode);
-      } else if (fieldName === "saleValue") {
-        const previewButton = document.querySelector("[data-action='preview']");
-        if (previewButton) (previewButton as HTMLButtonElement).click();
       }
     }
   };
@@ -313,15 +360,30 @@ export default function NewSale() {
       errors.push("CPF ou CNPJ inválido");
     }
 
+    if (!formData.brokerAngariador) {
+      errors.push("Angariador é obrigatório");
+    }
+
+    if (!formData.brokerVendedor) {
+      errors.push("Vendedor é obrigatório");
+    }
+
+    if (!formData.clientOrigin) {
+      errors.push("Origem do cliente é obrigatória");
+    }
+
+    if (!formData.paymentMethod) {
+      errors.push("Forma de pagamento é obrigatória");
+    }
+
     return {
       valid: errors.length === 0,
       errors,
     };
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSaveClick = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     const validation = validateForm();
 
@@ -332,9 +394,15 @@ export default function NewSale() {
         message: "Por favor, corrija os campos destacados abaixo:",
         errors: validation.errors,
       });
-      setLoading(false);
       return;
     }
+
+    // Show preview instead of submitting directly
+    handleInputChange("showPreview", true);
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
 
     try {
       const result = await createSaleMutation.mutateAsync({
@@ -392,6 +460,14 @@ export default function NewSale() {
 
   // Preview Mode
   if (formData.showPreview) {
+    const angariadorBroker = formData.brokerAngariadorType === "internal"
+      ? brokers.find((b) => b.id === formData.brokerAngariador)
+      : { name: formData.brokerAngariador, email: formData.brokerAngariador };
+
+    const vendedorBroker = formData.brokerVendedorType === "internal"
+      ? brokers.find((b) => b.id === formData.brokerVendedor)
+      : { name: formData.brokerVendedor, email: formData.brokerVendedor };
+
     return (
       <div className="min-h-screen bg-gray-50 p-4">
         <div className="max-w-4xl mx-auto">
@@ -560,11 +636,17 @@ export default function NewSale() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Angariador</p>
-                      <p className="font-semibold">{formData.brokerAngariador}</p>
+                      <p className="font-semibold">{angariadorBroker?.name || formData.brokerAngariador}</p>
+                      {formData.brokerAngariadorType === "external" && (
+                        <p className="text-xs text-gray-500">{angariadorBroker?.email}</p>
+                      )}
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Vendedor</p>
-                      <p className="font-semibold">{formData.brokerVendedor}</p>
+                      <p className="font-semibold">{vendedorBroker?.name || formData.brokerVendedor}</p>
+                      {formData.brokerVendedorType === "external" && (
+                        <p className="text-xs text-gray-500">{vendedorBroker?.email}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -602,7 +684,7 @@ export default function NewSale() {
                     ) : (
                       <>
                         <CheckCircle2 className="w-4 h-4" />
-                        Confirmar e Enviar
+                        Confirmar e Salvar
                       </>
                     )}
                   </Button>
@@ -643,7 +725,7 @@ export default function NewSale() {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSaveClick} className="space-y-8">
               {/* Section 1: Property Information */}
               <div>
                 <h3 className="text-lg font-semibold mb-4">1. Informações do Imóvel</h3>
@@ -689,6 +771,7 @@ export default function NewSale() {
                           }
                           onKeyPress={(e) => handleKeyPress(e, "propertyReference")}
                           disabled={loadingProperty}
+                          className={completionStatus.propertyReference ? "bg-green-50 border-green-300" : ""}
                         />
                         <Button
                           type="button"
@@ -736,7 +819,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyAddress", e.target.value)
                         }
-                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
+                        className={completionStatus.propertyAddress ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -770,7 +853,6 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyNeighborhood", e.target.value)
                         }
-                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -782,7 +864,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyCity", e.target.value)
                         }
-                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
+                        className={completionStatus.propertyCity ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -795,7 +877,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("propertyState", e.target.value)
                         }
-                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
+                        className={completionStatus.propertyState ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -809,7 +891,7 @@ export default function NewSale() {
                             handleInputChange("propertyZipCode", e.target.value)
                           }
                           onKeyPress={(e) => handleKeyPress(e, "propertyZipCode")}
-                          className={propertySuccess ? "bg-green-50 border-green-300" : ""}
+                          className={completionStatus.propertyZipCode ? "bg-green-50 border-green-300" : ""}
                         />
                         {formData.propertyType === "external" && (
                           <Button
@@ -849,7 +931,6 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("advertisementValue", e.target.value)
                         }
-                        className={propertySuccess ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                   </div>
@@ -874,6 +955,7 @@ export default function NewSale() {
                         onChange={(e) =>
                           handleInputChange("saleDate", e.target.value)
                         }
+                        className={completionStatus.saleDate ? "bg-green-50 border-green-300" : ""}
                       />
                     </div>
                     <div>
@@ -899,7 +981,7 @@ export default function NewSale() {
                       onChange={(e) =>
                         handleInputChange("saleValue", e.target.value)
                       }
-                      onKeyPress={(e) => handleKeyPress(e, "saleValue")}
+                      className={completionStatus.saleValue ? "bg-green-50 border-green-300" : ""}
                     />
                   </div>
                 </div>
@@ -922,6 +1004,7 @@ export default function NewSale() {
                       onChange={(e) =>
                         handleInputChange("buyerName", e.target.value)
                       }
+                      className={completionStatus.buyerName ? "bg-green-50 border-green-300" : ""}
                     />
                   </div>
 
@@ -951,7 +1034,7 @@ export default function NewSale() {
                           handleInputChange("clientOrigin", value)
                         }
                       >
-                        <SelectTrigger id="clientOrigin">
+                        <SelectTrigger id="clientOrigin" className={completionStatus.clientOrigin ? "bg-green-50 border-green-300" : ""}>
                           <SelectValue placeholder="Selecione..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -973,7 +1056,7 @@ export default function NewSale() {
                         handleInputChange("paymentMethod", value)
                       }
                     >
-                      <SelectTrigger id="paymentMethod">
+                      <SelectTrigger id="paymentMethod" className={completionStatus.paymentMethod ? "bg-green-50 border-green-300" : ""}>
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -1039,38 +1122,127 @@ export default function NewSale() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="brokerAngariador">
-                        Angariador
-                        <CheckCircle className="w-4 h-4 inline ml-2 text-green-600" />
-                      </Label>
-                      <Input
-                        id="brokerAngariador"
-                        placeholder="Nome do angariador"
-                        value={formData.brokerAngariador}
-                        onChange={(e) =>
-                          handleInputChange("brokerAngariador", e.target.value)
-                        }
-                        className="bg-green-50 border-green-300"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Preenchido automaticamente</p>
+                  {/* Angariador Selection */}
+                  <div>
+                    <Label>Angariador</Label>
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant={formData.brokerAngariadorType === "internal" ? "default" : "outline"}
+                          onClick={() => {
+                            handleInputChange("brokerAngariadorType", "internal");
+                            handleInputChange("brokerAngariador", "");
+                          }}
+                          className="flex-1"
+                        >
+                          Da Equipe
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={formData.brokerAngariadorType === "external" ? "default" : "outline"}
+                          onClick={() => {
+                            handleInputChange("brokerAngariadorType", "external");
+                            handleInputChange("brokerAngariador", "");
+                          }}
+                          className="flex-1"
+                        >
+                          Externo
+                        </Button>
+                      </div>
+
+                      {formData.brokerAngariadorType === "internal" ? (
+                        <Select
+                          value={formData.brokerAngariador}
+                          onValueChange={(value) =>
+                            handleInputChange("brokerAngariador", value)
+                          }
+                          disabled={loadingBrokers}
+                        >
+                          <SelectTrigger className={completionStatus.brokerAngariador ? "bg-green-50 border-green-300" : ""}>
+                            <SelectValue placeholder={loadingBrokers ? "Carregando..." : "Selecione um colega"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {brokers.map((broker) => (
+                              <SelectItem key={broker.id} value={broker.id}>
+                                {broker.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type="email"
+                          placeholder="email@example.com"
+                          value={formData.brokerAngariador}
+                          onChange={(e) =>
+                            handleInputChange("brokerAngariador", e.target.value)
+                          }
+                          className={completionStatus.brokerAngariador ? "bg-green-50 border-green-300" : ""}
+                        />
+                      )}
                     </div>
-                    <div>
-                      <Label htmlFor="brokerVendedor">
-                        Vendedor
-                        <CheckCircle className="w-4 h-4 inline ml-2 text-green-600" />
-                      </Label>
-                      <Input
-                        id="brokerVendedor"
-                        placeholder="Nome do vendedor"
-                        value={formData.brokerVendedor}
-                        onChange={(e) =>
-                          handleInputChange("brokerVendedor", e.target.value)
-                        }
-                        className="bg-green-50 border-green-300"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Preenchido automaticamente</p>
+                  </div>
+
+                  {/* Vendedor Selection */}
+                  <div>
+                    <Label>Vendedor</Label>
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant={formData.brokerVendedorType === "internal" ? "default" : "outline"}
+                          onClick={() => {
+                            handleInputChange("brokerVendedorType", "internal");
+                            handleInputChange("brokerVendedor", "");
+                          }}
+                          className="flex-1"
+                        >
+                          Da Equipe
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={formData.brokerVendedorType === "external" ? "default" : "outline"}
+                          onClick={() => {
+                            handleInputChange("brokerVendedorType", "external");
+                            handleInputChange("brokerVendedor", "");
+                          }}
+                          className="flex-1"
+                        >
+                          Externo
+                        </Button>
+                      </div>
+
+                      {formData.brokerVendedorType === "internal" ? (
+                        <Select
+                          value={formData.brokerVendedor}
+                          onValueChange={(value) =>
+                            handleInputChange("brokerVendedor", value)
+                          }
+                          disabled={loadingBrokers}
+                        >
+                          <SelectTrigger className={completionStatus.brokerVendedor ? "bg-green-50 border-green-300" : ""}>
+                            <SelectValue placeholder={loadingBrokers ? "Carregando..." : "Selecione um colega"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {brokers.map((broker) => (
+                              <SelectItem key={broker.id} value={broker.id}>
+                                {broker.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type="email"
+                          placeholder="email@example.com"
+                          value={formData.brokerVendedor}
+                          onChange={(e) =>
+                            handleInputChange("brokerVendedor", e.target.value)
+                          }
+                          className={completionStatus.brokerVendedor ? "bg-green-50 border-green-300" : ""}
+                        />
+                      )}
                     </div>
                   </div>
 
@@ -1152,29 +1324,19 @@ export default function NewSale() {
                   Cancelar
                 </Button>
                 <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => handleInputChange("showPreview", true)}
-                  className="gap-2"
-                  data-action="preview"
-                >
-                  <Eye className="w-4 h-4" />
-                  Visualizar Resumo
-                </Button>
-                <Button
                   type="submit"
-                  disabled={loading}
+                  disabled={!isFormComplete}
                   className="gap-2"
                 >
-                  {loading ? (
+                  {!isFormComplete ? (
                     <>
-                      <Loader className="w-4 h-4 animate-spin" />
-                      Registrando...
+                      <AlertCircle className="w-4 h-4" />
+                      Preencha todos os campos
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4" />
-                      Registrar Venda
+                      Salvar Proposta
                     </>
                   )}
                 </Button>
