@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, TrendingUp, TrendingDown } from "lucide-react";
+import CompactFilter from "@/components/CompactFilter";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface MonthlyData {
@@ -113,45 +113,28 @@ export default function IndicatorDetailModal({
 
         <CardContent className="pt-6 space-y-6">
           {/* Filters */}
-          <div className="flex gap-4 flex-wrap">
-            <div className="flex-1 min-w-[200px]">
-              <label className="text-sm font-medium text-slate-700 block mb-2">
-                Tipo de Negócio
-              </label>
-              <Select value={selectedBusinessType} onValueChange={setSelectedBusinessType}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BUSINESS_TYPE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex gap-3 flex-wrap items-center">
+            <CompactFilter
+              label="Tipo de Negócio"
+              options={BUSINESS_TYPE_OPTIONS}
+              value={selectedBusinessType}
+              onChange={setSelectedBusinessType}
+            />
 
             {/* Filtro de Corretor - apenas para gerentes e financeiro */}
             {userRole !== "broker" && (
-              <div className="flex-1 min-w-[200px]">
-                <label className="text-sm font-medium text-slate-700 block mb-2">
-                  Corretor
-                </label>
-                <Select value={selectedBroker} onValueChange={setSelectedBroker}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os Corretores</SelectItem>
-                    {brokers.map((broker) => (
-                      <SelectItem key={broker.id} value={broker.id}>
-                        {broker.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <CompactFilter
+                label="Corretor"
+                options={[
+                  { value: "all", label: "Todos os Corretores" },
+                  ...brokers.map((broker) => ({
+                    value: broker.id,
+                    label: broker.name,
+                  })),
+                ]}
+                value={selectedBroker}
+                onChange={setSelectedBroker}
+              />
             )}
           </div>
 

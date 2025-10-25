@@ -20,9 +20,15 @@ export default function AppHeader() {
   const getMenuItems = () => {
     const baseItems = [
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Nova Venda", href: "/new-sale" },
-      { label: "Indicadores", href: "/indicators" },
     ];
+
+    // Adicionar Nova Venda apenas para Corretor e Gerente
+    if (user?.role === "broker" || user?.role === "manager" || user?.role === "admin") {
+      baseItems.push({ label: "Nova Venda", href: "/new-sale" });
+    }
+
+    // Indicadores para todos
+    baseItems.push({ label: "Indicadores", href: "/indicators" });
 
     // Adicionar Relatórios para gerentes e financeiro
     if (user?.role === "manager" || user?.role === "finance" || user?.role === "admin") {
