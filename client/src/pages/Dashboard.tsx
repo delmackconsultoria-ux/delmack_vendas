@@ -5,30 +5,35 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BarChart3, TrendingUp, Users, FileText, Loader2, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import AppHeader from "@/components/AppHeader";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
-  // Fetch KPI data
+  // Fetch all data
   const { data: kpiData, isLoading: loadingKPI } = trpc.dashboard.getKPIData.useQuery();
   const { data: salesByType, isLoading: loadingSalesByType } = trpc.dashboard.getSalesByBusinessType.useQuery();
   const { data: commissionsByType, isLoading: loadingCommissionsByType } = trpc.dashboard.getCommissionsByBusinessType.useQuery();
   const { data: recentSales, isLoading: loadingRecentSales } = trpc.dashboard.getRecentSales.useQuery();
-
-  // Fetch operational tables
-  const { data: salesAndAngariations, isLoading: loadingSalesAndAngariations } =
-    trpc.dashboard.getSalesAndAngariationsByBroker.useQuery();
+  const { data: table1, isLoading: loadingTable1 } = trpc.dashboard.getSalesAndAngariationsByBroker.useQuery();
+  const { data: table2, isLoading: loadingTable2 } = trpc.dashboard.getAngariationValueByBroker.useQuery();
+  const { data: table3, isLoading: loadingTable3 } = trpc.dashboard.getAngariationQuantityByBroker.useQuery();
+  const { data: table4, isLoading: loadingTable4 } = trpc.dashboard.getCancelledSalesQuantityByBroker.useQuery();
+  const { data: table5, isLoading: loadingTable5 } = trpc.dashboard.getCancelledSalesValueByBroker.useQuery();
+  const { data: verificadores, isLoading: loadingVerificadores } = trpc.dashboard.getVerificadores.useQuery();
 
   const isLoading =
     loadingKPI ||
     loadingSalesByType ||
     loadingCommissionsByType ||
     loadingRecentSales ||
-    loadingSalesAndAngariations;
+    loadingTable1 ||
+    loadingTable2 ||
+    loadingTable3 ||
+    loadingTable4 ||
+    loadingTable5 ||
+    loadingVerificadores;
 
   if (!user) {
     return null;
@@ -146,7 +151,7 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Charts Row 1 */}
+            {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Minhas Vendas por Tipo */}
               <Card className="border-0 shadow-sm">
@@ -205,106 +210,273 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Minhas Vendas Recentes */}
-            <Card className="border-0 shadow-sm mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-slate-600" />
-                  Minhas Vendas Recentes
-                </CardTitle>
-                <CardDescription>Acompanhe o status de suas propostas</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Comprador</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Tipo</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Status</th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Data</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recentSales && recentSales.length > 0 ? (
-                        recentSales.map((sale, idx) => (
-                          <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                            <td className="py-3 px-4 text-slate-900">{sale.buyerName}</td>
-                            <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                              {formatCurrency(Number(sale.saleValue))}
-                            </td>
-                            <td className="py-3 px-4 text-slate-600">{sale.businessType}</td>
-                            <td className="py-3 px-4">
-                              <span
-                                className={`px-2 py-1 rounded text-xs font-semibold ${
-                                  sale.status === "pending"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : sale.status === "received"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : sale.status === "paid"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {sale.status}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4 text-slate-600">
-                              {sale.saleDate ? new Date(sale.saleDate).toLocaleDateString("pt-BR") : "N/A"}
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={5} className="py-4 px-4 text-center text-slate-600">
-                            Nenhuma venda registrada
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+            {/* SEÇÃO OPERACIONAL */}
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4 bg-blue-600 text-white p-3 rounded">
+                OPERACIONAL
+              </h3>
 
-            {/* Tabela Operacional - Valor por Corretor */}
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle>Tabela Operacional: Valor por Corretor</CardTitle>
-                <CardDescription>Mostrando valor total de angariações e vendas por corretor</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {salesAndAngariations && salesAndAngariations.length > 0 ? (
-                        salesAndAngariations.map((row, idx) => (
-                          <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                            <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                            <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                              {formatCurrency(Number(row.salesValue))}
+              {/* Tabela 1: Valor por Corretor (Angariações + Vendas) */}
+              <Card className="border-0 shadow-sm mb-6">
+                <CardHeader>
+                  <CardTitle>Tabela 1: Valor por Corretor (Angariações + Vendas)</CardTitle>
+                  <CardDescription>Mostrando valor total de angariações e vendas</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-100">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {table1 && table1.length > 0 ? (
+                          table1.map((row, idx) => (
+                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
+                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
+                                {formatCurrency(Number(row.salesValue))}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
+                              Sem dados disponíveis
                             </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                            Sem dados disponíveis
-                          </td>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Tabela 2: Valor por Corretor (Angariações) */}
+              <Card className="border-0 shadow-sm mb-6">
+                <CardHeader>
+                  <CardTitle>Tabela 2: Valor por Corretor (Angariações)</CardTitle>
+                  <CardDescription>Mostrando apenas valor de angariações</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-100">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Angariações</th>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+                      </thead>
+                      <tbody>
+                        {table2 && table2.length > 0 ? (
+                          table2.map((row, idx) => (
+                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
+                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
+                                {formatCurrency(Number(row.angariationValue))}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
+                              Sem dados disponíveis
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Tabela 3: Quantidade de Angariações por Corretor */}
+              <Card className="border-0 shadow-sm mb-6">
+                <CardHeader>
+                  <CardTitle>Tabela 3: Quantidade de Angariações por Corretor</CardTitle>
+                  <CardDescription>Mostrando quantidade de angariações</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-100">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Quantidade</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {table3 && table3.length > 0 ? (
+                          table3.map((row, idx) => (
+                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
+                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
+                                {Number(row.quantity)}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
+                              Sem dados disponíveis
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Tabela 4: Quantidade de Baixas por Corretor */}
+              <Card className="border-0 shadow-sm mb-6">
+                <CardHeader>
+                  <CardTitle>Tabela 4: Quantidade de Baixas por Corretor</CardTitle>
+                  <CardDescription>Mostrando quantidade de vendas canceladas</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-100">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Quantidade</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {table4 && table4.length > 0 ? (
+                          table4.map((row, idx) => (
+                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
+                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
+                                {Number(row.quantity)}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
+                              Sem dados disponíveis
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Tabela 5: Valor de Baixas por Corretor */}
+              <Card className="border-0 shadow-sm mb-6">
+                <CardHeader>
+                  <CardTitle>Tabela 5: Valor de Baixas por Corretor</CardTitle>
+                  <CardDescription>Mostrando valor total de vendas canceladas</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-100">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {table5 && table5.length > 0 ? (
+                          table5.map((row, idx) => (
+                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
+                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
+                                {formatCurrency(Number(row.value))}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
+                              Sem dados disponíveis
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* SEÇÃO VERIFICADORES */}
+            <div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4 bg-blue-600 text-white p-3 rounded">
+                VERIFICADORES
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Verificadores - Esquerda */}
+                <Card className="border-0 shadow-sm">
+                  <CardHeader>
+                    <CardTitle>Dados de Comissões</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-600">Comissões Pendentes</span>
+                        <span className="font-semibold">
+                          {formatCurrency(verificadores?.commissions.pending || 0)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-600">Comissões Recebidas</span>
+                        <span className="font-semibold">
+                          {formatCurrency(verificadores?.commissions.received || 0)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-600">Comissões Canceladas</span>
+                        <span className="font-semibold">
+                          {formatCurrency(verificadores?.commissions.cancelled || 0)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between bg-blue-100 p-2 rounded font-semibold">
+                        <span>Total a Receber</span>
+                        <span>{formatCurrency(verificadores?.commissions.totalToReceive || 0)}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Verificadores - Direita */}
+                <Card className="border-0 shadow-sm">
+                  <CardHeader>
+                    <CardTitle>Dados de Vendas</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-600">Total de Vendas</span>
+                        <span className="font-semibold">{verificadores?.sales.total || 0}</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-600">Valor Total Vendas</span>
+                        <span className="font-semibold">
+                          {formatCurrency(verificadores?.sales.value || 0)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-600">Vendas Recebidas</span>
+                        <span className="font-semibold">{verificadores?.sales.received || 0}</span>
+                      </div>
+                      <div className="flex justify-between bg-blue-100 p-2 rounded font-semibold">
+                        <span>Valor Recebido</span>
+                        <span>{formatCurrency(verificadores?.sales.receivedValue || 0)}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </>
         )}
       </main>

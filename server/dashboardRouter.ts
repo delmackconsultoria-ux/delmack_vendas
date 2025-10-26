@@ -4,7 +4,7 @@ import { sales, users, commissions } from "../drizzle/schema";
 import { eq, and, gte, sql } from "drizzle-orm";
 
 export const dashboardRouter = router({
-  // Get sales and angariations by broker (Table 1)
+  // TABLE 1: Sales and angariations value by broker
   getSalesAndAngariationsByBroker: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
@@ -31,7 +31,7 @@ export const dashboardRouter = router({
     return result;
   }),
 
-  // Get angariations value by broker (Table 2)
+  // TABLE 2: Angariations value by broker
   getAngariationValueByBroker: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
@@ -58,7 +58,7 @@ export const dashboardRouter = router({
     return result;
   }),
 
-  // Get angariations quantity by broker (Table 3)
+  // TABLE 3: Angariations quantity by broker
   getAngariationQuantityByBroker: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
@@ -85,7 +85,7 @@ export const dashboardRouter = router({
     return result;
   }),
 
-  // Get cancelled sales quantity by broker (Table 4)
+  // TABLE 4: Cancelled sales quantity by broker
   getCancelledSalesQuantityByBroker: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
@@ -115,7 +115,7 @@ export const dashboardRouter = router({
     return result;
   }),
 
-  // Get cancelled sales value by broker (Table 5)
+  // TABLE 5: Cancelled sales value by broker
   getCancelledSalesValueByBroker: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) throw new Error("Database not available");
@@ -143,6 +143,62 @@ export const dashboardRouter = router({
       .groupBy(sales.brokerVendedor, users.name);
 
     return result;
+  }),
+
+  // VERIFICADORES: Get aggregated verification data
+  getVerificadores: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new Error("Database not available");
+
+    const currentMonth = new Date();
+    currentMonth.setDate(1);
+
+    // Sales this month
+    let salesWhereClause = gte(sales.saleDate, currentMonth);
+    if (ctx.user.role === "broker") {
+      salesWhereClause = and(salesWhereClause, eq(sales.brokerVendedor, ctx.user.id))!;
+    }
+
+    const salesData = await db
+      .select({
+        totalSales: sql`COUNT(*)`,
+        totalValue: sql`COALESCE(SUM(${sales.saleValue}), 0)`,
+        receivedCount: sql`SUM(CASE WHEN ${sales.status} = 'received' THEN 1 ELSE 0 END)`,
+        receivedValue: sql`COALESCE(SUM(CASE WHEN ${sales.status} = 'received' THEN ${sales.saleValue} ELSE 0 END), 0)`,
+      })
+      .from(sales)
+      .where(salesWhereClause);
+
+    // Commissions
+    let commissionsWhereClause = gte(commissions.createdAt, currentMonth);
+    if (ctx.user.role === "broker") {
+      commissionsWhereClause = and(commissionsWhereClause, eq(commissions.brokerId, ctx.user.id))!;
+    }
+
+    const commissionsData = await db
+      .select({
+        pendingCommissions: sql`COALESCE(SUM(CASE WHEN ${commissions.status} = 'pending' THEN ${commissions.commissionValue} ELSE 0 END), 0)`,
+        receivedCommissions: sql`COALESCE(SUM(CASE WHEN ${commissions.status} = 'received' THEN ${commissions.commissionValue} ELSE 0 END), 0)`,
+        cancelledCommissions: sql`COALESCE(SUM(CASE WHEN ${commissions.status} = 'cancelled' THEN ${commissions.commissionValue} ELSE 0 END), 0)`,
+        totalToReceive: sql`COALESCE(SUM(CASE WHEN ${commissions.status} IN ('pending', 'received') THEN ${commissions.commissionValue} ELSE 0 END), 0)`,
+      })
+      .from(commissions)
+      .where(commissionsWhereClause);
+
+    return {
+      sales: {
+        total: Number(salesData[0]?.totalSales || 0),
+        value: Number(salesData[0]?.totalValue || 0),
+        received: Number(salesData[0]?.receivedCount || 0),
+        receivedValue: Number(salesData[0]?.receivedValue || 0),
+      },
+      commissions: {
+        pending: Number(commissionsData[0]?.pendingCommissions || 0),
+        received: Number(commissionsData[0]?.receivedCommissions || 0),
+        cancelled: Number(commissionsData[0]?.cancelledCommissions || 0),
+        totalToReceive: Number(commissionsData[0]?.totalToReceive || 0),
+      },
+    };
   }),
 
   // Get KPI data for current broker
