@@ -196,6 +196,8 @@ export default function NewSale() {
   });
 
   const [completionStatus, setCompletionStatus] = useState<CompletionStatus>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const createSaleMutation = trpc.sales.createSale.useMutation();
 
   // Load brokers
   const { data: brokersList } = trpc.brokers.listBrokers.useQuery(undefined);
@@ -250,6 +252,8 @@ export default function NewSale() {
     }
   };
 
+
+
   const requiredFields = [
     "propertyAddress",
     "saleValue",
@@ -262,6 +266,11 @@ export default function NewSale() {
     "bedrooms",
     "privateArea",
     "totalArea",
+    "saleDate",
+    "storeAngariador",
+    "storeVendedor",
+    "brokerAngariador",
+    "brokerVendedor",
   ];
 
   const isFormComplete = requiredFields.every((field) => completionStatus[field]);
@@ -286,6 +295,11 @@ export default function NewSale() {
             bedrooms: "Quantidade de Quartos",
             privateArea: "Área Privativa",
             totalArea: "Área Total",
+            saleDate: "Data da Venda",
+            storeAngariador: "Loja Angariador",
+            storeVendedor: "Loja Vendedor",
+            brokerAngariador: "Corretor Angariador",
+            brokerVendedor: "Corretor Vendedor",
           };
           return fieldLabels[field] || field;
         }),
@@ -294,6 +308,64 @@ export default function NewSale() {
     }
 
     setFormData((prev) => ({ ...prev, showPreview: true }));
+  };
+
+  const handleConfirmAndSave = async () => {
+    try {
+      setIsSubmitting(true);
+      
+      // Converter data para ISO format
+      const saleDateObj = new Date(formData.saleDate);
+      const angariationDateObj = formData.angariationDate ? new Date(formData.angariationDate) : null;
+      
+      const payload = {
+        propertyType: formData.propertyType as "baggio" | "external",
+        propertyReference: formData.propertyReference,
+        propertyAddress: formData.propertyAddress,
+        propertyNumber: formData.propertyNumber,
+        propertyComplement: formData.propertyComplement,
+        propertyNeighborhood: formData.propertyNeighborhood,
+        propertyCity: formData.propertyCity,
+        propertyState: formData.propertyState,
+        propertyZipCode: formData.propertyZipCode,
+        advertisementValue: formData.advertisementValue ? parseFloat(formData.advertisementValue) : undefined,
+        saleDate: saleDateObj.toISOString(),
+        angariationDate: angariationDateObj ? angariationDateObj.toISOString() : undefined,
+        saleValue: parseFloat(formData.saleValue),
+        buyerName: formData.buyerName,
+        buyerCpfCnpj: formData.buyerCpfCnpj,
+        clientOrigin: formData.clientOrigin,
+        paymentMethod: formData.paymentMethod,
+        storeAngariador: formData.storeAngariador,
+        storeVendedor: formData.storeVendedor,
+        brokerAngariador: formData.brokerAngariador,
+        brokerVendedor: formData.brokerVendedor,
+        businessType: formData.businessType,
+        observations: formData.observations,
+      };
+
+      await createSaleMutation.mutateAsync(payload);
+      
+      setErrorState({
+        isOpen: true,
+        title: "Sucesso",
+        message: "Venda registrada com sucesso!",
+        errors: [],
+      });
+      
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 2000);
+    } catch (error: any) {
+      setErrorState({
+        isOpen: true,
+        title: "Erro ao Salvar",
+        message: error.message || "Ocorreu um erro ao salvar a venda",
+        errors: [error.message || "Erro desconhecido"],
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (formData.showPreview) {
@@ -341,14 +413,30 @@ export default function NewSale() {
                 <button
                   onClick={() => setFormData((prev) => ({ ...prev, showPreview: false }))}
                   className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 rounded-lg hover:bg-slate-300"
+                  disabled={isSubmitting}
                 >
                   Voltar para Edição
                 </button>
                 <button
-                  onClick={() => setFormData((prev) => ({ ...prev, showPreview: false }))}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  onClick={handleConfirmAndSave}
+                  disabled={isSubmitting}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 ${
+                    isSubmitting
+                      ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
                 >
-                  Confirmar e Salvar
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="h-4 w-4 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Confirmar e Salvar
+                    </>
+                  )}
                 </button>
               </div>
             </CardContent>
@@ -720,6 +808,66 @@ export default function NewSale() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Loja Angariador *</Label>
+                    <Select value={formData.storeAngariador} onValueChange={(value) => handleInputChange("storeAngariador", value)}>
+                      <SelectTrigger className={completionStatus.storeAngariador ? "bg-green-50 border-green-300" : ""}>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STORES.map((store) => (
+                          <SelectItem key={store.value} value={store.value}>
+                            {store.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Loja Vendedor *</Label>
+                    <Select value={formData.storeVendedor} onValueChange={(value) => handleInputChange("storeVendedor", value)}>
+                      <SelectTrigger className={completionStatus.storeVendedor ? "bg-green-50 border-green-300" : ""}>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STORES.map((store) => (
+                          <SelectItem key={store.value} value={store.value}>
+                            {store.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Corretor Angariador *</Label>
+                    <Select value={formData.brokerAngariador} onValueChange={(value) => handleInputChange("brokerAngariador", value)}>
+                      <SelectTrigger className={completionStatus.brokerAngariador ? "bg-green-50 border-green-300" : ""}>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {brokers.map((broker) => (
+                          <SelectItem key={broker.id} value={broker.id}>
+                            {broker.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Corretor Vendedor *</Label>
+                    <Select value={formData.brokerVendedor} onValueChange={(value) => handleInputChange("brokerVendedor", value)}>
+                      <SelectTrigger className={completionStatus.brokerVendedor ? "bg-green-50 border-green-300" : ""}>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {brokers.map((broker) => (
+                          <SelectItem key={broker.id} value={broker.id}>
+                            {broker.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div>
                     <Label>Tipo de Negócio *</Label>
                     <Select value={formData.businessType} onValueChange={(value) => handleInputChange("businessType", value)}>
