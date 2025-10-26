@@ -81,6 +81,20 @@ export const sales = mysqlTable("sales", {
   status: mysqlEnum("status", ["pending", "received", "paid", "cancelled"]).default("pending").notNull(),
   observation: text("observation"), // Observation when status changes to received
   proposalDocumentUrl: text("proposalDocumentUrl"), // URL to uploaded proposal document
+  propertyType: varchar("propertyType", { length: 255 }), // Tipo do Imóvel
+  bedrooms: int("bedrooms"), // Quantidade de Quartos
+  costPerM2: decimal("costPerM2", { precision: 15, scale: 2 }), // Custo por m²
+  privateArea: decimal("privateArea", { precision: 10, scale: 2 }), // Área Privativa
+  totalArea: decimal("totalArea", { precision: 10, scale: 2 }), // Área Total
+  propertyAge: int("propertyAge"), // Idade do Imóvel
+  investmentType: varchar("investmentType", { length: 255 }), // Investimento ou Moradia
+  financedValue: decimal("financedValue", { precision: 15, scale: 2 }), // Valor Financiado
+  cartoryBank: varchar("cartoryBank", { length: 255 }), // Cartório/Banco/Consórcio
+  despachante: varchar("despachante", { length: 255 }), // Despachante
+  sellerName: varchar("sellerName", { length: 255 }), // Nome do Vendedor
+  sellerCpfCnpj: varchar("sellerCpfCnpj", { length: 20 }), // CPF/CNPJ do Vendedor
+  sellerPhone: varchar("sellerPhone", { length: 20 }), // Telefone do Vendedor
+  buyerPhone: varchar("buyerPhone", { length: 20 }), // Telefone do Comprador
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

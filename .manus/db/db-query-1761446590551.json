@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE users SET password = '$2b$10$GIMABk0meWygpA4.0wJhSuu3iQU4NaWQY4Vt3lvWRm/wL5z7ecqIa' WHERE email IN ('corretor@baggio.com.br', 'gerente@baggio.com.br', 'financeiro@baggio.com.br', 'admin@baggio.com.br', 'vendedor@baggio.com.br', 'angariador@baggio.com.br');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute UPDATE users SET password = '$2b$10$GIMABk0meWygpA4.0wJhSuu3iQU4NaWQY4Vt3lvWRm/wL5z7ecqIa' WHERE email IN ('corretor@baggio.com.br', 'gerente@baggio.com.br', 'financeiro@baggio.com.br', 'admin@baggio.com.br', 'vendedor@baggio.com.br', 'angariador@baggio.com.br');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 172
+}

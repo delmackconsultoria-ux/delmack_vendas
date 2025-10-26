@@ -48,7 +48,8 @@ export const authRouter = router({
       };
 
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.cookie(COOKIE_NAME, JSON.stringify(sessionCookie), {
+      const cookieValue = encodeURIComponent(JSON.stringify(sessionCookie));
+      ctx.res.cookie(COOKIE_NAME, cookieValue, {
         ...cookieOptions,
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
@@ -115,7 +116,8 @@ export const authRouter = router({
       };
 
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.cookie(COOKIE_NAME, JSON.stringify(sessionCookie), {
+      const cookieValue = encodeURIComponent(JSON.stringify(sessionCookie));
+      ctx.res.cookie(COOKIE_NAME, cookieValue, {
         ...cookieOptions,
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });

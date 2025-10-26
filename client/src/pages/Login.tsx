@@ -115,17 +115,7 @@ export default function Login() {
                 )}
               </Button>
 
-              {/* Register Link */}
-              <div className="text-center text-sm text-slate-600">
-                Não tem uma conta?{" "}
-                <button
-                  type="button"
-                  onClick={() => setLocation("/register")}
-                  className="text-slate-700 font-semibold hover:text-slate-900 underline"
-                >
-                  Cadastre-se aqui
-                </button>
-              </div>
+
             </form>
           </CardContent>
         </Card>

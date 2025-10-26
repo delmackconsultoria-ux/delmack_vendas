@@ -31,7 +31,8 @@ export async function createContext(
 
     // Parse session data from cookie
     try {
-      const sessionData = JSON.parse(sessionCookie);
+      const decodedCookie = decodeURIComponent(sessionCookie);
+      const sessionData = JSON.parse(decodedCookie);
       
       if (sessionData.userId) {
         // Email/password authentication
