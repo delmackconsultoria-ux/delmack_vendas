@@ -1,14 +1,15 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Loader2, Filter } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, TrendingUp, Users, LogOut, Target, Activity, Trophy } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import AppHeader from "@/components/AppHeader";
-import { useState } from "react";
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -18,444 +19,290 @@ import {
 } from "recharts";
 
 export default function DashboardManager() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedBroker, setSelectedBroker] = useState<string>("all");
 
-  // Fetch all data
-  const { data: table1, isLoading: loadingTable1 } = trpc.dashboard.getSalesAndAngariationsByBroker.useQuery();
-  const { data: table2, isLoading: loadingTable2 } = trpc.dashboard.getAngariationValueByBroker.useQuery();
-  const { data: table3, isLoading: loadingTable3 } = trpc.dashboard.getAngariationQuantityByBroker.useQuery();
-  const { data: table4, isLoading: loadingTable4 } = trpc.dashboard.getCancelledSalesQuantityByBroker.useQuery();
-  const { data: table5, isLoading: loadingTable5 } = trpc.dashboard.getCancelledSalesValueByBroker.useQuery();
-  const { data: verificadores, isLoading: loadingVerificadores } = trpc.dashboard.getVerificadores.useQuery();
-  const { data: salesByType, isLoading: loadingSalesByType } = trpc.dashboard.getSalesByBusinessType.useQuery();
-  const { data: brokers, isLoading: loadingBrokers } = trpc.brokers.listBrokers.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/login");
+    },
+  });
 
-  const isLoading =
-    loadingTable1 ||
-    loadingTable2 ||
-    loadingTable3 ||
-    loadingTable4 ||
-    loadingTable5 ||
-    loadingVerificadores ||
-    loadingSalesByType ||
-    loadingBrokers;
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+  };
 
   if (!user) {
     return null;
   }
 
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
+  // Dados mock para performance da equipe
+  const teamPerformance = [
+    { name: "João Silva", vendas: 12, comissoes: 45000, meta: 50000 },
+    { name: "Maria Santos", vendas: 8, comissoes: 35000, meta: 50000 },
+    { name: "Pedro Costa", vendas: 15, comissoes: 65000, meta: 50000 },
+  ];
 
-  // Prepare chart data
-  const salesChartData = (salesByType || []).map((item) => ({
-    name: item.businessType || "N/A",
-    vendas: Number(item.count || 0),
-  }));
-
-  // Calculate totals
-  const totalVendidos = (table1 || []).reduce((sum, row) => sum + Number(row.salesValue || 0), 0);
-  const totalRecebidos = verificadores?.sales.receivedValue || 0;
-  const totalAngariados = (table2 || []).reduce((sum, row) => sum + Number(row.angariationValue || 0), 0);
-  const totalDisponiveis = (table1 || []).length * 457; // Placeholder
-  const totalBaixas = (table5 || []).reduce((sum, row) => sum + Number(row.value || 0), 0);
-  const totalComissoes = verificadores?.commissions.received || 0;
-  const totalComissoesCanceladas = verificadores?.commissions.cancelled || 0;
-  const totalComissoesPendentes = verificadores?.commissions.pending || 0;
+  // Dados mock para evolução de vendas
+  const salesEvolution = [
+    { mes: "Jan", vendas: 8, angariações: 15, canceladas: 2 },
+    { mes: "Fev", vendas: 12, angariações: 18, canceladas: 1 },
+    { mes: "Mar", vendas: 15, angariações: 22, canceladas: 3 },
+    { mes: "Abr", vendas: 18, angariações: 25, canceladas: 2 },
+    { mes: "Mai", vendas: 22, angariações: 28, canceladas: 4 },
+    { mes: "Jun", vendas: 25, angariações: 32, canceladas: 3 },
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AppHeader />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/")}>
+            <h1 className="text-2xl font-bold text-slate-900">Delmack</h1>
+          </div>
+
+          {/* Navigation Menu */}
+          <nav className="hidden md:flex items-center gap-6">
+            <button onClick={() => setLocation("/")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Dashboard</button>
+            <button onClick={() => setLocation("/indicators")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Indicadores</button>
+            <button onClick={() => setLocation("/analytics")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Gráficos</button>
+            <button onClick={() => setLocation("/reports")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Relatórios</button>
+            <button onClick={() => setLocation("/ranking")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Ranking</button>
+            <button onClick={() => setLocation("/goals")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Metas</button>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm font-medium text-slate-900">{user.name}</p>
+              <Badge variant="outline" className="text-xs">Gerente</Badge>
+            </div>
+            <Link href="/ranking">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Trophy className="h-4 w-4" />
+                Ranking
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Sair
+            </Button>
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900">Dashboard Operacional</h2>
+          <h2 className="text-3xl font-bold text-slate-900">Painel de Gestão</h2>
           <p className="text-slate-600 mt-2">
-            Acompanhe o desempenho de toda a equipe e dados operacionais
+            Acompanhe a performance da sua equipe e evolução das vendas
           </p>
         </div>
 
-        {/* Filters */}
-        <Card className="border-0 shadow-sm mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filtros
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Month Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Mês</label>
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-slate-900"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i} value={i}>
-                      {new Date(2024, i).toLocaleDateString("pt-BR", { month: "long" })}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {/* Team Sales */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-purple-600" />
+                Vendas da Equipe
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">55</p>
+              <p className="text-xs text-slate-600 mt-2">Este mês</p>
+            </CardContent>
+          </Card>
 
-              {/* Year Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Ano</label>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-slate-900"
-                >
-                  {Array.from({ length: 5 }, (_, i) => {
-                    const year = new Date().getFullYear() - 2 + i;
-                    return (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
+          {/* Active Brokers */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <Users className="h-4 w-4 text-blue-600" />
+                Corretores Ativos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">3</p>
+              <p className="text-xs text-slate-600 mt-2">Membros da equipe</p>
+            </CardContent>
+          </Card>
 
-              {/* Broker Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Corretor</label>
-                <select
-                  value={selectedBroker}
-                  onChange={(e) => setSelectedBroker(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-slate-900"
-                >
-                  <option value="all">Todos os Corretores</option>
-                  {brokers?.map((broker) => (
-                    <option key={broker.id} value={broker.id}>
-                      {broker.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Total Commission */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <Activity className="h-4 w-4 text-green-600" />
+                Comissões Geradas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">R$ 145k</p>
+              <p className="text-xs text-slate-600 mt-2">Este mês</p>
+            </CardContent>
+          </Card>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-600" />
-            <p className="ml-2 text-slate-600">Carregando dados...</p>
-          </div>
-        )}
+          {/* Goal Achievement */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <Target className="h-4 w-4 text-amber-600" />
+                Meta Realizada
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">92%</p>
+              <p className="text-xs text-slate-600 mt-2">Do objetivo mensal</p>
+            </CardContent>
+          </Card>
+        </div>
 
-        {!isLoading && (
-          <>
-            {/* Totalizadores */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total Vendidos</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalVendidos)}</p>
-                </CardContent>
-              </Card>
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Team Performance */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Performance da Equipe
+              </CardTitle>
+              <CardDescription>
+                Vendas vs Meta por corretor
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={teamPerformance}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
+                  <Legend />
+                  <Bar dataKey="comissoes" fill="#8b5cf6" name="Comissões" />
+                  <Bar dataKey="meta" fill="#d1d5db" name="Meta" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total Recebidos</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(totalRecebidos)}</p>
-                </CardContent>
-              </Card>
+          {/* Sales Evolution */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Evolução de Vendas
+              </CardTitle>
+              <CardDescription>
+                Últimos 6 meses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={salesEvolution}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="vendas"
+                    stroke="#10b981"
+                    name="Vendas"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="angariações"
+                    stroke="#60a5fa"
+                    name="Angariações"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="canceladas"
+                    stroke="#ef4444"
+                    name="Canceladas"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
 
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total Angariados</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalAngariados)}</p>
-                </CardContent>
-              </Card>
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-purple-600" />
+                Gerenciar Equipe
+              </CardTitle>
+              <CardDescription>
+                Visualize e gerencie seus corretores
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                className="w-full"
+              >
+                Ir para Equipe
+              </Button>
+            </CardContent>
+          </Card>
 
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Disponíveis para Venda</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-blue-600">{totalDisponiveis}</p>
-                </CardContent>
-              </Card>
-            </div>
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                Relatórios
+              </CardTitle>
+              <CardDescription>
+                Análise detalhada de vendas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setLocation("/reports")}
+              >
+                Ver Relatórios
+              </Button>
+            </CardContent>
+          </Card>
 
-            {/* More Totalizadores */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total de Baixas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-red-600">{formatCurrency(totalBaixas)}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Comissões Pagas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(totalComissoes)}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Comissões Canceladas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-red-600">{formatCurrency(totalComissoesCanceladas)}</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Gráfico: Vendas por Tipo de Comissão */}
-            <Card className="border-0 shadow-sm mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-slate-600" />
-                  Vendas por Tipo de Comissão
-                </CardTitle>
-                <CardDescription>Distribuição de vendas por tipo</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {salesChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={salesChartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="vendas" fill="#3b82f6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex items-center justify-center h-300 text-slate-600">
-                    Sem dados disponíveis
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* SEÇÃO OPERACIONAL */}
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4 bg-blue-600 text-white p-3 rounded">
-                OPERACIONAL
-              </h3>
-
-              {/* Tabela 1: Valor por Corretor (Angariações + Vendas) */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 1: Valor por Corretor (Angariações + Vendas)</CardTitle>
-                  <CardDescription>Mostrando valor total de angariações e vendas</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table1 && table1.length > 0 ? (
-                          table1.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {formatCurrency(Number(row.salesValue))}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 2: Valor por Corretor (Angariações) */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 2: Valor por Corretor (Angariações)</CardTitle>
-                  <CardDescription>Mostrando apenas valor de angariações</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Angariações</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table2 && table2.length > 0 ? (
-                          table2.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {formatCurrency(Number(row.angariationValue))}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 3: Quantidade de Angariações por Corretor */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 3: Quantidade de Angariações por Corretor</CardTitle>
-                  <CardDescription>Mostrando quantidade de angariações</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Quantidade</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table3 && table3.length > 0 ? (
-                          table3.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {Number(row.quantity)}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 4: Quantidade de Baixas por Corretor */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 4: Quantidade de Baixas por Corretor</CardTitle>
-                  <CardDescription>Mostrando quantidade de vendas canceladas</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Quantidade</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table4 && table4.length > 0 ? (
-                          table4.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {Number(row.quantity)}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 5: Valor de Baixas por Corretor */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 5: Valor de Baixas por Corretor</CardTitle>
-                  <CardDescription>Mostrando valor total de vendas canceladas</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table5 && table5.length > 0 ? (
-                          table5.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {formatCurrency(Number(row.value))}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </>
-        )}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-green-600" />
+                Indicadores
+              </CardTitle>
+              <CardDescription>
+                KPIs e métricas da equipe
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setLocation("/indicators")}
+              >
+                Ver Indicadores
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </main>
     </div>
   );

@@ -2,460 +2,359 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Loader2, Filter } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle, BarChart3, X, ChevronDown } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import AppHeader from "@/components/AppHeader";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LineChart,
+  Line,
 } from "recharts";
 
 export default function DashboardFinance() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedBroker, setSelectedBroker] = useState<string>("all");
+  const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const mainRef = useRef<HTMLDivElement>(null);
 
-  // Fetch all data
-  const { data: table1, isLoading: loadingTable1 } = trpc.dashboard.getSalesAndAngariationsByBroker.useQuery();
-  const { data: table2, isLoading: loadingTable2 } = trpc.dashboard.getAngariationValueByBroker.useQuery();
-  const { data: table3, isLoading: loadingTable3 } = trpc.dashboard.getAngariationQuantityByBroker.useQuery();
-  const { data: table4, isLoading: loadingTable4 } = trpc.dashboard.getCancelledSalesQuantityByBroker.useQuery();
-  const { data: table5, isLoading: loadingTable5 } = trpc.dashboard.getCancelledSalesValueByBroker.useQuery();
-  const { data: verificadores, isLoading: loadingVerificadores } = trpc.dashboard.getVerificadores.useQuery();
-  const { data: salesByType, isLoading: loadingSalesByType } = trpc.dashboard.getSalesByBusinessType.useQuery();
-  const { data: brokers, isLoading: loadingBrokers } = trpc.brokers.listBrokers.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/login");
+    },
+  });
 
-  const isLoading =
-    loadingTable1 ||
-    loadingTable2 ||
-    loadingTable3 ||
-    loadingTable4 ||
-    loadingTable5 ||
-    loadingVerificadores ||
-    loadingSalesByType ||
-    loadingBrokers;
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+  };
+
+  const scrollToTop = () => {
+    if (mainRef.current) {
+      mainRef.current.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const years = ["2024", "2025"];
+
+  const toggleMonth = (month: string) => {
+    setSelectedMonths(prev =>
+      prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month]
+    );
+  };
+
+  const toggleYear = (year: string) => {
+    setSelectedYears(prev =>
+      prev.includes(year) ? prev.filter(y => y !== year) : [...prev, year]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedMonths([]);
+    setSelectedYears([]);
+    setShowFilters(false);
+  };
+
+  const handleApplyFilters = () => {
+    scrollToTop();
+    setShowFilters(false);
+  };
 
   if (!user) {
     return null;
   }
 
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
+  // Dados mock para comissões por status
+  const commissionsByStatus = [
+    { status: "Pendentes", value: 45000, fill: "#fbbf24" },
+    { status: "Recebidas", value: 125000, fill: "#60a5fa" },
+    { status: "Pagas", value: 380000, fill: "#10b981" },
+    { status: "Canceladas", value: 12000, fill: "#ef4444" },
+  ];
 
-  // Prepare chart data
-  const salesChartData = (salesByType || []).map((item) => ({
-    name: item.businessType || "N/A",
-    vendas: Number(item.count || 0),
-  }));
+  // Dados mock para comissões por corretor
+  const commissionsByBroker = [
+    { name: "João Silva", pendentes: 15000, recebidas: 45000, pagas: 120000 },
+    { name: "Maria Santos", pendentes: 12000, recebidas: 35000, pagas: 95000 },
+    { name: "Pedro Costa", pendentes: 18000, recebidas: 45000, pagas: 165000 },
+  ];
 
-  // Calculate totals
-  const totalVendidos = (table1 || []).reduce((sum, row) => sum + Number(row.salesValue || 0), 0);
-  const totalRecebidos = verificadores?.sales.receivedValue || 0;
-  const totalAngariados = (table2 || []).reduce((sum, row) => sum + Number(row.angariationValue || 0), 0);
-  const totalDisponiveis = (table1 || []).length * 457; // Placeholder
-  const totalBaixas = (table5 || []).reduce((sum, row) => sum + Number(row.value || 0), 0);
-  const totalComissoes = verificadores?.commissions.received || 0;
-  const totalComissoesCanceladas = verificadores?.commissions.cancelled || 0;
-  const totalComissoesPendentes = verificadores?.commissions.pending || 0;
+  // Dados mock para evolução de pagamentos
+  const paymentEvolution = [
+    { mes: "Jan", pagos: 50000, pendentes: 30000 },
+    { mes: "Fev", pagos: 75000, pendentes: 25000 },
+    { mes: "Mar", pagos: 95000, pendentes: 35000 },
+    { mes: "Abr", pagos: 120000, pendentes: 45000 },
+    { mes: "Mai", pagos: 150000, pendentes: 40000 },
+    { mes: "Jun", pagos: 180000, pendentes: 45000 },
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AppHeader />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/")}>
+            <h1 className="text-2xl font-bold text-slate-900">Delmack</h1>
+          </div>
+
+          {/* Navigation Menu */}
+          <nav className="hidden md:flex items-center gap-6">
+            <button onClick={() => setLocation("/")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Dashboard</button>
+            <button onClick={() => setLocation("/indicators")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Indicadores</button>
+            <button onClick={() => setLocation("/analytics")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Gráficos</button>
+            <button onClick={() => setLocation("/reports")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Relatórios</button>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm font-medium text-slate-900">{user.name}</p>
+              <Badge variant="outline" className="text-xs">Financeiro</Badge>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Sair
+            </Button>
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" ref={mainRef}>
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900">Dashboard Financeiro</h2>
+          <h2 className="text-3xl font-bold text-slate-900">Painel Financeiro</h2>
           <p className="text-slate-600 mt-2">
-            Acompanhe o desempenho financeiro e dados operacionais
+            Gerencie pagamentos de comissões e acompanhe o fluxo financeiro
           </p>
         </div>
 
-        {/* Filters */}
-        <Card className="border-0 shadow-sm mb-8">
+        {/* Alert - Pending Approvals */}
+        <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <h3 className="font-semibold text-amber-900">Atenção: Comissões Pendentes</h3>
+            <p className="text-sm text-amber-800 mt-1">
+              Você tem 45 comissões aguardando aprovação para pagamento
+            </p>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Pendentes de Aprovação</p>
+                  <p className="text-2xl font-bold text-amber-600">R$ 45.000</p>
+                </div>
+                <AlertCircle className="h-8 w-8 text-amber-600 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">A Pagar Este Mês</p>
+                  <p className="text-2xl font-bold text-blue-600">R$ 125.000</p>
+                </div>
+                <DollarSign className="h-8 w-8 text-blue-600 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Já Pagos Este Mês</p>
+                  <p className="text-2xl font-bold text-green-600">R$ 380.000</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-600 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Compact Filters */}
+        <div className="mb-6 bg-white rounded-lg border border-slate-200 shadow-sm">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50"
+          >
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-slate-600" />
+              <span className="text-sm font-medium text-slate-900">Filtros de Comissões</span>
+              {(selectedMonths.length > 0 || selectedYears.length > 0) && (
+                <Badge variant="secondary" className="text-xs">
+                  {selectedMonths.length + selectedYears.length} ativos
+                </Badge>
+              )}
+            </div>
+            <ChevronDown className={`h-4 w-4 text-slate-600 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showFilters && (
+            <div className="border-t border-slate-200 px-4 py-4 space-y-4">
+              {/* Months Filter */}
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-2">MESES</label>
+                <div className="grid grid-cols-6 gap-1">
+                  {months.map((month) => (
+                    <button
+                      key={month}
+                      onClick={() => toggleMonth(month)}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                        selectedMonths.includes(month)
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {month.substring(0, 3)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Years Filter */}
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-2">ANOS</label>
+                <div className="flex gap-2">
+                  {years.map((year) => (
+                    <button
+                      key={year}
+                      onClick={() => toggleYear(year)}
+                      className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                        selectedYears.includes(year)
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filter Actions */}
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={handleApplyFilters}
+                  size="sm"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-xs"
+                  disabled={selectedMonths.length === 0 && selectedYears.length === 0}
+                >
+                  Aplicar Filtros
+                </Button>
+                {(selectedMonths.length > 0 || selectedYears.length > 0) && (
+                  <Button
+                    onClick={clearFilters}
+                    variant="outline"
+                    size="sm"
+                    className="gap-1 text-xs"
+                  >
+                    <X className="h-3 w-3" />
+                    Limpar
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Commissions by Status */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="text-lg">Comissões por Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={commissionsByStatus}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ status, value }) => `${status}: R$ ${(value / 1000).toFixed(0)}k`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {commissionsByStatus.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Commissions by Broker */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="text-lg">Comissões por Corretor</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={commissionsByBroker}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                  <Legend />
+                  <Bar dataKey="pendentes" fill="#fbbf24" />
+                  <Bar dataKey="recebidas" fill="#60a5fa" />
+                  <Bar dataKey="pagas" fill="#10b981" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Payment Evolution */}
+        <Card className="border-0 shadow-md mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filtros
-            </CardTitle>
+            <CardTitle className="text-lg">Evolução de Pagamentos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Month Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Mês</label>
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-slate-900"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i} value={i}>
-                      {new Date(2024, i).toLocaleDateString("pt-BR", { month: "long" })}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Year Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Ano</label>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-slate-900"
-                >
-                  {Array.from({ length: 5 }, (_, i) => {
-                    const year = new Date().getFullYear() - 2 + i;
-                    return (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-
-              {/* Broker Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Corretor</label>
-                <select
-                  value={selectedBroker}
-                  onChange={(e) => setSelectedBroker(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-slate-900"
-                >
-                  <option value="all">Todos os Corretores</option>
-                  {brokers?.map((broker) => (
-                    <option key={broker.id} value={broker.id}>
-                      {broker.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={paymentEvolution}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mes" />
+                <YAxis />
+                <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                <Legend />
+                <Line type="monotone" dataKey="pagos" stroke="#10b981" strokeWidth={2} />
+                <Line type="monotone" dataKey="pendentes" stroke="#fbbf24" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-600" />
-            <p className="ml-2 text-slate-600">Carregando dados...</p>
-          </div>
-        )}
-
-        {!isLoading && (
-          <>
-            {/* Totalizadores */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total Vendidos</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalVendidos)}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total Recebidos</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(totalRecebidos)}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total Angariados</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalAngariados)}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Disponíveis para Venda</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-blue-600">{totalDisponiveis}</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* More Totalizadores */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Total de Baixas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-red-600">{formatCurrency(totalBaixas)}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Comissões Pagas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(totalComissoes)}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-600">Comissões Canceladas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-red-600">{formatCurrency(totalComissoesCanceladas)}</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Gráfico: Vendas por Tipo de Comissão */}
-            <Card className="border-0 shadow-sm mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-slate-600" />
-                  Vendas por Tipo de Comissão
-                </CardTitle>
-                <CardDescription>Distribuição de vendas por tipo</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {salesChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={salesChartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="vendas" fill="#3b82f6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex items-center justify-center h-300 text-slate-600">
-                    Sem dados disponíveis
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* SEÇÃO OPERACIONAL */}
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4 bg-blue-600 text-white p-3 rounded">
-                OPERACIONAL
-              </h3>
-
-              {/* Tabela 1: Valor por Corretor (Angariações + Vendas) */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 1: Valor por Corretor (Angariações + Vendas)</CardTitle>
-                  <CardDescription>Mostrando valor total de angariações e vendas</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table1 && table1.length > 0 ? (
-                          table1.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {formatCurrency(Number(row.salesValue))}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 2: Valor por Corretor (Angariações) */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 2: Valor por Corretor (Angariações)</CardTitle>
-                  <CardDescription>Mostrando apenas valor de angariações</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Angariações</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table2 && table2.length > 0 ? (
-                          table2.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {formatCurrency(Number(row.angariationValue))}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 3: Quantidade de Angariações por Corretor */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 3: Quantidade de Angariações por Corretor</CardTitle>
-                  <CardDescription>Mostrando quantidade de angariações</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Quantidade</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table3 && table3.length > 0 ? (
-                          table3.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {Number(row.quantity)}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 4: Quantidade de Baixas por Corretor */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 4: Quantidade de Baixas por Corretor</CardTitle>
-                  <CardDescription>Mostrando quantidade de vendas canceladas</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Quantidade</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table4 && table4.length > 0 ? (
-                          table4.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {Number(row.quantity)}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Tabela 5: Valor de Baixas por Corretor */}
-              <Card className="border-0 shadow-sm mb-6">
-                <CardHeader>
-                  <CardTitle>Tabela 5: Valor de Baixas por Corretor</CardTitle>
-                  <CardDescription>Mostrando valor total de vendas canceladas</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">Corretor</th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">Valor Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {table5 && table5.length > 0 ? (
-                          table5.map((row, idx) => (
-                            <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                              <td className="py-3 px-4 text-slate-900">{row.brokerName || "N/A"}</td>
-                              <td className="text-right py-3 px-4 text-slate-900 font-semibold">
-                                {formatCurrency(Number(row.value))}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} className="py-4 px-4 text-center text-slate-600">
-                              Sem dados disponíveis
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </>
-        )}
       </main>
     </div>
   );

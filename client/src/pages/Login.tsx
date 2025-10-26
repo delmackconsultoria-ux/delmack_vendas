@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function Login() {
@@ -13,7 +13,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: () => {
@@ -88,30 +87,16 @@ export default function Login() {
                 <label htmlFor="password" className="text-sm font-medium text-slate-700">
                   Senha
                 </label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={isLoading}
-                    required
-                    className="h-10 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-600 hover:text-slate-900"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  required
+                  className="h-10"
+                />
               </div>
 
               {/* Submit Button */}
@@ -130,7 +115,17 @@ export default function Login() {
                 )}
               </Button>
 
-
+              {/* Register Link */}
+              <div className="text-center text-sm text-slate-600">
+                Não tem uma conta?{" "}
+                <button
+                  type="button"
+                  onClick={() => setLocation("/register")}
+                  className="text-slate-700 font-semibold hover:text-slate-900 underline"
+                >
+                  Cadastre-se aqui
+                </button>
+              </div>
             </form>
           </CardContent>
         </Card>
