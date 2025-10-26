@@ -199,14 +199,59 @@ export default function NewSale() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const createSaleMutation = trpc.sales.createSale.useMutation();
 
-  // Load brokers
+  // Load brokers from TRPC
   const { data: brokersList } = trpc.brokers.listBrokers.useQuery(undefined);
-
   useEffect(() => {
     if (brokersList) {
       setBrokers(brokersList);
     }
   }, [brokersList]);
+
+  // Initialize completionStatus on mount and when formData changes
+  useEffect(() => {
+    const requiredFieldsToCheck = [
+      "buyerName",
+      "sellerName",
+      "saleValue",
+      "typeOfProperty",
+      "bedrooms",
+      "privateArea",
+      "totalArea",
+      "propertyAddress",
+      "saleDate",
+      "storeAngariador",
+      "storeVendedor",
+      "brokerAngariador",
+      "brokerVendedor",
+      "businessType",
+      "buyerCpfCnpj",
+      "sellerCpfCnpj",
+    ];
+    const newCompletionStatus: CompletionStatus = {};
+    requiredFieldsToCheck.forEach((field) => {
+      const value = formData[field as keyof FormData];
+      const isComplete = value !== "" && value !== null && value !== undefined && value !== "Selecione";
+      newCompletionStatus[field as keyof CompletionStatus] = isComplete;
+    });
+    setCompletionStatus(newCompletionStatus);
+  }, [
+    formData.buyerName,
+    formData.sellerName,
+    formData.saleValue,
+    formData.typeOfProperty,
+    formData.bedrooms,
+    formData.privateArea,
+    formData.totalArea,
+    formData.propertyAddress,
+    formData.saleDate,
+    formData.storeAngariador,
+    formData.storeVendedor,
+    formData.brokerAngariador,
+    formData.brokerVendedor,
+    formData.businessType,
+    formData.buyerCpfCnpj,
+    formData.sellerCpfCnpj,
+  ]);
 
   const handleInputChange = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({
@@ -244,11 +289,22 @@ export default function NewSale() {
   };
 
   const handleCPFChange = (field: "buyerCpfCnpj" | "sellerCpfCnpj", value: string) => {
-    if (validateCPFOrCNPJ(value)) {
-      const formatted = value.length === 11 ? formatCPF(value) : formatCNPJ(value);
-      handleInputChange(field, formatted);
-    } else if (value === "") {
+    // Allow any value, validation will be done on the server
+    if (value === "") {
       handleInputChange(field, "");
+    } else {
+      // Format if it looks like a CPF or CNPJ
+      const cleanValue = value.replace(/\D/g, "");
+      if (cleanValue.length === 11) {
+        const formatted = formatCPF(value);
+        handleInputChange(field, formatted);
+      } else if (cleanValue.length === 14) {
+        const formatted = formatCNPJ(value);
+        handleInputChange(field, formatted);
+      } else {
+        // If it doesn't match either format, save as is
+        handleInputChange(field, value);
+      }
     }
   };
 

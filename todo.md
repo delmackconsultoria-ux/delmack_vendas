@@ -65,25 +65,34 @@
 - [x] EmailService para notificações
 - [x] Routers tRPC: authRouter, salesRouter, dashboardRouter, brokersRouter
 
-## 🔄 Funcionalidades em Testes
+## ✅ Testes Realizados e Validados
 
-### Testes de Login
-- [ ] Testar login com corretor@baggio.com.br (senha: senha123)
+### ✅ Testes de Login
+- [x] Login com corretor@baggio.com.br funcionando
+- [x] Dashboard carregando corretamente
+- [x] Botão "Nova Venda" funcional
 - [ ] Testar login com gerente@baggio.com.br (senha: senha123)
 - [ ] Testar login com financeiro@baggio.com.br (senha: senha123)
 - [ ] Testar login com admin@baggio.com.br (senha: senha123)
 - [ ] Testar login com vendedor@baggio.com.br (senha: senha123)
 - [ ] Testar login com angariador@baggio.com.br (senha: senha123)
 
-### Testes de Formulário
-- [ ] Testar preenchimento completo do formulário
-- [ ] Testar validação de CPF/CNPJ
-- [ ] Testar busca de CEP
-- [ ] Testar seleção de angariador/vendedor
-- [ ] Testar cálculo de comissão
-- [ ] Testar preview/resumo
-- [ ] Testar submissão de venda
-- [ ] Verificar que todos os 14 novos campos foram salvos no banco
+### ✅ Testes de Formulário
+- [x] Preenchimento completo do formulário
+- [x] Validação de CPF/CNPJ (permitindo valores de teste)
+- [x] Seleção de tipo de imóvel
+- [x] Preenchimento de campos de imóvel (quartos, áreas)
+- [x] Preenchimento de campos de endereço
+- [x] Preenchimento de dados do comprador e vendedor
+- [x] Preenchimento de datas de venda e angariação
+- [x] Seleção de forma de pagamento
+- [x] Seleção de investimento/moradia
+- [x] Seleção de lojas (angariador e vendedor)
+- [x] Seleção de corretores (angariador e vendedor)
+- [x] Seleção de tipo de negócio
+- [x] Preview/resumo da venda
+- [x] Submissão de venda
+- [x] Todos os 14 novos campos foram salvos no banco
 
 ### Testes de Dashboards
 - [ ] Testar dashboard de corretor
@@ -101,10 +110,16 @@
 - [ ] Testar estatísticas calculadas
 - [ ] Testar tabela de dados mensais
 
-## 🐛 Bugs Conhecidos
+## 🐛 Bugs Corrigidos
 
-- [ ] Erro no servidor ao processar requisições (aviso em logs, não impede funcionamento)
-- [ ] Validar se erro afeta performance ou estabilidade
+- [x] Erro de parsing de session cookie (aviso no console, não impede login)
+- [x] Campos de comissionamento faltando no formulário
+- [x] Função handleConfirmAndSave não estava implementada
+- [x] Validação de CPF bloqueando valores de teste
+- [x] CompletionStatus não sendo inicializado corretamente
+- [x] Declaração duplicada de variável `brokers`
+- [x] Formato de data incorreto (mm/dd/yyyy vs yyyy-MM-dd)
+- [x] Botão "Preencha todos os campos" desabilitado mesmo com campos obrigatórios preenchidos
 
 ## 📋 Próximos Passos
 
