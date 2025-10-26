@@ -1,0 +1,46 @@
+{
+  "query": "SELECT id, email, name, role FROM users LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, name, role FROM users LIMIT 20;",
+  "rows": [
+    {
+      "id": "066905aa-f65a-4d88-b9fb-6384c5bc8802",
+      "email": "admin@delmack.com",
+      "name": "Admin Delmack",
+      "role": "admin"
+    },
+    {
+      "id": "602922ed-1d40-45c3-adac-cbb14e14cc8f",
+      "email": "financeiro@baggio.com",
+      "name": "Financeiro Baggio",
+      "role": "finance"
+    },
+    {
+      "id": "616d5fb1-5c98-4e8c-ba99-d8de25f0da72",
+      "email": "gerente@baggio.com",
+      "name": "Gerente Baggio",
+      "role": "manager"
+    },
+    {
+      "id": "7faf90de-680c-4255-acb9-8bb182cbc381",
+      "email": "corretor@baggio.com",
+      "name": "Corretor Baggio",
+      "role": "broker"
+    },
+    {
+      "id": "user_1761184861031_0b1ydukkw",
+      "email": "teste@teste.com",
+      "name": "teste",
+      "role": "broker"
+    },
+    {
+      "id": "WGxQeeqMJJfugkqAYm7pZC",
+      "email": "agoraintermediacoes@gmail.com",
+      "name": "Àgora Intermediações",
+      "role": "admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\trole\n066905aa-f65a-4d88-b9fb-6384c5bc8802\tadmin@delmack.com\tAdmin Delmack\tadmin\n602922ed-1d40-45c3-adac-cbb14e14cc8f\tfinanceiro@baggio.com\tFinanceiro Baggio\tfinance\n616d5fb1-5c98-4e8c-ba99-d8de25f0da72\tgerente@baggio.com\tGerente Baggio\tmanager\n7faf90de-680c-4255-acb9-8bb182cbc381\tcorretor@baggio.com\tCorretor Baggio\tbroker\nuser_1761184861031_0b1ydukkw\tteste@teste.com\tteste\tbroker\nWGxQeeqMJJfugkqAYm7pZC\tagoraintermediacoes@gmail.com\tÀgora Intermediações\tadmin\n",
+  "stderr": "",
+  "execution_time_ms": 682
+}
