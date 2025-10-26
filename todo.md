@@ -66,14 +66,17 @@
 - [x] Criar router tRPC para dados de KPIs
 - [x] Integrar gráficos ao Dashboard
 
-### Tabelas Operacionais no Dashboard
-- [x] Tabela 1: Valor por Corretor (Angariações + Vendas)
-- [x] Tabela 2: Valor por Corretor (Angariações)
-- [x] Tabela 3: Quantidade de Angariações por Corretor
-- [x] Tabela 4: Quantidade de Baixas por Corretor
-- [x] Tabela 5: Valor de Baixas por Corretor
-- [x] Seção VERIFICADORES com dados agregados
-- [x] Implementar para todos os perfis (Corretor, Gerente, Financeiro)
+### Dashboards por Perfil (CORRIGINDO)
+- [ ] Dashboard Corretor: Minhas Vendas Recentes, Minhas Comissoes, Meu Desempenho
+- [ ] Dashboard Gerente/Financeiro: 5 Tabelas + Tabela de Resultados
+- [ ] Tabela de Resultados com filtros (Mes/Ano, Corretor)
+- [ ] Totalizadores (Vendidos, Recebidos, Angariados, Disponiveis, Baixas)
+- [ ] Grafico: Vendas por Tipo de Comissao
+- [ ] Tabela 1: Valor por Corretor (Angariações + Vendas)
+- [ ] Tabela 2: Valor por Corretor (Angariações)
+- [ ] Tabela 3: Quantidade de Angariações por Corretor
+- [ ] Tabela 4: Quantidade de Baixas por Corretor
+- [ ] Tabela 5: Valor de Baixas por Corretor
 
 ### Relatórios
 - [ ] Página de Relatórios completa
