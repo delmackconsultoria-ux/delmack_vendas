@@ -1,0 +1,14 @@
+{
+  "query": "SELECT email, password FROM users WHERE email = 'corretor@baggio.com.br' LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT email, password FROM users WHERE email = 'corretor@baggio.com.br' LIMIT 1;",
+  "rows": [
+    {
+      "email": "corretor@baggio.com.br",
+      "password": "$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC"
+    }
+  ],
+  "messages": [],
+  "stdout": "email\tpassword\ncorretor@baggio.com.br\t$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

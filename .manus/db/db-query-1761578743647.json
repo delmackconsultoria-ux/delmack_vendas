@@ -1,0 +1,58 @@
+{
+  "query": "SELECT id, email, password, name, role, isActive FROM users WHERE email IN ('corretor@baggio.com.br', 'gerente@baggio.com.br', 'financeiro@baggio.com.br', 'admin@baggio.com.br', 'vendedor@baggio.com.br', 'angariador@baggio.com.br');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, password, name, role, isActive FROM users WHERE email IN ('corretor@baggio.com.br', 'gerente@baggio.com.br', 'financeiro@baggio.com.br', 'admin@baggio.com.br', 'vendedor@baggio.com.br', 'angariador@baggio.com.br');",
+  "rows": [
+    {
+      "id": "user_1",
+      "email": "corretor@baggio.com.br",
+      "password": "$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC",
+      "name": "Corretor Baggio",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "user_2",
+      "email": "gerente@baggio.com.br",
+      "password": "$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC",
+      "name": "Gerente Baggio",
+      "role": "manager",
+      "isActive": "1"
+    },
+    {
+      "id": "user_3",
+      "email": "financeiro@baggio.com.br",
+      "password": "$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC",
+      "name": "Financeiro Baggio",
+      "role": "finance",
+      "isActive": "1"
+    },
+    {
+      "id": "user_4",
+      "email": "admin@baggio.com.br",
+      "password": "$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC",
+      "name": "Admin Baggio",
+      "role": "admin",
+      "isActive": "1"
+    },
+    {
+      "id": "user_5",
+      "email": "vendedor@baggio.com.br",
+      "password": "$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC",
+      "name": "Vendedor Baggio",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "user_6",
+      "email": "angariador@baggio.com.br",
+      "password": "$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC",
+      "name": "Angariador Baggio",
+      "role": "broker",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tpassword\tname\trole\tisActive\nuser_1\tcorretor@baggio.com.br\t$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC\tCorretor Baggio\tbroker\t1\nuser_2\tgerente@baggio.com.br\t$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC\tGerente Baggio\tmanager\t1\nuser_3\tfinanceiro@baggio.com.br\t$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC\tFinanceiro Baggio\tfinance\t1\nuser_4\tadmin@baggio.com.br\t$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC\tAdmin Baggio\tadmin\t1\nuser_5\tvendedor@baggio.com.br\t$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC\tVendedor Baggio\tbroker\t1\nuser_6\tangariador@baggio.com.br\t$2b$10$57hx1yTgBxoUd6Gbk6B.Guwe8mQfE.XWUEqlyL/UfdWebkjXeVDjC\tAngariador Baggio\tbroker\t1\n",
+  "stderr": "",
+  "execution_time_ms": 47
+}

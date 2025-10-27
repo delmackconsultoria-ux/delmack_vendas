@@ -141,3 +141,10 @@
 - **Contas de Teste:** 6
 - **Novos Campos de Vendas:** 14
 
+
+
+## 🚨 Bugs Reportados pelo Usuário
+
+- [ ] Login rejeitando senha correta com mensagem "Email ou senha incorretos"
+- [ ] Validação de senha mínima (6 caracteres) funcionando, mas autenticação falhando
+
