@@ -121,15 +121,29 @@
 - [x] Formato de data incorreto (mm/dd/yyyy vs yyyy-MM-dd)
 - [x] Botão "Preencha todos os campos" desabilitado mesmo com campos obrigatórios preenchidos
 
+## ✅ Funcionalidades Recentemente Implementadas
+
+- [x] Página de Gerenciamento de Corretores para gerente
+  - [x] Visualizar lista de corretores da equipe
+  - [x] Adicionar novo corretor (botão)
+  - [x] Editar informações do corretor (botão)
+  - [x] Remover corretor da equipe (botão)
+  - [x] Ver performance/estatísticas do corretor (tabela com dados)
+  - [x] Filtros por busca (nome/email)
+  - [x] 4 KPI Cards (Total de Corretores, Total de Vendas, Total de Comissões, Performance Média)
+  - [x] Tabela com colunas: Nome, Email, Telefone, Status, Vendas, Comissões, Performance, Ações
+
 ## 📋 Próximos Passos
 
-1. Executar testes de login com todas as 6 contas
-2. Testar preenchimento completo do formulário de vendas
-3. Verificar que todos os 14 novos campos são salvos no banco
-4. Testar dashboards com diferentes perfis
-5. Testar indicadores e filtros
-6. Corrigir qualquer bug encontrado
-7. Criar checkpoint final
+1. ✅ Executar testes de login com todas as 6 contas
+2. ✅ Testar preenchimento completo do formulário de vendas
+3. ✅ Verificar que todos os 14 novos campos são salvos no banco
+4. ✅ Testar dashboards com diferentes perfis
+5. ✅ Criar header padrão em todas as páginas
+6. [ ] Criar página de gerenciamento de corretores
+7. [ ] Testar indicadores e filtros
+8. [ ] Corrigir qualquer bug encontrado
+9. [ ] Criar checkpoint final
 
 ## 📊 Estatísticas
 
