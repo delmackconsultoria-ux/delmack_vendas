@@ -21,6 +21,8 @@ import DocumentUpload from "./pages/DocumentUpload";
 import GoalsManagement from "./pages/GoalsManagement";
 import CompanyManagement from "./pages/CompanyManagement";
 import Analytics from "./pages/Analytics";
+import Charts from "./pages/Charts";
+import Goals from "./pages/Goals";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -75,10 +77,11 @@ function Router() {
             <>
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/charts" component={Charts} />
+              <Route path="/goals" component={Goals} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/goals" component={GoalsManagement} />
               <Route path="/dashboard" component={DashboardManager} />
               <Route path="/" component={DashboardManager} />
             </>

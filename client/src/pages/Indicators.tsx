@@ -7,6 +7,7 @@ import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import React from "react";
 import IndicatorDetailModal from "@/components/IndicatorDetailModal";
+import { AppLayout } from "@/components/AppLayout";
 
 interface Indicator {
   name: string;
@@ -114,49 +115,31 @@ export default function Indicators() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLocation("/")}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Voltar
-            </Button>
-            <h1 className="text-xl font-bold text-slate-900">Indicadores de Vendas</h1>
-          </div>
+    <AppLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Indicadores de Vendas</h1>
+          <p className="text-muted-foreground mt-2">
+            Acompanhe os principais indicadores de desempenho
+          </p>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Summary Card - MOVED TO TOP */}
-        <Card className="border-0 shadow-md mb-8">
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle>Resumo de Performance</CardTitle>
-            <CardDescription>
-              {user.role === "broker"
-                ? "Seus dados e comparação com a média da equipe"
-                : "Dados da equipe e análise de performance"}
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-sm text-green-700 font-medium mb-1">Indicadores Positivos</p>
+                <p className="text-sm text-green-700 font-medium mb-1">Positivos</p>
                 <p className="text-2xl font-bold text-green-600">14</p>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
-                <p className="text-sm text-red-700 font-medium mb-1">Indicadores Negativos</p>
+                <p className="text-sm text-red-700 font-medium mb-1">Negativos</p>
                 <p className="text-2xl font-bold text-red-600">8</p>
               </div>
               <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-sm text-slate-700 font-medium mb-1">Indicadores Indefinidos</p>
+                <p className="text-sm text-slate-700 font-medium mb-1">Indefinidos</p>
                 <p className="text-2xl font-bold text-slate-600">5</p>
               </div>
             </div>
@@ -165,7 +148,7 @@ export default function Indicators() {
 
         {/* Filter Section */}
         {canViewTeamData && (
-          <Card className="border-0 shadow-md mb-8">
+          <Card className="mb-8">
             <CardHeader>
               <CardTitle>Filtros</CardTitle>
             </CardHeader>
@@ -195,7 +178,7 @@ export default function Indicators() {
           {indicators.map((indicator, idx) => (
             <Card
               key={idx}
-              className="border-0 shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="hover:shadow-lg transition-all cursor-pointer"
               onClick={() => handleIndicatorClick(indicator.name)}
             >
               <CardHeader className="pb-3">
@@ -230,7 +213,7 @@ export default function Indicators() {
             </Card>
           ))}
         </div>
-      </main>
+      </div>
 
       {/* Indicator Detail Modal */}
       {selectedIndicator && (
@@ -247,7 +230,7 @@ export default function Indicators() {
           userRole={user?.role as "broker" | "manager" | "finance" | "admin"}
         />
       )}
-    </div>
+    </AppLayout>
   );
 }
 

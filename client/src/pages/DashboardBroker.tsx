@@ -58,14 +58,7 @@ export default function DashboardBroker() {
             <h1 className="text-2xl font-bold text-slate-900">Delmack</h1>
           </div>
 
-          {/* Navigation Menu */}
-          <nav className="hidden md:flex items-center gap-6">
-            <button onClick={() => setLocation("/")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Dashboard</button>
-            <button onClick={() => setLocation("/sales/new")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Nova Venda</button>
-            <button onClick={() => setLocation("/indicators")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Indicadores</button>
-            <button onClick={() => setLocation("/reports")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Relatórios</button>
-            <button onClick={() => setLocation("/ranking")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Ranking</button>
-          </nav>
+          {/* Navigation Menu - Removido pois agora usa AppHeader */}
 
           <div className="flex items-center gap-4">
             <div className="text-right">
