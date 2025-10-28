@@ -133,6 +133,15 @@
   - [x] 4 KPI Cards (Total de Corretores, Total de Vendas, Total de Comissões, Performance Média)
   - [x] Tabela com colunas: Nome, Email, Telefone, Status, Vendas, Comissões, Performance, Ações
 
+## ✅ Bugs/Correções Implementadas
+
+- [x] Remover texto "Gerente" (papel) do dropdown - deixar apenas "Sair"
+- [x] Implementar funcionalidade completa de cadastro/edição de corretores
+  - [x] Modal de adicionar novo corretor
+  - [x] Modal de editar corretor existente
+  - [x] Salvar dados no estado local (funcional)
+  - [x] Remover corretor com confirmação
+
 ## 📋 Próximos Passos
 
 1. ✅ Executar testes de login com todas as 6 contas
@@ -140,10 +149,11 @@
 3. ✅ Verificar que todos os 14 novos campos são salvos no banco
 4. ✅ Testar dashboards com diferentes perfis
 5. ✅ Criar header padrão em todas as páginas
-6. [ ] Criar página de gerenciamento de corretores
-7. [ ] Testar indicadores e filtros
-8. [ ] Corrigir qualquer bug encontrado
-9. [ ] Criar checkpoint final
+6. ✅ Criar página de gerenciamento de corretores
+7. [ ] Corrigir dropdown para mostrar apenas "Sair"
+8. [ ] Implementar funcionalidade de cadastro/edição de corretores
+9. [ ] Testar indicadores e filtros
+10. [ ] Criar checkpoint final
 
 ## 📊 Estatísticas
 

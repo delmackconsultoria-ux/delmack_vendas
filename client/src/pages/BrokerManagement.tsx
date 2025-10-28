@@ -2,7 +2,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Edit2, Trash2, TrendingUp, DollarSign, FileText } from "lucide-react";
+import { Plus, Edit2, Trash2, TrendingUp, DollarSign, FileText, X } from "lucide-react";
 import { useState } from "react";
 
 interface Broker {
@@ -49,11 +49,25 @@ const mockBrokers: Broker[] = [
   },
 ];
 
+interface FormData {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: "active" | "inactive";
+}
+
 export default function BrokerManagementPage() {
   const [brokers, setBrokers] = useState<Broker[]>(mockBrokers);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [editingBroker, setEditingBroker] = useState<Broker | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    phone: "",
+    status: "active",
+  });
 
   const filteredBrokers = brokers.filter(
     (broker) =>
@@ -61,9 +75,69 @@ export default function BrokerManagementPage() {
       broker.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleOpenAddModal = () => {
+    setEditingBroker(null);
+    setFormData({ name: "", email: "", phone: "", status: "active" });
+    setShowModal(true);
+  };
+
+  const handleOpenEditModal = (broker: Broker) => {
+    setEditingBroker(broker);
+    setFormData({
+      id: broker.id,
+      name: broker.name,
+      email: broker.email,
+      phone: broker.phone,
+      status: broker.status,
+    });
+    setShowModal(true);
+  };
+
+  const handleSaveBroker = () => {
+    if (!formData.name || !formData.email || !formData.phone) {
+      alert("Por favor, preencha todos os campos!");
+      return;
+    }
+
+    if (editingBroker) {
+      // Editar corretor existente
+      setBrokers(
+        brokers.map((b) =>
+          b.id === editingBroker.id
+            ? {
+                ...b,
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                status: formData.status,
+              }
+            : b
+        )
+      );
+      alert("Corretor atualizado com sucesso!");
+    } else {
+      // Adicionar novo corretor
+      const newBroker: Broker = {
+        id: Date.now().toString(),
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        status: formData.status,
+        sales: 0,
+        commissions: 0,
+        performance: 0,
+      };
+      setBrokers([...brokers, newBroker]);
+      alert("Corretor adicionado com sucesso!");
+    }
+
+    setShowModal(false);
+  };
+
   const handleDeleteBroker = (id: string) => {
     if (confirm("Tem certeza que deseja remover este corretor?")) {
       setBrokers(brokers.filter((b) => b.id !== id));
+      alert("Corretor removido com sucesso!");
     }
   };
 
@@ -92,7 +166,7 @@ export default function BrokerManagementPage() {
               </p>
             </div>
             <Button
-              onClick={() => setShowAddModal(true)}
+              onClick={handleOpenAddModal}
               className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -153,7 +227,10 @@ export default function BrokerManagementPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold text-slate-900">
-                  {Math.round(brokers.reduce((sum, b) => sum + b.performance, 0) / brokers.length)}%
+                  {brokers.length > 0
+                    ? Math.round(brokers.reduce((sum, b) => sum + b.performance, 0) / brokers.length)
+                    : 0}
+                  %
                 </p>
               </CardContent>
             </Card>
@@ -225,7 +302,7 @@ export default function BrokerManagementPage() {
                         <td className="py-4 px-4">
                           <div className="flex justify-center gap-2">
                             <button
-                              onClick={() => setEditingBroker(broker)}
+                              onClick={() => handleOpenEditModal(broker)}
                               className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
                               title="Editar"
                             >
@@ -249,6 +326,86 @@ export default function BrokerManagementPage() {
           </Card>
         </div>
       </div>
+
+      {/* Modal de Adicionar/Editar Corretor */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>
+                {editingBroker ? "Editar Corretor" : "Adicionar Novo Corretor"}
+              </CardTitle>
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-1 hover:bg-slate-100 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700">Nome</label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Digite o nome do corretor"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700">Email</label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="Digite o email do corretor"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700">Telefone</label>
+                <Input
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="Digite o telefone do corretor"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status: e.target.value as "active" | "inactive",
+                    })
+                  }
+                  className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-md"
+                >
+                  <option value="active">Ativo</option>
+                  <option value="inactive">Inativo</option>
+                </select>
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={handleSaveBroker}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  {editingBroker ? "Atualizar" : "Adicionar"}
+                </Button>
+                <Button
+                  onClick={() => setShowModal(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </>
   );
 }

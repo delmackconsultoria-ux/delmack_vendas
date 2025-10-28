@@ -71,14 +71,10 @@ export function AppHeader() {
 
         {/* Usuário e Sair */}
         <div className="flex items-center gap-4 ml-auto">
-          <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium">{user?.name || "-"}</p>
-            <p className="text-xs text-muted-foreground">{user?.role || "-"}</p>
-          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="text-sm">
-                {user?.name?.split(" ")[0] || "Menu"}
+                {user?.name || "Menu"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
