@@ -21,8 +21,7 @@ import DocumentUpload from "./pages/DocumentUpload";
 import GoalsManagement from "./pages/GoalsManagement";
 import CompanyManagement from "./pages/CompanyManagement";
 import Analytics from "./pages/Analytics";
-import Charts from "./pages/Charts";
-import Goals from "./pages/Goals";
+
 import BrokerManagement from "./pages/BrokerManagement";
 
 function Router() {
@@ -78,8 +77,8 @@ function Router() {
             <>
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
-              <Route path="/charts" component={Charts} />
-              <Route path="/goals" component={Goals} />
+
+
               <Route path="/brokers" component={BrokerManagement} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />

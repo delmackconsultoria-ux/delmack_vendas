@@ -142,6 +142,15 @@
   - [x] Salvar dados no estado local (funcional)
   - [x] Remover corretor com confirmação
 
+## 📋 Funcionalidades em Desenvolvimento
+
+- [ ] Juntar páginas de Gráficos e Relatórios em uma única página
+  - [ ] Remover página Charts.tsx
+  - [ ] Atualizar Reports.tsx com conteúdo de ambas
+  - [ ] Remover "Gráficos" do menu horizontal
+  - [ ] Manter apenas "Relatórios" no menu
+  - [ ] Atualizar App.tsx para remover rota de /charts
+
 ## 📋 Próximos Passos
 
 1. ✅ Executar testes de login com todas as 6 contas
@@ -150,10 +159,11 @@
 4. ✅ Testar dashboards com diferentes perfis
 5. ✅ Criar header padrão em todas as páginas
 6. ✅ Criar página de gerenciamento de corretores
-7. [ ] Corrigir dropdown para mostrar apenas "Sair"
-8. [ ] Implementar funcionalidade de cadastro/edição de corretores
-9. [ ] Testar indicadores e filtros
-10. [ ] Criar checkpoint final
+7. ✅ Corrigir dropdown para mostrar apenas "Sair"
+8. ✅ Implementar funcionalidade de cadastro/edição de corretores
+9. [ ] Juntar páginas de Gráficos e Relatórios
+10. [ ] Testar indicadores e filtros
+11. [ ] Criar checkpoint final
 
 ## 📊 Estatísticas
 

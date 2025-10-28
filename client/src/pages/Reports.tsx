@@ -1,11 +1,6 @@
-import { useAuth } from "@/_core/hooks/useAuth";
-import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
+import { AppHeader } from "@/components/AppHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { BarChart3, LogOut, Download } from "lucide-react";
-import { AppLayout } from "@/components/AppLayout";
-import { trpc } from "@/lib/trpc";
+import { BarChart3, TrendingUp, Download } from "lucide-react";
 import { useState } from "react";
 import {
   BarChart,
@@ -20,27 +15,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export default function Reports() {
-  const { user, logout } = useAuth();
-  const [, setLocation] = useLocation();
+export default function ReportsPage() {
   const [reportType, setReportType] = useState("sales-engagement");
   const [selectedBroker, setSelectedBroker] = useState("all");
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      setLocation("/login");
-    },
-  });
-
-  const handleLogout = async () => {
-    await logoutMutation.mutateAsync();
-  };
-
-  if (!user) {
-    return null;
-  }
 
   // Mock data - corretores
   const brokers = [
@@ -151,42 +128,43 @@ export default function Reports() {
   const chartData = getChartData();
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
-        {/* Title Section */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Relatórios e Análises</h1>
-          <p className="text-muted-foreground mt-2">
-            Acompanhe o desempenho de vendas, angariações e indicadores
-          </p>
-        </div>
+    <>
+      <AppHeader />
+      <div className="min-h-screen bg-slate-50 pt-16">
+        <div className="px-6 py-8 max-w-7xl mx-auto">
+          {/* Title Section */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Relatórios e Gráficos</h1>
+            <p className="text-slate-600 mt-2">
+              Acompanhe o desempenho de vendas, angariações e indicadores com gráficos interativos
+            </p>
+          </div>
 
-        {/* Filters */}
-        <Card className="border-0 shadow-md mb-8 bg-gradient-to-br from-blue-50 to-indigo-50">
-          <CardHeader>
-            <CardTitle>Filtros</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Tipo de Relatório */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Tipo de Relatório
-                </label>
-                <select
-                  value={reportType}
-                  onChange={(e) => setReportType(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="sales-engagement">Vendas + Angariações</option>
-                  <option value="engagement-qty">Qtd Angariações</option>
-                  <option value="cancellations-qty">Qtd Baixas</option>
-                  <option value="cancellations-value">Valor Baixas</option>
-                </select>
-              </div>
+          {/* Filters */}
+          <Card className="border-0 shadow-md mb-8 bg-gradient-to-br from-blue-50 to-indigo-50">
+            <CardHeader>
+              <CardTitle>Filtros</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Tipo de Relatório */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Tipo de Relatório
+                  </label>
+                  <select
+                    value={reportType}
+                    onChange={(e) => setReportType(e.target.value)}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="sales-engagement">Vendas + Angariações</option>
+                    <option value="engagement-qty">Qtd Angariações</option>
+                    <option value="cancellations-qty">Qtd Baixas</option>
+                    <option value="cancellations-value">Valor Baixas</option>
+                  </select>
+                </div>
 
-              {/* Corretor */}
-              {(user.role === "manager" || user.role === "finance") && (
+                {/* Corretor */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Corretor
@@ -204,215 +182,155 @@ export default function Reports() {
                     ))}
                   </select>
                 </div>
-              )}
 
-              {/* Mês */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Mês
-                </label>
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      {new Date(2025, i).toLocaleString("pt-BR", {
-                        month: "long",
-                      })}
-                    </option>
-                  ))}
-                </select>
+                {/* Download Button */}
+                <div className="flex items-end">
+                  <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
+                    <Download className="h-4 w-4" />
+                    Baixar Relatório
+                  </button>
+                </div>
               </div>
-
-              {/* Ano */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Ano
-                </label>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {Array.from({ length: 5 }, (_, i) => {
-                    const year = new Date().getFullYear() - 2 + i;
-                    return (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 shadow-md">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Total Vendas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-slate-900">
-                R$ {(7700000 / 1000000).toFixed(1)}M
-              </p>
-              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Total Angariações
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">
+                  Total Vendas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-slate-900">
+                  R$ {(7700000 / 1000000).toFixed(1)}M
+                </p>
+                <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">
+                  Total Angariações
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-slate-900">
+                  R$ {(8100000 / 1000000).toFixed(1)}M
+                </p>
+                <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">
+                  Qtd Angariações
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-slate-900">175</p>
+                <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">
+                  Qtd Baixas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-slate-900">26</p>
+                <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Chart */}
+          <Card className="border-0 shadow-md mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                {getChartTitle()}
               </CardTitle>
+              <CardDescription>{getChartDescription()}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">
-                R$ {(8100000 / 1000000).toFixed(1)}M
-              </p>
-              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
+              <ResponsiveContainer width="100%" height={400}>
+                {reportType === "sales-engagement" ? (
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => `R$ ${(value / 1000000).toFixed(2)}M`} />
+                    <Legend />
+                    <Bar dataKey="vendas" fill="#3b82f6" name="Vendas" />
+                    <Bar dataKey="angariações" fill="#8b5cf6" name="Angariações" />
+                  </BarChart>
+                ) : (
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey={reportType === "engagement-qty" ? "quantidade" : reportType === "cancellations-qty" ? "quantidade" : "valor"} fill="#3b82f6" />
+                  </BarChart>
+                )}
+              </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Qtd Angariações
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-slate-900">175</p>
-              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
-            </CardContent>
-          </Card>
+          {/* Additional Charts Grid */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="border-0 shadow-md">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Evolução Mensal
+                </CardTitle>
+                <CardDescription>
+                  Tendência de crescimento
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={monthlyEvolutionData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="mes" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => `R$ ${(value / 1000000).toFixed(2)}M`} />
+                    <Legend />
+                    <Line type="monotone" dataKey="vendas" stroke="#3b82f6" name="Vendas" />
+                    <Line type="monotone" dataKey="angariações" stroke="#8b5cf6" name="Angariações" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-          <Card className="border-0 shadow-md">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Valor Baixas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-slate-900">
-                R$ {(1560000 / 1000000).toFixed(1)}M
-              </p>
-              <p className="text-xs text-slate-600 mt-2">Período selecionado</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Chart */}
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle>{getChartTitle()}</CardTitle>
-            <CardDescription>{getChartDescription()}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={400}>
-              {reportType === "sales-engagement" ? (
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value: any) =>
-                      `R$ ${(value / 1000000).toFixed(2)}M`
-                    }
-                  />
-                  <Legend />
-                  <Bar dataKey="vendas" fill="#3b82f6" name="Vendas" />
-                  <Bar dataKey="angariações" fill="#10b981" name="Angariações" />
-                </BarChart>
-              ) : reportType === "engagement-qty" ? (
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="quantidade" fill="#8b5cf6" name="Quantidade" />
-                </BarChart>
-              ) : reportType === "cancellations-qty" ? (
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="quantidade" fill="#ef4444" name="Quantidade" />
-                </BarChart>
-              ) : (
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value: any) =>
-                      `R$ ${(value / 1000000).toFixed(2)}M`
-                    }
-                  />
-                  <Legend />
-                  <Bar dataKey="valor" fill="#f59e0b" name="Valor" />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Monthly Evolution Chart */}
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle>Evolução Mensal</CardTitle>
-            <CardDescription>
-              Acompanhe a evolução de vendas e angariações ao longo dos meses
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={monthlyEvolutionData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value: any) =>
-                    `R$ ${(value / 1000000).toFixed(2)}M`
-                  }
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="vendas"
-                  stroke="#3b82f6"
-                  name="Vendas"
-                  strokeWidth={2}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="angariações"
-                  stroke="#10b981"
-                  name="Angariações"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Export Button */}
-        <div className="flex justify-end">
-          <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
-            <Download className="h-4 w-4" />
-            Exportar Relatório
-          </Button>
+            <Card className="border-0 shadow-md">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Comissões por Corretor
+                </CardTitle>
+                <CardDescription>
+                  Distribuição de comissões
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64 bg-slate-100 rounded flex items-center justify-center">
+                  <p className="text-slate-600">Gráfico em desenvolvimento</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
 
