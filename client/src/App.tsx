@@ -75,10 +75,9 @@ function Router() {
           )}
           {user.role === "manager" && (
             <>
+              <Route path="/sales/new" component={NewSale} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
-
-
               <Route path="/brokers" component={BrokerManagement} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />

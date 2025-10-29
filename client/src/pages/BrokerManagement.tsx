@@ -5,6 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Plus, Edit2, Trash2, TrendingUp, DollarSign, FileText, X } from "lucide-react";
 import { useState } from "react";
 
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 interface Broker {
   id: string;
   name: string;
@@ -14,6 +21,7 @@ interface Broker {
   sales: number;
   commissions: number;
   performance: number;
+  teamMembers?: TeamMember[];
 }
 
 const mockBrokers: Broker[] = [
@@ -26,6 +34,7 @@ const mockBrokers: Broker[] = [
     sales: 15,
     commissions: 45000,
     performance: 85,
+    teamMembers: [],
   },
   {
     id: "2",
@@ -36,6 +45,7 @@ const mockBrokers: Broker[] = [
     sales: 18,
     commissions: 54000,
     performance: 92,
+    teamMembers: [],
   },
   {
     id: "3",
@@ -46,6 +56,7 @@ const mockBrokers: Broker[] = [
     sales: 12,
     commissions: 36000,
     performance: 78,
+    teamMembers: [],
   },
 ];
 
@@ -55,18 +66,32 @@ interface FormData {
   email: string;
   phone: string;
   status: "active" | "inactive";
+  teamMembers?: TeamMember[];
+}
+
+interface TeamFormData {
+  name: string;
+  email: string;
+  role: string;
 }
 
 export default function BrokerManagementPage() {
   const [brokers, setBrokers] = useState<Broker[]>(mockBrokers);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
   const [editingBroker, setEditingBroker] = useState<Broker | null>(null);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
     status: "active",
+    teamMembers: [],
+  });
+  const [teamFormData, setTeamFormData] = useState<TeamFormData>({
+    name: "",
+    email: "",
+    role: "",
   });
 
   const filteredBrokers = brokers.filter(
@@ -77,7 +102,7 @@ export default function BrokerManagementPage() {
 
   const handleOpenAddModal = () => {
     setEditingBroker(null);
-    setFormData({ name: "", email: "", phone: "", status: "active" });
+    setFormData({ name: "", email: "", phone: "", status: "active", teamMembers: [] });
     setShowModal(true);
   };
 
@@ -89,8 +114,38 @@ export default function BrokerManagementPage() {
       email: broker.email,
       phone: broker.phone,
       status: broker.status,
+      teamMembers: broker.teamMembers || [],
     });
     setShowModal(true);
+  };
+
+  const handleAddTeamMember = () => {
+    if (!teamFormData.name || !teamFormData.email || !teamFormData.role) {
+      alert("Por favor, preencha todos os campos da equipe!");
+      return;
+    }
+
+    const newTeamMember: TeamMember = {
+      id: Date.now().toString(),
+      name: teamFormData.name,
+      email: teamFormData.email,
+      role: teamFormData.role,
+    };
+
+    setFormData({
+      ...formData,
+      teamMembers: [...(formData.teamMembers || []), newTeamMember],
+    });
+
+    setTeamFormData({ name: "", email: "", role: "" });
+    setShowTeamModal(false);
+  };
+
+  const handleRemoveTeamMember = (memberId: string) => {
+    setFormData({
+      ...formData,
+      teamMembers: (formData.teamMembers || []).filter((m) => m.id !== memberId),
+    });
   };
 
   const handleSaveBroker = () => {
@@ -110,6 +165,7 @@ export default function BrokerManagementPage() {
                 email: formData.email,
                 phone: formData.phone,
                 status: formData.status,
+                teamMembers: formData.teamMembers || [],
               }
             : b
         )
@@ -126,6 +182,7 @@ export default function BrokerManagementPage() {
         sales: 0,
         commissions: 0,
         performance: 0,
+        teamMembers: formData.teamMembers || [],
       };
       setBrokers([...brokers, newBroker]);
       alert("Corretor adicionado com sucesso!");
@@ -248,77 +305,108 @@ export default function BrokerManagementPage() {
 
           {/* Tabela de Corretores */}
           <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle>Corretores da Equipe</CardTitle>
-              <CardDescription>
-                {filteredBrokers.length} corretor(es) encontrado(s)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 font-semibold text-slate-900">Nome</th>
-                      <th className="text-left py-3 px-4 font-semibold text-slate-900">Email</th>
-                      <th className="text-left py-3 px-4 font-semibold text-slate-900">Telefone</th>
-                      <th className="text-left py-3 px-4 font-semibold text-slate-900">Status</th>
-                      <th className="text-center py-3 px-4 font-semibold text-slate-900">Vendas</th>
-                      <th className="text-center py-3 px-4 font-semibold text-slate-900">Comissões</th>
-                      <th className="text-center py-3 px-4 font-semibold text-slate-900">Performance</th>
-                      <th className="text-center py-3 px-4 font-semibold text-slate-900">Ações</th>
+                    <tr className="border-b bg-slate-50">
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                        Nome
+                      </th>
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                        Email
+                      </th>
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                        Telefone
+                      </th>
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                        Status
+                      </th>
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                        Vendas
+                      </th>
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                        Comissões
+                      </th>
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                        Performance
+                      </th>
+                      <th className="py-4 px-4 text-center text-sm font-semibold text-slate-900">
+                        Ações
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredBrokers.map((broker) => (
-                      <tr key={broker.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-4 px-4 text-slate-900 font-medium">{broker.name}</td>
-                        <td className="py-4 px-4 text-slate-600">{broker.email}</td>
-                        <td className="py-4 px-4 text-slate-600">{broker.phone}</td>
-                        <td className="py-4 px-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(broker.status)}`}>
-                            {getStatusLabel(broker.status)}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4 text-center text-slate-900 font-medium">
-                          {broker.sales}
-                        </td>
-                        <td className="py-4 px-4 text-center text-slate-900 font-medium">
-                          R$ {broker.commissions.toLocaleString()}
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            <div className="w-16 bg-slate-200 rounded-full h-2">
-                              <div
-                                className="bg-purple-600 h-2 rounded-full"
-                                style={{ width: `${broker.performance}%` }}
-                              ></div>
+                    {filteredBrokers.length > 0 ? (
+                      filteredBrokers.map((broker) => (
+                        <tr key={broker.id} className="border-b hover:bg-slate-50 transition-colors">
+                          <td className="py-4 px-4">
+                            <div>
+                              <p className="text-sm font-medium text-slate-900">{broker.name}</p>
+                              {broker.teamMembers && broker.teamMembers.length > 0 && (
+                                <p className="text-xs text-slate-500 mt-1">
+                                  {broker.teamMembers.length} membro(s) na equipe
+                                </p>
+                              )}
                             </div>
-                            <span className="text-sm text-slate-600 font-medium">
-                              {broker.performance}%
+                          </td>
+                          <td className="py-4 px-4 text-sm text-slate-600">{broker.email}</td>
+                          <td className="py-4 px-4 text-sm text-slate-600">{broker.phone}</td>
+                          <td className="py-4 px-4">
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                broker.status
+                              )}`}
+                            >
+                              {getStatusLabel(broker.status)}
                             </span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex justify-center gap-2">
-                            <button
-                              onClick={() => handleOpenEditModal(broker)}
-                              className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                              title="Editar"
-                            >
-                              <Edit2 className="h-4 w-4 text-blue-600" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteBroker(broker.id)}
-                              className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                              title="Remover"
-                            >
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </button>
-                          </div>
+                          </td>
+                          <td className="py-4 px-4 text-sm font-medium text-slate-900">
+                            {broker.sales}
+                          </td>
+                          <td className="py-4 px-4 text-sm font-medium text-green-600">
+                            R$ {(broker.commissions / 1000).toFixed(1)}k
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 bg-slate-200 rounded-full h-2">
+                                <div
+                                  className="bg-purple-600 h-2 rounded-full"
+                                  style={{ width: `${broker.performance}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-sm font-medium text-slate-900 w-8">
+                                {broker.performance}%
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="flex justify-center gap-2">
+                              <button
+                                onClick={() => handleOpenEditModal(broker)}
+                                className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                                title="Editar"
+                              >
+                                <Edit2 className="h-4 w-4 text-blue-600" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteBroker(broker.id)}
+                                className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                                title="Remover"
+                              >
+                                <Trash2 className="h-4 w-4 text-red-600" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={8} className="py-8 text-center text-slate-500">
+                          Nenhum corretor encontrado
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -327,11 +415,73 @@ export default function BrokerManagementPage() {
         </div>
       </div>
 
+      {/* Modal de Adicionar Membro da Equipe */}
+      {showTeamModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>Adicionar Membro da Equipe</CardTitle>
+              <button
+                onClick={() => setShowTeamModal(false)}
+                className="p-1 hover:bg-slate-100 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700">Nome</label>
+                <Input
+                  value={teamFormData.name}
+                  onChange={(e) => setTeamFormData({ ...teamFormData, name: e.target.value })}
+                  placeholder="Digite o nome do membro"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700">Email</label>
+                <Input
+                  type="email"
+                  value={teamFormData.email}
+                  onChange={(e) => setTeamFormData({ ...teamFormData, email: e.target.value })}
+                  placeholder="Digite o email do membro"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700">Funcao/Cargo</label>
+                <Input
+                  value={teamFormData.role}
+                  onChange={(e) => setTeamFormData({ ...teamFormData, role: e.target.value })}
+                  placeholder="Ex: Assistente, Gerente de Vendas"
+                  className="mt-1"
+                />
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={handleAddTeamMember}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Adicionar
+                </Button>
+                <Button
+                  onClick={() => setShowTeamModal(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Modal de Adicionar/Editar Corretor */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 sticky top-0 bg-white">
               <CardTitle>
                 {editingBroker ? "Editar Corretor" : "Adicionar Novo Corretor"}
               </CardTitle>
@@ -387,6 +537,48 @@ export default function BrokerManagementPage() {
                   <option value="inactive">Inativo</option>
                 </select>
               </div>
+
+              {/* Secao de Equipe */}
+              <div className="border-t pt-4 mt-4">
+                <div className="flex justify-between items-center mb-3">
+                  <label className="text-sm font-medium text-slate-700">Equipe do Corretor</label>
+                  <Button
+                    onClick={() => setShowTeamModal(true)}
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Adicionar Membro
+                  </Button>
+                </div>
+
+                {formData.teamMembers && formData.teamMembers.length > 0 ? (
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {formData.teamMembers.map((member) => (
+                      <div
+                        key={member.id}
+                        className="flex items-center justify-between bg-slate-50 p-2 rounded border border-slate-200"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
+                          <p className="text-xs text-slate-600 truncate">{member.email}</p>
+                          <p className="text-xs text-slate-500">{member.role}</p>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveTeamMember(member.id)}
+                          className="p-1 hover:bg-red-100 rounded ml-2 flex-shrink-0"
+                        >
+                          <X className="h-4 w-4 text-red-600" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500 italic">Nenhum membro adicionado ainda</p>
+                )}
+              </div>
+
               <div className="flex gap-2 pt-4">
                 <Button
                   onClick={handleSaveBroker}

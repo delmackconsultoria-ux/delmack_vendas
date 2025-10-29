@@ -142,14 +142,32 @@
   - [x] Salvar dados no estado local (funcional)
   - [x] Remover corretor com confirmação
 
+## 🚀 Funcionalidades Solicitadas para Implementar
+
+- [x] Ativar "Nova Venda" para o perfil de Gerente
+  - [x] Adicionada rota /sales/new para manager no App.tsx
+  - [x] Testado com sucesso - gerente consegue acessar formulário de nova venda
+- [x] Permitir cadastrar a equipe do corretor (adicionar campos de equipe no formulário de edição)
+  - [x] Adicionada interface TeamMember e campos de equipe em BrokerManagement.tsx
+  - [x] Modal para adicionar membros da equipe implementada
+  - [x] Funcionalidade de remover membros implementada
+  - [x] Testado com sucesso - adicionado membro à equipe de João Silva
+- [x] Remover "Dashboard" do menu horizontal
+  - [x] Removido item "Dashboard" da lista navItems em AppHeader.tsx
+  - [x] Testado com sucesso - menu agora mostra apenas: Nova Venda, Indicadores, Corretores, Relatórios
+- [x] Vincular logo/Delmack para ir ao dashboard (padrão para todos os perfis)
+  - [x] Logo convertido em button clicável em AppHeader.tsx
+  - [x] onClick navega para /dashboard
+  - [x] Testado com sucesso - logo leva ao dashboard
+
 ## 📋 Funcionalidades em Desenvolvimento
 
-- [ ] Juntar páginas de Gráficos e Relatórios em uma única página
-  - [ ] Remover página Charts.tsx
-  - [ ] Atualizar Reports.tsx com conteúdo de ambas
-  - [ ] Remover "Gráficos" do menu horizontal
-  - [ ] Manter apenas "Relatórios" no menu
-  - [ ] Atualizar App.tsx para remover rota de /charts
+- [x] Juntar páginas de Gráficos e Relatórios em uma única página
+  - [x] Remover página Charts.tsx
+  - [x] Atualizar Reports.tsx com conteúdo de ambas
+  - [x] Remover "Gráficos" do menu horizontal
+  - [x] Manter apenas "Relatórios" no menu
+  - [x] Atualizar App.tsx para remover rota de /charts
 
 ## 📋 Próximos Passos
 

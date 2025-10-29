@@ -17,7 +17,6 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", path: "/dashboard" },
   { label: "Nova Venda", path: "/sales/new", roles: ["broker", "manager", "admin"] },
   { label: "Indicadores", path: "/indicators", roles: ["manager", "finance", "admin"] },
 
@@ -39,8 +38,11 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-4 max-w-full">
-        {/* Logo e Título */}
-        <div className="flex items-center gap-3 min-w-0">
+        {/* Logo e Título - Clicável para Dashboard */}
+        <button
+          onClick={() => setLocation("/dashboard")}
+          className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity"
+        >
           <img
             src={APP_LOGO}
             alt={APP_TITLE}
@@ -49,7 +51,7 @@ export function AppHeader() {
           <span className="font-semibold tracking-tight text-lg hidden sm:inline">
             {APP_TITLE}
           </span>
-        </div>
+        </button>
 
         {/* Menu Horizontal */}
         <nav className="flex items-center gap-1 mx-auto">
