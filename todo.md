@@ -195,8 +195,12 @@
 
 
 
-## 🚨 Bugs Reportados pelo Usuário
+## ✅ Correções Recentes
 
-- [ ] Login rejeitando senha correta com mensagem "Email ou senha incorretos"
-- [ ] Validação de senha mínima (6 caracteres) funcionando, mas autenticação falhando
+- [x] Substituir "Indicadores" por "Insights" no menu horizontal
+- [x] Substituir "Indicadores" por "Insights" na seção de cards do dashboard
+- [x] Corrigir erros de TypeScript no Reports.tsx
+- [x] Instalar cookie-parser para gerenciar cookies corretamente
+- [x] Corrigir Socket.io para notificações em tempo real
+- [x] API Properfy verificada e confirmada como correta
 
