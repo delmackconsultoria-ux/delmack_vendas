@@ -237,7 +237,7 @@ export default function DashboardManager() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5 text-green-600" />
-                  Insights
+                  Indicadores
                 </CardTitle>
                 <CardDescription>
                   KPIs e métricas da equipe
