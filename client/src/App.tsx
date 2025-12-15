@@ -23,6 +23,7 @@ import CompanyManagement from "./pages/CompanyManagement";
 import Analytics from "./pages/Analytics";
 
 import BrokerManagement from "./pages/BrokerManagement";
+import DashboardSuperAdmin from "./pages/DashboardSuperAdmin";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -49,6 +50,14 @@ function Router() {
       {/* Protected routes */}
       {user ? (
         <>
+          {/* Super Admin routes */}
+          {user.role === "superadmin" && (
+            <>
+              <Route path="/" component={DashboardSuperAdmin} />
+              <Route path="/dashboard" component={DashboardSuperAdmin} />
+            </>
+          )}
+
           {/* Role-based dashboards */}
           {user.role === "broker" && (
             <>

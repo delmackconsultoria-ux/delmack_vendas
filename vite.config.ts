@@ -27,6 +27,9 @@ export default defineConfig({
   },
   server: {
     host: true,
+    hmr: {
+      overlay: false,
+    },
     allowedHosts: [
       ".manuspre.computer",
       ".manus.computer",

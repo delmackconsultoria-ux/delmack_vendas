@@ -11,7 +11,7 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }).unique(),
   password: text("password"), // Hashed password for traditional login
   loginMethod: varchar("loginMethod", { length: 64 }).default("email"),
-  role: mysqlEnum("role", ["admin", "manager", "broker", "finance"]).default("broker").notNull(),
+  role: mysqlEnum("role", ["superadmin", "admin", "manager", "broker", "finance"]).default("broker").notNull(),
   companyId: varchar("companyId", { length: 64 }), // Company/Imobiliária reference
   isActive: boolean("isActive").default(true),
   createdAt: timestamp("createdAt").defaultNow(),
@@ -31,6 +31,9 @@ export const companies = mysqlTable("companies", {
   phone: varchar("phone", { length: 20 }),
   address: text("address"),
   logo: text("logo"), // URL to company logo
+  licenseType: mysqlEnum("licenseType", ["trial", "monthly", "annual"]).default("trial"),
+  licenseExpiresAt: timestamp("licenseExpiresAt"),
+  isActive: boolean("isActive").default(true),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

@@ -200,3 +200,15 @@
 - [ ] Login rejeitando senha correta com mensagem "Email ou senha incorretos"
 - [ ] Validação de senha mínima (6 caracteres) funcionando, mas autenticação falhando
 
+
+
+## 🆕 Nova Implementação - Sistema Multi-Empresa
+
+- [x] Atualizar schema do banco para multi-empresa (companies table)
+- [x] Criar Super Admin único (delmackconsultoria@gmail.com)
+- [x] Implementar upload de Excel para criar usuários em lote
+- [x] Enviar senhas por e-mail via Manus Notification API
+- [x] Adicionar botão ver senha nos campos de senha
+- [x] Remover notificações de erro vermelhas (overlay desabilitado)
+- [x] Dashboard do Super Admin para gerenciar empresas
+- [x] Manager como admin da empresa
