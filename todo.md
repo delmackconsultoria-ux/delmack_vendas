@@ -218,3 +218,20 @@
 - [x] Painel de gestão de usuários para Manager
 - [x] Soft delete de usuários (dados permanecem)
 - [x] Template de Excel para download
+
+## 🆕 Melhorias Solicitadas
+
+### Gestão de Usuários (Manager)
+- [x] Filtro por status (ativos/inativos)
+- [x] Edição de usuário existente
+- [ ] Histórico de ações (log) - Pendente
+
+### Dashboard Super Admin
+- [x] Quantidade total de usuários
+- [x] Usuários por empresa
+- [x] Quantidade de acessos
+- [x] Tipos de licença (perpétua, mensal, trimestral, semestral, anual)
+- [x] Detalhes da empresa ao clicar
+- [x] Responsável pelo contrato
+- [x] Data de início manual
+- [x] Perfis principais da empresa

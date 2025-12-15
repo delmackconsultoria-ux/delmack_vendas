@@ -271,6 +271,35 @@ export const companyRouter = router({
     }),
 
   /**
+   * Atualiza dados do usuário
+   */
+  updateUser: protectedProcedure
+    .input(z.object({
+      userId: z.string(),
+      name: z.string().optional(),
+      email: z.string().email().optional(),
+      role: z.enum(["broker", "finance", "manager"]).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        if (ctx.user?.role !== "manager" && ctx.user?.role !== "superadmin") {
+          throw new Error("Acesso negado");
+        }
+        const updateData: any = {};
+        if (input.name) updateData.name = input.name;
+        if (input.email) updateData.email = input.email;
+        if (input.role) updateData.role = input.role;
+        await db.update(users).set(updateData).where(eq(users.id, input.userId));
+        return { success: true };
+      } catch (error) {
+        console.error("[Company] Erro ao atualizar usuário:", error);
+        throw error;
+      }
+    }),
+
+  /**
    * Ativa/Desativa usuário (soft delete)
    */
   toggleUserStatus: protectedProcedure

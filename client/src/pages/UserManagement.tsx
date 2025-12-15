@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, UserX, UserCheck, Search, Users, Upload, Download } from "lucide-react";
+import { Plus, UserX, UserCheck, Search, Users, Upload, Download, Edit2 } from "lucide-react";
 import { useState, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -14,8 +14,11 @@ import { AppHeader } from "@/components/AppHeader";
 export default function UserManagement() {
   const { user } = useAuth();
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<any>(null);
   const [newUser, setNewUser] = useState<{ name: string; surname: string; email: string; role: "broker" | "finance" }>({ name: "", surname: "", email: "", role: "broker" });
   const [uploadedUsers, setUploadedUsers] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -23,6 +26,25 @@ export default function UserManagement() {
   const usersQuery = trpc.company.listUsers.useQuery();
   const addUserMutation = trpc.company.addUser.useMutation();
   const toggleUserMutation = trpc.company.toggleUserStatus.useMutation();
+  const updateUserMutation = trpc.company.updateUser.useMutation();
+
+  const handleUpdateUser = async () => {
+    if (!editingUser) return;
+    try {
+      await updateUserMutation.mutateAsync({
+        userId: editingUser.id,
+        name: editingUser.name,
+        email: editingUser.email,
+        role: editingUser.role,
+      });
+      toast.success("Usuário atualizado!");
+      setShowEditModal(false);
+      setEditingUser(null);
+      usersQuery.refetch();
+    } catch (error) {
+      toast.error("Erro ao atualizar usuário");
+    }
+  };
 
   const handleAddUser = async () => {
     try {
@@ -79,10 +101,14 @@ export default function UserManagement() {
     usersQuery.refetch();
   };
 
-  const filteredUsers = usersQuery.data?.filter((u: any) =>
-    u.name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase())
-  ) || [];
+  const filteredUsers = usersQuery.data?.filter((u: any) => {
+    const matchesSearch = u.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "active" && u.isActive) || 
+      (statusFilter === "inactive" && !u.isActive);
+    return matchesSearch && matchesStatus;
+  }) || [];
 
   if (!user) return null;
 
@@ -140,15 +166,26 @@ export default function UserManagement() {
           </Card>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Buscar por nome ou email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
+        {/* Search and Filter */}
+        <div className="flex gap-4 mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Buscar por nome ou email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <select
+            className="px-4 py-2 border rounded-md bg-white"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "inactive")}
+          >
+            <option value="all">Todos</option>
+            <option value="active">Ativos</option>
+            <option value="inactive">Inativos</option>
+          </select>
         </div>
 
         {/* Users Table */}
@@ -177,15 +214,20 @@ export default function UserManagement() {
                         {u.isActive ? "Ativo" : "Inativo"}
                       </Badge>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-4 text-right space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => { setEditingUser(u); setShowEditModal(true); }}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant={u.isActive ? "destructive" : "default"}
                         onClick={() => handleToggleUser(u.id, u.isActive)}
-                        className="gap-1"
                       >
                         {u.isActive ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-                        {u.isActive ? "Desativar" : "Reativar"}
                       </Button>
                     </td>
                   </tr>
@@ -255,6 +297,43 @@ export default function UserManagement() {
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => { setShowUploadModal(false); setUploadedUsers([]); }}>Cancelar</Button>
                 <Button onClick={handleUploadUsers} disabled={uploadedUsers.length === 0}>Importar</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {showEditModal && editingUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Editar Usuário</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Nome</Label>
+                <Input value={editingUser.name || ""} onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })} />
+              </div>
+              <div>
+                <Label>E-mail</Label>
+                <Input type="email" value={editingUser.email || ""} onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })} />
+              </div>
+              <div>
+                <Label>Perfil</Label>
+                <select
+                  className="w-full p-2 border rounded-md"
+                  value={editingUser.role}
+                  onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                >
+                  <option value="broker">Corretor</option>
+                  <option value="finance">Financeiro</option>
+                  <option value="manager">Gerente</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => { setShowEditModal(false); setEditingUser(null); }}>Cancelar</Button>
+                <Button onClick={handleUpdateUser}>Salvar</Button>
               </div>
             </CardContent>
           </Card>

@@ -30,10 +30,20 @@ export const companies = mysqlTable("companies", {
   email: varchar("email", { length: 320 }),
   phone: varchar("phone", { length: 20 }),
   address: text("address"),
-  logo: text("logo"), // URL to company logo
-  licenseType: mysqlEnum("licenseType", ["trial", "monthly", "annual"]).default("trial"),
+  logo: text("logo"),
+  // Licença
+  licenseType: mysqlEnum("licenseType", ["perpetual", "monthly", "quarterly", "semiannual", "annual"]).default("monthly"),
+  licenseStartDate: timestamp("licenseStartDate"),
   licenseExpiresAt: timestamp("licenseExpiresAt"),
+  // Contrato
+  contractResponsible: varchar("contractResponsible", { length: 255 }),
+  contractResponsibleEmail: varchar("contractResponsibleEmail", { length: 320 }),
+  contractResponsiblePhone: varchar("contractResponsiblePhone", { length: 20 }),
+  contractStartDate: timestamp("contractStartDate"),
+  contractNotes: text("contractNotes"),
+  // Status
   isActive: boolean("isActive").default(true),
+  totalLogins: int("totalLogins").default(0),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

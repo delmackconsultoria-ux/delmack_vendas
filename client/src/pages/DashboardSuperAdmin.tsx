@@ -22,8 +22,24 @@ export default function DashboardSuperAdmin() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const companiesQuery = trpc.superadmin.listCompanies.useQuery();
+  const statsQuery = trpc.superadmin.getStats.useQuery();
   const createCompanyMutation = trpc.superadmin.createCompany.useMutation();
   const uploadUsersMutation = trpc.superadmin.uploadUsers.useMutation();
+  const updateCompanyMutation = trpc.superadmin.updateCompany.useMutation();
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<any>(null);
+
+  const handleUpdateCompany = async (field: string, value: any) => {
+    if (!selectedCompany) return;
+    try {
+      await updateCompanyMutation.mutateAsync({ companyId: selectedCompany.id, [field]: value });
+      toast.success("Empresa atualizada!");
+      companiesQuery.refetch();
+      setSelectedCompany({ ...selectedCompany, [field]: value });
+    } catch (error) {
+      toast.error("Erro ao atualizar");
+    }
+  };
 
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => setLocation("/login"),
@@ -136,7 +152,7 @@ export default function DashboardSuperAdmin() {
               <Building2 className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{companiesQuery.data?.length || 0}</div>
+              <div className="text-3xl font-bold text-white">{statsQuery.data?.totalCompanies || 0}</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/50 border-slate-700">
@@ -145,7 +161,7 @@ export default function DashboardSuperAdmin() {
               <Users className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{companiesQuery.data?.reduce((acc: number, c: any) => acc + (c.userCount || 0), 0) || 0}</div>
+              <div className="text-3xl font-bold text-white">{statsQuery.data?.totalUsers || 0}</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/50 border-slate-700">
@@ -154,7 +170,7 @@ export default function DashboardSuperAdmin() {
               <FileSpreadsheet className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{companiesQuery.data?.filter((c: any) => c.isActive).length || 0}</div>
+              <div className="text-3xl font-bold text-white">{statsQuery.data?.totalLogins || 0}</div>
             </CardContent>
           </Card>
         </div>
@@ -195,6 +211,9 @@ export default function DashboardSuperAdmin() {
                     <span className="text-sm text-slate-400">{company.userCount || 0} usuários</span>
                     <Button size="sm" variant="outline" className="border-slate-600 text-slate-300" onClick={() => { setSelectedCompanyId(company.id); setShowUploadModal(true); }}>
                       <Upload className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="ghost" className="text-purple-400" onClick={() => { setSelectedCompany(company); setShowDetailsModal(true); }}>
+                      <Eye className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -303,6 +322,90 @@ export default function DashboardSuperAdmin() {
                 <Button onClick={handleCreateCompany} className="bg-purple-600 hover:bg-purple-700">
                   Criar Empresa
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Company Details Modal */}
+      {showDetailsModal && selectedCompany && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto py-8">
+          <Card className="w-full max-w-2xl bg-slate-800 border-slate-700 my-auto">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center justify-between">
+                <span className="flex items-center gap-2"><Building2 className="h-5 w-5" /> {selectedCompany.name}</span>
+                <Button variant="ghost" size="sm" onClick={() => setShowDetailsModal(false)} className="text-slate-400">X</Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-slate-700 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-white">{selectedCompany.userCount || 0}</div>
+                  <div className="text-sm text-slate-400">Usuários</div>
+                </div>
+                <div className="bg-slate-700 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-white">{selectedCompany.totalLogins || 0}</div>
+                  <div className="text-sm text-slate-400">Acessos</div>
+                </div>
+                <div className="bg-slate-700 p-4 rounded-lg text-center">
+                  <Badge className={selectedCompany.isActive ? "bg-green-600" : "bg-red-600"}>
+                    {selectedCompany.isActive ? "Ativo" : "Inativo"}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* License */}
+              <div className="bg-slate-700 p-4 rounded-lg">
+                <h3 className="text-white font-medium mb-3">Licença</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-slate-400">Tipo</Label>
+                    <select
+                      className="w-full p-2 rounded-md bg-slate-600 border-slate-500 text-white mt-1"
+                      value={selectedCompany.licenseType || "monthly"}
+                      onChange={(e) => handleUpdateCompany("licenseType", e.target.value)}
+                    >
+                      <option value="perpetual">Perpétua</option>
+                      <option value="monthly">Mensal</option>
+                      <option value="quarterly">Trimestral</option>
+                      <option value="semiannual">Semestral</option>
+                      <option value="annual">Anual</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-slate-400">Data de Início</Label>
+                    <Input type="date" value={selectedCompany.licenseStartDate?.split("T")[0] || ""} onChange={(e) => handleUpdateCompany("licenseStartDate", new Date(e.target.value))} className="bg-slate-600 border-slate-500 text-white mt-1" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Contract */}
+              <div className="bg-slate-700 p-4 rounded-lg">
+                <h3 className="text-white font-medium mb-3">Contrato</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-slate-400">Responsável</Label>
+                    <Input value={selectedCompany.contractResponsible || ""} onChange={(e) => handleUpdateCompany("contractResponsible", e.target.value)} className="bg-slate-600 border-slate-500 text-white mt-1" placeholder="Nome" />
+                  </div>
+                  <div>
+                    <Label className="text-slate-400">Email</Label>
+                    <Input type="email" value={selectedCompany.contractResponsibleEmail || ""} onChange={(e) => handleUpdateCompany("contractResponsibleEmail", e.target.value)} className="bg-slate-600 border-slate-500 text-white mt-1" />
+                  </div>
+                  <div>
+                    <Label className="text-slate-400">Telefone</Label>
+                    <Input value={selectedCompany.contractResponsiblePhone || ""} onChange={(e) => handleUpdateCompany("contractResponsiblePhone", e.target.value)} className="bg-slate-600 border-slate-500 text-white mt-1" />
+                  </div>
+                  <div>
+                    <Label className="text-slate-400">Data do Contrato</Label>
+                    <Input type="date" value={selectedCompany.contractStartDate?.split("T")[0] || ""} onChange={(e) => handleUpdateCompany("contractStartDate", new Date(e.target.value))} className="bg-slate-600 border-slate-500 text-white mt-1" />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Label className="text-slate-400">Observações</Label>
+                  <textarea value={selectedCompany.contractNotes || ""} onChange={(e) => handleUpdateCompany("contractNotes", e.target.value)} className="w-full p-2 rounded-md bg-slate-600 border-slate-500 text-white mt-1 min-h-[80px]" />
+                </div>
               </div>
             </CardContent>
           </Card>

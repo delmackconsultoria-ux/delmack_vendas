@@ -19,27 +19,77 @@ function generateStrongPassword(): string {
 }
 
 export const superadminRouter = router({
+  getStats: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "superadmin") {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+    }
+    const db = await getDb();
+    if (!db) return { totalCompanies: 0, totalUsers: 0, totalLogins: 0, activeUsers: 0 };
+    const [companyCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(companies);
+    const [userCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(users);
+    const [activeCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(users).where(eq(users.isActive, true));
+    const [loginCount] = await db.select({ total: sql<number>`COALESCE(SUM(totalLogins), 0)` }).from(companies);
+    return {
+      totalCompanies: Number(companyCount?.count || 0),
+      totalUsers: Number(userCount?.count || 0),
+      totalLogins: Number(loginCount?.total || 0),
+      activeUsers: Number(activeCount?.count || 0),
+    };
+  }),
+
   listCompanies: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.user.role !== "superadmin") {
       throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
     }
-    
     const db = await getDb();
     if (!db) return [];
-    
     const result = await db.select({
       id: companies.id,
       name: companies.name,
       email: companies.email,
       phone: companies.phone,
       licenseType: companies.licenseType,
+      licenseStartDate: companies.licenseStartDate,
+      licenseExpiresAt: companies.licenseExpiresAt,
+      contractResponsible: companies.contractResponsible,
+      contractResponsibleEmail: companies.contractResponsibleEmail,
+      contractResponsiblePhone: companies.contractResponsiblePhone,
+      contractStartDate: companies.contractStartDate,
+      contractNotes: companies.contractNotes,
+      totalLogins: companies.totalLogins,
       isActive: companies.isActive,
       createdAt: companies.createdAt,
       userCount: sql<number>`(SELECT COUNT(*) FROM users WHERE companyId = ${companies.id})`,
     }).from(companies);
-    
     return result;
   }),
+
+  updateCompany: protectedProcedure
+    .input(z.object({
+      companyId: z.string(),
+      licenseType: z.enum(["perpetual", "monthly", "quarterly", "semiannual", "annual"]).optional(),
+      licenseStartDate: z.date().optional(),
+      contractResponsible: z.string().optional(),
+      contractResponsibleEmail: z.string().optional(),
+      contractResponsiblePhone: z.string().optional(),
+      contractStartDate: z.date().optional(),
+      contractNotes: z.string().optional(),
+      isActive: z.boolean().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      const { companyId, ...updateData } = input;
+      const cleanData: any = {};
+      Object.entries(updateData).forEach(([k, v]) => { if (v !== undefined) cleanData[k] = v; });
+      if (Object.keys(cleanData).length > 0) {
+        await db.update(companies).set(cleanData).where(eq(companies.id, companyId));
+      }
+      return { success: true };
+    }),
 
   createCompany: protectedProcedure
     .input(z.object({
@@ -61,7 +111,7 @@ export const superadminRouter = router({
         name: input.name,
         email: input.email || null,
         phone: input.phone || null,
-        licenseType: "trial",
+        licenseType: "monthly",
         isActive: true,
       });
       
