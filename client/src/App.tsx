@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { useAuth } from "./_core/hooks/useAuth";
@@ -57,7 +57,7 @@ function Router() {
               <Route path="/indicators" component={Indicators} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/dashboard" component={DashboardBroker} />
+              <Route path="/dashboard" component={() => <Redirect to="/" />} />
               <Route path="/" component={DashboardBroker} />
             </>
           )}
