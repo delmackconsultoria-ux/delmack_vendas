@@ -265,7 +265,7 @@ export default function ReportsPage() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip formatter={(value) => `R$ ${(value / 1000000).toFixed(2)}M`} />
+                    <Tooltip formatter={(value: any) => `R$ ${(value / 1000000).toFixed(2)}M`} />
                     <Legend />
                     <Bar dataKey="vendas" fill="#3b82f6" name="Vendas" />
                     <Bar dataKey="angariações" fill="#8b5cf6" name="Angariações" />
@@ -302,7 +302,7 @@ export default function ReportsPage() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="mes" />
                     <YAxis />
-                    <Tooltip formatter={(value) => `R$ ${(value / 1000000).toFixed(2)}M`} />
+                    <Tooltip formatter={(value: any) => `R$ ${(value / 1000000).toFixed(2)}M`} />
                     <Legend />
                     <Line type="monotone" dataKey="vendas" stroke="#3b82f6" name="Vendas" />
                     <Line type="monotone" dataKey="angariações" stroke="#8b5cf6" name="Angariações" />
