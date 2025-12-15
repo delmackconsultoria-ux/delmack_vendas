@@ -430,3 +430,21 @@ export const companiesRelationsUpdated = relations(companies, ({ many }) => ({
   commissionApprovals: many(commissionApprovals),
   propertyHistory: many(propertyHistory),
 }));
+
+
+/**
+ * Action Logs/Histórico de Ações
+ */
+export const actionLogs = mysqlTable("actionLogs", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }),
+  userId: varchar("userId", { length: 64 }).notNull(),
+  targetType: mysqlEnum("targetType", ["user", "company", "sale", "commission", "license"]).notNull(),
+  targetId: varchar("targetId", { length: 64 }),
+  action: mysqlEnum("action", ["create", "update", "delete", "activate", "deactivate", "login"]).notNull(),
+  details: text("details"),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type ActionLog = typeof actionLogs.$inferSelect;
+export type InsertActionLog = typeof actionLogs.$inferInsert;

@@ -26,8 +26,14 @@ export default function DashboardSuperAdmin() {
   const createCompanyMutation = trpc.superadmin.createCompany.useMutation();
   const uploadUsersMutation = trpc.superadmin.uploadUsers.useMutation();
   const updateCompanyMutation = trpc.superadmin.updateCompany.useMutation();
+  const licenseAlertsQuery = trpc.superadmin.getLicenseAlerts.useQuery();
+  const actionLogsQuery = trpc.superadmin.getActionLogs.useQuery({ limit: 10 });
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
+  const companyStatsQuery = trpc.superadmin.getCompanyStats.useQuery(
+    { companyId: selectedCompany?.id || "" },
+    { enabled: !!selectedCompany?.id }
+  );
 
   const handleUpdateCompany = async (field: string, value: any) => {
     if (!selectedCompany) return;
@@ -175,6 +181,25 @@ export default function DashboardSuperAdmin() {
           </Card>
         </div>
 
+        {/* License Alerts */}
+        {licenseAlertsQuery.data && licenseAlertsQuery.data.length > 0 && (
+          <Card className="bg-red-900/30 border-red-700 mb-8">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-red-300 text-sm">⚠️ Alertas de Licença</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {licenseAlertsQuery.data.map((c: any) => (
+                  <div key={c.id} className="flex justify-between items-center text-sm">
+                    <span className="text-white">{c.name}</span>
+                    <Badge className="bg-red-600">Vence em {c.licenseExpiresAt ? new Date(c.licenseExpiresAt).toLocaleDateString() : 'N/A'}</Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Actions */}
         <div className="flex gap-4 mb-8">
           <Button onClick={() => setShowCompanyModal(true)} className="bg-purple-600 hover:bg-purple-700 gap-2">
@@ -220,6 +245,30 @@ export default function DashboardSuperAdmin() {
               ))}
               {(!companiesQuery.data || companiesQuery.data.length === 0) && (
                 <p className="text-center text-slate-400 py-8">Nenhuma empresa cadastrada</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Action Logs */}
+        <Card className="bg-slate-800/50 border-slate-700 mt-8">
+          <CardHeader>
+            <CardTitle className="text-white">Histórico de Ações</CardTitle>
+            <CardDescription className="text-slate-400">Últimas ações no sistema</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {actionLogsQuery.data?.map((log: any) => (
+                <div key={log.id} className="flex justify-between items-center text-sm p-2 bg-slate-700/30 rounded">
+                  <div>
+                    <span className="text-white font-medium">{log.userName || 'Sistema'}</span>
+                    <span className="text-slate-400 ml-2">{log.action === 'create' ? 'criou' : log.action === 'update' ? 'atualizou' : log.action === 'delete' ? 'removeu' : log.action === 'activate' ? 'ativou' : log.action === 'deactivate' ? 'desativou' : log.action} {log.targetType}</span>
+                  </div>
+                  <span className="text-slate-500 text-xs">{log.createdAt ? new Date(log.createdAt).toLocaleString() : ''}</span>
+                </div>
+              ))}
+              {(!actionLogsQuery.data || actionLogsQuery.data.length === 0) && (
+                <p className="text-center text-slate-400 py-4">Nenhuma ação registrada</p>
               )}
             </div>
           </CardContent>
@@ -353,6 +402,25 @@ export default function DashboardSuperAdmin() {
                   <Badge className={selectedCompany.isActive ? "bg-green-600" : "bg-red-600"}>
                     {selectedCompany.isActive ? "Ativo" : "Inativo"}
                   </Badge>
+                </div>
+              </div>
+
+              {/* Métricas de Vendas */}
+              <div className="bg-purple-900/30 p-4 rounded-lg">
+                <h3 className="text-purple-300 font-medium mb-3">Métricas de Vendas</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-white">{companyStatsQuery.data?.totalSales || 0}</div>
+                    <div className="text-xs text-slate-400">Vendas</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-green-400">R$ {((companyStatsQuery.data?.totalValue || 0) / 1000000).toFixed(1)}M</div>
+                    <div className="text-xs text-slate-400">Valor Total</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-yellow-400">R$ {((companyStatsQuery.data?.totalCommissions || 0) / 1000).toFixed(0)}k</div>
+                    <div className="text-xs text-slate-400">Comissões</div>
+                  </div>
                 </div>
               </div>
 

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { router, protectedProcedure } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
-import { companies, users } from "../../drizzle/schema";
+import { companies, users, actionLogs, sales, commissions } from "../../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
@@ -179,4 +179,58 @@ export const superadminRouter = router({
       
       return { created, total: input.users.length };
     }),
+
+  getCompanyStats: protectedProcedure
+    .input(z.object({ companyId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) return { totalSales: 0, totalCommissions: 0, totalValue: 0 };
+      const [salesCount] = await db.select({ count: sql<number>`COUNT(*)`, total: sql<number>`COALESCE(SUM(saleValue), 0)` }).from(sales).where(eq(sales.companyId, input.companyId));
+      const [commCount] = await db.select({ count: sql<number>`COUNT(*)`, total: sql<number>`COALESCE(SUM(value), 0)` }).from(commissions).where(eq(commissions.companyId, input.companyId));
+      return {
+        totalSales: Number(salesCount?.count || 0),
+        totalValue: Number(salesCount?.total || 0),
+        totalCommissions: Number(commCount?.total || 0),
+      };
+    }),
+
+  getActionLogs: protectedProcedure
+    .input(z.object({ companyId: z.string().optional(), limit: z.number().default(50) }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) return [];
+      let query = db.select({
+        id: actionLogs.id,
+        userId: actionLogs.userId,
+        targetType: actionLogs.targetType,
+        action: actionLogs.action,
+        details: actionLogs.details,
+        createdAt: actionLogs.createdAt,
+        userName: users.name,
+      }).from(actionLogs).leftJoin(users, eq(actionLogs.userId, users.id)).orderBy(sql`${actionLogs.createdAt} DESC`).limit(input.limit);
+      return await query;
+    }),
+
+  getLicenseAlerts: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "superadmin") {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+    }
+    const db = await getDb();
+    if (!db) return [];
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    const result = await db.select({
+      id: companies.id,
+      name: companies.name,
+      licenseType: companies.licenseType,
+      licenseExpiresAt: companies.licenseExpiresAt,
+    }).from(companies).where(sql`${companies.licenseExpiresAt} IS NOT NULL AND ${companies.licenseExpiresAt} <= ${thirtyDaysFromNow} AND ${companies.isActive} = true`);
+    return result;
+  }),
 });

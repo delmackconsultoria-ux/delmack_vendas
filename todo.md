@@ -235,3 +235,9 @@
 - [x] Responsável pelo contrato
 - [x] Data de início manual
 - [x] Perfis principais da empresa
+
+## 🆕 Novas Implementações
+
+- [x] Histórico de ações (log de usuários)
+- [x] Alertas de vencimento de licença
+- [x] Dashboard de métricas por empresa
