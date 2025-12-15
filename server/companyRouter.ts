@@ -150,9 +150,36 @@ export const companyRouter = router({
     }),
 
   /**
-   * Lista usuários da empresa
+   * Lista usuários da empresa (sem input - usa companyId do usuário logado)
    */
-  listUsers: protectedProcedure
+  listUsers: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      if (!ctx.user?.companyId && ctx.user?.role !== "manager") {
+        return [];
+      }
+      const companyId = ctx.user.companyId;
+      if (!companyId) return [];
+      const result = await db.select().from(users).where(eq(users.companyId, companyId));
+      return result.map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        isActive: u.isActive,
+        createdAt: u.createdAt,
+      }));
+    } catch (error) {
+      console.error("[Company] Erro ao listar usuários:", error);
+      throw error;
+    }
+  }),
+
+  /**
+   * Lista usuários da empresa (com companyId)
+   */
+  listUsersById: protectedProcedure
     .input(z.object({ companyId: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
@@ -189,9 +216,84 @@ export const companyRouter = router({
     }),
 
   /**
-   * Adiciona usuário à empresa
+   * Cria novo usuário na empresa (Manager)
    */
   addUser: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        surname: z.string().optional(),
+        email: z.string().email(),
+        role: z.enum(["broker", "finance"]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        if (ctx.user?.role !== "manager" && ctx.user?.role !== "superadmin") {
+          throw new Error("Acesso negado");
+        }
+        const bcrypt = await import("bcryptjs");
+        const { randomBytes } = await import("crypto");
+        const { notifyOwner } = await import("./_core/notification");
+        
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*";
+        let password = "";
+        const bytes = randomBytes(12);
+        for (let i = 0; i < 12; i++) password += chars[bytes[i] % chars.length];
+        
+        const hashedPassword = await bcrypt.default.hash(password, 10);
+        const id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const fullName = input.surname ? `${input.name} ${input.surname}` : input.name;
+        
+        await db.insert(users).values({
+          id,
+          name: fullName,
+          email: input.email,
+          password: hashedPassword,
+          role: input.role,
+          companyId: ctx.user.companyId,
+          loginMethod: "email",
+          isActive: true,
+        });
+        
+        await notifyOwner({
+          title: `Novo usuário: ${fullName}`,
+          content: `Email: ${input.email}\nSenha: ${password}`,
+        });
+        
+        return { success: true, id };
+      } catch (error) {
+        console.error("[Company] Erro ao criar usuário:", error);
+        throw error;
+      }
+    }),
+
+  /**
+   * Ativa/Desativa usuário (soft delete)
+   */
+  toggleUserStatus: protectedProcedure
+    .input(z.object({ userId: z.string(), isActive: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        if (ctx.user?.role !== "manager" && ctx.user?.role !== "superadmin") {
+          throw new Error("Acesso negado");
+        }
+        await db.update(users).set({ isActive: input.isActive }).where(eq(users.id, input.userId));
+        return { success: true };
+      } catch (error) {
+        console.error("[Company] Erro ao alterar status:", error);
+        throw error;
+      }
+    }),
+
+  /**
+   * Adiciona usuário existente à empresa
+   */
+  addExistingUser: protectedProcedure
     .input(
       z.object({
         companyId: z.string(),
@@ -201,23 +303,11 @@ export const companyRouter = router({
     .mutation(async ({ ctx, input }) => {
       try {
         const db = await getDb();
-        if (!db) {
-          throw new Error("Database not available");
-        }
-
-        // Apenas admin ou gerente da empresa pode adicionar usuários
-        if (
-          ctx.user?.role !== "admin" &&
-          ctx.user?.companyId !== input.companyId
-        ) {
+        if (!db) throw new Error("Database not available");
+        if (ctx.user?.role !== "admin" && ctx.user?.companyId !== input.companyId) {
           throw new Error("Acesso negado");
         }
-
-        await db
-          .update(users)
-          .set({ companyId: input.companyId })
-          .where(eq(users.id, input.userId));
-
+        await db.update(users).set({ companyId: input.companyId }).where(eq(users.id, input.userId));
         return { success: true };
       } catch (error) {
         console.error("[Company] Erro ao adicionar usuário:", error);

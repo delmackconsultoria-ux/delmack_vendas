@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { label: "Indicadores", path: "/indicators", roles: ["manager", "finance", "admin"] },
 
   { label: "Corretores", path: "/brokers", roles: ["manager"] },
+  { label: "Usuários", path: "/users", roles: ["manager"] },
   { label: "Relatórios", path: "/reports", roles: ["manager", "finance", "admin"] },
 
 ];

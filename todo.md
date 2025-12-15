@@ -212,3 +212,9 @@
 - [x] Remover notificações de erro vermelhas (overlay desabilitado)
 - [x] Dashboard do Super Admin para gerenciar empresas
 - [x] Manager como admin da empresa
+
+## 🆕 Sugestões Implementadas
+
+- [x] Painel de gestão de usuários para Manager
+- [x] Soft delete de usuários (dados permanecem)
+- [x] Template de Excel para download

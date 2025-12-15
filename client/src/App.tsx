@@ -24,6 +24,7 @@ import Analytics from "./pages/Analytics";
 
 import BrokerManagement from "./pages/BrokerManagement";
 import DashboardSuperAdmin from "./pages/DashboardSuperAdmin";
+import UserManagement from "./pages/UserManagement";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -88,6 +89,7 @@ function Router() {
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/brokers" component={BrokerManagement} />
+              <Route path="/users" component={UserManagement} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
