@@ -248,3 +248,8 @@
 - [x] Upload de anexos (proposta de compra) no S3
 - [x] Botão exportar anexos para Super Admin
 - [x] Botão exportar anexos para Manager
+
+## 🆕 Novas Implementações
+
+- [x] Visualização de anexos nas vendas (botão ver/baixar)
+- [x] Documento de contrato (arquitetura, segurança, riscos, escopo)

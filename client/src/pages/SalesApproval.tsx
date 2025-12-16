@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, ArrowLeft, CheckCircle, XCircle, FileUp } from "lucide-react";
+import { AlertCircle, ArrowLeft, CheckCircle, XCircle, FileUp, FileText, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 
@@ -18,6 +18,7 @@ interface Sale {
   createdAt: Date;
   brokerVendedor?: string;
   businessType?: string;
+  proposalDocumentUrl?: string;
 }
 
 export default function SalesApproval() {
@@ -240,6 +241,17 @@ export default function SalesApproval() {
                             <p className="text-xs text-slate-500 mt-1">
                               Tipo: {sale.businessType || "N/A"}
                             </p>
+                            {sale.proposalDocumentUrl && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(sale.proposalDocumentUrl, '_blank');
+                                }}
+                                className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
+                              >
+                                <FileText className="h-3 w-3" /> Ver Anexo
+                              </button>
+                            )}
                           </div>
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
