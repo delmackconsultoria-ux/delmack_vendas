@@ -5,7 +5,8 @@
 import { router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import { getDb } from "./db";
-import { companies, users } from "../drizzle/schema";
+import { companies, users, sales } from "../drizzle/schema";
+import { storageGet } from "./storage";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
@@ -340,6 +341,49 @@ export const companyRouter = router({
         return { success: true };
       } catch (error) {
         console.error("[Company] Erro ao adicionar usuário:", error);
+        throw error;
+      }
+    }),
+
+  /**
+   * Exportar lista de anexos (URLs) para backup
+   */
+  exportAttachments: protectedProcedure
+    .query(async ({ ctx }) => {
+      try {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        if (ctx.user?.role !== "manager" && ctx.user?.role !== "superadmin") {
+          throw new Error("Acesso negado");
+        }
+        
+        const companyId = ctx.user.companyId || "1";
+        const salesWithDocs = await db.select()
+          .from(sales)
+          .where(eq(sales.companyId, companyId));
+        
+        const attachments = [];
+        for (const sale of salesWithDocs) {
+          if (sale.proposalDocumentUrl) {
+            try {
+              const key = sale.proposalDocumentUrl.split('/').slice(-3).join('/');
+              const { url } = await storageGet(key, 86400); // 24 horas
+              attachments.push({
+                saleId: sale.id,
+                buyerName: sale.buyerName,
+                saleDate: sale.saleDate,
+                downloadUrl: url,
+                originalUrl: sale.proposalDocumentUrl
+              });
+            } catch {
+              // Ignorar arquivos que não existem mais
+            }
+          }
+        }
+        
+        return { success: true, attachments, count: attachments.length };
+      } catch (error) {
+        console.error("[Company] Erro ao exportar anexos:", error);
         throw error;
       }
     }),

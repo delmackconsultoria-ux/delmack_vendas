@@ -241,3 +241,10 @@
 - [x] Histórico de ações (log de usuários)
 - [x] Alertas de vencimento de licença
 - [x] Dashboard de métricas por empresa
+
+## 🆕 Integração Properfy e Anexos
+
+- [x] Integração API Properfy (busca imóveis por referência)
+- [x] Upload de anexos (proposta de compra) no S3
+- [x] Botão exportar anexos para Super Admin
+- [x] Botão exportar anexos para Manager

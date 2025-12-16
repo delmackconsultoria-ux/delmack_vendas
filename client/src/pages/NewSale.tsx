@@ -1,9 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, Search, CheckCircle, Loader, Eye, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { ArrowLeft, Save, Search, CheckCircle, Loader, Eye, CheckCircle2, AlertCircle, X, Upload, FileText } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -197,7 +198,45 @@ export default function NewSale() {
 
   const [completionStatus, setCompletionStatus] = useState<CompletionStatus>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [properfySearch, setProperfySearch] = useState({ loading: false, error: "", found: false });
+  const [proposalFile, setProposalFile] = useState<File | null>(null);
   const createSaleMutation = trpc.sales.createSale.useMutation();
+  const uploadMutation = trpc.sales.uploadProposalDocument.useMutation();
+
+  // Buscar imóvel no Properfy
+  const handleSearchPropertyfy = async () => {
+    if (!formData.propertyReference) return;
+    setProperfySearch({ loading: true, error: "", found: false });
+    try {
+      const result = await fetch(`/api/trpc/sales.searchProperty?input=${encodeURIComponent(JSON.stringify({ reference: formData.propertyReference }))}`);
+      const data = await result.json();
+      if (data.result?.data?.success && data.result?.data?.property) {
+        const prop = data.result.data.property;
+        setFormData(prev => ({
+          ...prev,
+          propertyAddress: prop.address || prev.propertyAddress,
+          propertyCity: prop.city || prev.propertyCity,
+          propertyState: prop.state || prev.propertyState,
+          propertyNeighborhood: prop.district || prev.propertyNeighborhood,
+          propertyZipCode: prop.postalCode || prev.propertyZipCode,
+          typeOfProperty: prop.propertyType?.toLowerCase() || prev.typeOfProperty,
+          advertisementValue: prop.value?.toString() || prev.advertisementValue,
+          privateArea: prop.area?.toString() || prev.privateArea,
+          bedrooms: prop.bedrooms?.toString() || prev.bedrooms,
+        }));
+        setProperfySearch({ loading: false, error: "", found: true });
+      } else {
+        setProperfySearch({ loading: false, error: data.result?.data?.error || "Imóvel não encontrado no Properfy", found: false });
+      }
+    } catch {
+      setProperfySearch({ loading: false, error: "Erro ao conectar com Properfy. Preencha manualmente.", found: false });
+    }
+  };
+
+  // Upload de proposta
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) setProposalFile(e.target.files[0]);
+  };
 
   // Load brokers from TRPC
   const { data: brokersList } = trpc.brokers.listBrokers.useQuery(undefined);
@@ -400,7 +439,26 @@ export default function NewSale() {
         observations: formData.observations,
       };
 
-      await createSaleMutation.mutateAsync(payload);
+      const result = await createSaleMutation.mutateAsync(payload);
+      
+      // Upload do arquivo de proposta se houver
+      if (proposalFile && result.saleId) {
+        try {
+          const reader = new FileReader();
+          reader.onload = async () => {
+            const base64 = (reader.result as string).split(',')[1];
+            await uploadMutation.mutateAsync({
+              saleId: result.saleId,
+              fileName: proposalFile.name,
+              fileData: base64,
+              contentType: proposalFile.type
+            });
+          };
+          reader.readAsDataURL(proposalFile);
+        } catch (uploadError) {
+          console.error('Erro ao fazer upload da proposta:', uploadError);
+        }
+      }
       
       setErrorState({
         isOpen: true,
@@ -521,6 +579,37 @@ export default function NewSale() {
 
           {/* Form */}
           <div className="space-y-6">
+            {/* Referência Properfy */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Referência do Imóvel (Properfy)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Digite a referência do imóvel"
+                    value={formData.propertyReference}
+                    onChange={(e) => handleInputChange("propertyReference", e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button onClick={handleSearchPropertyfy} disabled={properfySearch.loading || !formData.propertyReference}>
+                    {properfySearch.loading ? <Loader className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                    Buscar
+                  </Button>
+                </div>
+                {properfySearch.error && (
+                  <p className="text-amber-600 text-sm mt-2 flex items-center gap-1">
+                    <AlertCircle className="h-4 w-4" /> {properfySearch.error}
+                  </p>
+                )}
+                {properfySearch.found && (
+                  <p className="text-green-600 text-sm mt-2 flex items-center gap-1">
+                    <CheckCircle className="h-4 w-4" /> Imóvel encontrado! Dados preenchidos automaticamente.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Property Type Section */}
             <Card>
               <CardHeader>
@@ -940,6 +1029,32 @@ export default function NewSale() {
                     </Select>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Upload de Proposta */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Anexo da Proposta de Compra</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-8 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                    <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleFileChange} className="hidden" />
+                    {proposalFile ? (
+                      <>
+                        <FileText className="h-6 w-6 text-green-600" />
+                        <span className="text-green-600 font-medium">{proposalFile.name}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-6 w-6 text-slate-400" />
+                        <span className="text-slate-500">Clique para anexar proposta (PDF, DOC, JPG)</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+                <p className="text-xs text-slate-500 mt-2">Máximo 10MB. O arquivo será enviado após salvar a venda.</p>
               </CardContent>
             </Card>
 

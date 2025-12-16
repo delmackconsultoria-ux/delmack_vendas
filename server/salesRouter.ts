@@ -10,6 +10,8 @@ import { sales, commissions, properties } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { calculateCommission } from "./commissionService";
+import { searchPropertyByReference } from "./services/properfyService";
+import { storagePut, storageGet } from "./storage";
 
 // Zod schema para validação de entrada
 const createSaleSchema = z.object({
@@ -49,6 +51,74 @@ const createSaleSchema = z.object({
 });
 
 export const salesRouter = router({
+  /**
+   * Buscar imóvel no Properfy por referência
+   */
+  searchProperty: protectedProcedure
+    .input(z.object({ reference: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const result = await searchPropertyByReference(input.reference);
+      return result;
+    }),
+
+  /**
+   * Upload de anexo (proposta de compra)
+   */
+  uploadProposalDocument: protectedProcedure
+    .input(z.object({
+      saleId: z.string(),
+      fileName: z.string(),
+      fileData: z.string(), // Base64
+      contentType: z.string()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const buffer = Buffer.from(input.fileData, 'base64');
+        const key = `proposals/${ctx.user.companyId || '1'}/${input.saleId}/${input.fileName}`;
+        
+        const { url } = await storagePut(key, buffer, input.contentType);
+        
+        // Atualizar venda com URL do documento
+        const db = await getDb();
+        if (db) {
+          await db.update(sales)
+            .set({ proposalDocumentUrl: url, updatedAt: new Date() })
+            .where(eq(sales.id, input.saleId));
+        }
+        
+        return { success: true, url };
+      } catch (error) {
+        console.error('[Sales Router] Erro ao fazer upload:', error);
+        throw new Error('Erro ao fazer upload do documento');
+      }
+    }),
+
+  /**
+   * Obter URL do documento de proposta
+   */
+  getProposalDocument: protectedProcedure
+    .input(z.object({ saleId: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        
+        const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
+        if (!sale.length || !sale[0].proposalDocumentUrl) {
+          return { success: false, url: null };
+        }
+        
+        // Gerar URL presigned para download
+        const key = sale[0].proposalDocumentUrl.split('/').slice(-3).join('/');
+        const { url } = await storageGet(key, 3600); // 1 hora
+        
+        return { success: true, url };
+      } catch (error) {
+        console.error('[Sales Router] Erro ao obter documento:', error);
+        return { success: false, url: null };
+      }
+    }),
+
   /**
    * Criar nova venda com todos os campos
    */

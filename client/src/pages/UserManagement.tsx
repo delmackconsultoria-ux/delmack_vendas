@@ -28,6 +28,29 @@ export default function UserManagement() {
   const toggleUserMutation = trpc.company.toggleUserStatus.useMutation();
   const updateUserMutation = trpc.company.updateUser.useMutation();
 
+  // Exportar anexos para backup
+  const handleExportAttachments = async () => {
+    try {
+      const result = await fetch('/api/trpc/company.exportAttachments');
+      const data = await result.json();
+      if (data.result?.data?.attachments?.length > 0) {
+        const attachments = data.result.data.attachments;
+        // Criar arquivo JSON com links de download
+        const blob = new Blob([JSON.stringify(attachments, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup-anexos-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        toast.success(`${attachments.length} anexos exportados!`);
+      } else {
+        toast.info('Nenhum anexo encontrado para exportar');
+      }
+    } catch {
+      toast.error('Erro ao exportar anexos');
+    }
+  };
+
   const handleUpdateUser = async () => {
     if (!editingUser) return;
     try {
@@ -130,6 +153,9 @@ export default function UserManagement() {
             </Button>
             <Button onClick={() => setShowAddModal(true)} className="gap-2 bg-slate-800">
               <Plus className="h-4 w-4" /> Novo Usuário
+            </Button>
+            <Button onClick={handleExportAttachments} variant="outline" className="gap-2">
+              <Download className="h-4 w-4" /> Backup Anexos
             </Button>
           </div>
         </div>
