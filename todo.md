@@ -253,3 +253,5 @@
 
 - [x] Visualização de anexos nas vendas (botão ver/baixar)
 - [x] Documento de contrato (arquitetura, segurança, riscos, escopo)
+
+- [x] Corrigir mensagens de erro no login (sem página de erro)

@@ -22,19 +22,28 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      // Primeiro verificar se o email existe
+      const existingUser = await getUserByEmail(input.email);
+      if (!existingUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Este e-mail não está cadastrado no sistema. Verifique o e-mail digitado ou entre em contato com o administrador.",
+        });
+      }
+
       const user = await authenticateUser(input.email, input.password);
 
       if (!user) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Email ou senha incorretos",
+          message: "Senha incorreta. Por favor, verifique sua senha e tente novamente.",
         });
       }
 
       if (!user.isActive) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Usuário inativo",
+          message: "Sua conta está desativada. Entre em contato com o administrador da sua empresa para reativá-la.",
         });
       }
 
