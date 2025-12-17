@@ -109,6 +109,16 @@ export default function Login() {
                 </div>
               </div>
 
+              {/* Forgot Password Link */}
+              <div className="text-right">
+                <a 
+                  href="/forgot-password" 
+                  className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  Esqueci minha senha
+                </a>
+              </div>
+
               {/* Submit Button */}
               <Button
                 type="submit"
@@ -124,8 +134,6 @@ export default function Login() {
                   "Entrar"
                 )}
               </Button>
-
-
             </form>
           </CardContent>
         </Card>

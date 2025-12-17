@@ -25,6 +25,8 @@ import Analytics from "./pages/Analytics";
 import BrokerManagement from "./pages/BrokerManagement";
 import DashboardSuperAdmin from "./pages/DashboardSuperAdmin";
 import UserManagement from "./pages/UserManagement";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -47,6 +49,8 @@ function Router() {
       {/* Public routes */}
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
 
       {/* Protected routes */}
       {user ? (

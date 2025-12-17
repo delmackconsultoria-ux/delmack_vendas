@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { publicProcedure, router } from "./_core/trpc";
-import { authenticateUser, createUser, getUserByEmail, hashPassword } from "./db";
+import { authenticateUser, createUser, getUserByEmail, hashPassword, incrementFailedAttempts, resetFailedAttempts, requestPasswordReset, resetPassword } from "./db";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 
@@ -31,14 +31,38 @@ export const authRouter = router({
         });
       }
 
+      // Verificar se a conta está bloqueada
+      if (existingUser.lockedUntil && new Date(existingUser.lockedUntil) > new Date()) {
+        const minutesLeft = Math.ceil((new Date(existingUser.lockedUntil).getTime() - Date.now()) / 60000);
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: `Conta temporariamente bloqueada devido a múltiplas tentativas incorretas. Tente novamente em ${minutesLeft} minuto(s).`,
+        });
+      }
+
       const user = await authenticateUser(input.email, input.password);
 
       if (!user) {
+        // Incrementar tentativas falhas
+        await incrementFailedAttempts(input.email);
+        const attempts = (existingUser.failedLoginAttempts || 0) + 1;
+        const remaining = 5 - attempts;
+        
+        if (remaining <= 0) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: "Conta bloqueada por 15 minutos devido a múltiplas tentativas incorretas.",
+          });
+        }
+        
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Senha incorreta. Por favor, verifique sua senha e tente novamente.",
+          message: `Senha incorreta. Você tem mais ${remaining} tentativa(s) antes do bloqueio.`,
         });
       }
+
+      // Resetar tentativas após login bem-sucedido
+      await resetFailedAttempts(input.email);
 
       if (!user.isActive) {
         throw new TRPCError({
@@ -147,20 +171,29 @@ export const authRouter = router({
   }),
 
   /**
-   * Reset password request
+   * Reset password request - envia e-mail com link de recuperação
    */
   requestPasswordReset: publicProcedure
     .input(z.object({ email: z.string().email() }))
     .mutation(async ({ input }) => {
-      const user = await getUserByEmail(input.email);
-      if (!user) {
-        // Don't reveal if email exists for security
-        return { success: true };
+      const result = await requestPasswordReset(input.email);
+      
+      if (result) {
+        // Enviar e-mail com link de recuperação
+        const { notifyOwner } = await import("./_core/notification");
+        const resetLink = `${process.env.VITE_OAUTH_PORTAL_URL?.replace('/oauth', '')}/reset-password?token=${result.token}`;
+        
+        await notifyOwner({
+          title: `Recuperação de Senha - ${result.name || result.email}`,
+          content: `O usuário ${result.name || result.email} solicitou recuperação de senha.\n\nLink de recuperação: ${resetLink}\n\nEste link expira em 1 hora.`
+        });
       }
-
-      // TODO: Send password reset email
-      // For now, just return success
-      return { success: true };
+      
+      // Sempre retorna sucesso para não revelar se o email existe
+      return { 
+        success: true, 
+        message: "Se o e-mail estiver cadastrado, você receberá um link de recuperação em breve." 
+      };
     }),
 
   /**
@@ -170,7 +203,7 @@ export const authRouter = router({
     .input(
       z.object({
         token: z.string(),
-        newPassword: z.string().min(6),
+        newPassword: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
         confirmPassword: z.string(),
       })
     )
@@ -182,9 +215,16 @@ export const authRouter = router({
         });
       }
 
-      // TODO: Verify token and reset password
-      // For now, just return success
-      return { success: true };
+      const result = await resetPassword(input.token, input.newPassword);
+      
+      if (!result.success) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: result.message,
+        });
+      }
+
+      return { success: true, message: "Senha alterada com sucesso! Você já pode fazer login." };
     }),
 });
 

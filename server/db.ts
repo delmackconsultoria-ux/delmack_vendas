@@ -176,6 +176,94 @@ export async function getUserByEmail(email: string) {
 }
 
 /**
+ * Increment failed login attempts
+ */
+export async function incrementFailedAttempts(email: string) {
+  const db = await getDb();
+  if (!db) return;
+
+  const user = await getUserByEmail(email);
+  if (!user) return;
+
+  const attempts = (user.failedLoginAttempts || 0) + 1;
+  const updateData: any = { failedLoginAttempts: attempts };
+
+  // Bloquear por 15 minutos após 5 tentativas
+  if (attempts >= 5) {
+    updateData.lockedUntil = new Date(Date.now() + 15 * 60 * 1000);
+  }
+
+  await db.update(users).set(updateData).where(eq(users.email, email));
+}
+
+/**
+ * Reset failed login attempts
+ */
+export async function resetFailedAttempts(email: string) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(users).set({ 
+    failedLoginAttempts: 0, 
+    lockedUntil: null 
+  }).where(eq(users.email, email));
+}
+
+/**
+ * Request password reset - generate token
+ */
+export async function requestPasswordReset(email: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const user = await getUserByEmail(email);
+  if (!user) return null;
+
+  // Gerar token aleatório
+  const token = `reset_${Date.now()}_${Math.random().toString(36).substr(2, 32)}`;
+  const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+  await db.update(users).set({ 
+    resetToken: token, 
+    resetTokenExpiry: expiry 
+  }).where(eq(users.email, email));
+
+  return { token, email: user.email, name: user.name };
+}
+
+/**
+ * Reset password with token
+ */
+export async function resetPassword(token: string, newPassword: string) {
+  const db = await getDb();
+  if (!db) return { success: false, message: "Banco de dados indisponível" };
+
+  // Buscar usuário pelo token
+  const result = await db.select().from(users).where(eq(users.resetToken, token)).limit(1);
+  const user = result.length > 0 ? result[0] : null;
+
+  if (!user) {
+    return { success: false, message: "Token inválido ou expirado" };
+  }
+
+  if (!user.resetTokenExpiry || new Date(user.resetTokenExpiry) < new Date()) {
+    return { success: false, message: "Token expirado. Solicite um novo link de recuperação." };
+  }
+
+  // Atualizar senha
+  const hashedPassword = await hashPassword(newPassword);
+  await db.update(users).set({ 
+    password: hashedPassword, 
+    resetToken: null, 
+    resetTokenExpiry: null,
+    failedLoginAttempts: 0,
+    lockedUntil: null
+  }).where(eq(users.id, user.id));
+
+  return { success: true, message: "Senha alterada com sucesso" };
+}
+
+/**
  * Get company by ID
  */
 export async function getCompany(id: string): Promise<Company | undefined> {

@@ -255,3 +255,10 @@
 - [x] Documento de contrato (arquitetura, segurança, riscos, escopo)
 
 - [x] Corrigir mensagens de erro no login (sem página de erro)
+
+## 🆕 Segurança e Gestão de Usuários
+
+- [x] Recuperação de senha por e-mail
+- [x] Bloqueio após 5 tentativas incorretas
+- [x] Super Admin redefinir senha de usuário
+- [x] Super Admin bloquear/desbloquear usuário

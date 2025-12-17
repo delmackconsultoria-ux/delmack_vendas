@@ -14,6 +14,12 @@ export const users = mysqlTable("users", {
   role: mysqlEnum("role", ["superadmin", "admin", "manager", "broker", "finance"]).default("broker").notNull(),
   companyId: varchar("companyId", { length: 64 }), // Company/Imobiliária reference
   isActive: boolean("isActive").default(true),
+  // Segurança de login
+  failedLoginAttempts: int("failedLoginAttempts").default(0),
+  lockedUntil: timestamp("lockedUntil"),
+  // Reset de senha
+  resetToken: varchar("resetToken", { length: 128 }),
+  resetTokenExpiry: timestamp("resetTokenExpiry"),
   createdAt: timestamp("createdAt").defaultNow(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow(),
 });
@@ -441,7 +447,7 @@ export const actionLogs = mysqlTable("actionLogs", {
   userId: varchar("userId", { length: 64 }).notNull(),
   targetType: mysqlEnum("targetType", ["user", "company", "sale", "commission", "license"]).notNull(),
   targetId: varchar("targetId", { length: 64 }),
-  action: mysqlEnum("action", ["create", "update", "delete", "activate", "deactivate", "login"]).notNull(),
+  action: mysqlEnum("action", ["create", "update", "delete", "activate", "deactivate", "login", "reset_password", "block_user", "unblock_user"]).notNull(),
   details: text("details"),
   createdAt: timestamp("createdAt").defaultNow(),
 });

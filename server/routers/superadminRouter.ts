@@ -233,4 +233,132 @@ export const superadminRouter = router({
     }).from(companies).where(sql`${companies.licenseExpiresAt} IS NOT NULL AND ${companies.licenseExpiresAt} <= ${thirtyDaysFromNow} AND ${companies.isActive} = true`);
     return result;
   }),
+
+  // Listar todos os usuários do sistema
+  listAllUsers: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "superadmin") {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+    }
+    const db = await getDb();
+    if (!db) return [];
+    const result = await db.select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role,
+      companyId: users.companyId,
+      isActive: users.isActive,
+      failedLoginAttempts: users.failedLoginAttempts,
+      lockedUntil: users.lockedUntil,
+      lastSignedIn: users.lastSignedIn,
+      createdAt: users.createdAt,
+    }).from(users).orderBy(sql`${users.createdAt} DESC`);
+    return result;
+  }),
+
+  // Redefinir senha de um usuário
+  resetUserPassword: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível" });
+
+      const [user] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
+
+      const newPassword = generateStrongPassword();
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await db.update(users).set({
+        password: hashedPassword,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        resetToken: null,
+        resetTokenExpiry: null,
+      }).where(eq(users.id, input.userId));
+
+      // Registrar ação
+      await db.insert(actionLogs).values({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: ctx.user.id,
+        targetType: "user",
+        targetId: input.userId,
+        action: "reset_password",
+        details: `Senha redefinida para ${user.email}`,
+      });
+
+      // Enviar notificação com a nova senha
+      await notifyOwner({
+        title: `Senha Redefinida - ${user.name || user.email}`,
+        content: `A senha do usuário ${user.name || user.email} foi redefinida pelo Super Admin.\n\nNova senha: ${newPassword}\n\nOriente o usuário a alterar a senha após o primeiro login.`
+      });
+
+      return { success: true, message: "Senha redefinida com sucesso. A nova senha foi enviada por notificação." };
+    }),
+
+  // Bloquear/Desbloquear usuário
+  toggleUserBlock: protectedProcedure
+    .input(z.object({ userId: z.string(), block: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível" });
+
+      const [user] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
+
+      if (input.block) {
+        // Bloquear por 24 horas
+        const lockUntil = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        await db.update(users).set({ lockedUntil: lockUntil }).where(eq(users.id, input.userId));
+      } else {
+        // Desbloquear
+        await db.update(users).set({ lockedUntil: null, failedLoginAttempts: 0 }).where(eq(users.id, input.userId));
+      }
+
+      // Registrar ação
+      await db.insert(actionLogs).values({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: ctx.user.id,
+        targetType: "user",
+        targetId: input.userId,
+        action: input.block ? "block_user" : "unblock_user",
+        details: `Usuário ${user.email} ${input.block ? "bloqueado" : "desbloqueado"}`,
+      });
+
+      return { success: true, message: input.block ? "Usuário bloqueado por 24 horas" : "Usuário desbloqueado com sucesso" };
+    }),
+
+  // Ativar/Desativar usuário
+  toggleUserActive: protectedProcedure
+    .input(z.object({ userId: z.string(), active: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível" });
+
+      const [user] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
+
+      await db.update(users).set({ isActive: input.active }).where(eq(users.id, input.userId));
+
+      // Registrar ação
+      await db.insert(actionLogs).values({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: ctx.user.id,
+        targetType: "user",
+        targetId: input.userId,
+        action: input.active ? "activate" : "deactivate",
+        details: `Usuário ${user.email} ${input.active ? "ativado" : "desativado"}`,
+      });
+
+      return { success: true, message: input.active ? "Usuário ativado com sucesso" : "Usuário desativado com sucesso" };
+    }),
 });
