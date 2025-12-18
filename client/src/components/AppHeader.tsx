@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { APP_LOGO, APP_TITLE } from "@/const";
-import { LogOut } from "lucide-react";
+import { LogOut, User, Users } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
 
@@ -81,6 +81,22 @@ export function AppHeader() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                onClick={() => setLocation("/profile")}
+                className="cursor-pointer"
+              >
+                <User className="mr-2 h-4 w-4" />
+                <span>Meu Perfil</span>
+              </DropdownMenuItem>
+              {user?.role === "superadmin" && (
+                <DropdownMenuItem
+                  onClick={() => setLocation("/users")}
+                  className="cursor-pointer"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  <span>Gestão de Usuários</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={logout}
                 className="cursor-pointer text-destructive focus:text-destructive"

@@ -1,7 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { publicProcedure, router } from "./_core/trpc";
-import { authenticateUser, createUser, getUserByEmail, hashPassword, incrementFailedAttempts, resetFailedAttempts, requestPasswordReset, resetPassword } from "./db";
+import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { authenticateUser, createUser, getUserByEmail, hashPassword, incrementFailedAttempts, resetFailedAttempts, requestPasswordReset, resetPassword, getDb } from "./db";
+import { users } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
+import bcrypt from "bcryptjs";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 
@@ -225,6 +228,27 @@ export const authRouter = router({
       }
 
       return { success: true, message: "Senha alterada com sucesso! Você já pode fazer login." };
+    }),
+
+  /**
+   * Change password (authenticated user)
+   */
+  changePassword: protectedProcedure
+    .input(z.object({ currentPassword: z.string(), newPassword: z.string().min(6) }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível" });
+
+      const [user] = await db.select().from(users).where(eq(users.id, ctx.user.id)).limit(1);
+      if (!user || !user.password) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
+
+      const isValid = await bcrypt.compare(input.currentPassword, user.password);
+      if (!isValid) throw new TRPCError({ code: "BAD_REQUEST", message: "Senha atual incorreta" });
+
+      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
+      await db.update(users).set({ password: hashedPassword }).where(eq(users.id, ctx.user.id));
+
+      return { success: true, message: "Senha alterada com sucesso!" };
     }),
 });
 

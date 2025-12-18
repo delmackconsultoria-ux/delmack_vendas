@@ -262,3 +262,9 @@
 - [x] Bloqueio após 5 tentativas incorretas
 - [x] Super Admin redefinir senha de usuário
 - [x] Super Admin bloquear/desbloquear usuário
+
+## 🆕 Novas Implementações
+
+- [x] Painel de usuários no Super Admin
+- [x] Alterar senha no perfil do usuário
+- [x] Log de acessos (histórico de logins)

@@ -27,6 +27,8 @@ import DashboardSuperAdmin from "./pages/DashboardSuperAdmin";
 import UserManagement from "./pages/UserManagement";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import SuperAdminUsers from "./pages/SuperAdminUsers";
+import Profile from "./pages/Profile";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -55,11 +57,15 @@ function Router() {
       {/* Protected routes */}
       {user ? (
         <>
+          {/* Common routes for all authenticated users */}
+          <Route path="/profile" component={Profile} />
+
           {/* Super Admin routes */}
           {user.role === "superadmin" && (
             <>
               <Route path="/" component={DashboardSuperAdmin} />
               <Route path="/dashboard" component={DashboardSuperAdmin} />
+              <Route path="/users" component={SuperAdminUsers} />
             </>
           )}
 
