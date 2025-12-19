@@ -465,3 +465,41 @@ export const actionLogs = mysqlTable("actionLogs", {
 
 export type ActionLog = typeof actionLogs.$inferSelect;
 export type InsertActionLog = typeof actionLogs.$inferInsert;
+
+
+/**
+ * Sales History/Histórico de Alterações de Vendas para Auditoria
+ */
+export const salesHistory = mysqlTable("salesHistory", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  saleId: varchar("saleId", { length: 64 }).notNull(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  changedBy: varchar("changedBy", { length: 64 }).notNull(),
+  changedByName: varchar("changedByName", { length: 255 }),
+  action: mysqlEnum("action", ["create", "update", "delete", "status_change", "approval", "rejection"]).notNull(),
+  fieldName: varchar("fieldName", { length: 100 }), // Campo que foi alterado
+  previousValue: text("previousValue"), // Valor anterior
+  newValue: text("newValue"), // Novo valor
+  changeReason: text("changeReason"), // Motivo da alteração
+  ipAddress: varchar("ipAddress", { length: 45 }), // IP do usuário
+  userAgent: text("userAgent"), // Browser/dispositivo
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type SalesHistory = typeof salesHistory.$inferSelect;
+export type InsertSalesHistory = typeof salesHistory.$inferInsert;
+
+export const salesHistoryRelations = relations(salesHistory, ({ one }) => ({
+  sale: one(sales, {
+    fields: [salesHistory.saleId],
+    references: [sales.id],
+  }),
+  company: one(companies, {
+    fields: [salesHistory.companyId],
+    references: [companies.id],
+  }),
+  changedByUser: one(users, {
+    fields: [salesHistory.changedBy],
+    references: [users.id],
+  }),
+}));

@@ -10,8 +10,9 @@ import { sales, commissions, properties } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { calculateCommission } from "./commissionService";
-import { searchPropertyByReference } from "./services/properfyService";
+import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch } from "./services/properfyService";
 import { storagePut, storageGet } from "./storage";
+import { logSaleCreation, getSaleHistory } from "./salesHistoryService";
 
 // Zod schema para validação de entrada
 const createSaleSchema = z.object({
@@ -80,13 +81,26 @@ const createSaleSchema = z.object({
 
 export const salesRouter = router({
   /**
-   * Buscar imóvel no Properfy por referência
+   * Busca inteligente de imóvel no Properfy (referência, endereço ou CEP)
    */
   searchProperty: protectedProcedure
-    .input(z.object({ reference: z.string().min(1) }))
+    .input(z.object({ 
+      reference: z.string().min(1),
+      searchType: z.enum(['auto', 'reference', 'address', 'cep']).optional()
+    }))
     .query(async ({ input }) => {
-      const result = await searchPropertyByReference(input.reference);
-      return result;
+      // Se tipo específico foi solicitado, usar busca específica
+      if (input.searchType === 'cep') {
+        return await searchPropertyByCEP(input.reference);
+      }
+      if (input.searchType === 'address') {
+        return await searchPropertyByAddress(input.reference);
+      }
+      if (input.searchType === 'reference') {
+        return await searchPropertyByReference(input.reference);
+      }
+      // Busca inteligente automática
+      return await smartSearch(input.reference);
     }),
 
   /**
@@ -282,6 +296,21 @@ export const salesRouter = router({
           });
         }
 
+        // Registrar no histórico de auditoria
+        await logSaleCreation(
+          saleId,
+          ctx.user.companyId || "1",
+          ctx.user.id,
+          ctx.user.name || "Usuário",
+          {
+            buyerName: input.buyerName,
+            sellerName: input.sellerName,
+            saleValue: input.saleValue,
+            businessType: input.businessType,
+            propertyAddress: input.propertyAddress,
+          }
+        );
+
         return {
           success: true,
           saleId: saleId,
@@ -449,6 +478,26 @@ export const salesRouter = router({
       } catch (error) {
         console.error("[Sales Router] Erro ao listar comissões:", error);
         throw new Error("Erro ao listar comissões");
+      }
+    }),
+
+  /**
+   * Obter histórico de alterações de uma venda (auditoria)
+   */
+  getSaleHistory: protectedProcedure
+    .input(z.object({ saleId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        // Apenas gerentes e financeiro podem ver histórico
+        if (ctx.user.role !== "manager" && ctx.user.role !== "finance" && ctx.user.role !== "admin") {
+          throw new Error("Permissão negada para visualizar histórico");
+        }
+
+        const history = await getSaleHistory(input.saleId);
+        return history;
+      } catch (error) {
+        console.error("[Sales Router] Erro ao obter histórico:", error);
+        throw new Error("Erro ao obter histórico da venda");
       }
     }),
 

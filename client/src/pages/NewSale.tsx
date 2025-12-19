@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, Search, CheckCircle, Loader, CheckCircle2, AlertCircle, Upload, FileText, Calculator } from "lucide-react";
+import { ArrowLeft, Save, Search, CheckCircle, Loader, CheckCircle2, AlertCircle, Upload, FileText, Calculator, XCircle, MapPin } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -207,7 +207,13 @@ export default function NewSale() {
 
   const [completionStatus, setCompletionStatus] = useState<CompletionStatus>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [properfySearch, setProperfySearch] = useState({ loading: false, error: "", found: false });
+  const [properfySearch, setProperfySearch] = useState({ loading: false, error: "", found: false, searchType: "auto" as "auto" | "reference" | "address" | "cep" });
+  
+  // Validação visual de CPF/CNPJ
+  const [cpfValidation, setCpfValidation] = useState<{ buyer: "idle" | "valid" | "invalid"; seller: "idle" | "valid" | "invalid" }>({
+    buyer: "idle",
+    seller: "idle",
+  });
   const [proposalFile, setProposalFile] = useState<File | null>(null);
   const createSaleMutation = trpc.sales.createSale.useMutation();
   const uploadMutation = trpc.sales.uploadProposalDocument.useMutation();
@@ -222,18 +228,22 @@ export default function NewSale() {
     return calculateCommissions(saleValue, formData.businessType as BusinessType, customPercent);
   }, [formData.saleValue, formData.businessType, formData.totalCommissionPercent]);
 
-  // Buscar imóvel no Properfy
-  const handleSearchPropertyfy = async () => {
-    if (!formData.propertyReference) return;
-    setProperfySearch({ loading: true, error: "", found: false });
+  // Buscar imóvel no Properfy (busca inteligente por referência, endereço ou CEP)
+  const handleSearchPropertyfy = async (searchType: "auto" | "reference" | "address" | "cep" = "auto") => {
+    const searchQuery = formData.propertyReference || formData.propertyAddress || formData.propertyZipCode;
+    if (!searchQuery) return;
+    
+    setProperfySearch({ loading: true, error: "", found: false, searchType });
     try {
-      const result = await fetch(`/api/trpc/sales.searchProperty?input=${encodeURIComponent(JSON.stringify({ reference: formData.propertyReference }))}`);
+      const result = await fetch(`/api/trpc/sales.searchProperty?input=${encodeURIComponent(JSON.stringify({ reference: searchQuery, searchType }))}`);
       const data = await result.json();
       if (data.result?.data?.success && data.result?.data?.property) {
         const prop = data.result.data.property;
         setFormData(prev => ({
           ...prev,
+          propertyReference: prop.reference || prev.propertyReference,
           propertyAddress: prop.address || prev.propertyAddress,
+          propertyNumber: prop.number || prev.propertyNumber,
           propertyCity: prop.city || prev.propertyCity,
           propertyState: prop.state || prev.propertyState,
           propertyNeighborhood: prop.district || prev.propertyNeighborhood,
@@ -241,18 +251,54 @@ export default function NewSale() {
           typeOfProperty: prop.propertyType?.toLowerCase() || prev.typeOfProperty,
           advertisementValue: prop.value?.toString() || prev.advertisementValue,
           privateArea: prop.area?.toString() || prev.privateArea,
+          totalArea: prop.totalArea?.toString() || prev.totalArea,
           bedrooms: prop.bedrooms?.toString() || prev.bedrooms,
           condominiumName: prop.condominiumName || prev.condominiumName,
-          propertyNumber: prop.number?.toString() || prev.propertyNumber,
-          totalArea: prop.totalArea?.toString() || prev.totalArea,
         }));
-        setProperfySearch({ loading: false, error: "", found: true });
+        setProperfySearch({ loading: false, error: "", found: true, searchType });
       } else {
-        setProperfySearch({ loading: false, error: data.result?.data?.error || "Imóvel não encontrado no Properfy", found: false });
+        setProperfySearch({ loading: false, error: data.result?.data?.error || "Imóvel não encontrado no Properfy", found: false, searchType });
       }
     } catch {
-      setProperfySearch({ loading: false, error: "Erro ao conectar com Properfy. Preencha manualmente.", found: false });
+      setProperfySearch({ loading: false, error: "Erro ao conectar com Properfy. Preencha manualmente.", found: false, searchType });
     }
+  };
+
+  // Validação em tempo real de CPF/CNPJ
+  const handleCpfCnpjChange = (value: string, field: "buyer" | "seller") => {
+    const cleanValue = value.replace(/\D/g, "");
+    let formattedValue = value;
+    
+    // Formatar automaticamente
+    if (cleanValue.length <= 11) {
+      formattedValue = formatCPF(cleanValue);
+    } else {
+      formattedValue = formatCNPJ(cleanValue);
+    }
+    
+    // Atualizar o formulário
+    if (field === "buyer") {
+      setFormData(prev => ({ ...prev, buyerCpfCnpj: formattedValue }));
+    } else {
+      setFormData(prev => ({ ...prev, sellerCpfCnpj: formattedValue }));
+    }
+    
+    // Validar apenas quando tiver tamanho completo
+    if (cleanValue.length === 11 || cleanValue.length === 14) {
+      const isValid = validateCPFOrCNPJ(cleanValue);
+      setCpfValidation(prev => ({ ...prev, [field]: isValid ? "valid" : "invalid" }));
+    } else if (cleanValue.length > 0) {
+      setCpfValidation(prev => ({ ...prev, [field]: "idle" }));
+    } else {
+      setCpfValidation(prev => ({ ...prev, [field]: "idle" }));
+    }
+  };
+
+  // Componente de ícone de validação
+  const ValidationIcon = ({ status }: { status: "idle" | "valid" | "invalid" }) => {
+    if (status === "valid") return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+    if (status === "invalid") return <XCircle className="h-5 w-5 text-red-500" />;
+    return null;
   };
 
   // Upload de proposta
@@ -778,7 +824,7 @@ export default function NewSale() {
                     onKeyPress={(e) => e.key === "Enter" && handleSearchPropertyfy()}
                     className="flex-1"
                   />
-                  <Button onClick={handleSearchPropertyfy} disabled={properfySearch.loading || !formData.propertyReference}>
+                  <Button onClick={() => handleSearchPropertyfy("auto")} disabled={properfySearch.loading || !formData.propertyReference}>
                     {properfySearch.loading ? <Loader className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                     Buscar
                   </Button>
@@ -983,13 +1029,20 @@ export default function NewSale() {
                   </div>
                   <div>
                     <Label>CPF/CNPJ *</Label>
-                    <Input
-                      placeholder="000.000.000-00"
-                      value={formData.buyerCpfCnpj}
-                      onChange={(e) => handleCPFChange("buyerCpfCnpj", e.target.value)}
-                      className={completionStatus.buyerCpfCnpj ? "bg-green-50 border-green-300" : ""}
-                    />
-                    <p className="text-xs text-slate-500 mt-1">Formatação automática ao digitar</p>
+                    <div className="relative">
+                      <Input
+                        placeholder="000.000.000-00"
+                        value={formData.buyerCpfCnpj}
+                        onChange={(e) => handleCpfCnpjChange(e.target.value, "buyer")}
+                        className={`pr-10 ${cpfValidation.buyer === "valid" ? "bg-green-50 border-green-400" : cpfValidation.buyer === "invalid" ? "bg-red-50 border-red-400" : completionStatus.buyerCpfCnpj ? "bg-green-50 border-green-300" : ""}`}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <ValidationIcon status={cpfValidation.buyer} />
+                      </div>
+                    </div>
+                    <p className={`text-xs mt-1 ${cpfValidation.buyer === "invalid" ? "text-red-500" : "text-slate-500"}`}>
+                      {cpfValidation.buyer === "invalid" ? "CPF/CNPJ inválido" : "Formatação e validação automática"}
+                    </p>
                   </div>
                   <div>
                     <Label>Telefone</Label>
@@ -1037,12 +1090,20 @@ export default function NewSale() {
                   </div>
                   <div>
                     <Label>CPF/CNPJ *</Label>
-                    <Input
-                      placeholder="000.000.000-00"
-                      value={formData.sellerCpfCnpj}
-                      onChange={(e) => handleCPFChange("sellerCpfCnpj", e.target.value)}
-                      className={completionStatus.sellerCpfCnpj ? "bg-green-50 border-green-300" : ""}
-                    />
+                    <div className="relative">
+                      <Input
+                        placeholder="000.000.000-00"
+                        value={formData.sellerCpfCnpj}
+                        onChange={(e) => handleCpfCnpjChange(e.target.value, "seller")}
+                        className={`pr-10 ${cpfValidation.seller === "valid" ? "bg-green-50 border-green-400" : cpfValidation.seller === "invalid" ? "bg-red-50 border-red-400" : completionStatus.sellerCpfCnpj ? "bg-green-50 border-green-300" : ""}`}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <ValidationIcon status={cpfValidation.seller} />
+                      </div>
+                    </div>
+                    <p className={`text-xs mt-1 ${cpfValidation.seller === "invalid" ? "text-red-500" : "text-slate-500"}`}>
+                      {cpfValidation.seller === "invalid" ? "CPF/CNPJ inválido" : "Formatação e validação automática"}
+                    </p>
                   </div>
                   <div>
                     <Label>Telefone</Label>

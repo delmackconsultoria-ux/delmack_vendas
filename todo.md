@@ -301,3 +301,9 @@
 - [x] Validação e formatação de CPF/CNPJ
 - [x] Validação e formatação de Telefone (XX) XXXXX-XXXX
 - [x] Busca automática de endereço por CEP
+
+## 🆕 Novas Funcionalidades Solicitadas
+
+- [x] Busca Properfy por referência, endereço ou CEP
+- [x] Validação visual em tempo real de CPF/CNPJ (ícone verde/vermelho)
+- [x] Histórico de alterações das vendas para auditoria
