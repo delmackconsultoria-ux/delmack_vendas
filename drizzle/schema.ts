@@ -92,12 +92,29 @@ export const sales = mysqlTable("sales", {
   saleDate: timestamp("saleDate"),
   angariationDate: timestamp("angariationDate"),
   saleValue: decimal("saleValue", { precision: 15, scale: 2 }).notNull(),
-  clientOrigin: varchar("clientOrigin", { length: 255 }), // Origin of client (Zap, Website, etc)
-  paymentMethod: varchar("paymentMethod", { length: 255 }), // Payment method (À vista, Financiado, etc)
-  brokerAngariador: varchar("brokerAngariador", { length: 64 }), // Broker who sourced the property
-  brokerVendedor: varchar("brokerVendedor", { length: 64 }), // Broker who closed the sale
-  businessType: varchar("businessType", { length: 255 }), // Type of business (Venda Interna, Parceria, etc)
-  status: mysqlEnum("status", ["pending", "received", "paid", "cancelled"]).default("pending").notNull(),
+  clientOrigin: varchar("clientOrigin", { length: 255 }),
+  paymentMethod: varchar("paymentMethod", { length: 255 }),
+  // Corretor Angariador (interno ou externo)
+  brokerAngariador: varchar("brokerAngariador", { length: 64 }),
+  brokerAngariadorType: mysqlEnum("brokerAngariadorType", ["internal", "external"]).default("internal"),
+  brokerAngariadorName: varchar("brokerAngariadorName", { length: 255 }),
+  brokerAngariadorCreci: varchar("brokerAngariadorCreci", { length: 50 }),
+  brokerAngariadorEmail: varchar("brokerAngariadorEmail", { length: 320 }),
+  // Corretor Vendedor (interno ou externo)
+  brokerVendedor: varchar("brokerVendedor", { length: 64 }),
+  brokerVendedorType: mysqlEnum("brokerVendedorType", ["internal", "external"]).default("internal"),
+  brokerVendedorName: varchar("brokerVendedorName", { length: 255 }),
+  brokerVendedorCreci: varchar("brokerVendedorCreci", { length: 50 }),
+  brokerVendedorEmail: varchar("brokerVendedorEmail", { length: 320 }),
+  businessType: varchar("businessType", { length: 255 }),
+  // Status expandido para fluxo de proposta
+  status: mysqlEnum("status", ["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]).default("draft").notNull(),
+  // Quem registrou e quando
+  registeredBy: varchar("registeredBy", { length: 64 }),
+  registeredByName: varchar("registeredByName", { length: 255 }),
+  registeredAt: timestamp("registeredAt").defaultNow(),
+  // Comissão da imobiliária
+  realEstateCommission: decimal("realEstateCommission", { precision: 15, scale: 2 }),
   observation: text("observation"), // Observation when status changes to received
   proposalDocumentUrl: text("proposalDocumentUrl"), // URL to uploaded proposal document
   propertyType: varchar("propertyType", { length: 255 }), // Tipo do Imóvel
@@ -123,8 +140,6 @@ export const sales = mysqlTable("sales", {
   vendedorCommission: decimal("vendedorCommission", { precision: 15, scale: 2 }), // Comissão Corretor Vendedor
   baggioCommission: decimal("baggioCommission", { precision: 15, scale: 2 }), // Comissão Baggio
   expectedPaymentDate: timestamp("expectedPaymentDate"), // Previsão de Recebimento
-  storeAngariador: varchar("storeAngariador", { length: 255 }), // Loja Angariador
-  storeVendedor: varchar("storeVendedor", { length: 255 }), // Loja Vendedor
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
@@ -500,6 +515,36 @@ export const salesHistoryRelations = relations(salesHistory, ({ one }) => ({
   }),
   changedByUser: one(users, {
     fields: [salesHistory.changedBy],
+    references: [users.id],
+  }),
+}));
+
+
+/**
+ * Proposal Status Comments/Comentários de Status de Proposta
+ */
+export const proposalComments = mysqlTable("proposalComments", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  saleId: varchar("saleId", { length: 64 }).notNull(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  userId: varchar("userId", { length: 64 }).notNull(),
+  userName: varchar("userName", { length: 255 }),
+  previousStatus: varchar("previousStatus", { length: 50 }),
+  newStatus: varchar("newStatus", { length: 50 }),
+  comment: text("comment"),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type ProposalComment = typeof proposalComments.$inferSelect;
+export type InsertProposalComment = typeof proposalComments.$inferInsert;
+
+export const proposalCommentsRelations = relations(proposalComments, ({ one }) => ({
+  sale: one(sales, {
+    fields: [proposalComments.saleId],
+    references: [sales.id],
+  }),
+  user: one(users, {
+    fields: [proposalComments.userId],
     references: [users.id],
   }),
 }));

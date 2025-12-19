@@ -114,16 +114,24 @@ interface FormData {
   investmentType: string;
 
   // Broker Info
-  storeAngariador: string;
-  storeVendedor: string;
   brokerAngariadorType: "internal" | "external";
   brokerAngariador: string;
+  brokerAngariadorName: string;
+  brokerAngariadorCreci: string;
+  brokerAngariadorEmail: string;
   brokerVendedorType: "internal" | "external";
   brokerVendedor: string;
+  brokerVendedorName: string;
+  brokerVendedorCreci: string;
+  brokerVendedorEmail: string;
   businessType: string;
 
-  // Commission Info (calculado automaticamente)
+  // Commission Info
   totalCommissionPercent: string;
+  totalCommissionValue: string;
+  angariadorCommission: string;
+  vendedorCommission: string;
+  realEstateCommission: string;
 
   observations: string;
   showPreview: boolean;
@@ -140,7 +148,7 @@ interface CompletionStatus {
   [key: string]: boolean;
 }
 
-export default function NewSale() {
+export default function NewProposal() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [brokers, setBrokers] = useState<Broker[]>([]);
@@ -185,14 +193,22 @@ export default function NewSale() {
     despachante: "",
     investmentType: "",
 
-    storeAngariador: "",
-    storeVendedor: "",
     brokerAngariadorType: "internal",
     brokerAngariador: "",
+    brokerAngariadorName: "",
+    brokerAngariadorCreci: "",
+    brokerAngariadorEmail: "",
     brokerVendedorType: "internal",
     brokerVendedor: "",
+    brokerVendedorName: "",
+    brokerVendedorCreci: "",
+    brokerVendedorEmail: "",
     businessType: "",
     totalCommissionPercent: "",
+    totalCommissionValue: "",
+    angariadorCommission: "",
+    vendedorCommission: "",
+    realEstateCommission: "",
 
     observations: "",
     showPreview: false,
@@ -351,8 +367,6 @@ export default function NewSale() {
     formData.totalArea,
     formData.propertyAddress,
     formData.saleDate,
-    formData.storeAngariador,
-    formData.storeVendedor,
     formData.brokerAngariador,
     formData.brokerVendedor,
     formData.businessType,
@@ -508,16 +522,23 @@ export default function NewSale() {
         cartoryBank: formData.cartoryBank,
         despachante: formData.despachante,
         investmentType: formData.investmentType,
-        storeAngariador: formData.storeAngariador,
-        storeVendedor: formData.storeVendedor,
-        brokerAngariador: formData.brokerAngariador,
-        brokerVendedor: formData.brokerVendedor,
+        brokerAngariadorType: formData.brokerAngariadorType,
+        brokerAngariador: formData.brokerAngariadorType === "internal" ? formData.brokerAngariador : undefined,
+        brokerAngariadorName: formData.brokerAngariadorType === "external" ? formData.brokerAngariadorName : undefined,
+        brokerAngariadorCreci: formData.brokerAngariadorType === "external" ? formData.brokerAngariadorCreci : undefined,
+        brokerAngariadorEmail: formData.brokerAngariadorType === "external" ? formData.brokerAngariadorEmail : undefined,
+        brokerVendedorType: formData.brokerVendedorType,
+        brokerVendedor: formData.brokerVendedorType === "internal" ? formData.brokerVendedor : undefined,
+        brokerVendedorName: formData.brokerVendedorType === "external" ? formData.brokerVendedorName : undefined,
+        brokerVendedorCreci: formData.brokerVendedorType === "external" ? formData.brokerVendedorCreci : undefined,
+        brokerVendedorEmail: formData.brokerVendedorType === "external" ? formData.brokerVendedorEmail : undefined,
         businessType: formData.businessType,
-        // Comissões calculadas
-        totalCommission: commissionCalc?.totalCommissionValue,
-        totalCommissionPercent: commissionCalc?.totalCommissionPercent,
-        angariadorCommission: commissionCalc?.angariadorValue,
-        vendedorCommission: commissionCalc?.vendedorValue,
+        // Comissões
+        totalCommission: formData.totalCommissionValue ? parseFloat(formData.totalCommissionValue) : commissionCalc?.totalCommissionValue,
+        totalCommissionPercent: formData.totalCommissionPercent ? parseFloat(formData.totalCommissionPercent) : commissionCalc?.totalCommissionPercent,
+        angariadorCommission: formData.angariadorCommission ? parseFloat(formData.angariadorCommission) : commissionCalc?.angariadorValue,
+        vendedorCommission: formData.vendedorCommission ? parseFloat(formData.vendedorCommission) : commissionCalc?.vendedorValue,
+        realEstateCommission: formData.realEstateCommission ? parseFloat(formData.realEstateCommission) : undefined,
         baggioCommission: commissionCalc?.baggioValue,
         observations: formData.observations,
         typeOfProperty: formData.typeOfProperty,
@@ -735,20 +756,32 @@ export default function NewSale() {
                 <h3 className="font-semibold text-lg mb-3">Corretores</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-slate-500">Loja Angariador</p>
-                    <p className="font-medium">{STORES.find(s => s.value === formData.storeAngariador)?.label || "-"}</p>
-                  </div>
-                  <div>
                     <p className="text-slate-500">Corretor Angariador</p>
-                    <p className="font-medium">{brokers.find(b => b.id === formData.brokerAngariador)?.name || "-"}</p>
+                    <p className="font-medium">
+                      {formData.brokerAngariadorType === "internal" 
+                        ? brokers.find(b => b.id === formData.brokerAngariador)?.name || "-"
+                        : `${formData.brokerAngariadorName} (Externo - CRECI: ${formData.brokerAngariadorCreci})`}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-slate-500">Loja Vendedor</p>
-                    <p className="font-medium">{STORES.find(s => s.value === formData.storeVendedor)?.label || "-"}</p>
+                    <p className="text-slate-500">Comissão Angariador</p>
+                    <p className="font-medium">{formData.angariadorCommission ? formatCurrency(parseFloat(formData.angariadorCommission)) : "-"}</p>
                   </div>
                   <div>
                     <p className="text-slate-500">Corretor Vendedor</p>
-                    <p className="font-medium">{brokers.find(b => b.id === formData.brokerVendedor)?.name || "-"}</p>
+                    <p className="font-medium">
+                      {formData.brokerVendedorType === "internal" 
+                        ? brokers.find(b => b.id === formData.brokerVendedor)?.name || "-"
+                        : `${formData.brokerVendedorName} (Externo - CRECI: ${formData.brokerVendedorCreci})`}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Comissão Vendedor</p>
+                    <p className="font-medium">{formData.vendedorCommission ? formatCurrency(parseFloat(formData.vendedorCommission)) : "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Comissão Imobiliária</p>
+                    <p className="font-medium">{formData.realEstateCommission ? formatCurrency(parseFloat(formData.realEstateCommission)) : "-"}</p>
                   </div>
                 </div>
               </div>
@@ -804,8 +837,8 @@ export default function NewSale() {
               <ArrowLeft className="h-4 w-4" />
               Voltar
             </button>
-            <h1 className="text-3xl font-bold text-slate-900">Registrar Nova Venda</h1>
-            <p className="text-slate-600 mt-2">Preencha todos os campos obrigatórios para registrar uma nova proposta de venda</p>
+            <h1 className="text-3xl font-bold text-slate-900">Nova Proposta</h1>
+            <p className="text-slate-600 mt-2">Preencha os campos para registrar uma nova proposta de venda</p>
           </div>
 
           {/* Form */}
@@ -813,22 +846,26 @@ export default function NewSale() {
             {/* Referência Properfy */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Referência do Imóvel (Properfy)</CardTitle>
+                <CardTitle className="text-lg">Buscar Imóvel (Properfy)</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2">
-                  <Input
-                    placeholder="Digite a referência do imóvel"
-                    value={formData.propertyReference}
-                    onChange={(e) => handleInputChange("propertyReference", e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleSearchPropertyfy()}
-                    className="flex-1"
-                  />
+                  <div className="flex-1 relative">
+                    <Input
+                      placeholder="Busque por referência, CEP ou endereço"
+                      value={formData.propertyReference}
+                      onChange={(e) => handleInputChange("propertyReference", e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleSearchPropertyfy()}
+                      className="pr-10"
+                    />
+                    <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  </div>
                   <Button onClick={() => handleSearchPropertyfy("auto")} disabled={properfySearch.loading || !formData.propertyReference}>
                     {properfySearch.loading ? <Loader className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                     Buscar
                   </Button>
                 </div>
+                <p className="text-xs text-slate-500 mt-1">Você pode buscar por: código de referência, CEP (ex: 80010-000) ou endereço</p>
                 {properfySearch.error && (
                   <p className="text-amber-600 text-sm mt-2 flex items-center gap-1">
                     <AlertCircle className="h-4 w-4" /> {properfySearch.error}
@@ -1120,12 +1157,12 @@ export default function NewSale() {
             {/* Sale Info Section */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Informações da Venda</CardTitle>
+                <CardTitle className="text-lg">Informações da Proposta</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Data da Venda *</Label>
+                    <Label>Data da Proposta *</Label>
                     <Input
                       type="date"
                       value={formData.saleDate}
@@ -1149,6 +1186,15 @@ export default function NewSale() {
                       value={formData.saleValue}
                       onChange={(e) => handleInputChange("saleValue", e.target.value)}
                       className={completionStatus.saleValue ? "bg-green-50 border-green-300" : ""}
+                    />
+                  </div>
+                  <div>
+                    <Label>Valor de Divulgação</Label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.advertisementValue}
+                      onChange={(e) => handleInputChange("advertisementValue", e.target.value)}
                     />
                   </div>
                   <div>
@@ -1251,75 +1297,202 @@ export default function NewSale() {
                       </SelectContent>
                     </Select>
                   </div>
+                  {/* Total da Comissão Fechada */}
                   <div>
-                    <Label>% Comissão Total (opcional)</Label>
+                    <Label>Total da comissão fechada em %</Label>
                     <Input
                       type="number"
-                      placeholder="Deixe vazio para usar padrão"
+                      step="0.01"
+                      placeholder="Ex: 6"
                       value={formData.totalCommissionPercent}
-                      onChange={(e) => handleInputChange("totalCommissionPercent", e.target.value)}
+                      onChange={(e) => {
+                        handleInputChange("totalCommissionPercent", e.target.value);
+                        if (e.target.value && formData.saleValue) {
+                          const value = (parseFloat(formData.saleValue) * parseFloat(e.target.value) / 100).toFixed(2);
+                          handleInputChange("totalCommissionValue", value);
+                        }
+                      }}
                     />
-                    <p className="text-xs text-slate-500 mt-1">Padrão: 6% (Prontos), 4% (Lançamentos), 5% (Ebani)</p>
                   </div>
                   <div>
-                    <Label>Loja Angariador *</Label>
-                    <Select value={formData.storeAngariador} onValueChange={(value) => handleInputChange("storeAngariador", value)}>
-                      <SelectTrigger className={completionStatus.storeAngariador ? "bg-green-50 border-green-300" : ""}>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STORES.map((store) => (
-                          <SelectItem key={store.value} value={store.value}>
-                            {store.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Total da comissão fechada em R$</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="Calculado automaticamente"
+                      value={formData.totalCommissionValue}
+                      onChange={(e) => {
+                        handleInputChange("totalCommissionValue", e.target.value);
+                        if (e.target.value && formData.saleValue && parseFloat(formData.saleValue) > 0) {
+                          const percent = ((parseFloat(e.target.value) / parseFloat(formData.saleValue)) * 100).toFixed(2);
+                          handleInputChange("totalCommissionPercent", percent);
+                        }
+                      }}
+                    />
                   </div>
-                  <div>
-                    <Label>Loja Vendedor *</Label>
-                    <Select value={formData.storeVendedor} onValueChange={(value) => handleInputChange("storeVendedor", value)}>
-                      <SelectTrigger className={completionStatus.storeVendedor ? "bg-green-50 border-green-300" : ""}>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STORES.map((store) => (
-                          <SelectItem key={store.value} value={store.value}>
-                            {store.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                </div>
+
+                {/* Corretor Angariador */}
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="font-semibold text-slate-700 mb-3">Corretor Angariador</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Tipo de Corretor *</Label>
+                      <Select value={formData.brokerAngariadorType} onValueChange={(value: "internal" | "external") => handleInputChange("brokerAngariadorType", value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="internal">Interno (da empresa)</SelectItem>
+                          <SelectItem value="external">Externo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {formData.brokerAngariadorType === "internal" ? (
+                      <div>
+                        <Label>Selecionar Corretor *</Label>
+                        <Select value={formData.brokerAngariador} onValueChange={(value) => handleInputChange("brokerAngariador", value)}>
+                          <SelectTrigger className={completionStatus.brokerAngariador ? "bg-green-50 border-green-300" : ""}>
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {brokers.map((broker) => (
+                              <SelectItem key={broker.id} value={broker.id}>
+                                {broker.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <Label>Nome do Corretor *</Label>
+                          <Input
+                            placeholder="Nome completo"
+                            value={formData.brokerAngariadorName}
+                            onChange={(e) => handleInputChange("brokerAngariadorName", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>CRECI *</Label>
+                          <Input
+                            placeholder="Número do CRECI"
+                            value={formData.brokerAngariadorCreci}
+                            onChange={(e) => handleInputChange("brokerAngariadorCreci", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Email *</Label>
+                          <Input
+                            type="email"
+                            placeholder="email@exemplo.com"
+                            value={formData.brokerAngariadorEmail}
+                            onChange={(e) => handleInputChange("brokerAngariadorEmail", e.target.value)}
+                          />
+                        </div>
+                      </>
+                    )}
+                    <div>
+                      <Label>Comissão do Angariador (R$)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={formData.angariadorCommission}
+                        onChange={(e) => handleInputChange("angariadorCommission", e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label>Corretor Angariador *</Label>
-                    <Select value={formData.brokerAngariador} onValueChange={(value) => handleInputChange("brokerAngariador", value)}>
-                      <SelectTrigger className={completionStatus.brokerAngariador ? "bg-green-50 border-green-300" : ""}>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brokers.map((broker) => (
-                          <SelectItem key={broker.id} value={broker.id}>
-                            {broker.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                </div>
+
+                {/* Corretor Vendedor */}
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="font-semibold text-slate-700 mb-3">Corretor Vendedor</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Tipo de Corretor *</Label>
+                      <Select value={formData.brokerVendedorType} onValueChange={(value: "internal" | "external") => handleInputChange("brokerVendedorType", value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="internal">Interno (da empresa)</SelectItem>
+                          <SelectItem value="external">Externo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {formData.brokerVendedorType === "internal" ? (
+                      <div>
+                        <Label>Selecionar Corretor *</Label>
+                        <Select value={formData.brokerVendedor} onValueChange={(value) => handleInputChange("brokerVendedor", value)}>
+                          <SelectTrigger className={completionStatus.brokerVendedor ? "bg-green-50 border-green-300" : ""}>
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {brokers.map((broker) => (
+                              <SelectItem key={broker.id} value={broker.id}>
+                                {broker.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <Label>Nome do Corretor *</Label>
+                          <Input
+                            placeholder="Nome completo"
+                            value={formData.brokerVendedorName}
+                            onChange={(e) => handleInputChange("brokerVendedorName", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>CRECI *</Label>
+                          <Input
+                            placeholder="Número do CRECI"
+                            value={formData.brokerVendedorCreci}
+                            onChange={(e) => handleInputChange("brokerVendedorCreci", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Email *</Label>
+                          <Input
+                            type="email"
+                            placeholder="email@exemplo.com"
+                            value={formData.brokerVendedorEmail}
+                            onChange={(e) => handleInputChange("brokerVendedorEmail", e.target.value)}
+                          />
+                        </div>
+                      </>
+                    )}
+                    <div>
+                      <Label>Comissão do Vendedor (R$)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={formData.vendedorCommission}
+                        onChange={(e) => handleInputChange("vendedorCommission", e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label>Corretor Vendedor *</Label>
-                    <Select value={formData.brokerVendedor} onValueChange={(value) => handleInputChange("brokerVendedor", value)}>
-                      <SelectTrigger className={completionStatus.brokerVendedor ? "bg-green-50 border-green-300" : ""}>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brokers.map((broker) => (
-                          <SelectItem key={broker.id} value={broker.id}>
-                            {broker.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                </div>
+
+                {/* Comissão da Imobiliária */}
+                <div className="border-t pt-4 mt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Total da comissão da imobiliária (R$)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={formData.realEstateCommission}
+                        onChange={(e) => handleInputChange("realEstateCommission", e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
 

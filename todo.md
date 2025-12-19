@@ -307,3 +307,22 @@
 - [x] Busca Properfy por referência, endereço ou CEP
 - [x] Validação visual em tempo real de CPF/CNPJ (ícone verde/vermelho)
 - [x] Histórico de alterações das vendas para auditoria
+
+## 🆕 Refatoração Nova Proposta (CONCLUÍDO)
+
+- [x] Renomear "Nova Venda" para "Nova Proposta"
+- [x] Campo de busca Properfy unificado (referência/CEP/endereço)
+- [x] Adicionar "Valor de Divulgação" ao lado de "Valor da Venda"
+- [x] Remover "Loja Angariador" e "Loja Vendedor"
+- [x] Alterar comissão para "Total fechada %" e "Total fechada R$" com cálculo automático
+- [x] Corretor Angariador (interno/externo com nome, CRECI, email obrigatórios)
+- [x] Corretor Vendedor (interno/externo com nome, CRECI, email obrigatórios)
+- [x] Comissão do Angariador em R$
+- [x] Comissão do Vendedor em R$
+- [x] Total comissão imobiliária em R$
+- [x] Salvar usuário que registrou e horário
+- [x] Opção "Salvar Incompleto" (rascunho)
+- [x] Status: Rascunho, Em análise, Venda, Em análise gerente, Em análise financeiro, Comissão paga, Cancelada
+- [x] Comentários com autor e horário em mudanças de status
+- [x] Página de gerenciamento de propostas (corretor vê só suas, gerente vê todas)
+- [x] Métricas: % propostas→vendas, % canceladas, tempo médio proposta→venda

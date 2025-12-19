@@ -62,18 +62,28 @@ const createSaleSchema = z.object({
   investmentType: z.string().optional(),
 
   // Commission Information
-  storeAngariador: z.string(),
-  storeVendedor: z.string(),
-  brokerAngariador: z.string(),
-  brokerVendedor: z.string(),
+  brokerAngariadorType: z.enum(["internal", "external"]).optional(),
+  brokerAngariador: z.string().optional(),
+  brokerAngariadorName: z.string().optional(),
+  brokerAngariadorCreci: z.string().optional(),
+  brokerAngariadorEmail: z.string().optional(),
+  brokerVendedorType: z.enum(["internal", "external"]).optional(),
+  brokerVendedor: z.string().optional(),
+  brokerVendedorName: z.string().optional(),
+  brokerVendedorCreci: z.string().optional(),
+  brokerVendedorEmail: z.string().optional(),
   businessType: z.string().min(1, "Tipo de negócio é obrigatório"),
   
-  // Calculated Commissions
+  // Commissions
   totalCommission: z.number().optional(),
   totalCommissionPercent: z.number().optional(),
   angariadorCommission: z.number().optional(),
   vendedorCommission: z.number().optional(),
+  realEstateCommission: z.number().optional(),
   baggioCommission: z.number().optional(),
+  
+  // Status
+  status: z.enum(["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]).optional(),
 
   // Observations
   observations: z.string().optional(),
@@ -241,8 +251,15 @@ export const salesRouter = router({
           vendedorCommission: input.vendedorCommission?.toString() || commissionData.vendedorValue.toString(),
           baggioCommission: input.baggioCommission?.toString() || null,
           expectedPaymentDate: input.expectedPaymentDate ? new Date(input.expectedPaymentDate) : null,
-          storeAngariador: input.storeAngariador || null,
-          storeVendedor: input.storeVendedor || null,
+          brokerAngariadorType: input.brokerAngariadorType || null,
+          brokerAngariadorName: input.brokerAngariadorName || null,
+          brokerAngariadorCreci: input.brokerAngariadorCreci || null,
+          brokerAngariadorEmail: input.brokerAngariadorEmail || null,
+          brokerVendedorType: input.brokerVendedorType || null,
+          brokerVendedorName: input.brokerVendedorName || null,
+          brokerVendedorCreci: input.brokerVendedorCreci || null,
+          brokerVendedorEmail: input.brokerVendedorEmail || null,
+          realEstateCommission: input.realEstateCommission?.toString() || null,
           // Campos adicionais
           propertyType: input.typeOfProperty || null,
           bedrooms: input.bedrooms || null,
@@ -262,8 +279,8 @@ export const salesRouter = router({
         // Criar comissões automaticamente para angariador e vendedor
         const commissionIds: string[] = [];
 
-        // Comissão do Angariador (se houver valor)
-        if (commissionData.angariadorValue > 0) {
+        // Comissão do Angariador (se houver valor e corretor interno)
+        if (commissionData.angariadorValue > 0 && input.brokerAngariador && input.brokerAngariadorType === "internal") {
           const angariadorCommissionId = uuidv4();
           commissionIds.push(angariadorCommissionId);
 
@@ -279,8 +296,8 @@ export const salesRouter = router({
           });
         }
 
-        // Comissão do Vendedor (se houver valor)
-        if (commissionData.vendedorValue > 0) {
+        // Comissão do Vendedor (se houver valor e corretor interno)
+        if (commissionData.vendedorValue > 0 && input.brokerVendedor && input.brokerVendedorType === "internal") {
           const vendedorCommissionId = uuidv4();
           commissionIds.push(vendedorCommissionId);
 
@@ -393,7 +410,7 @@ export const salesRouter = router({
     .input(
       z.object({
         saleId: z.string(),
-        status: z.enum(["pending", "received", "paid", "cancelled"]),
+        status: z.enum(["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]),
         observation: z.string().optional(),
       })
     )
@@ -420,7 +437,7 @@ export const salesRouter = router({
           .where(eq(sales.id, input.saleId));
 
         // Atualizar comissões associadas
-        if (input.status === "paid") {
+        if (input.status === "commission_paid") {
           await db
             .update(commissions)
             .set({

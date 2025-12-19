@@ -12,7 +12,8 @@ import Dashboard from "./pages/Dashboard";
 import DashboardBroker from "./pages/DashboardBroker";
 import DashboardFinance from "./pages/DashboardFinance";
 import DashboardManager from "./pages/DashboardManager";
-import NewSale from "./pages/NewSale";
+import NewProposal from "./pages/NewProposal";
+import ProposalManagement from "./pages/ProposalManagement";
 import Reports from "./pages/Reports";
 import Indicators from "./pages/Indicators";
 import Ranking from "./pages/Ranking";
@@ -72,7 +73,8 @@ function Router() {
           {/* Role-based dashboards */}
           {user.role === "broker" && (
             <>
-              <Route path="/sales/new" component={NewSale} />
+              <Route path="/proposals/new" component={NewProposal} />
+              <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/ranking" component={Ranking} />
@@ -95,7 +97,8 @@ function Router() {
           )}
           {user.role === "manager" && (
             <>
-              <Route path="/sales/new" component={NewSale} />
+              <Route path="/proposals/new" component={NewProposal} />
+              <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/brokers" component={BrokerManagement} />

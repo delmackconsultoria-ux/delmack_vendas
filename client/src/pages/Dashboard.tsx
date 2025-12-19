@@ -129,18 +129,18 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-slate-600" />
-                Nova Venda
+                Nova Proposta
               </CardTitle>
               <CardDescription>
-                Registre uma nova venda no sistema
+                Registre uma nova proposta de venda
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button
-                onClick={() => setLocation("/sales/new")}
+                onClick={() => setLocation("/proposals/new")}
                 className="w-full bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-950"
               >
-                Cadastrar Venda
+                Nova Proposta
               </Button>
             </CardContent>
           </Card>
@@ -149,19 +149,19 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-slate-600" />
-                Minhas Vendas
+                Minhas Propostas
               </CardTitle>
               <CardDescription>
-                Visualize todas as suas vendas registradas
+                Visualize todas as suas propostas registradas
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button
                 variant="outline"
-                onClick={() => setLocation("/sales")}
+                onClick={() => setLocation("/proposals")}
                 className="w-full"
               >
-                Ver Vendas
+                Ver Propostas
               </Button>
             </CardContent>
           </Card>

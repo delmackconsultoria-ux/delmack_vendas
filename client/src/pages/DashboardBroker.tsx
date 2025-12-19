@@ -98,16 +98,16 @@ export default function DashboardBroker() {
         <div className="mb-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold mb-2">Registre uma Nova Venda</h3>
+              <h3 className="text-2xl font-bold mb-2">Registre uma Nova Proposta</h3>
               <p className="text-blue-100">Comece agora a registrar suas propostas de venda</p>
             </div>
             <Button
-              onClick={() => setLocation("/sales/new")}
+              onClick={() => setLocation("/proposals/new")}
               className="bg-white text-blue-600 hover:bg-blue-50 font-semibold gap-2"
               size="lg"
             >
               <Plus className="h-5 w-5" />
-              Nova Venda
+              Nova Proposta
             </Button>
           </div>
         </div>
@@ -239,16 +239,16 @@ export default function DashboardBroker() {
           <CardContent>
             <div className="text-center py-12">
               <Home className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600 font-medium">Nenhuma venda registrada ainda</p>
+              <p className="text-slate-600 font-medium">Nenhuma proposta registrada ainda</p>
               <p className="text-slate-500 text-sm mt-1">
-                Comece registrando sua primeira venda
+                Comece registrando sua primeira proposta
               </p>
               <Button
-                onClick={() => setLocation("/sales/new")}
+                onClick={() => setLocation("/proposals/new")}
                 className="mt-4 bg-blue-600 hover:bg-blue-700"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Registrar Venda
+                Nova Proposta
               </Button>
             </div>
           </CardContent>
