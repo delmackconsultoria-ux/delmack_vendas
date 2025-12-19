@@ -444,17 +444,22 @@ export default function NewSale() {
       // Upload do arquivo de proposta se houver
       if (proposalFile && result.saleId) {
         try {
-          const reader = new FileReader();
-          reader.onload = async () => {
-            const base64 = (reader.result as string).split(',')[1];
-            await uploadMutation.mutateAsync({
-              saleId: result.saleId,
-              fileName: proposalFile.name,
-              fileData: base64,
-              contentType: proposalFile.type
-            });
-          };
-          reader.readAsDataURL(proposalFile);
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result as string;
+              resolve(result.split(',')[1]);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(proposalFile);
+          });
+          
+          await uploadMutation.mutateAsync({
+            saleId: result.saleId,
+            fileName: proposalFile.name,
+            fileData: base64,
+            contentType: proposalFile.type
+          });
         } catch (uploadError) {
           console.error('Erro ao fazer upload da proposta:', uploadError);
         }

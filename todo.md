@@ -274,3 +274,8 @@
 - [x] Remover link "Esqueci minha senha" da interface
 - [x] Corrigir "Delmac" para "Delmack" no rodapé (já estava correto)
 - [x] Manter redefinição de senha apenas pelo Super Admin
+
+## 🐛 Bugs Reportados
+
+- [x] Corrigir integração Properfy (busca em todas as páginas)
+- [x] Corrigir upload de imagem (Promise corrigida)

@@ -25,6 +25,21 @@ export interface ProperfySearchResult {
   error?: string;
 }
 
+function translatePropertyType(type: string): string {
+  const types: Record<string, string> = {
+    'APARTMENT': 'Apartamento',
+    'HOUSE': 'Casa',
+    'LAND': 'Terreno',
+    'COMMERCIAL': 'Comercial',
+    'RURAL': 'Rural',
+    'CONDO': 'Condomínio',
+    'OFFICE': 'Sala Comercial',
+    'WAREHOUSE': 'Galpão',
+    'STORE': 'Loja',
+  };
+  return types[type] || type;
+}
+
 export async function searchPropertyByReference(reference: string): Promise<ProperfySearchResult> {
   if (!PROPERFY_API_TOKEN) {
     return {
@@ -34,56 +49,59 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
   }
 
   try {
-    // Tentar diferentes endpoints possíveis
-    const endpoints = [
-      `${PROPERFY_API_URL}/crm/business-property?reference=${reference}`,
-      `${PROPERFY_API_URL}/property?reference=${reference}`,
-      `${PROPERFY_API_URL}/properties?reference=${reference}`,
-      `${PROPERFY_API_URL}/imovel?reference=${reference}`,
-    ];
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Tentar extrair dados do imóvel de diferentes formatos de resposta
-          const property = Array.isArray(data) ? data[0] : data;
-          
-          if (property && (property.id || property.reference)) {
-            return {
-              success: true,
-              property: {
-                id: property.id || property.intId,
-                reference: property.reference || property.chrReference || reference,
-                address: property.address || property.chrAddress || property.chrAddressStreet || '',
-                city: property.city || property.chrAddressCity || '',
-                state: property.state || property.chrAddressState || '',
-                district: property.district || property.chrAddressDistrict || '',
-                postalCode: property.postalCode || property.chrAddressPostalCode || '',
-                propertyType: property.propertyType || property.chrType || 'Apartamento',
-                value: property.value || property.dblValue || 0,
-                area: property.area || property.dblArea || 0,
-                bedrooms: property.bedrooms || property.intBedrooms || 0,
-                bathrooms: property.bathrooms || property.intBathrooms || 0,
-                parkingSpaces: property.parkingSpaces || property.intParkingSpaces || 0,
-                description: property.description || property.txtDescription || ''
-              }
-            };
-          }
+    const searchRef = reference.toUpperCase().trim();
+    
+    // Buscar nas primeiras 5 páginas (até 500 imóveis)
+    for (let page = 1; page <= 5; page++) {
+      const response = await fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+          'Content-Type': 'application/json'
         }
-      } catch {
-        // Tentar próximo endpoint
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          return { success: false, error: 'Token de acesso Properfy inválido ou expirado' };
+        }
         continue;
       }
+
+      const data = await response.json();
+      
+      // Buscar por referência exata ou parcial
+      const property = data.data?.find((p: any) => 
+        p.chrReference?.toUpperCase() === searchRef ||
+        p.chrInnerReference?.toUpperCase() === searchRef ||
+        p.chrReference?.toUpperCase().includes(searchRef) ||
+        p.chrInnerReference?.toUpperCase().includes(searchRef)
+      );
+
+      if (property) {
+        return {
+          success: true,
+          property: {
+            id: property.id,
+            reference: property.chrReference || property.chrInnerReference || reference,
+            address: `${property.chrAddressStreet || ''}, ${property.chrAddressNumber || 'S/N'}`,
+            city: property.chrAddressCity || '',
+            state: property.chrAddressState || '',
+            district: property.chrAddressDistrict || '',
+            postalCode: property.chrAddressPostalCode || '',
+            propertyType: translatePropertyType(property.chrType || ''),
+            value: property.dcmSale || 0,
+            area: property.dcmAreaTotal || 0,
+            bedrooms: property.intBedrooms || 0,
+            bathrooms: property.intBathrooms || 0,
+            parkingSpaces: property.intGarage || 0,
+            description: property.txtDescription || ''
+          }
+        };
+      }
+
+      // Se não há mais páginas, parar
+      if (page >= (data.last_page || 1)) break;
     }
 
     return {
