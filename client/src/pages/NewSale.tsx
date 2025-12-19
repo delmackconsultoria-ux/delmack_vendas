@@ -4,21 +4,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save, Search, CheckCircle, Loader, Eye, CheckCircle2, AlertCircle, X, Upload, FileText } from "lucide-react";
+import { ArrowLeft, Save, Search, CheckCircle, Loader, CheckCircle2, AlertCircle, Upload, FileText, Calculator } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import ErrorModal from "@/components/ErrorModal";
-import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP } from "@/lib/validators";
+import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP, formatPhone, BRAZILIAN_STATES } from "@/lib/validators";
+import { calculateCommissions, formatCurrency, BusinessType } from "@/lib/commissionCalculator";
 
-
-// Complete lists from Excel
+// Tipos de Negócio atualizados conforme manual de comissionamento
 const BUSINESS_TYPES = [
   { value: "venda_interna", label: "Venda Interna" },
   { value: "parceria_una", label: "Parceria UNA" },
   { value: "parceria_externa", label: "Parceria Externa" },
-  { value: "lancamento", label: "Lançamento" },
+  { value: "lancamento", label: "Lançamentos" },
+  { value: "parceria_autonomo", label: "Parceria Autônomo" },
+  { value: "imoveis_ebani", label: "Imóveis Ebani" },
   { value: "prontos", label: "Prontos" },
 ];
 
@@ -77,8 +79,9 @@ interface FormData {
   propertyState: string;
   propertyZipCode: string;
   advertisementValue: string;
+  condominiumName: string;
   
-  // New Property Details
+  // Property Details
   typeOfProperty: string;
   bedrooms: string;
   costPerM2: string;
@@ -90,6 +93,7 @@ interface FormData {
   saleDate: string;
   angariationDate: string;
   saleValue: string;
+  expectedPaymentDate: string;
 
   // Buyer Info
   buyerName: string;
@@ -118,6 +122,9 @@ interface FormData {
   brokerVendedor: string;
   businessType: string;
 
+  // Commission Info (calculado automaticamente)
+  totalCommissionPercent: string;
+
   observations: string;
   showPreview: boolean;
 }
@@ -137,7 +144,6 @@ export default function NewSale() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [brokers, setBrokers] = useState<Broker[]>([]);
-  const [isLoadingBrokers, setIsLoadingBrokers] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     propertyType: "baggio",
@@ -150,6 +156,7 @@ export default function NewSale() {
     propertyState: "",
     propertyZipCode: "",
     advertisementValue: "",
+    condominiumName: "",
     
     typeOfProperty: "",
     bedrooms: "",
@@ -161,6 +168,7 @@ export default function NewSale() {
     saleDate: "",
     angariationDate: "",
     saleValue: "",
+    expectedPaymentDate: "",
 
     buyerName: "",
     buyerCpfCnpj: "",
@@ -184,6 +192,7 @@ export default function NewSale() {
     brokerVendedorType: "internal",
     brokerVendedor: "",
     businessType: "",
+    totalCommissionPercent: "",
 
     observations: "",
     showPreview: false,
@@ -202,6 +211,16 @@ export default function NewSale() {
   const [proposalFile, setProposalFile] = useState<File | null>(null);
   const createSaleMutation = trpc.sales.createSale.useMutation();
   const uploadMutation = trpc.sales.uploadProposalDocument.useMutation();
+
+  // Cálculo automático de comissões
+  const commissionCalc = useMemo(() => {
+    if (!formData.saleValue || !formData.businessType) return null;
+    const saleValue = parseFloat(formData.saleValue);
+    if (isNaN(saleValue) || saleValue <= 0) return null;
+    
+    const customPercent = formData.totalCommissionPercent ? parseFloat(formData.totalCommissionPercent) : undefined;
+    return calculateCommissions(saleValue, formData.businessType as BusinessType, customPercent);
+  }, [formData.saleValue, formData.businessType, formData.totalCommissionPercent]);
 
   // Buscar imóvel no Properfy
   const handleSearchPropertyfy = async () => {
@@ -223,6 +242,9 @@ export default function NewSale() {
           advertisementValue: prop.value?.toString() || prev.advertisementValue,
           privateArea: prop.area?.toString() || prev.privateArea,
           bedrooms: prop.bedrooms?.toString() || prev.bedrooms,
+          condominiumName: prop.condominiumName || prev.condominiumName,
+          propertyNumber: prop.number?.toString() || prev.propertyNumber,
+          totalArea: prop.totalArea?.toString() || prev.totalArea,
         }));
         setProperfySearch({ loading: false, error: "", found: true });
       } else {
@@ -298,20 +320,20 @@ export default function NewSale() {
       [field]: value,
     }));
     
-    // Update completion status
     setCompletionStatus((prev) => ({
       ...prev,
       [field]: value !== "" && value !== null,
     }));
   };
 
+  // Busca automática de endereço por CEP
   const handleCEPChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const cep = e.target.value;
-    handleInputChange("propertyZipCode", cep);
+    const rawCep = e.target.value.replace(/\D/g, "");
+    handleInputChange("propertyZipCode", rawCep);
 
-    if (validateCEP(cep)) {
+    if (rawCep.length === 8) {
       try {
-        const address = await fetchAddressFromCEP(cep);
+        const address = await fetchAddressFromCEP(rawCep);
         if (address) {
           setFormData((prev) => ({
             ...prev,
@@ -327,27 +349,26 @@ export default function NewSale() {
     }
   };
 
+  // Formatação automática de CPF/CNPJ
   const handleCPFChange = (field: "buyerCpfCnpj" | "sellerCpfCnpj", value: string) => {
-    // Allow any value, validation will be done on the server
-    if (value === "") {
-      handleInputChange(field, "");
-    } else {
-      // Format if it looks like a CPF or CNPJ
-      const cleanValue = value.replace(/\D/g, "");
-      if (cleanValue.length === 11) {
-        const formatted = formatCPF(value);
-        handleInputChange(field, formatted);
-      } else if (cleanValue.length === 14) {
-        const formatted = formatCNPJ(value);
-        handleInputChange(field, formatted);
-      } else {
-        // If it doesn't match either format, save as is
-        handleInputChange(field, value);
-      }
+    const cleanValue = value.replace(/\D/g, "");
+    let formattedValue = cleanValue;
+    
+    if (cleanValue.length === 11) {
+      formattedValue = formatCPF(cleanValue);
+    } else if (cleanValue.length === 14) {
+      formattedValue = formatCNPJ(cleanValue);
     }
+    
+    handleInputChange(field, formattedValue);
   };
 
-
+  // Formatação automática de telefone
+  const handlePhoneChange = (field: "buyerPhone" | "sellerPhone", value: string) => {
+    const cleanValue = value.replace(/\D/g, "");
+    const formattedValue = formatPhone(cleanValue);
+    handleInputChange(field, formattedValue);
+  };
 
   const requiredFields = [
     "propertyAddress",
@@ -409,9 +430,9 @@ export default function NewSale() {
     try {
       setIsSubmitting(true);
       
-      // Converter data para ISO format
       const saleDateObj = new Date(formData.saleDate);
       const angariationDateObj = formData.angariationDate ? new Date(formData.angariationDate) : null;
+      const expectedPaymentDateObj = formData.expectedPaymentDate ? new Date(formData.expectedPaymentDate) : null;
       
       const payload = {
         propertyType: formData.propertyType as "baggio" | "external",
@@ -424,19 +445,41 @@ export default function NewSale() {
         propertyState: formData.propertyState,
         propertyZipCode: formData.propertyZipCode,
         advertisementValue: formData.advertisementValue ? parseFloat(formData.advertisementValue) : undefined,
+        condominiumName: formData.condominiumName,
         saleDate: saleDateObj.toISOString(),
         angariationDate: angariationDateObj ? angariationDateObj.toISOString() : undefined,
+        expectedPaymentDate: expectedPaymentDateObj ? expectedPaymentDateObj.toISOString() : undefined,
         saleValue: parseFloat(formData.saleValue),
         buyerName: formData.buyerName,
-        buyerCpfCnpj: formData.buyerCpfCnpj,
+        buyerCpfCnpj: formData.buyerCpfCnpj.replace(/\D/g, ""),
+        buyerPhone: formData.buyerPhone.replace(/\D/g, ""),
         clientOrigin: formData.clientOrigin,
         paymentMethod: formData.paymentMethod,
+        financedValue: formData.financedValue ? parseFloat(formData.financedValue) : undefined,
+        sellerName: formData.sellerName,
+        sellerCpfCnpj: formData.sellerCpfCnpj.replace(/\D/g, ""),
+        sellerPhone: formData.sellerPhone.replace(/\D/g, ""),
+        cartoryBank: formData.cartoryBank,
+        despachante: formData.despachante,
+        investmentType: formData.investmentType,
         storeAngariador: formData.storeAngariador,
         storeVendedor: formData.storeVendedor,
         brokerAngariador: formData.brokerAngariador,
         brokerVendedor: formData.brokerVendedor,
         businessType: formData.businessType,
+        // Comissões calculadas
+        totalCommission: commissionCalc?.totalCommissionValue,
+        totalCommissionPercent: commissionCalc?.totalCommissionPercent,
+        angariadorCommission: commissionCalc?.angariadorValue,
+        vendedorCommission: commissionCalc?.vendedorValue,
+        baggioCommission: commissionCalc?.baggioValue,
         observations: formData.observations,
+        typeOfProperty: formData.typeOfProperty,
+        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : undefined,
+        privateArea: formData.privateArea ? parseFloat(formData.privateArea) : undefined,
+        totalArea: formData.totalArea ? parseFloat(formData.totalArea) : undefined,
+        costPerM2: formData.costPerM2 ? parseFloat(formData.costPerM2) : undefined,
+        propertyAge: formData.propertyAge ? parseInt(formData.propertyAge) : undefined,
       };
 
       const result = await createSaleMutation.mutateAsync(payload);
@@ -487,6 +530,7 @@ export default function NewSale() {
     }
   };
 
+  // Tela de Preview/Resumo
   if (formData.showPreview) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -500,34 +544,170 @@ export default function NewSale() {
               <CardDescription>Revise os dados antes de confirmar</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Preview content */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-slate-600">Comprador</p>
-                  <p className="font-semibold">{formData.buyerName}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600">Vendedor</p>
-                  <p className="font-semibold">{formData.sellerName}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600">Valor da Venda</p>
-                  <p className="font-semibold">R$ {parseFloat(formData.saleValue).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600">Tipo de Imóvel</p>
-                  <p className="font-semibold">{formData.typeOfProperty}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600">Área Privativa</p>
-                  <p className="font-semibold">{formData.privateArea} m²</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600">Área Total</p>
-                  <p className="font-semibold">{formData.totalArea} m²</p>
+              {/* Dados do Imóvel */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold text-lg mb-3">Dados do Imóvel</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-500">Referência</p>
+                    <p className="font-medium">{formData.propertyReference || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Condomínio</p>
+                    <p className="font-medium">{formData.condominiumName || "-"}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-slate-500">Endereço</p>
+                    <p className="font-medium">{formData.propertyAddress}, {formData.propertyNumber} {formData.propertyComplement} - {formData.propertyNeighborhood}, {formData.propertyCity}/{formData.propertyState} - CEP: {formData.propertyZipCode}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Tipo</p>
+                    <p className="font-medium">{PROPERTY_TYPES.find(t => t.value === formData.typeOfProperty)?.label || formData.typeOfProperty}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Quartos</p>
+                    <p className="font-medium">{formData.bedrooms}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Área Privativa</p>
+                    <p className="font-medium">{formData.privateArea} m²</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Área Total</p>
+                    <p className="font-medium">{formData.totalArea} m²</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Valor de Divulgação</p>
+                    <p className="font-medium">{formData.advertisementValue ? formatCurrency(parseFloat(formData.advertisementValue)) : "-"}</p>
+                  </div>
                 </div>
               </div>
 
+              {/* Dados da Venda */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold text-lg mb-3">Dados da Venda</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-500">Data da Venda</p>
+                    <p className="font-medium">{new Date(formData.saleDate).toLocaleDateString("pt-BR")}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Data da Angariação</p>
+                    <p className="font-medium">{formData.angariationDate ? new Date(formData.angariationDate).toLocaleDateString("pt-BR") : "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Valor da Venda</p>
+                    <p className="font-medium text-lg text-green-700">{formatCurrency(parseFloat(formData.saleValue))}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Previsão de Recebimento</p>
+                    <p className="font-medium">{formData.expectedPaymentDate ? new Date(formData.expectedPaymentDate).toLocaleDateString("pt-BR") : "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Forma de Pagamento</p>
+                    <p className="font-medium">{PAYMENT_METHODS.find(m => m.value === formData.paymentMethod)?.label || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Tipo de Negócio</p>
+                    <p className="font-medium">{BUSINESS_TYPES.find(t => t.value === formData.businessType)?.label || "-"}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comissões Calculadas */}
+              {commissionCalc && (
+                <div className="border-b pb-4 bg-blue-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                    <Calculator className="h-5 w-5 text-blue-600" />
+                    Comissões Calculadas
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="col-span-2">
+                      <p className="text-slate-500">Total da Comissão Fechada</p>
+                      <p className="font-bold text-xl text-blue-700">{formatCurrency(commissionCalc.totalCommissionValue)} ({commissionCalc.totalCommissionPercent}%)</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500">Comissão Corretor Angariador ({commissionCalc.angariadorPercent}%)</p>
+                      <p className="font-medium text-green-700">{formatCurrency(commissionCalc.angariadorValue)}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500">Comissão Corretor Vendedor ({commissionCalc.vendedorPercent}%)</p>
+                      <p className="font-medium text-green-700">{formatCurrency(commissionCalc.vendedorValue)}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-slate-500">Comissão Baggio ({commissionCalc.baggioPercent}%)</p>
+                      <p className="font-medium text-slate-700">{formatCurrency(commissionCalc.baggioValue)}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Dados do Comprador */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold text-lg mb-3">Dados do Comprador</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-500">Nome</p>
+                    <p className="font-medium">{formData.buyerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">CPF/CNPJ</p>
+                    <p className="font-medium">{formData.buyerCpfCnpj}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Telefone</p>
+                    <p className="font-medium">{formData.buyerPhone || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Origem do Cliente</p>
+                    <p className="font-medium">{CLIENT_ORIGINS.find(o => o.value === formData.clientOrigin)?.label || "-"}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dados do Vendedor */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold text-lg mb-3">Dados do Vendedor</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-500">Nome</p>
+                    <p className="font-medium">{formData.sellerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">CPF/CNPJ</p>
+                    <p className="font-medium">{formData.sellerCpfCnpj}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Telefone</p>
+                    <p className="font-medium">{formData.sellerPhone || "-"}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Corretores */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold text-lg mb-3">Corretores</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-500">Loja Angariador</p>
+                    <p className="font-medium">{STORES.find(s => s.value === formData.storeAngariador)?.label || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Corretor Angariador</p>
+                    <p className="font-medium">{brokers.find(b => b.id === formData.brokerAngariador)?.name || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Loja Vendedor</p>
+                    <p className="font-medium">{STORES.find(s => s.value === formData.storeVendedor)?.label || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500">Corretor Vendedor</p>
+                    <p className="font-medium">{brokers.find(b => b.id === formData.brokerVendedor)?.name || "-"}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botões */}
               <div className="flex gap-4">
                 <button
                   onClick={() => setFormData((prev) => ({ ...prev, showPreview: false }))}
@@ -595,6 +775,7 @@ export default function NewSale() {
                     placeholder="Digite a referência do imóvel"
                     value={formData.propertyReference}
                     onChange={(e) => handleInputChange("propertyReference", e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSearchPropertyfy()}
                     className="flex-1"
                   />
                   <Button onClick={handleSearchPropertyfy} disabled={properfySearch.loading || !formData.propertyReference}>
@@ -702,10 +883,19 @@ export default function NewSale() {
                       placeholder="00000-000"
                       value={formData.propertyZipCode}
                       onChange={handleCEPChange}
-                      onKeyPress={(e) => e.key === "Enter" && handleCEPChange(e as any)}
+                      maxLength={9}
                     />
+                    <p className="text-xs text-slate-500 mt-1">Digite o CEP para preencher o endereço automaticamente</p>
                   </div>
                   <div>
+                    <Label>Nome do Condomínio</Label>
+                    <Input
+                      placeholder="Nome do condomínio"
+                      value={formData.condominiumName}
+                      onChange={(e) => handleInputChange("condominiumName", e.target.value)}
+                    />
+                  </div>
+                  <div className="col-span-2">
                     <Label>Endereço *</Label>
                     <Input
                       placeholder="Rua/Avenida"
@@ -747,12 +937,27 @@ export default function NewSale() {
                     />
                   </div>
                   <div>
-                    <Label>Estado</Label>
+                    <Label>Estado *</Label>
+                    <Select value={formData.propertyState} onValueChange={(value) => handleInputChange("propertyState", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BRAZILIAN_STATES.map((state) => (
+                          <SelectItem key={state.value} value={state.value}>
+                            {state.value} - {state.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Valor de Divulgação</Label>
                     <Input
-                      placeholder="SP"
-                      maxLength={2}
-                      value={formData.propertyState}
-                      onChange={(e) => handleInputChange("propertyState", e.target.value.toUpperCase())}
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.advertisementValue}
+                      onChange={(e) => handleInputChange("advertisementValue", e.target.value)}
                     />
                   </div>
                 </div>
@@ -762,7 +967,8 @@ export default function NewSale() {
             {/* Buyer Section */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Informações do Comprador</CardTitle>
+                <CardTitle className="text-lg">Dados do Cliente Comprador</CardTitle>
+                <CardDescription>Dados utilizados na Nota Fiscal</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -780,16 +986,17 @@ export default function NewSale() {
                     <Input
                       placeholder="000.000.000-00"
                       value={formData.buyerCpfCnpj}
-                      onChange={(e) => handleCPFChange("buyerCpfCnpj", e.target.value.replace(/\D/g, ""))}
+                      onChange={(e) => handleCPFChange("buyerCpfCnpj", e.target.value)}
                       className={completionStatus.buyerCpfCnpj ? "bg-green-50 border-green-300" : ""}
                     />
+                    <p className="text-xs text-slate-500 mt-1">Formatação automática ao digitar</p>
                   </div>
                   <div>
                     <Label>Telefone</Label>
                     <Input
-                      placeholder="(11) 99999-9999"
+                      placeholder="(00) 00000-0000"
                       value={formData.buyerPhone}
-                      onChange={(e) => handleInputChange("buyerPhone", e.target.value)}
+                      onChange={(e) => handlePhoneChange("buyerPhone", e.target.value)}
                     />
                   </div>
                   <div>
@@ -814,7 +1021,8 @@ export default function NewSale() {
             {/* Seller Section */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Informações do Vendedor</CardTitle>
+                <CardTitle className="text-lg">Dados do Cliente Vendedor</CardTitle>
+                <CardDescription>Dados utilizados na Nota Fiscal</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -832,16 +1040,16 @@ export default function NewSale() {
                     <Input
                       placeholder="000.000.000-00"
                       value={formData.sellerCpfCnpj}
-                      onChange={(e) => handleCPFChange("sellerCpfCnpj", e.target.value.replace(/\D/g, ""))}
+                      onChange={(e) => handleCPFChange("sellerCpfCnpj", e.target.value)}
                       className={completionStatus.sellerCpfCnpj ? "bg-green-50 border-green-300" : ""}
                     />
                   </div>
                   <div>
                     <Label>Telefone</Label>
                     <Input
-                      placeholder="(11) 99999-9999"
+                      placeholder="(00) 00000-0000"
                       value={formData.sellerPhone}
-                      onChange={(e) => handleInputChange("sellerPhone", e.target.value)}
+                      onChange={(e) => handlePhoneChange("sellerPhone", e.target.value)}
                     />
                   </div>
                 </div>
@@ -856,11 +1064,12 @@ export default function NewSale() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Data da Venda</Label>
+                    <Label>Data da Venda *</Label>
                     <Input
                       type="date"
                       value={formData.saleDate}
                       onChange={(e) => handleInputChange("saleDate", e.target.value)}
+                      className={completionStatus.saleDate ? "bg-green-50 border-green-300" : ""}
                     />
                   </div>
                   <div>
@@ -879,6 +1088,14 @@ export default function NewSale() {
                       value={formData.saleValue}
                       onChange={(e) => handleInputChange("saleValue", e.target.value)}
                       className={completionStatus.saleValue ? "bg-green-50 border-green-300" : ""}
+                    />
+                  </div>
+                  <div>
+                    <Label>Previsão de Recebimento</Label>
+                    <Input
+                      type="date"
+                      value={formData.expectedPaymentDate}
+                      onChange={(e) => handleInputChange("expectedPaymentDate", e.target.value)}
                     />
                   </div>
                   <div>
@@ -959,6 +1176,31 @@ export default function NewSale() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <Label>Tipo de Negócio *</Label>
+                    <Select value={formData.businessType} onValueChange={(value) => handleInputChange("businessType", value)}>
+                      <SelectTrigger className={completionStatus.businessType ? "bg-green-50 border-green-300" : ""}>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BUSINESS_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>% Comissão Total (opcional)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Deixe vazio para usar padrão"
+                      value={formData.totalCommissionPercent}
+                      onChange={(e) => handleInputChange("totalCommissionPercent", e.target.value)}
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Padrão: 6% (Prontos), 4% (Lançamentos), 5% (Ebani)</p>
+                  </div>
+                  <div>
                     <Label>Loja Angariador *</Label>
                     <Select value={formData.storeAngariador} onValueChange={(value) => handleInputChange("storeAngariador", value)}>
                       <SelectTrigger className={completionStatus.storeAngariador ? "bg-green-50 border-green-300" : ""}>
@@ -1018,22 +1260,35 @@ export default function NewSale() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label>Tipo de Negócio *</Label>
-                    <Select value={formData.businessType} onValueChange={(value) => handleInputChange("businessType", value)}>
-                      <SelectTrigger className={completionStatus.businessType ? "bg-green-50 border-green-300" : ""}>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {BUSINESS_TYPES.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
+
+                {/* Preview das Comissões */}
+                {commissionCalc && (
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                      <Calculator className="h-4 w-4" />
+                      Prévia das Comissões
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <p className="text-slate-600">Total ({commissionCalc.totalCommissionPercent}%)</p>
+                        <p className="font-bold text-blue-700">{formatCurrency(commissionCalc.totalCommissionValue)}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-600">Angariador ({commissionCalc.angariadorPercent}%)</p>
+                        <p className="font-semibold text-green-700">{formatCurrency(commissionCalc.angariadorValue)}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-600">Vendedor ({commissionCalc.vendedorPercent}%)</p>
+                        <p className="font-semibold text-green-700">{formatCurrency(commissionCalc.vendedorValue)}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-600">Baggio ({commissionCalc.baggioPercent}%)</p>
+                        <p className="font-semibold text-slate-700">{formatCurrency(commissionCalc.baggioValue)}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -1114,4 +1369,3 @@ export default function NewSale() {
     </div>
   );
 }
-

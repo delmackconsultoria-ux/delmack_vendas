@@ -22,21 +22,43 @@ const createSaleSchema = z.object({
   propertyNumber: z.string().optional(),
   propertyComplement: z.string().optional(),
   propertyNeighborhood: z.string().optional(),
-  propertyCity: z.string().min(1, "Cidade é obrigatória"),
-  propertyState: z.string().min(2).max(2),
+  propertyCity: z.string().optional(),
+  propertyState: z.string().max(2).optional(),
   propertyZipCode: z.string().optional(),
   advertisementValue: z.number().optional(),
+  condominiumName: z.string().optional(),
+  
+  // Property Details
+  typeOfProperty: z.string().optional(),
+  bedrooms: z.number().optional(),
+  costPerM2: z.number().optional(),
+  privateArea: z.number().optional(),
+  totalArea: z.number().optional(),
+  propertyAge: z.number().optional(),
 
   // Sale Information
   saleDate: z.string().datetime(),
   angariationDate: z.string().datetime().optional(),
   saleValue: z.number().positive("Valor da venda deve ser positivo"),
+  expectedPaymentDate: z.string().datetime().optional(),
 
-  // Client Information
+  // Buyer Information
   buyerName: z.string().min(1, "Nome do comprador é obrigatório"),
   buyerCpfCnpj: z.string().optional(),
+  buyerPhone: z.string().optional(),
   clientOrigin: z.string().optional(),
   paymentMethod: z.string().optional(),
+  financedValue: z.number().optional(),
+
+  // Seller Information
+  sellerName: z.string().optional(),
+  sellerCpfCnpj: z.string().optional(),
+  sellerPhone: z.string().optional(),
+
+  // Additional Info
+  cartoryBank: z.string().optional(),
+  despachante: z.string().optional(),
+  investmentType: z.string().optional(),
 
   // Commission Information
   storeAngariador: z.string(),
@@ -44,7 +66,13 @@ const createSaleSchema = z.object({
   brokerAngariador: z.string(),
   brokerVendedor: z.string(),
   businessType: z.string().min(1, "Tipo de negócio é obrigatório"),
-  walletSituation: z.string().optional(),
+  
+  // Calculated Commissions
+  totalCommission: z.number().optional(),
+  totalCommissionPercent: z.number().optional(),
+  angariadorCommission: z.number().optional(),
+  vendedorCommission: z.number().optional(),
+  baggioCommission: z.number().optional(),
 
   // Observations
   observations: z.string().optional(),
@@ -171,13 +199,14 @@ export const salesRouter = router({
           });
         }
 
-        // Criar venda
+        // Criar venda com todos os campos
         await db.insert(sales).values({
           id: saleId,
           companyId: ctx.user.companyId || "1",
           propertyId: finalPropertyId,
           buyerName: input.buyerName,
           buyerCpfCnpj: input.buyerCpfCnpj || null,
+          buyerPhone: input.buyerPhone || null,
           saleDate: new Date(input.saleDate),
           angariationDate: input.angariationDate ? new Date(input.angariationDate) : null,
           saleValue: input.saleValue.toString(),
@@ -189,6 +218,31 @@ export const salesRouter = router({
           status: "pending",
           observation: input.observations || null,
           proposalDocumentUrl: null,
+          // Novos campos do documento Word
+          condominiumName: input.condominiumName || null,
+          advertisementValue: input.advertisementValue?.toString() || null,
+          totalCommission: input.totalCommission?.toString() || commissionData.totalCommissionValue.toString(),
+          totalCommissionPercent: input.totalCommissionPercent?.toString() || (commissionData.totalCommissionPercentage * 100).toString(),
+          angariadorCommission: input.angariadorCommission?.toString() || commissionData.angariadorValue.toString(),
+          vendedorCommission: input.vendedorCommission?.toString() || commissionData.vendedorValue.toString(),
+          baggioCommission: input.baggioCommission?.toString() || null,
+          expectedPaymentDate: input.expectedPaymentDate ? new Date(input.expectedPaymentDate) : null,
+          storeAngariador: input.storeAngariador || null,
+          storeVendedor: input.storeVendedor || null,
+          // Campos adicionais
+          propertyType: input.typeOfProperty || null,
+          bedrooms: input.bedrooms || null,
+          costPerM2: input.costPerM2?.toString() || null,
+          privateArea: input.privateArea?.toString() || null,
+          totalArea: input.totalArea?.toString() || null,
+          propertyAge: input.propertyAge || null,
+          financedValue: input.financedValue?.toString() || null,
+          sellerName: input.sellerName || null,
+          sellerCpfCnpj: input.sellerCpfCnpj || null,
+          sellerPhone: input.sellerPhone || null,
+          cartoryBank: input.cartoryBank || null,
+          despachante: input.despachante || null,
+          investmentType: input.investmentType || null,
         });
 
         // Criar comissões automaticamente para angariador e vendedor

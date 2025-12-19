@@ -114,6 +114,17 @@ export const sales = mysqlTable("sales", {
   sellerCpfCnpj: varchar("sellerCpfCnpj", { length: 20 }), // CPF/CNPJ do Vendedor
   sellerPhone: varchar("sellerPhone", { length: 20 }), // Telefone do Vendedor
   buyerPhone: varchar("buyerPhone", { length: 20 }), // Telefone do Comprador
+  // Novos campos do documento Word
+  condominiumName: varchar("condominiumName", { length: 255 }), // Nome do Condomínio
+  advertisementValue: decimal("advertisementValue", { precision: 15, scale: 2 }), // Valor de Divulgação
+  totalCommission: decimal("totalCommission", { precision: 15, scale: 2 }), // Total da Comissão Fechada
+  totalCommissionPercent: decimal("totalCommissionPercent", { precision: 5, scale: 2 }), // % da Comissão
+  angariadorCommission: decimal("angariadorCommission", { precision: 15, scale: 2 }), // Comissão Corretor Angariador
+  vendedorCommission: decimal("vendedorCommission", { precision: 15, scale: 2 }), // Comissão Corretor Vendedor
+  baggioCommission: decimal("baggioCommission", { precision: 15, scale: 2 }), // Comissão Baggio
+  expectedPaymentDate: timestamp("expectedPaymentDate"), // Previsão de Recebimento
+  storeAngariador: varchar("storeAngariador", { length: 255 }), // Loja Angariador
+  storeVendedor: varchar("storeVendedor", { length: 255 }), // Loja Vendedor
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

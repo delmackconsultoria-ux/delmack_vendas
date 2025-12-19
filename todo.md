@@ -279,3 +279,25 @@
 
 - [x] Corrigir integração Properfy (busca em todas as páginas)
 - [x] Corrigir upload de imagem (Promise corrigida)
+
+
+## 🆕 Atualização Formulário de Venda
+
+- [ ] Campo Estado como select (dropdown)
+- [ ] Garantir campos exatos do documento Word no formulário
+
+
+## 🆕 Melhorias UX Formulário de Venda (Solicitado)
+
+- [x] Campo Nome do Condomínio
+- [x] Campo Valor de Divulgação mais visível
+- [x] Cálculo Total da Comissão Fechada (Valor e %)
+- [x] Cálculo Comissão Corretor Angariador R$
+- [x] Cálculo Comissão Corretor Vendedor R$
+- [x] Cálculo Comissão Baggio R$
+- [x] Campo Previsão de Recebimento
+- [x] Estado como dropdown (select) com UFs brasileiras
+- [x] Preenchimento automático do Properfy
+- [x] Validação e formatação de CPF/CNPJ
+- [x] Validação e formatação de Telefone (XX) XXXXX-XXXX
+- [x] Busca automática de endereço por CEP
