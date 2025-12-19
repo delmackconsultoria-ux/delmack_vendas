@@ -268,3 +268,9 @@
 - [x] Painel de usuários no Super Admin
 - [x] Alterar senha no perfil do usuário
 - [x] Log de acessos (histórico de logins)
+
+## 🆕 Correções Solicitadas
+
+- [x] Remover link "Esqueci minha senha" da interface
+- [x] Corrigir "Delmac" para "Delmack" no rodapé (já estava correto)
+- [x] Manter redefinição de senha apenas pelo Super Admin
