@@ -326,3 +326,25 @@
 - [x] Comentários com autor e horário em mudanças de status
 - [x] Página de gerenciamento de propostas (corretor vê só suas, gerente vê todas)
 - [x] Métricas: % propostas→vendas, % canceladas, tempo médio proposta→venda
+
+
+## 🆕 Isolamento de Dados e Gestão de Empresas
+
+### Isolamento por Empresa
+- [x] Revisar todas as queries para filtrar por companyId
+- [x] Garantir que sales só retorne dados da empresa do usuário
+- [x] Garantir que commissions só retorne dados da empresa do usuário
+- [x] Garantir que brokers só retorne dados da empresa do usuário
+- [x] Garantir que users só retorne dados da empresa do usuário (exceto Super Admin)
+
+### Cadastro de Empresas (Super Admin)
+- [x] Criar formulário de nova empresa (nome, CNPJ, contatos)
+- [x] Validação de CNPJ único
+- [x] Campos de contato (telefone, email, endereço)
+- [x] Listar empresas existentes
+
+### Preparação para Dados Reais
+- [ ] Limpar dados de teste do banco
+- [ ] Manter apenas Super Admin
+- [ ] Preparar importação de Excel para usuários
+- [ ] Preparar importação de Excel para empresas

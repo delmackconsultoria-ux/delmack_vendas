@@ -33,6 +33,7 @@ export type InsertUser = typeof users.$inferInsert;
 export const companies = mysqlTable("companies", {
   id: varchar("id", { length: 64 }).primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
+  cnpj: varchar("cnpj", { length: 20 }).unique(),
   email: varchar("email", { length: 320 }),
   phone: varchar("phone", { length: 20 }),
   address: text("address"),

@@ -7,7 +7,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
 import { sales, commissions, properties } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { calculateCommission } from "./commissionService";
 import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch } from "./services/properfyService";
@@ -358,18 +358,25 @@ export const salesRouter = router({
         throw new Error("Database not available");
       }
 
-      // Corretores veem apenas suas vendas
-      // Gerentes veem todas as vendas da empresa
-      let query: any = db.select().from(sales);
-
-      if (ctx.user.role === "broker") {
-        query = query.where(eq(sales.brokerVendedor, ctx.user.id));
-      } else if (ctx.user.role === "manager") {
-        query = query.where(eq(sales.companyId, ctx.user.companyId || "1"));
+      const companyId = ctx.user.companyId;
+      if (!companyId) {
+        throw new Error("Usuário sem empresa vinculada");
       }
 
-      const result = await query;
-      return result;
+      // SEMPRE filtrar por companyId primeiro para isolamento de dados
+      // Corretores veem apenas suas vendas da empresa
+      // Gerentes/Financeiro veem todas as vendas da empresa
+      let result;
+
+      if (ctx.user.role === "broker") {
+        result = await db.select().from(sales)
+          .where(and(eq(sales.companyId, companyId), eq(sales.brokerVendedor, ctx.user.id)));
+      } else {
+        result = await db.select().from(sales)
+          .where(eq(sales.companyId, companyId));
+      }
+
+      return { sales: result };
     } catch (error) {
       console.error("[Sales Router] Erro ao listar vendas:", error);
       throw new Error("Erro ao listar vendas");

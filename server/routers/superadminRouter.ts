@@ -94,8 +94,10 @@ export const superadminRouter = router({
   createCompany: protectedProcedure
     .input(z.object({
       name: z.string().min(1),
+      cnpj: z.string().optional(),
       email: z.string().email().optional(),
       phone: z.string().optional(),
+      address: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       if (ctx.user.role !== "superadmin") {
@@ -105,12 +107,22 @@ export const superadminRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       
+      // Verificar se CNPJ já existe
+      if (input.cnpj) {
+        const existingCompany = await db.select().from(companies).where(eq(companies.cnpj, input.cnpj)).limit(1);
+        if (existingCompany.length > 0) {
+          throw new TRPCError({ code: "CONFLICT", message: "CNPJ já cadastrado" });
+        }
+      }
+      
       const id = `company_${Date.now()}`;
       await db.insert(companies).values({
         id,
         name: input.name,
+        cnpj: input.cnpj || null,
         email: input.email || null,
         phone: input.phone || null,
+        address: input.address || null,
         licenseType: "monthly",
         isActive: true,
       });

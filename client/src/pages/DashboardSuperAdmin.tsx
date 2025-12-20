@@ -18,7 +18,7 @@ export default function DashboardSuperAdmin() {
   const [showCompanyModal, setShowCompanyModal] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
   const [uploadedUsers, setUploadedUsers] = useState<any[]>([]);
-  const [newCompany, setNewCompany] = useState({ name: "", email: "", phone: "" });
+  const [newCompany, setNewCompany] = useState({ name: "", cnpj: "", email: "", phone: "", address: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const companiesQuery = trpc.superadmin.listCompanies.useQuery();
@@ -106,7 +106,7 @@ export default function DashboardSuperAdmin() {
       await createCompanyMutation.mutateAsync(newCompany);
       toast.success("Empresa criada com sucesso!");
       setShowCompanyModal(false);
-      setNewCompany({ name: "", email: "", phone: "" });
+      setNewCompany({ name: "", cnpj: "", email: "", phone: "", address: "" });
       companiesQuery.refetch();
     } catch (error) {
       toast.error("Erro ao criar empresa");
@@ -340,19 +340,39 @@ export default function DashboardSuperAdmin() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label className="text-slate-300">Nome da Empresa</Label>
+                <Label className="text-slate-300">Nome da Empresa *</Label>
                 <Input
                   value={newCompany.name}
                   onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
+                  placeholder="Ex: Imobiliária ABC"
                   className="mt-1 bg-slate-700 border-slate-600 text-white"
                 />
               </div>
               <div>
-                <Label className="text-slate-300">E-mail</Label>
+                <Label className="text-slate-300">CNPJ *</Label>
+                <Input
+                  value={newCompany.cnpj}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length <= 14) {
+                      v = v.replace(/(\d{2})(\d)/, "$1.$2");
+                      v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                      v = v.replace(/(\d{3})(\d)/, "$1/$2");
+                      v = v.replace(/(\d{4})(\d)/, "$1-$2");
+                    }
+                    setNewCompany({ ...newCompany, cnpj: v });
+                  }}
+                  placeholder="00.000.000/0000-00"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">E-mail *</Label>
                 <Input
                   type="email"
                   value={newCompany.email}
                   onChange={(e) => setNewCompany({ ...newCompany, email: e.target.value })}
+                  placeholder="contato@empresa.com.br"
                   className="mt-1 bg-slate-700 border-slate-600 text-white"
                 />
               </div>
@@ -360,7 +380,24 @@ export default function DashboardSuperAdmin() {
                 <Label className="text-slate-300">Telefone</Label>
                 <Input
                   value={newCompany.phone}
-                  onChange={(e) => setNewCompany({ ...newCompany, phone: e.target.value })}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length <= 11) {
+                      v = v.replace(/(\d{2})(\d)/, "($1) $2");
+                      v = v.replace(/(\d{5})(\d)/, "$1-$2");
+                    }
+                    setNewCompany({ ...newCompany, phone: v });
+                  }}
+                  placeholder="(00) 00000-0000"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Endereço</Label>
+                <Input
+                  value={newCompany.address}
+                  onChange={(e) => setNewCompany({ ...newCompany, address: e.target.value })}
+                  placeholder="Rua, número, bairro, cidade - UF"
                   className="mt-1 bg-slate-700 border-slate-600 text-white"
                 />
               </div>
