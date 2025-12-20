@@ -348,3 +348,10 @@
 - [ ] Manter apenas Super Admin
 - [ ] Preparar importação de Excel para usuários
 - [ ] Preparar importação de Excel para empresas
+
+
+## 🆕 Correção Super Admin e Criação de Usuários
+
+- [x] Verificar/recriar Super Admin com senha funcional
+- [x] Implementar criação de usuários individuais pelo Super Admin
+- [x] Testar login e fornecer credenciais

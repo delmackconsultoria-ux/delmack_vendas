@@ -130,6 +130,55 @@ export const superadminRouter = router({
       return { id, success: true };
     }),
 
+  createUser: protectedProcedure
+    .input(z.object({
+      name: z.string().min(1),
+      email: z.string().email(),
+      role: z.enum(["broker", "manager", "finance"]),
+      companyId: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      
+      // Verificar se email já existe
+      const existingUser = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
+      if (existingUser.length > 0) {
+        throw new TRPCError({ code: "CONFLICT", message: "E-mail já cadastrado" });
+      }
+      
+      const password = generateStrongPassword();
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      await db.insert(users).values({
+        id,
+        name: input.name,
+        email: input.email,
+        password: hashedPassword,
+        role: input.role,
+        companyId: input.companyId,
+        loginMethod: "email",
+        isActive: true,
+      });
+      
+      // Enviar email com credenciais
+      try {
+        await notifyOwner({
+          title: `Novo usuário criado: ${input.name}`,
+          content: `Email: ${input.email}\nSenha: ${password}\nPerfil: ${input.role}`,
+        });
+      } catch (e) {
+        console.log("[SuperAdmin] Erro ao enviar notificação:", e);
+      }
+      
+      return { success: true, email: input.email, password };
+    }),
+
   uploadUsers: protectedProcedure
     .input(z.object({
       companyId: z.string(),

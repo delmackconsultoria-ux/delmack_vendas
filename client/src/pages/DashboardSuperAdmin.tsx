@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Users, Upload, LogOut, Plus, Eye, EyeOff, FileSpreadsheet, Settings } from "lucide-react";
+import { Building2, Users, Upload, LogOut, Plus, Eye, EyeOff, FileSpreadsheet, Settings, UserPlus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
@@ -19,12 +20,15 @@ export default function DashboardSuperAdmin() {
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
   const [uploadedUsers, setUploadedUsers] = useState<any[]>([]);
   const [newCompany, setNewCompany] = useState({ name: "", cnpj: "", email: "", phone: "", address: "" });
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [newUser, setNewUser] = useState({ name: "", email: "", role: "broker", companyId: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const companiesQuery = trpc.superadmin.listCompanies.useQuery();
   const statsQuery = trpc.superadmin.getStats.useQuery();
   const createCompanyMutation = trpc.superadmin.createCompany.useMutation();
   const uploadUsersMutation = trpc.superadmin.uploadUsers.useMutation();
+  const createUserMutation = trpc.superadmin.createUser.useMutation();
   const updateCompanyMutation = trpc.superadmin.updateCompany.useMutation();
   const licenseAlertsQuery = trpc.superadmin.getLicenseAlerts.useQuery();
   const actionLogsQuery = trpc.superadmin.getActionLogs.useQuery({ limit: 10 });
@@ -205,6 +209,10 @@ export default function DashboardSuperAdmin() {
           <Button onClick={() => setShowCompanyModal(true)} className="bg-purple-600 hover:bg-purple-700 gap-2">
             <Plus className="h-4 w-4" />
             Nova Empresa
+          </Button>
+          <Button onClick={() => setShowUserModal(true)} className="bg-green-600 hover:bg-green-700 gap-2">
+            <UserPlus className="h-4 w-4" />
+            Novo Usuário
           </Button>
           <Button onClick={() => setShowUploadModal(true)} variant="outline" className="border-purple-600 text-purple-400 hover:bg-purple-600/20 gap-2">
             <Upload className="h-4 w-4" />
@@ -511,6 +519,93 @@ export default function DashboardSuperAdmin() {
                   <Label className="text-slate-400">Observações</Label>
                   <textarea value={selectedCompany.contractNotes || ""} onChange={(e) => handleUpdateCompany("contractNotes", e.target.value)} className="w-full p-2 rounded-md bg-slate-600 border-slate-500 text-white mt-1 min-h-[80px]" />
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* New User Modal */}
+      {showUserModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <UserPlus className="h-5 w-5" />
+                Novo Usuário
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-slate-300">Nome Completo *</Label>
+                <Input
+                  value={newUser.name}
+                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  placeholder="João da Silva"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">E-mail *</Label>
+                <Input
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  placeholder="joao@empresa.com.br"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Perfil *</Label>
+                <Select value={newUser.role} onValueChange={(v) => setNewUser({ ...newUser, role: v })}>
+                  <SelectTrigger className="mt-1 bg-slate-700 border-slate-600 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="broker">Corretor</SelectItem>
+                    <SelectItem value="manager">Gerente</SelectItem>
+                    <SelectItem value="finance">Financeiro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-slate-300">Empresa *</Label>
+                <Select value={newUser.companyId} onValueChange={(v) => setNewUser({ ...newUser, companyId: v })}>
+                  <SelectTrigger className="mt-1 bg-slate-700 border-slate-600 text-white">
+                    <SelectValue placeholder="Selecione a empresa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {companiesQuery.data?.map((company: any) => (
+                      <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowUserModal(false)} className="border-slate-600 text-slate-300">
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={async () => {
+                    if (!newUser.name || !newUser.email || !newUser.companyId) {
+                      toast.error("Preencha todos os campos obrigatórios");
+                      return;
+                    }
+                    try {
+                      const result = await createUserMutation.mutateAsync(newUser as any);
+                      toast.success(`Usuário criado! Senha: ${result.password}`);
+                      setShowUserModal(false);
+                      setNewUser({ name: "", email: "", role: "broker", companyId: "" });
+                      companiesQuery.refetch();
+                    } catch (error: any) {
+                      toast.error(error.message || "Erro ao criar usuário");
+                    }
+                  }}
+                  className="bg-green-600 hover:bg-green-700"
+                  disabled={createUserMutation.isPending}
+                >
+                  {createUserMutation.isPending ? "Criando..." : "Criar Usuário"}
+                </Button>
               </div>
             </CardContent>
           </Card>
