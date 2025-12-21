@@ -20,7 +20,7 @@ const createSaleSchema = z.object({
   // Property Information
   propertyType: z.enum(["baggio", "external"]),
   propertyReference: z.string().optional(),
-  propertyAddress: z.string().min(1, "Endereço é obrigatório"),
+  propertyAddress: z.string().optional(),
   propertyNumber: z.string().optional(),
   propertyComplement: z.string().optional(),
   propertyNeighborhood: z.string().optional(),
@@ -41,11 +41,11 @@ const createSaleSchema = z.object({
   // Sale Information
   saleDate: z.string().datetime(),
   angariationDate: z.string().datetime().optional(),
-  saleValue: z.number().positive("Valor da venda deve ser positivo"),
+  saleValue: z.number().optional(),
   expectedPaymentDate: z.string().datetime().optional(),
 
   // Buyer Information
-  buyerName: z.string().min(1, "Nome do comprador é obrigatório"),
+  buyerName: z.string().optional(),
   buyerCpfCnpj: z.string().optional(),
   buyerPhone: z.string().optional(),
   clientOrigin: z.string().optional(),
@@ -193,7 +193,7 @@ export const salesRouter = router({
         const propertyId = uuidv4();
 
         // Calcular comissão baseado no tipo de negócio
-        const commissionData = calculateCommission(input.businessType, input.saleValue);
+        const commissionData = calculateCommission(input.businessType, input.saleValue || 0);
 
         // Criar ou atualizar propriedade
         const existingProperty = input.propertyReference
@@ -211,11 +211,11 @@ export const salesRouter = router({
             companyId: ctx.user.companyId || "1",
             propertyReference: input.propertyReference || null,
             isFromBaggio: input.propertyType === "baggio",
-            address: input.propertyAddress,
+            address: input.propertyAddress || '',
             zipCode: input.propertyZipCode || null,
             neighborhood: input.propertyNeighborhood || null,
-            city: input.propertyCity,
-            state: input.propertyState,
+            city: input.propertyCity || '',
+            state: input.propertyState || '',
             number: input.propertyNumber || null,
             complement: input.propertyComplement || null,
             advertisementValue: input.advertisementValue
@@ -229,12 +229,12 @@ export const salesRouter = router({
           id: saleId,
           companyId: ctx.user.companyId || "1",
           propertyId: finalPropertyId,
-          buyerName: input.buyerName,
+          buyerName: input.buyerName || '',
           buyerCpfCnpj: input.buyerCpfCnpj || null,
           buyerPhone: input.buyerPhone || null,
           saleDate: new Date(input.saleDate),
           angariationDate: input.angariationDate ? new Date(input.angariationDate) : null,
-          saleValue: input.saleValue.toString(),
+          saleValue: (input.saleValue || 0).toString(),
           clientOrigin: input.clientOrigin || null,
           paymentMethod: input.paymentMethod || null,
           brokerAngariador: input.brokerAngariador,
@@ -338,7 +338,7 @@ export const salesRouter = router({
 **Comprador:** ${input.buyerName}
 **Vendedor:** ${input.sellerName || 'N/A'}
 **Endereço:** ${input.propertyAddress}, ${input.propertyCity}/${input.propertyState}
-**Valor da Venda:** R$ ${input.saleValue.toLocaleString('pt-BR')}
+**Valor da Venda:** R$ ${(input.saleValue || 0).toLocaleString('pt-BR')}
 **Tipo de Negócio:** ${input.businessType}
 **Comissão Total:** R$ ${commissionData.totalCommissionValue.toLocaleString('pt-BR')}
 **Registrado por:** ${ctx.user.name || 'Usuário'}

@@ -1034,7 +1034,7 @@ export default function NewProposal() {
                       placeholder="Rua/Avenida"
                       value={formData.propertyAddress}
                       onChange={(e) => handleInputChange("propertyAddress", e.target.value)}
-                      className={completionStatus.propertyAddress ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.propertyAddress ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.propertyAddress ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
@@ -1102,7 +1102,7 @@ export default function NewProposal() {
                       placeholder="Nome completo"
                       value={formData.buyerName}
                       onChange={(e) => handleInputChange("buyerName", e.target.value)}
-                      className={completionStatus.buyerName ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.buyerName ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.buyerName ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
@@ -1208,7 +1208,7 @@ export default function NewProposal() {
                       type="date"
                       value={formData.saleDate}
                       onChange={(e) => handleInputChange("saleDate", e.target.value)}
-                      className={completionStatus.saleDate ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.saleDate ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.saleDate ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
@@ -1226,7 +1226,7 @@ export default function NewProposal() {
                       placeholder="0.00"
                       value={formData.saleValue}
                       onChange={(e) => handleInputChange("saleValue", e.target.value)}
-                      className={completionStatus.saleValue ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.saleValue ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.saleValue ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
@@ -1326,7 +1326,7 @@ export default function NewProposal() {
                   <div>
                     <Label>Tipo de Negócio *</Label>
                     <Select value={formData.businessType} onValueChange={(value) => handleInputChange("businessType", value)}>
-                      <SelectTrigger className={completionStatus.businessType ? "bg-green-50 border-green-300" : ""}>
+                      <SelectTrigger className={completionStatus.businessType ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.businessType ? "bg-red-50 border-red-400" : ""}>
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1393,7 +1393,7 @@ export default function NewProposal() {
                       <div>
                         <Label>Selecionar Corretor *</Label>
                         <Select value={formData.brokerAngariador} onValueChange={(value) => handleInputChange("brokerAngariador", value)}>
-                          <SelectTrigger className={completionStatus.brokerAngariador ? "bg-green-50 border-green-300" : ""}>
+                          <SelectTrigger className={completionStatus.brokerAngariador ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.brokerAngariador ? "bg-red-50 border-red-400" : ""}>
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
@@ -1467,7 +1467,7 @@ export default function NewProposal() {
                       <div>
                         <Label>Selecionar Corretor *</Label>
                         <Select value={formData.brokerVendedor} onValueChange={(value) => handleInputChange("brokerVendedor", value)}>
-                          <SelectTrigger className={completionStatus.brokerVendedor ? "bg-green-50 border-green-300" : ""}>
+                          <SelectTrigger className={completionStatus.brokerVendedor ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.brokerVendedor ? "bg-red-50 border-red-400" : ""}>
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
