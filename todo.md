@@ -384,3 +384,18 @@
 
 - [x] Badge com perfil do usuário (Corretor, Gerente, etc) ao lado do nome
 - [ ] Configurar API Properfy de produção (aguardando URL de produção)
+
+
+## 🆕 Correções Super Admin
+
+- [ ] Header padrão (AppHeader) em todas as páginas incluindo Super Admin
+- [ ] Permitir excluir empresas (botão funcional)
+- [ ] Clicar em "Usuários Totais" abre listagem de todos os usuários
+
+
+## 🆕 Correções Super Admin
+
+- [x] Header padrão (AppHeader) em todas as páginas incluindo Super Admin
+- [x] Permitir excluir empresas (botão funcional)
+- [x] Clicar em "Usuários Totais" abre listagem de todos os usuários
+- [x] Na listagem de usuários: editar, desabilitar/ativar, redefinir senha

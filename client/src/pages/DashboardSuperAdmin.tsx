@@ -5,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Users, Upload, LogOut, Plus, Eye, EyeOff, FileSpreadsheet, Settings, UserPlus, Copy, Trash2, Ban, Key, Check, X } from "lucide-react";
+import { Building2, Users, Upload, Plus, Eye, EyeOff, FileSpreadsheet, UserPlus, Copy, Trash2, Ban, Key, Check, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function DashboardSuperAdmin() {
   const { user, logout } = useAuth();
@@ -37,10 +38,14 @@ export default function DashboardSuperAdmin() {
   const [showUsersModal, setShowUsersModal] = useState(false);
   const [companyUsers, setCompanyUsers] = useState<any[]>([]);
   const [createdPassword, setCreatedPassword] = useState<string | null>(null);
+  const [showAllUsersModal, setShowAllUsersModal] = useState(false);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
   const companyStatsQuery = trpc.superadmin.getCompanyStats.useQuery(
     { companyId: selectedCompany?.id || "" },
     { enabled: !!selectedCompany?.id }
   );
+  const allUsersQuery = trpc.superadmin.listAllUsers.useQuery(undefined, { enabled: showAllUsersModal });
+  const deleteCompanyMutation = trpc.superadmin.deleteCompany.useMutation();
 
   const handleUpdateCompany = async (field: string, value: any) => {
     if (!selectedCompany) return;
@@ -124,30 +129,8 @@ export default function DashboardSuperAdmin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <header className="bg-slate-800/50 border-b border-slate-700 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-purple-600 p-2 rounded-lg">
-              <Settings className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-white">Delmack Admin</h1>
-              <p className="text-xs text-purple-300">Painel de Controle</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium text-white">{user.name}</p>
-              <Badge className="bg-purple-600">Super Admin</Badge>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-700">
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Header Padrão */}
+      <AppHeader />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -168,13 +151,17 @@ export default function DashboardSuperAdmin() {
               <div className="text-3xl font-bold text-white">{statsQuery.data?.totalCompanies || 0}</div>
             </CardContent>
           </Card>
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card 
+            className="bg-slate-800/50 border-slate-700 cursor-pointer hover:bg-slate-700/50 transition-colors"
+            onClick={() => setShowAllUsersModal(true)}
+          >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-300">Usuários Totais</CardTitle>
               <Users className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-white">{statsQuery.data?.totalUsers || 0}</div>
+              <p className="text-xs text-purple-400 mt-1">Clique para gerenciar</p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/50 border-slate-700">
@@ -259,20 +246,41 @@ export default function DashboardSuperAdmin() {
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="text-red-400 hover:bg-red-600/20" 
+                      className="text-orange-400 hover:bg-orange-600/20" 
                       onClick={async () => {
-                        if (!confirm(`Deseja desativar a empresa ${company.name}? Todos os usuários também serão desativados.`)) return;
+                        const action = company.isActive ? "desativar" : "ativar";
+                        if (!confirm(`Deseja ${action} a empresa ${company.name}?`)) return;
                         try {
-                          await updateCompanyMutation.mutateAsync({ companyId: company.id, isActive: false });
-                          toast.success("Empresa desativada");
+                          await updateCompanyMutation.mutateAsync({ companyId: company.id, isActive: !company.isActive });
+                          toast.success(`Empresa ${company.isActive ? "desativada" : "ativada"}`);
                           companiesQuery.refetch();
+                          statsQuery.refetch();
                         } catch (e) {
-                          toast.error("Erro ao desativar empresa");
+                          toast.error(`Erro ao ${action} empresa`);
                         }
                       }}
-                      title="Desativar Empresa"
+                      title={company.isActive ? "Desativar Empresa" : "Ativar Empresa"}
                     >
-                      <Ban className="h-4 w-4" />
+                      {company.isActive ? <Ban className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-red-400 hover:bg-red-600/20" 
+                      onClick={async () => {
+                        if (!confirm(`ATENÇÃO: Deseja EXCLUIR permanentemente a empresa ${company.name}? Esta ação desativará a empresa e todos os usuários.`)) return;
+                        try {
+                          await deleteCompanyMutation.mutateAsync({ companyId: company.id });
+                          toast.success("Empresa excluída");
+                          companiesQuery.refetch();
+                          statsQuery.refetch();
+                        } catch (e) {
+                          toast.error("Erro ao excluir empresa");
+                        }
+                      }}
+                      title="Excluir Empresa"
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -661,6 +669,17 @@ export default function DashboardSuperAdmin() {
           onRefresh={() => companiesQuery.refetch()}
         />
       )}
+
+      {/* All Users Modal */}
+      {showAllUsersModal && (
+        <AllUsersModal
+          users={allUsersQuery.data || []}
+          companies={companiesQuery.data || []}
+          isLoading={allUsersQuery.isLoading}
+          onClose={() => setShowAllUsersModal(false)}
+          onRefresh={() => { allUsersQuery.refetch(); companiesQuery.refetch(); statsQuery.refetch(); }}
+        />
+      )}
     </div>
   );
 }
@@ -753,6 +772,171 @@ function UsersListModal({ company, onClose, onRefresh }: { company: any; onClose
                       </Badge>
                       <Badge variant="outline" className="border-purple-600 text-purple-400">
                         {roleLabels[user.role] || user.role}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-slate-400">{user.email}</p>
+                    {user.lastSignedIn && (
+                      <p className="text-xs text-slate-500">Último acesso: {new Date(user.lastSignedIn).toLocaleString()}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-yellow-600 text-yellow-400 hover:bg-yellow-600/20"
+                      onClick={() => handleResetPassword(user.id)}
+                      disabled={resetPasswordMutation.isPending}
+                      title="Redefinir Senha"
+                    >
+                      <Key className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className={user.isActive ? "border-orange-600 text-orange-400 hover:bg-orange-600/20" : "border-green-600 text-green-400 hover:bg-green-600/20"}
+                      onClick={() => handleToggleActive(user.id, !user.isActive)}
+                      disabled={toggleActiveMutation.isPending}
+                      title={user.isActive ? "Desativar" : "Ativar"}
+                    >
+                      {user.isActive ? <Ban className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-red-600 text-red-400 hover:bg-red-600/20"
+                      onClick={() => handleDelete(user.id)}
+                      disabled={deleteMutation.isPending}
+                      title="Remover"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
+// Componente para modal de todos os usuários
+function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: { 
+  users: any[]; 
+  companies: any[];
+  isLoading: boolean; 
+  onClose: () => void; 
+  onRefresh: () => void 
+}) {
+  const resetPasswordMutation = trpc.superadmin.resetPasswordWithReturn.useMutation();
+  const toggleActiveMutation = trpc.superadmin.toggleUserActive.useMutation();
+  const deleteMutation = trpc.superadmin.deleteUser.useMutation();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const getCompanyName = (companyId: string) => {
+    const company = companies.find((c: any) => c.id === companyId);
+    return company?.name || "Sem empresa";
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    try {
+      const result = await resetPasswordMutation.mutateAsync({ userId });
+      toast.success(
+        <div className="flex items-center gap-2">
+          <span>Nova senha: <strong>{result.password}</strong></span>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(result.password);
+              toast.success("Senha copiada!");
+            }}
+            className="p-1 hover:bg-slate-700 rounded"
+          >
+            <Copy className="h-4 w-4" />
+          </button>
+        </div>,
+        { duration: 30000 }
+      );
+      onRefresh();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao redefinir senha");
+    }
+  };
+
+  const handleToggleActive = async (userId: string, active: boolean) => {
+    try {
+      await toggleActiveMutation.mutateAsync({ userId, active });
+      toast.success(active ? "Usuário ativado" : "Usuário desativado");
+      onRefresh();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao alterar status");
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (!confirm("Tem certeza que deseja remover este usuário?")) return;
+    try {
+      await deleteMutation.mutateAsync({ userId });
+      toast.success("Usuário removido");
+      onRefresh();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao remover usuário");
+    }
+  };
+
+  const roleLabels: Record<string, string> = {
+    broker: "Corretor",
+    manager: "Gerente",
+    finance: "Financeiro",
+    admin: "Admin",
+    superadmin: "Super Admin",
+  };
+
+  const filteredUsers = users.filter((user: any) => 
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    getCompanyName(user.companyId).toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto py-8">
+      <Card className="w-full max-w-5xl bg-slate-800 border-slate-700 my-auto max-h-[90vh] overflow-auto">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center justify-between">
+            <span className="flex items-center gap-2"><Users className="h-5 w-5" /> Todos os Usuários</span>
+            <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-400"><X className="h-5 w-5" /></Button>
+          </CardTitle>
+          <CardDescription className="text-slate-400">{users.length} usuários no sistema</CardDescription>
+          <div className="mt-4">
+            <Input
+              placeholder="Buscar por nome, email ou empresa..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="bg-slate-700 border-slate-600 text-white"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <p className="text-center text-slate-400 py-8">Carregando...</p>
+          ) : filteredUsers.length === 0 ? (
+            <p className="text-center text-slate-400 py-8">Nenhum usuário encontrado</p>
+          ) : (
+            <div className="space-y-3">
+              {filteredUsers.map((user: any) => (
+                <div key={user.id} className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-medium text-white">{user.name}</h4>
+                      <Badge className={user.isActive ? "bg-green-600" : "bg-red-600"}>
+                        {user.isActive ? "Ativo" : "Inativo"}
+                      </Badge>
+                      <Badge variant="outline" className="border-purple-600 text-purple-400">
+                        {roleLabels[user.role] || user.role}
+                      </Badge>
+                      <Badge variant="outline" className="border-blue-600 text-blue-400">
+                        {getCompanyName(user.companyId)}
                       </Badge>
                     </div>
                     <p className="text-sm text-slate-400">{user.email}</p>
