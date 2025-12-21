@@ -393,13 +393,14 @@ export const salesRouter = router({
 
       // SEMPRE filtrar por companyId primeiro para isolamento de dados
       // Corretores veem apenas suas vendas da empresa
-      // Gerentes/Financeiro veem todas as vendas da empresa
+      // Gerentes/Financeiro/Viewer veem todas as vendas da empresa
       let result;
 
       if (ctx.user.role === "broker") {
         result = await db.select().from(sales)
           .where(and(eq(sales.companyId, companyId), eq(sales.brokerVendedor, ctx.user.id)));
       } else {
+        // manager, finance, viewer, admin - veem todas as vendas da empresa
         result = await db.select().from(sales)
           .where(eq(sales.companyId, companyId));
       }
@@ -520,8 +521,8 @@ export const salesRouter = router({
         // Corretores veem apenas suas comissões
         if (ctx.user.role === "broker") {
           query = query.where(eq(commissions.brokerId, ctx.user.id));
-        } else if (ctx.user.role === "manager" || ctx.user.role === "finance") {
-          // Gerentes e financeiro veem comissões da empresa
+        } else if (ctx.user.role === "manager" || ctx.user.role === "finance" || ctx.user.role === "viewer") {
+          // Gerentes, financeiro e viewer veem comissões da empresa
           query = query.where(eq(commissions.companyId, ctx.user.companyId || "1"));
         }
 
@@ -540,8 +541,8 @@ export const salesRouter = router({
     .input(z.object({ saleId: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
-        // Apenas gerentes e financeiro podem ver histórico
-        if (ctx.user.role !== "manager" && ctx.user.role !== "finance" && ctx.user.role !== "admin") {
+        // Gerentes, financeiro, admin e viewer podem ver histórico
+        if (ctx.user.role !== "manager" && ctx.user.role !== "finance" && ctx.user.role !== "admin" && ctx.user.role !== "viewer") {
           throw new Error("Permissão negada para visualizar histórico");
         }
 
@@ -567,7 +568,7 @@ export const salesRouter = router({
 
       if (ctx.user.role === "broker") {
         query = query.where(eq(commissions.brokerId, ctx.user.id));
-      } else if (ctx.user.role === "manager" || ctx.user.role === "finance") {
+      } else if (ctx.user.role === "manager" || ctx.user.role === "finance" || ctx.user.role === "viewer") {
         query = query.where(eq(commissions.companyId, ctx.user.companyId || "1"));
       }
 

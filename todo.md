@@ -499,3 +499,12 @@
 - [x] Modal de edição de empresa com Nome Fantasia, CNPJ, telefone, endereço
 - [x] Botão de editar empresa (ícone lápis azul) na lista de empresas
 - [x] Contagem de usuários por empresa funcionando (query SQL correta)
+
+
+## 🆕 Correções (21/12/2025 - Sessão 5)
+
+- [x] Erro ao salvar empresa corrigido (nullable fields)
+- [x] Contagem de usuários por empresa corrigida (BigInt → Number)
+- [x] Viewer tem acesso a Analytics (Insights) no menu e rotas
+- [x] Viewer vê dados filtrados por empresa (sales, commissions, history)
+- [x] Todos os perfis veem apenas dados da própria empresa

@@ -43,7 +43,7 @@ const navItems: NavItem[] = [
   { label: "Usuários", path: "/users", roles: ["manager"] },
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },
-  { label: "Analytics", path: "/analytics", roles: ["finance"] },
+  { label: "Analytics", path: "/analytics", roles: ["finance", "viewer"] },
   { label: "Aprovação", path: "/sales-approval", roles: ["finance", "manager"] },
 ];
 

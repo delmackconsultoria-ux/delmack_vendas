@@ -124,6 +124,7 @@ function Router() {
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/ranking" component={Ranking} />
+              <Route path="/analytics" component={Analytics} />
               <Route path="/dashboard" component={Reports} />
               <Route path="/" component={Reports} />
             </>

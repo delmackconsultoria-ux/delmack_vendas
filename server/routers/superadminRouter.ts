@@ -78,25 +78,26 @@ export const superadminRouter = router({
       createdAt: companies.createdAt,
       userCount: sql<number>`(SELECT COUNT(*) FROM users WHERE companyId = ${companies.id})`,
     }).from(companies);
-    return result;
+    // Converter userCount para número (MySQL retorna BigInt)
+    return result.map(c => ({ ...c, userCount: Number(c.userCount) || 0 }));
   }),
 
   updateCompany: protectedProcedure
     .input(z.object({
       companyId: z.string(),
-      name: z.string().optional(),
-      tradeName: z.string().optional(),
-      cnpj: z.string().optional(),
-      email: z.string().optional(),
-      phone: z.string().optional(),
-      address: z.string().optional(),
+      name: z.string().optional().nullable(),
+      tradeName: z.string().optional().nullable(),
+      cnpj: z.string().optional().nullable(),
+      email: z.string().optional().nullable(),
+      phone: z.string().optional().nullable(),
+      address: z.string().optional().nullable(),
       licenseType: z.enum(["perpetual", "monthly", "quarterly", "semiannual", "annual"]).optional(),
-      licenseStartDate: z.date().optional(),
-      contractResponsible: z.string().optional(),
-      contractResponsibleEmail: z.string().optional(),
-      contractResponsiblePhone: z.string().optional(),
-      contractStartDate: z.date().optional(),
-      contractNotes: z.string().optional(),
+      licenseStartDate: z.date().optional().nullable(),
+      contractResponsible: z.string().optional().nullable(),
+      contractResponsibleEmail: z.string().optional().nullable(),
+      contractResponsiblePhone: z.string().optional().nullable(),
+      contractStartDate: z.date().optional().nullable(),
+      contractNotes: z.string().optional().nullable(),
       isActive: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -107,7 +108,11 @@ export const superadminRouter = router({
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       const { companyId, ...updateData } = input;
       const cleanData: any = {};
-      Object.entries(updateData).forEach(([k, v]) => { if (v !== undefined) cleanData[k] = v; });
+      Object.entries(updateData).forEach(([k, v]) => { 
+        if (v !== undefined) {
+          cleanData[k] = v === "" ? null : v;
+        }
+      });
       if (Object.keys(cleanData).length > 0) {
         await db.update(companies).set(cleanData).where(eq(companies.id, companyId));
       }

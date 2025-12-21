@@ -1,0 +1,20 @@
+{
+  "query": "SELECT c.id, c.name, (SELECT COUNT(*) FROM users WHERE companyId = c.id) as userCount FROM companies c;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT c.id, c.name, (SELECT COUNT(*) FROM users WHERE companyId = c.id) as userCount FROM companies c;",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "userCount": "3"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes",
+      "userCount": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tuserCount\ncompany_1766331506068\tB I IMOVEIS LTDA\t3\ncompany_1766344499112\tTestes\t3\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}
