@@ -1,6 +1,7 @@
 // Serviço de integração com API Properfy
 // Suporta busca por referência, endereço ou CEP
-const PROPERFY_API_URL = process.env.PROPERFY_API_URL || 'https://sandbox.properfy.com.br/api';
+// A URL do env pode estar errada (apontando para /auth/token), usar URL base correta
+const PROPERFY_API_URL = 'https://sandbox.properfy.com.br/api';
 const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN || '';
 
 export interface ProperfyProperty {

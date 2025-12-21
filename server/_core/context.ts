@@ -32,15 +32,33 @@ export async function createContext(
     // Parse session data from cookie
     try {
       const decodedCookie = decodeURIComponent(sessionCookie);
-      const sessionData = JSON.parse(decodedCookie);
       
-      if (sessionData.userId) {
-        // Email/password authentication
-        const fetchedUser = await db.getUser(sessionData.userId);
-        user = fetchedUser || null;
+      // Verificar se é um JWT (começa com eyJ)
+      if (decodedCookie.startsWith('eyJ')) {
+        // JWT token - decodificar payload
+        try {
+          const parts = decodedCookie.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+            if (payload.userId) {
+              const fetchedUser = await db.getUser(payload.userId);
+              user = fetchedUser || null;
+            }
+          }
+        } catch (jwtError) {
+          // JWT inválido, ignorar silenciosamente
+          user = null;
+        }
+      } else {
+        // JSON simples
+        const sessionData = JSON.parse(decodedCookie);
+        if (sessionData.userId) {
+          const fetchedUser = await db.getUser(sessionData.userId);
+          user = fetchedUser || null;
+        }
       }
     } catch (error) {
-      console.warn("[Auth] Failed to parse session cookie:", error);
+      // Ignorar erros de parsing silenciosamente - cookie inválido ou expirado
       user = null;
     }
   } catch (error) {

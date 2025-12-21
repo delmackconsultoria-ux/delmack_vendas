@@ -355,3 +355,9 @@
 - [x] Verificar/recriar Super Admin com senha funcional
 - [x] Implementar criação de usuários individuais pelo Super Admin
 - [x] Testar login e fornecer credenciais
+
+
+## 🐛 Bugs Reportados
+
+- [x] Busca Properfy não retorna dados - URL corrigida (refs BG não existem no sandbox)
+- [x] Tela de erro "Ops! Algo deu errado" - cookie JWT tratado corretamente
