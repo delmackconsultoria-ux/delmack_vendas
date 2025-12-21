@@ -372,3 +372,9 @@
 - [x] Desabilitar/excluir usuário
 - [x] Desabilitar/excluir empresa
 - [x] Corrigir erro 404 ao acessar com usuário criado
+
+
+## 🆕 Ajustes Header
+
+- [x] Clicar em "Delmack" redireciona para home/dashboard
+- [x] Exibir "Nome - Empresa" no header (ex: "Angellica - Testes")

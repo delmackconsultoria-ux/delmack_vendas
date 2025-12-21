@@ -158,8 +158,21 @@ export async function getUser(id: string) {
   }
 
   const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
-
-  return result.length > 0 ? result[0] : undefined;
+  
+  if (result.length === 0) return undefined;
+  
+  const user = result[0];
+  
+  // Buscar nome da empresa se o usuário tiver companyId
+  let companyName: string | null = null;
+  if (user.companyId) {
+    const companyResult = await db.select().from(companies).where(eq(companies.id, user.companyId)).limit(1);
+    if (companyResult.length > 0) {
+      companyName = companyResult[0].name;
+    }
+  }
+  
+  return { ...user, companyName };
 }
 
 /**

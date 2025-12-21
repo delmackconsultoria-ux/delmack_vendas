@@ -38,9 +38,9 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-4 max-w-full">
-        {/* Logo e Título - Clicável para Dashboard */}
+        {/* Logo e Título - Clicável para Home */}
         <button
-          onClick={() => setLocation("/dashboard")}
+          onClick={() => setLocation("/")}
           className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity"
         >
           <img
@@ -76,7 +76,7 @@ export function AppHeader() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="text-sm">
-                {user?.name || "Menu"}
+                {user?.name?.split(' ')[0] || "Menu"}{user?.companyName ? ` - ${user.companyName}` : ""}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">

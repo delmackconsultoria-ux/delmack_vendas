@@ -26,6 +26,7 @@ export const users = mysqlTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+export type UserWithCompany = User & { companyName: string | null };
 
 /**
  * Companies/Imobiliárias table
