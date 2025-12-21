@@ -484,3 +484,10 @@
 - [x] Adicionado campo "Nome Fantasia" no formulário de empresa
 - [x] Erros removidos da interface (ErrorBoundary redireciona silenciosamente)
 - [x] Login redireciona direto para o perfil correto (sem tela de erro)
+
+
+## 🆕 Botões de Proposta (21/12/2025)
+
+- [x] Botão Cancelar - volta para listagem de propostas
+- [x] Botão Salvar Rascunho (laranja) - salva imediatamente com status "draft"
+- [x] Botão Enviar Proposta (azul) - valida campos obrigatórios, destaca em vermelho se faltarem

@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -441,11 +442,92 @@ export default function NewProposal() {
   // Estado para marcar campos com erro (vazios quando tentou salvar)
   const [attemptedSave, setAttemptedSave] = useState(false);
 
-  const handleSave = async () => {
-    // Marcar que tentou salvar para destacar campos vazios em vermelho
+  // Salvar Rascunho - salva imediatamente sem prévia
+  const handleSaveDraft = async () => {
+    try {
+      setIsSubmitting(true);
+      
+      const saleDateObj = formData.saleDate ? new Date(formData.saleDate) : new Date();
+      const angariationDateObj = formData.angariationDate ? new Date(formData.angariationDate) : null;
+      const expectedPaymentDateObj = formData.expectedPaymentDate ? new Date(formData.expectedPaymentDate) : null;
+      
+      const payload = {
+        propertyType: (formData.propertyType || "baggio") as "baggio" | "external",
+        propertyReference: formData.propertyReference || "",
+        propertyAddress: formData.propertyAddress || "",
+        propertyNumber: formData.propertyNumber,
+        propertyComplement: formData.propertyComplement,
+        propertyNeighborhood: formData.propertyNeighborhood,
+        propertyCity: formData.propertyCity,
+        propertyState: formData.propertyState,
+        propertyZipCode: formData.propertyZipCode,
+        advertisementValue: formData.advertisementValue ? parseFloat(formData.advertisementValue) : undefined,
+        condominiumName: formData.condominiumName,
+        saleDate: saleDateObj.toISOString(),
+        angariationDate: angariationDateObj ? angariationDateObj.toISOString() : undefined,
+        expectedPaymentDate: expectedPaymentDateObj ? expectedPaymentDateObj.toISOString() : undefined,
+        saleValue: formData.saleValue ? parseFloat(formData.saleValue) : 0,
+        buyerName: formData.buyerName || "",
+        buyerCpfCnpj: formData.buyerCpfCnpj?.replace(/\D/g, "") || "",
+        buyerPhone: formData.buyerPhone?.replace(/\D/g, "") || "",
+        clientOrigin: formData.clientOrigin,
+        paymentMethod: formData.paymentMethod,
+        financedValue: formData.financedValue ? parseFloat(formData.financedValue) : undefined,
+        sellerName: formData.sellerName,
+        sellerCpfCnpj: formData.sellerCpfCnpj?.replace(/\D/g, "") || "",
+        sellerPhone: formData.sellerPhone?.replace(/\D/g, "") || "",
+        cartoryBank: formData.cartoryBank,
+        despachante: formData.despachante,
+        investmentType: formData.investmentType,
+        brokerAngariadorType: formData.brokerAngariadorType,
+        brokerAngariador: formData.brokerAngariadorType === "internal" ? formData.brokerAngariador : undefined,
+        brokerAngariadorName: formData.brokerAngariadorType === "external" ? formData.brokerAngariadorName : undefined,
+        brokerAngariadorCreci: formData.brokerAngariadorType === "external" ? formData.brokerAngariadorCreci : undefined,
+        brokerAngariadorEmail: formData.brokerAngariadorType === "external" ? formData.brokerAngariadorEmail : undefined,
+        brokerVendedorType: formData.brokerVendedorType,
+        brokerVendedor: formData.brokerVendedorType === "internal" ? formData.brokerVendedor : undefined,
+        brokerVendedorName: formData.brokerVendedorType === "external" ? formData.brokerVendedorName : undefined,
+        brokerVendedorCreci: formData.brokerVendedorType === "external" ? formData.brokerVendedorCreci : undefined,
+        brokerVendedorEmail: formData.brokerVendedorType === "external" ? formData.brokerVendedorEmail : undefined,
+        businessType: formData.businessType || "sale",
+        totalCommission: formData.totalCommissionValue ? parseFloat(formData.totalCommissionValue) : commissionCalc?.totalCommissionValue,
+        totalCommissionPercent: formData.totalCommissionPercent ? parseFloat(formData.totalCommissionPercent) : commissionCalc?.totalCommissionPercent,
+        angariadorCommission: formData.angariadorCommission ? parseFloat(formData.angariadorCommission) : commissionCalc?.angariadorValue,
+        vendedorCommission: formData.vendedorCommission ? parseFloat(formData.vendedorCommission) : commissionCalc?.vendedorValue,
+        realEstateCommission: formData.realEstateCommission ? parseFloat(formData.realEstateCommission) : undefined,
+        baggioCommission: commissionCalc?.baggioValue,
+        observations: formData.observations,
+        typeOfProperty: formData.typeOfProperty,
+        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : undefined,
+        privateArea: formData.privateArea ? parseFloat(formData.privateArea) : undefined,
+        totalArea: formData.totalArea ? parseFloat(formData.totalArea) : undefined,
+        costPerM2: formData.costPerM2 ? parseFloat(formData.costPerM2) : undefined,
+        propertyAge: formData.propertyAge ? parseInt(formData.propertyAge) : undefined,
+        status: "draft" as const, // Salva como rascunho
+      };
+
+      await createSaleMutation.mutateAsync(payload);
+      toast.success("Rascunho salvo com sucesso!");
+      setLocation("/proposals");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao salvar rascunho");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Enviar Proposta - valida campos e mostra prévia
+  const handleSubmitProposal = async () => {
+    // Marcar que tentou enviar para destacar campos vazios em vermelho
     setAttemptedSave(true);
     
-    // Sempre permitir salvar, mesmo com campos vazios
+    // Verificar se todos os campos obrigatórios estão preenchidos
+    if (!isFormComplete) {
+      toast.error("Preencha todos os campos obrigatórios (destacados em vermelho)");
+      return;
+    }
+    
+    // Mostrar prévia antes de salvar
     setFormData((prev) => ({ ...prev, showPreview: true }));
   };
 
@@ -1526,24 +1608,29 @@ export default function NewProposal() {
               </CardContent>
             </Card>
 
-            {/* Save Button */}
-            <div className="flex gap-4">
+            {/* Botões de Ação */}
+            <div className="flex gap-3">
               <button
-                onClick={() => setLocation("/dashboard")}
-                className="flex-1 px-4 py-2 bg-slate-200 text-slate-900 rounded-lg hover:bg-slate-300 font-medium"
+                onClick={() => setLocation("/proposals")}
+                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium"
               >
                 Cancelar
               </button>
               <button
-                onClick={handleSave}
-                className={`flex-1 px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 ${
-                  isFormComplete
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "bg-orange-500 text-white hover:bg-orange-600"
-                }`}
+                onClick={handleSaveDraft}
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium flex items-center gap-2 disabled:opacity-50"
               >
                 <Save className="h-4 w-4" />
-                {isFormComplete ? "Salvar Proposta" : "Salvar Rascunho"}
+                {isSubmitting ? "Salvando..." : "Salvar Rascunho"}
+              </button>
+              <button
+                onClick={handleSubmitProposal}
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2 disabled:opacity-50"
+              >
+                <CheckCircle className="h-4 w-4" />
+                Enviar Proposta
               </button>
             </div>
           </div>
