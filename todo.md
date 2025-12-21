@@ -530,3 +530,34 @@
 - [x] Verificar página Indicadores - mostrando dados zerados (Positivos: 0, Negativos: 0, Indefinidos: 0)
 - [x] Verificar página Ranking - mostrando "Nenhum dado cadastrado para esta empresa"
 - [x] Verificar página Analytics - mostrando dados zerados (Vendas: 0, Corretores: 0, Comissões: R$ 0)
+
+
+## 🆕 Correção - Dados Mock para Gerente e Financeiro da Baggio
+
+- [ ] Testar login com gerente (camila.pires@baggioimoveis.com.br)
+- [ ] Testar login com financeiro (Darlan@baggioimoveis.com.br)
+- [ ] Identificar páginas que ainda mostram dados mock
+- [ ] Corrigir Dashboard do Gerente para mostrar dados zerados
+- [ ] Corrigir Dashboard do Financeiro para mostrar dados zerados
+- [ ] Verificar todas as páginas para todos os perfis da Baggio
+
+
+## 🆕 Correção - Dados Mock para Empresa Baggio (21/12/2025)
+
+### Páginas Corrigidas
+- [x] DashboardManager.tsx - dados vazios para empresas não-Testes
+- [x] DashboardFinance.tsx - dados vazios para empresas não-Testes
+- [x] BrokerManagement.tsx - dados vazios para empresas não-Testes
+- [x] GoalsManagement.tsx - dados vazios para empresas não-Testes
+- [x] SalesApproval.tsx - dados vazios para empresas não-Testes
+- [x] Indicators.tsx - já estava corrigido
+- [x] Ranking.tsx - já estava corrigido
+- [x] Analytics.tsx - já estava corrigido
+- [x] Reports.tsx - usa dados reais do banco (já zerado)
+
+### Testes Realizados com Gerente Baggio (Camila Pires)
+- [x] Dashboard Gerente - Vendas: 0, Corretores: 0, Comissões: R$ 0, Meta: 0%
+- [x] Indicadores - Positivos: 0, Negativos: 0, Indefinidos: 0
+- [x] Corretores - "Nenhum corretor encontrado"
+- [x] Relatórios - "Nenhum dado disponível"
+- [x] Aprovação - "Nenhuma venda encontrada"

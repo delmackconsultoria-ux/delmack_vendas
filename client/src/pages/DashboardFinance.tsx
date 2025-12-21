@@ -79,30 +79,33 @@ export default function DashboardFinance() {
     return null;
   }
 
-  // Dados mock para comissões por status
-  const commissionsByStatus = [
+  // Verificar se é empresa de Testes para mostrar dados mock
+  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+
+  // Dados mock para comissões por status (apenas para empresa de testes)
+  const commissionsByStatus = isTestCompany ? [
     { status: "Pendentes", value: 45000, fill: "#fbbf24" },
     { status: "Recebidas", value: 125000, fill: "#60a5fa" },
     { status: "Pagas", value: 380000, fill: "#10b981" },
     { status: "Canceladas", value: 12000, fill: "#ef4444" },
-  ];
+  ] : [];
 
-  // Dados mock para comissões por corretor
-  const commissionsByBroker = [
+  // Dados mock para comissões por corretor (apenas para empresa de testes)
+  const commissionsByBroker = isTestCompany ? [
     { name: "João Silva", pendentes: 15000, recebidas: 45000, pagas: 120000 },
     { name: "Maria Santos", pendentes: 12000, recebidas: 35000, pagas: 95000 },
     { name: "Pedro Costa", pendentes: 18000, recebidas: 45000, pagas: 165000 },
-  ];
+  ] : [];
 
-  // Dados mock para evolução de pagamentos
-  const paymentEvolution = [
+  // Dados mock para evolução de pagamentos (apenas para empresa de testes)
+  const paymentEvolution = isTestCompany ? [
     { mes: "Jan", pagos: 50000, pendentes: 30000 },
     { mes: "Fev", pagos: 75000, pendentes: 25000 },
     { mes: "Mar", pagos: 95000, pendentes: 35000 },
     { mes: "Abr", pagos: 120000, pendentes: 45000 },
     { mes: "Mai", pagos: 150000, pendentes: 40000 },
     { mes: "Jun", pagos: 180000, pendentes: 45000 },
-  ];
+  ] : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-slate-50">
@@ -119,16 +122,29 @@ export default function DashboardFinance() {
           </p>
         </div>
 
-        {/* Alert - Pending Approvals */}
-        <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <h3 className="font-semibold text-amber-900">Atenção: Comissões Pendentes</h3>
-            <p className="text-sm text-amber-800 mt-1">
-              Você tem 45 comissões aguardando aprovação para pagamento
-            </p>
+        {/* Aviso de dados vazios */}
+        {!isTestCompany && (
+          <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-amber-800 font-medium">Nenhum dado cadastrado para esta empresa.</p>
+              <p className="text-amber-700 text-sm mt-1">Os dados financeiros serão exibidos quando houver propostas e vendas registradas.</p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Alert - Pending Approvals (apenas para empresa de testes) */}
+        {isTestCompany && (
+          <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-900">Atenção: Comissões Pendentes</h3>
+              <p className="text-sm text-amber-800 mt-1">
+                Você tem 45 comissões aguardando aprovação para pagamento
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -137,7 +153,7 @@ export default function DashboardFinance() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">Pendentes de Aprovação</p>
-                  <p className="text-2xl font-bold text-amber-600">R$ 45.000</p>
+                  <p className="text-2xl font-bold text-amber-600">{isTestCompany ? "R$ 45.000" : "R$ 0"}</p>
                 </div>
                 <AlertCircle className="h-8 w-8 text-amber-600 opacity-20" />
               </div>
@@ -149,7 +165,7 @@ export default function DashboardFinance() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">A Pagar Este Mês</p>
-                  <p className="text-2xl font-bold text-blue-600">R$ 125.000</p>
+                  <p className="text-2xl font-bold text-blue-600">{isTestCompany ? "R$ 125.000" : "R$ 0"}</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-blue-600 opacity-20" />
               </div>
@@ -161,7 +177,7 @@ export default function DashboardFinance() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">Já Pagos Este Mês</p>
-                  <p className="text-2xl font-bold text-green-600">R$ 380.000</p>
+                  <p className="text-2xl font-bold text-green-600">{isTestCompany ? "R$ 380.000" : "R$ 0"}</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600 opacity-20" />
               </div>
@@ -255,79 +271,82 @@ export default function DashboardFinance() {
           )}
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Commissions by Status */}
-          <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg">Comissões por Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={commissionsByStatus}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ status, value }) => `${status}: R$ ${(value / 1000).toFixed(0)}k`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {commissionsByStatus.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+        {/* Charts Section - apenas para empresa de testes */}
+        {isTestCompany && (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Commissions by Status */}
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg">Comissões por Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={commissionsByStatus}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ status, value }) => `${status}: R$ ${(value / 1000).toFixed(0)}k`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {commissionsByStatus.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
 
-          {/* Commissions by Broker */}
-          <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg">Comissões por Corretor</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={commissionsByBroker}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
-                  <Legend />
-                  <Bar dataKey="pendentes" fill="#fbbf24" />
-                  <Bar dataKey="recebidas" fill="#60a5fa" />
-                  <Bar dataKey="pagas" fill="#10b981" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
+              {/* Commissions by Broker */}
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg">Comissões por Corretor</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={commissionsByBroker}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                      <Legend />
+                      <Bar dataKey="pendentes" fill="#fbbf24" />
+                      <Bar dataKey="recebidas" fill="#60a5fa" />
+                      <Bar dataKey="pagas" fill="#10b981" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Payment Evolution */}
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle className="text-lg">Evolução de Pagamentos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={paymentEvolution}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
-                <Legend />
-                <Line type="monotone" dataKey="pagos" stroke="#10b981" strokeWidth={2} />
-                <Line type="monotone" dataKey="pendentes" stroke="#fbbf24" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+            {/* Payment Evolution */}
+            <Card className="border-0 shadow-md mb-8">
+              <CardHeader>
+                <CardTitle className="text-lg">Evolução de Pagamentos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={paymentEvolution}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="mes" />
+                    <YAxis />
+                    <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                    <Legend />
+                    <Line type="monotone" dataKey="pagos" stroke="#10b981" strokeWidth={2} />
+                    <Line type="monotone" dataKey="pendentes" stroke="#fbbf24" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </main>
     </div>
   );
 }
-

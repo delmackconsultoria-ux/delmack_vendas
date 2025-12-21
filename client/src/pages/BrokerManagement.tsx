@@ -1,4 +1,6 @@
 import { AppHeader } from "@/components/AppHeader";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,11 +26,11 @@ interface Broker {
   teamMembers?: TeamMember[];
 }
 
-const mockBrokers: Broker[] = [
+const mockBrokersTest: Broker[] = [
   {
     id: "1",
     name: "João Silva",
-    email: "joao@baggio.com.br",
+    email: "joao@testes.com.br",
     phone: "(11) 98765-4321",
     status: "active",
     sales: 15,
@@ -39,7 +41,7 @@ const mockBrokers: Broker[] = [
   {
     id: "2",
     name: "Maria Santos",
-    email: "maria@baggio.com.br",
+    email: "maria@testes.com.br",
     phone: "(11) 91234-5678",
     status: "active",
     sales: 18,
@@ -50,7 +52,7 @@ const mockBrokers: Broker[] = [
   {
     id: "3",
     name: "Pedro Costa",
-    email: "pedro@baggio.com.br",
+    email: "pedro@testes.com.br",
     phone: "(11) 99876-5432",
     status: "active",
     sales: 12,
@@ -76,7 +78,12 @@ interface TeamFormData {
 }
 
 export default function BrokerManagementPage() {
-  const [brokers, setBrokers] = useState<Broker[]>(mockBrokers);
+  const { user } = useAuth();
+  
+  // Verificar se é empresa de Testes para mostrar dados mock
+  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+  
+  const [brokers, setBrokers] = useState<Broker[]>(isTestCompany ? mockBrokersTest : []);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);

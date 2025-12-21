@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Target, LogOut, Plus, Edit2 } from "lucide-react";
+import { Target, LogOut, Plus, Edit2, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
 import { useState } from "react";
@@ -49,8 +49,11 @@ export default function GoalsManagement() {
     );
   }
 
-  // Mock data - metas cadastradas
-  const goals = [
+  // Verificar se é empresa de Testes para mostrar dados mock
+  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+
+  // Mock data - metas cadastradas (apenas para empresa de testes)
+  const goals = isTestCompany ? [
     {
       id: 1,
       brokerName: "João Silva",
@@ -75,14 +78,14 @@ export default function GoalsManagement() {
       monthlyIndicatorGoal: 42,
       createdAt: "2025-01-17",
     },
-  ];
+  ] : [];
 
-  const brokers = [
+  const brokers = isTestCompany ? [
     { id: "1", name: "João Silva" },
     { id: "2", name: "Maria Santos" },
     { id: "3", name: "Pedro Costa" },
     { id: "4", name: "Ana Oliveira" },
-  ];
+  ] : [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

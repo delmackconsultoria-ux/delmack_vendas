@@ -42,25 +42,31 @@ export default function SalesApproval() {
         // const { data } = await trpc.sales.listAllSales.useQuery({});
         // setSales(data);
         
-        // Por enquanto, dados mock
-        setSales([
-          {
-            id: "1",
-            buyerName: "João Silva",
-            saleValue: 450000,
-            status: "pending",
-            businessType: "venda",
-            createdAt: new Date(),
-          },
-          {
-            id: "2",
-            buyerName: "Maria Santos",
-            saleValue: 650000,
-            status: "pending",
-            businessType: "angariacao",
-            createdAt: new Date(),
-          },
-        ]);
+        // Verificar se é empresa de Testes para mostrar dados mock
+        const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+        
+        if (isTestCompany) {
+          setSales([
+            {
+              id: "1",
+              buyerName: "João Silva",
+              saleValue: 450000,
+              status: "pending",
+              businessType: "venda",
+              createdAt: new Date(),
+            },
+            {
+              id: "2",
+              buyerName: "Maria Santos",
+              saleValue: 650000,
+              status: "pending",
+              businessType: "angariacao",
+              createdAt: new Date(),
+            },
+          ]);
+        } else {
+          setSales([]);
+        }
       } catch (err) {
         setError("Erro ao carregar vendas");
       } finally {
