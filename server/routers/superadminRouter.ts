@@ -108,6 +108,7 @@ export const superadminRouter = router({
   createCompany: protectedProcedure
     .input(z.object({
       name: z.string().min(1),
+      tradeName: z.string().optional(),
       cnpj: z.string().optional(),
       email: z.string().email().optional(),
       phone: z.string().optional(),
@@ -133,6 +134,7 @@ export const superadminRouter = router({
       await db.insert(companies).values({
         id,
         name: input.name,
+        tradeName: input.tradeName || null,
         cnpj: input.cnpj || null,
         email: input.email || null,
         phone: input.phone || null,

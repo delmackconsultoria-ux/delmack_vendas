@@ -1002,15 +1002,6 @@ export default function NewProposal() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label>Valor de Divulgação</Label>
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={formData.advertisementValue}
-                      onChange={(e) => handleInputChange("advertisementValue", e.target.value)}
-                    />
-                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -474,3 +474,13 @@
 - [x] Máscaras em tempo real para telefone ((00) 00000-0000)
 - [x] Máscaras em tempo real para CPF (000.000.000-00)
 - [x] Máscaras em tempo real para CNPJ (00.000.000/0000-00)
+
+
+## 🆕 Correções Implementadas (21/12/2025 - Final)
+
+### Correções Solicitadas
+- [x] Removido "Valor de Divulgação" duplicado da seção de endereço
+- [x] Adicionada opção "Visualizador" na criação de usuário
+- [x] Adicionado campo "Nome Fantasia" no formulário de empresa
+- [x] Erros removidos da interface (ErrorBoundary redireciona silenciosamente)
+- [x] Login redireciona direto para o perfil correto (sem tela de erro)

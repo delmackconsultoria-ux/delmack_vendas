@@ -20,7 +20,7 @@ export default function DashboardSuperAdmin() {
   const [showCompanyModal, setShowCompanyModal] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
   const [uploadedUsers, setUploadedUsers] = useState<any[]>([]);
-  const [newCompany, setNewCompany] = useState({ name: "", cnpj: "", email: "", phone: "", address: "" });
+  const [newCompany, setNewCompany] = useState({ name: "", tradeName: "", cnpj: "", email: "", phone: "", address: "" });
   const [showUserModal, setShowUserModal] = useState(false);
   const [newUser, setNewUser] = useState({ name: "", email: "", role: "broker", companyId: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -118,7 +118,7 @@ export default function DashboardSuperAdmin() {
       await createCompanyMutation.mutateAsync(newCompany);
       toast.success("Empresa criada com sucesso!");
       setShowCompanyModal(false);
-      setNewCompany({ name: "", cnpj: "", email: "", phone: "", address: "" });
+      setNewCompany({ name: "", tradeName: "", cnpj: "", email: "", phone: "", address: "" });
       companiesQuery.refetch();
     } catch (error) {
       toast.error("Erro ao criar empresa");
@@ -383,10 +383,19 @@ export default function DashboardSuperAdmin() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label className="text-slate-300">Nome da Empresa *</Label>
+                <Label className="text-slate-300">Razão Social *</Label>
                 <Input
                   value={newCompany.name}
                   onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
+                  placeholder="Ex: Imobiliária ABC LTDA"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Nome Fantasia</Label>
+                <Input
+                  value={newCompany.tradeName}
+                  onChange={(e) => setNewCompany({ ...newCompany, tradeName: e.target.value })}
                   placeholder="Ex: Imobiliária ABC"
                   className="mt-1 bg-slate-700 border-slate-600 text-white"
                 />
@@ -600,6 +609,7 @@ export default function DashboardSuperAdmin() {
                     <SelectItem value="broker">Corretor</SelectItem>
                     <SelectItem value="manager">Gerente</SelectItem>
                     <SelectItem value="finance">Financeiro</SelectItem>
+                    <SelectItem value="viewer">Visualizador</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

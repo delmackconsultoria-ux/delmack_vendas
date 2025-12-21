@@ -17,10 +17,11 @@ export default function Login() {
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: () => {
-      setLocation("/dashboard");
+      // Redireciona para / que vai para o dashboard correto do perfil
+      window.location.href = "/";
     },
-    onError: (error) => {
-      setError(error.message || "Erro ao fazer login");
+    onError: () => {
+      setError("Email ou senha incorretos");
     },
   });
 
