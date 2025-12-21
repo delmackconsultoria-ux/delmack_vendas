@@ -14,6 +14,7 @@ import DashboardFinance from "./pages/DashboardFinance";
 import DashboardManager from "./pages/DashboardManager";
 import NewProposal from "./pages/NewProposal";
 import ProposalManagement from "./pages/ProposalManagement";
+import ProposalDetail from "./pages/ProposalDetail";
 import Reports from "./pages/Reports";
 import Indicators from "./pages/Indicators";
 import Ranking from "./pages/Ranking";
@@ -74,6 +75,7 @@ function Router() {
           {user.role === "broker" && (
             <>
               <Route path="/proposals/new" component={NewProposal} />
+              <Route path="/proposals/:id" component={ProposalDetail} />
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
@@ -103,7 +105,6 @@ function Router() {
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/brokers" component={BrokerManagement} />
-              <Route path="/users" component={UserManagement} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
@@ -120,6 +121,7 @@ function Router() {
           )}
           {user.role === "viewer" && (
             <>
+              <Route path="/proposals/:id" component={ProposalDetail} />
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />

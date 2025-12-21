@@ -40,7 +40,7 @@ const navItems: NavItem[] = [
   { label: "Propostas", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
   { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Corretores", path: "/brokers", roles: ["manager"] },
-  { label: "Usuários", path: "/users", roles: ["manager"] },
+  
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },
   { label: "Analytics", path: "/analytics", roles: ["finance", "viewer"] },

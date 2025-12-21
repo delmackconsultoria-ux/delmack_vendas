@@ -378,6 +378,18 @@ export const salesRouter = router({
   /**
    * Listar vendas do corretor logado
    */
+  getSaleById: protectedProcedure
+    .input(z.object({ saleId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      const result = await db.select().from(sales).where(and(eq(sales.id, input.saleId), eq(sales.companyId, ctx.user.companyId || "1"))).limit(1);
+      if (!result.length) return null;
+      const sale = result[0];
+      const prop = await db.select().from(properties).where(eq(properties.id, sale.propertyId || "")).limit(1);
+      return { ...sale, property: prop[0] || null };
+    }),
+
   listMySales: protectedProcedure.query(async ({ ctx }) => {
     try {
       const db = await getDb();

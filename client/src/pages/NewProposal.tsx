@@ -524,6 +524,14 @@ export default function NewProposal() {
     // Verificar se todos os campos obrigatórios estão preenchidos
     if (!isFormComplete) {
       toast.error("Preencha todos os campos obrigatórios (destacados em vermelho)");
+      // Scroll para o primeiro campo com erro
+      setTimeout(() => {
+        const errorField = document.querySelector('.bg-red-50');
+        if (errorField) {
+          errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (errorField as HTMLElement).focus?.();
+        }
+      }, 100);
       return;
     }
     
