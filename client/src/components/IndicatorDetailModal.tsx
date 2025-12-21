@@ -20,7 +20,7 @@ interface IndicatorDetailModalProps {
   indicatorType: "value" | "units" | "cancelled";
   monthlyData: MonthlyData[];
   brokers: Array<{ id: string; name: string }>;
-  userRole: "broker" | "manager" | "finance" | "admin";
+  userRole: "broker" | "manager" | "finance" | "admin" | "viewer";
 }
 
 const BUSINESS_TYPE_OPTIONS = [

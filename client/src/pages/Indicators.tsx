@@ -55,7 +55,7 @@ export default function Indicators() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  if (!user || !["manager", "finance", "broker"].includes(user.role)) {
+  if (!user || !["manager", "finance", "broker", "viewer"].includes(user.role)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -70,7 +70,7 @@ export default function Indicators() {
     );
   }
 
-  const canViewTeamData = ["manager", "finance"].includes(user.role);
+  const canViewTeamData = ["manager", "finance", "viewer"].includes(user.role);
 
   const indicators: Indicator[] = [
     { name: "Negócios no mês", meta: "R$ 15.000.000,00", media: "R$ 6.071.208,23", percentual: "40%", trend: "up" },
@@ -227,7 +227,7 @@ export default function Indicators() {
           indicatorType="value"
           monthlyData={mockMonthlyData}
           brokers={mockBrokers}
-          userRole={user?.role as "broker" | "manager" | "finance" | "admin"}
+          userRole={user?.role as "broker" | "manager" | "finance" | "admin" | "viewer"}
         />
       )}
     </AppLayout>

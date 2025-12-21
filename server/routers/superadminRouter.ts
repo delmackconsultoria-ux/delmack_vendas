@@ -57,29 +57,21 @@ export const superadminRouter = router({
     }
     const db = await getDb();
     if (!db) return [];
-    const result = await db.select({
-      id: companies.id,
-      name: companies.name,
-      tradeName: companies.tradeName,
-      cnpj: companies.cnpj,
-      address: companies.address,
-      email: companies.email,
-      phone: companies.phone,
-      licenseType: companies.licenseType,
-      licenseStartDate: companies.licenseStartDate,
-      licenseExpiresAt: companies.licenseExpiresAt,
-      contractResponsible: companies.contractResponsible,
-      contractResponsibleEmail: companies.contractResponsibleEmail,
-      contractResponsiblePhone: companies.contractResponsiblePhone,
-      contractStartDate: companies.contractStartDate,
-      contractNotes: companies.contractNotes,
-      totalLogins: companies.totalLogins,
-      isActive: companies.isActive,
-      createdAt: companies.createdAt,
-      userCount: sql<number>`(SELECT COUNT(*) FROM users WHERE companyId = ${companies.id})`,
-    }).from(companies);
-    // Converter userCount para número (MySQL retorna BigInt)
-    return result.map(c => ({ ...c, userCount: Number(c.userCount) || 0 }));
+    // Usar query SQL raw para garantir que userCount funcione
+    const result = await db.execute(sql`
+      SELECT c.id, c.name, c.tradeName, c.cnpj, c.address, c.email, c.phone,
+        c.licenseType, c.licenseStartDate, c.licenseExpiresAt,
+        c.contractResponsible, c.contractResponsibleEmail, c.contractResponsiblePhone,
+        c.contractStartDate, c.contractNotes, c.totalLogins, c.isActive, c.createdAt,
+        (SELECT COUNT(*) FROM users WHERE users.companyId = c.id) as userCount
+      FROM companies c
+    `);
+    const rows = (result as any)[0] as any[];
+    return rows.map((c: any) => ({
+      ...c,
+      userCount: Number(c.userCount) || 0,
+      isActive: Boolean(c.isActive),
+    }));
   }),
 
   updateCompany: protectedProcedure
