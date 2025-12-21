@@ -9,11 +9,28 @@ import { APP_LOGO, APP_TITLE } from "@/const";
 import { LogOut, User, Users } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+
+const roleLabels: Record<string, string> = {
+  superadmin: "Super Admin",
+  admin: "Admin",
+  manager: "Gerente",
+  broker: "Corretor",
+  finance: "Financeiro",
+};
+
+const roleColors: Record<string, string> = {
+  superadmin: "bg-purple-600",
+  admin: "bg-blue-600",
+  manager: "bg-green-600",
+  broker: "bg-orange-500",
+  finance: "bg-cyan-600",
+};
 
 interface NavItem {
   label: string;
   path: string;
-  roles?: string[]; // Se não definido, mostra para todos
+  roles?: string[];
 }
 
 const navItems: NavItem[] = [
@@ -29,16 +46,15 @@ export function AppHeader() {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
 
-  // Filtrar itens de navegação baseado no papel do usuário
   const visibleItems = navItems.filter(item => {
-    if (!item.roles) return true; // Mostra para todos se não houver restrição
+    if (!item.roles) return true;
     return item.roles.includes(user?.role || "");
   });
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-4 max-w-full">
-        {/* Logo e Título - Clicável para Home */}
+        {/* Logo - Clicável para Home */}
         <button
           onClick={() => setLocation("/")}
           className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity"
@@ -71,12 +87,17 @@ export function AppHeader() {
           })}
         </nav>
 
-        {/* Usuário e Sair */}
+        {/* Usuário com Badge de Perfil */}
         <div className="flex items-center gap-4 ml-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-sm">
-                {user?.name?.split(' ')[0] || "Menu"}{user?.companyName ? ` - ${user.companyName}` : ""}
+              <Button variant="ghost" size="sm" className="text-sm flex items-center gap-2">
+                <span>{user?.name?.split(' ')[0] || "Menu"}{user?.companyName ? ` - ${user.companyName}` : ""}</span>
+                {user?.role && (
+                  <Badge className={`${roleColors[user.role] || 'bg-gray-500'} text-white text-xs px-2 py-0.5`}>
+                    {roleLabels[user.role] || user.role}
+                  </Badge>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -110,4 +131,3 @@ export function AppHeader() {
     </header>
   );
 }
-

@@ -378,3 +378,9 @@
 
 - [x] Clicar em "Delmack" redireciona para home/dashboard
 - [x] Exibir "Nome - Empresa" no header (ex: "Angellica - Testes")
+
+
+## 🆕 Melhorias Header e Properfy
+
+- [x] Badge com perfil do usuário (Corretor, Gerente, etc) ao lado do nome
+- [ ] Configurar API Properfy de produção (aguardando URL de produção)
