@@ -11,7 +11,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import ErrorModal from "@/components/ErrorModal";
-import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP, formatPhone, BRAZILIAN_STATES } from "@/lib/validators";
+import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP, formatPhone, BRAZILIAN_STATES, maskCPFOrCNPJ, maskCEP, maskPhone } from "@/lib/validators";
 import { calculateCommissions, formatCurrency, BusinessType } from "@/lib/commissionCalculator";
 
 // Tipos de Negócio atualizados conforme manual de comissionamento
@@ -281,17 +281,11 @@ export default function NewProposal() {
     }
   };
 
-  // Validação em tempo real de CPF/CNPJ
+  // Validação em tempo real de CPF/CNPJ com máscara
   const handleCpfCnpjChange = (value: string, field: "buyer" | "seller") => {
     const cleanValue = value.replace(/\D/g, "");
-    let formattedValue = value;
-    
-    // Formatar automaticamente
-    if (cleanValue.length <= 11) {
-      formattedValue = formatCPF(cleanValue);
-    } else {
-      formattedValue = formatCNPJ(cleanValue);
-    }
+    // Aplicar máscara em tempo real enquanto digita
+    const formattedValue = maskCPFOrCNPJ(value);
     
     // Atualizar o formulário
     if (field === "buyer") {
@@ -389,8 +383,9 @@ export default function NewProposal() {
 
   // Busca automática de endereço por CEP
   const handleCEPChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const maskedCep = maskCEP(e.target.value);
+    handleInputChange("propertyZipCode", maskedCep);
     const rawCep = e.target.value.replace(/\D/g, "");
-    handleInputChange("propertyZipCode", rawCep);
 
     if (rawCep.length === 8) {
       try {
@@ -410,25 +405,16 @@ export default function NewProposal() {
     }
   };
 
-  // Formatação automática de CPF/CNPJ
+  // Formatação automática de CPF/CNPJ com máscara em tempo real
   const handleCPFChange = (field: "buyerCpfCnpj" | "sellerCpfCnpj", value: string) => {
-    const cleanValue = value.replace(/\D/g, "");
-    let formattedValue = cleanValue;
-    
-    if (cleanValue.length === 11) {
-      formattedValue = formatCPF(cleanValue);
-    } else if (cleanValue.length === 14) {
-      formattedValue = formatCNPJ(cleanValue);
-    }
-    
-    handleInputChange(field, formattedValue);
+    const maskedValue = maskCPFOrCNPJ(value);
+    handleInputChange(field, maskedValue);
   };
 
-  // Formatação automática de telefone
+  // Formatação automática de telefone com máscara em tempo real
   const handlePhoneChange = (field: "buyerPhone" | "sellerPhone", value: string) => {
-    const cleanValue = value.replace(/\D/g, "");
-    const formattedValue = formatPhone(cleanValue);
-    handleInputChange(field, formattedValue);
+    const maskedValue = maskPhone(value);
+    handleInputChange(field, maskedValue);
   };
 
   const requiredFields = [
@@ -452,39 +438,21 @@ export default function NewProposal() {
 
   const isFormComplete = requiredFields.every((field) => completionStatus[field]);
 
-  const handleSave = async () => {
-    if (!isFormComplete) {
-      const missingFields = requiredFields.filter((field) => !completionStatus[field]);
-      setErrorState({
-        isOpen: true,
-        title: "Campos Obrigatórios",
-        message: "Por favor, preencha todos os campos obrigatórios antes de salvar.",
-        errors: missingFields.map((field) => {
-          const fieldLabels: { [key: string]: string } = {
-            propertyAddress: "Endereço do Imóvel",
-            saleValue: "Valor da Venda",
-            buyerName: "Nome do Comprador",
-            buyerCpfCnpj: "CPF/CNPJ do Comprador",
-            businessType: "Tipo de Negócio",
-            sellerName: "Nome do Vendedor",
-            sellerCpfCnpj: "CPF/CNPJ do Vendedor",
-            typeOfProperty: "Tipo do Imóvel",
-            bedrooms: "Quantidade de Quartos",
-            privateArea: "Área Privativa",
-            totalArea: "Área Total",
-            saleDate: "Data da Venda",
-            storeAngariador: "Loja Angariador",
-            storeVendedor: "Loja Vendedor",
-            brokerAngariador: "Corretor Angariador",
-            brokerVendedor: "Corretor Vendedor",
-          };
-          return fieldLabels[field] || field;
-        }),
-      });
-      return;
-    }
+  // Estado para marcar campos com erro (vazios quando tentou salvar)
+  const [attemptedSave, setAttemptedSave] = useState(false);
 
+  const handleSave = async () => {
+    // Marcar que tentou salvar para destacar campos vazios em vermelho
+    setAttemptedSave(true);
+    
+    // Sempre permitir salvar, mesmo com campos vazios
     setFormData((prev) => ({ ...prev, showPreview: true }));
+  };
+
+  // Função para verificar se campo está com erro (vazio após tentar salvar)
+  const isFieldError = (field: string) => {
+    if (!attemptedSave) return false;
+    return requiredFields.includes(field) && !completionStatus[field];
   };
 
   const handleConfirmAndSave = async () => {
@@ -1577,15 +1545,14 @@ export default function NewProposal() {
               </button>
               <button
                 onClick={handleSave}
-                disabled={!isFormComplete}
                 className={`flex-1 px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 ${
                   isFormComplete
                     ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                    : "bg-orange-500 text-white hover:bg-orange-600"
                 }`}
               >
                 <Save className="h-4 w-4" />
-                {isFormComplete ? "Salvar Proposta" : "Preencha todos os campos"}
+                {isFormComplete ? "Salvar Proposta" : "Salvar Rascunho"}
               </button>
             </div>
           </div>

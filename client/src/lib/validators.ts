@@ -159,6 +159,58 @@ export function formatPhone(phone: string): string {
 }
 
 /**
+ * Máscara de CPF em tempo real (aplica enquanto digita)
+ */
+export function maskCPF(value: string): string {
+  const clean = value.replace(/\D/g, "").slice(0, 11);
+  if (clean.length <= 3) return clean;
+  if (clean.length <= 6) return `${clean.slice(0, 3)}.${clean.slice(3)}`;
+  if (clean.length <= 9) return `${clean.slice(0, 3)}.${clean.slice(3, 6)}.${clean.slice(6)}`;
+  return `${clean.slice(0, 3)}.${clean.slice(3, 6)}.${clean.slice(6, 9)}-${clean.slice(9)}`;
+}
+
+/**
+ * Máscara de CNPJ em tempo real (aplica enquanto digita)
+ */
+export function maskCNPJ(value: string): string {
+  const clean = value.replace(/\D/g, "").slice(0, 14);
+  if (clean.length <= 2) return clean;
+  if (clean.length <= 5) return `${clean.slice(0, 2)}.${clean.slice(2)}`;
+  if (clean.length <= 8) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5)}`;
+  if (clean.length <= 12) return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8)}`;
+  return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8, 12)}-${clean.slice(12)}`;
+}
+
+/**
+ * Máscara de CPF ou CNPJ em tempo real (detecta automaticamente)
+ */
+export function maskCPFOrCNPJ(value: string): string {
+  const clean = value.replace(/\D/g, "");
+  if (clean.length <= 11) return maskCPF(value);
+  return maskCNPJ(value);
+}
+
+/**
+ * Máscara de CEP em tempo real (aplica enquanto digita)
+ */
+export function maskCEP(value: string): string {
+  const clean = value.replace(/\D/g, "").slice(0, 8);
+  if (clean.length <= 5) return clean;
+  return `${clean.slice(0, 5)}-${clean.slice(5)}`;
+}
+
+/**
+ * Máscara de telefone em tempo real (aplica enquanto digita)
+ */
+export function maskPhone(value: string): string {
+  const clean = value.replace(/\D/g, "").slice(0, 11);
+  if (clean.length <= 2) return clean.length ? `(${clean}` : "";
+  if (clean.length <= 6) return `(${clean.slice(0, 2)}) ${clean.slice(2)}`;
+  if (clean.length <= 10) return `(${clean.slice(0, 2)}) ${clean.slice(2, 6)}-${clean.slice(6)}`;
+  return `(${clean.slice(0, 2)}) ${clean.slice(2, 7)}-${clean.slice(7)}`;
+}
+
+/**
  * Lista de estados brasileiros
  */
 export const BRAZILIAN_STATES = [

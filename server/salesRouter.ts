@@ -387,7 +387,8 @@ export const salesRouter = router({
 
       const companyId = ctx.user.companyId;
       if (!companyId) {
-        throw new Error("Usuário sem empresa vinculada");
+        // Retornar array vazio se usuário não tem empresa - sem erro na UI
+        return { sales: [] };
       }
 
       // SEMPRE filtrar por companyId primeiro para isolamento de dados
@@ -406,7 +407,7 @@ export const salesRouter = router({
       return { sales: result };
     } catch (error) {
       console.error("[Sales Router] Erro ao listar vendas:", error);
-      throw new Error("Erro ao listar vendas");
+      return { sales: [] }; // Retornar array vazio em caso de erro
     }
   }),
 
@@ -422,7 +423,7 @@ export const salesRouter = router({
 
       // Apenas gerentes e financeiro podem ver todas as vendas
       if (ctx.user.role !== "manager" && ctx.user.role !== "finance") {
-        throw new Error("Permissão negada");
+        return []; // Retornar array vazio sem erro na UI
       }
 
       const result: any = await db
@@ -433,7 +434,7 @@ export const salesRouter = router({
       return result;
     } catch (error) {
       console.error("[Sales Router] Erro ao listar todas as vendas:", error);
-      throw new Error("Erro ao listar vendas");
+      return []; // Retornar array vazio em caso de erro
     }
   }),
 

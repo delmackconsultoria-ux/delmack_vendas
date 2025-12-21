@@ -447,3 +447,30 @@
 - [x] 6. Adicionar Analytics ao menu do Financeiro - CONCLUÍDO
 - [x] 7. Adicionar Ranking ao menu de Corretor e Financeiro - CONCLUÍDO
 - [x] 8. Adicionar Aprovação de Vendas ao menu do Financeiro - CONCLUÍDO
+
+
+## 🐛 Correções Solicitadas (21/12/2025 - 17h)
+
+- [ ] Restaurar nome da empresa ao lado do nome do usuário no header
+- [ ] Adicionar campo Nome Fantasia no cadastro de empresa
+- [ ] Remover TODAS as notificações de erro da interface do usuário
+- [ ] Criar log de erros interno para Super Admin visualizar
+- [ ] Permitir salvar proposta sem todos os campos preenchidos
+- [ ] Campos obrigatórios vazios devem ficar em vermelho
+- [ ] Adicionar máscara de CEP (00000-000)
+- [ ] Adicionar máscara de telefone ((00) 00000-0000)
+- [ ] Adicionar máscara de CPF (000.000.000-00)
+- [ ] Adicionar máscara de CNPJ (00.000.000/0000-00)
+
+
+## 🆕 Correções Implementadas (21/12/2025 - Tarde)
+
+### Interface e UX
+- [x] Nome Fantasia adicionado ao cadastro de empresa (tradeName)
+- [x] Nome da empresa exibido ao lado do usuário no header (usa Nome Fantasia se disponível)
+- [x] Notificações de erro removidas da interface (erros tratados silenciosamente)
+- [x] Botão salvar sempre habilitado (laranja para rascunho, azul para completo)
+- [x] Máscaras em tempo real para CEP (00000-000)
+- [x] Máscaras em tempo real para telefone ((00) 00000-0000)
+- [x] Máscaras em tempo real para CPF (000.000.000-00)
+- [x] Máscaras em tempo real para CNPJ (00.000.000/0000-00)

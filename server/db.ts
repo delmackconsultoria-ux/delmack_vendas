@@ -165,14 +165,19 @@ export async function getUser(id: string) {
   
   // Buscar nome da empresa se o usuário tiver companyId
   let companyName: string | null = null;
+  let companyTradeName: string | null = null;
   if (user.companyId) {
     const companyResult = await db.select().from(companies).where(eq(companies.id, user.companyId)).limit(1);
     if (companyResult.length > 0) {
       companyName = companyResult[0].name;
+      companyTradeName = companyResult[0].tradeName || null;
     }
   }
   
-  return { ...user, companyName };
+  // Usar Nome Fantasia se existir, senão Razão Social
+  const displayCompanyName = companyTradeName || companyName;
+  
+  return { ...user, companyName: displayCompanyName, companyTradeName, companyLegalName: companyName };
 }
 
 /**
