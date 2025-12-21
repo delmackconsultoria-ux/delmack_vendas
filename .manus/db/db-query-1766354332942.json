@@ -1,0 +1,33 @@
+{
+  "query": "SELECT * FROM companies WHERE name LIKE '%B I IMOVEIS%' OR name LIKE '%Baggio%' OR tradeName LIKE '%Baggio%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT * FROM companies WHERE name LIKE '%B I IMOVEIS%' OR name LIKE '%Baggio%' OR tradeName LIKE '%Baggio%'",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "email": "Darlan@baggioimoveis.com.br",
+      "phone": "NULL",
+      "address": "Rua Eduardo Sprada, 3936, Campo Comprido, Curitiba/PR",
+      "logo": "NULL",
+      "createdAt": "2025-12-21 15:38:26",
+      "updatedAt": "2025-12-21 21:29:56",
+      "licenseType": "perpetual",
+      "licenseExpiresAt": "NULL",
+      "isActive": "1",
+      "licenseStartDate": "2025-12-22 00:00:00",
+      "contractResponsible": "NULL",
+      "contractResponsibleEmail": "NULL",
+      "contractResponsiblePhone": "NULL",
+      "contractStartDate": "NULL",
+      "contractNotes": "NULL",
+      "totalLogins": "0",
+      "cnpj": "12.142.829/0001-08",
+      "notificationEmail": "NULL",
+      "tradeName": "Baggio Imóveis"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tphone\taddress\tlogo\tcreatedAt\tupdatedAt\tlicenseType\tlicenseExpiresAt\tisActive\tlicenseStartDate\tcontractResponsible\tcontractResponsibleEmail\tcontractResponsiblePhone\tcontractStartDate\tcontractNotes\ttotalLogins\tcnpj\tnotificationEmail\ttradeName\ncompany_1766331506068\tB I IMOVEIS LTDA\tDarlan@baggioimoveis.com.br\tNULL\tRua Eduardo Sprada, 3936, Campo Comprido, Curitiba/PR\tNULL\t2025-12-21 15:38:26\t2025-12-21 21:29:56\tperpetual\tNULL\t1\t2025-12-22 00:00:00\tNULL\tNULL\tNULL\tNULL\tNULL\t0\t12.142.829/0001-08\tNULL\tBaggio Imóveis\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

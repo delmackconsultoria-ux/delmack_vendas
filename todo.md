@@ -518,3 +518,15 @@
 - [x] Adicionar mensagem informativa quando não há dados cadastrados
 - [x] Manter dados mock apenas para empresa "Testes" (para demonstração)
 - [x] Testado com usuário corretor@testes.com.br - dados mock aparecem corretamente
+
+
+## 🆕 Limpeza de Dados - Empresa B I IMOVEIS LTDA
+
+- [x] Identificar ID da empresa B I IMOVEIS LTDA no banco (company_1766331506068)
+- [x] Verificar tabelas - banco já estava zerado (0 sales, 0 commissions, 0 properties)
+- [x] Corrigir código frontend para mostrar dados vazios para empresas não-Testes
+- [x] Testar login com usuário Lucas@baggioimoveis.com.br
+- [x] Verificar página Relatórios - mostrando "Nenhum dado disponível"
+- [x] Verificar página Indicadores - mostrando dados zerados (Positivos: 0, Negativos: 0, Indefinidos: 0)
+- [x] Verificar página Ranking - mostrando "Nenhum dado cadastrado para esta empresa"
+- [x] Verificar página Analytics - mostrando dados zerados (Vendas: 0, Corretores: 0, Comissões: R$ 0)
