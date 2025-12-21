@@ -548,7 +548,8 @@ export const superadminRouter = router({
       userId: z.string(),
       name: z.string().optional(),
       email: z.string().email().optional(),
-      role: z.enum(["admin", "manager", "broker", "finance"]).optional(),
+      role: z.enum(["admin", "manager", "broker", "finance", "viewer"]).optional(),
+      managerId: z.string().nullable().optional(),
       companyId: z.string().nullable().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -574,6 +575,7 @@ export const superadminRouter = router({
       if (input.email !== undefined) updateData.email = input.email;
       if (input.role !== undefined) updateData.role = input.role;
       if (input.companyId !== undefined) updateData.companyId = input.companyId;
+      if (input.managerId !== undefined) updateData.managerId = input.managerId;
 
       if (Object.keys(updateData).length > 0) {
         await db.update(users).set(updateData).where(eq(users.id, input.userId));
@@ -590,5 +592,123 @@ export const superadminRouter = router({
       }
 
       return { success: true, message: "Usuário atualizado com sucesso" };
+    }),
+
+  // Atualizar email de notificação da empresa
+  updateCompanyNotificationEmail: protectedProcedure
+    .input(z.object({
+      companyId: z.string(),
+      notificationEmail: z.string().email().nullable(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      await db.update(companies).set({ notificationEmail: input.notificationEmail }).where(eq(companies.id, input.companyId));
+      return { success: true, message: "Email de notificação atualizado" };
+    }),
+
+  // Listar gerentes de uma empresa
+  listManagers: protectedProcedure
+    .input(z.object({ companyId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) return [];
+      
+      let query = db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        companyId: users.companyId,
+      }).from(users).where(eq(users.role, "manager"));
+      
+      if (input.companyId) {
+        query = db.select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          companyId: users.companyId,
+        }).from(users).where(sql`${users.role} = 'manager' AND ${users.companyId} = ${input.companyId}`);
+      }
+      
+      return await query;
+    }),
+
+  // Listar corretores de um gerente
+  listBrokersByManager: protectedProcedure
+    .input(z.object({ managerId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) return [];
+      
+      return await db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+      }).from(users).where(eq(users.managerId, input.managerId));
+    }),
+
+  // Atribuir corretor a um gerente
+  assignBrokerToManager: protectedProcedure
+    .input(z.object({
+      brokerId: z.string(),
+      managerId: z.string().nullable(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      await db.update(users).set({ managerId: input.managerId }).where(eq(users.id, input.brokerId));
+      
+      await db.insert(actionLogs).values({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: ctx.user.id,
+        targetType: "user",
+        targetId: input.brokerId,
+        action: "assign_manager",
+        details: `Corretor vinculado ao gerente ${input.managerId || 'nenhum'}`,
+      });
+
+      return { success: true, message: "Corretor vinculado ao gerente" };
+    }),
+
+  // Vincular usuário a empresa (com atualização automática de contagem)
+  assignUserToCompany: protectedProcedure
+    .input(z.object({
+      userId: z.string(),
+      companyId: z.string().nullable(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      await db.update(users).set({ companyId: input.companyId }).where(eq(users.id, input.userId));
+      
+      await db.insert(actionLogs).values({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: ctx.user.id,
+        targetType: "user",
+        targetId: input.userId,
+        action: "assign_company",
+        details: `Usuário vinculado à empresa ${input.companyId || 'nenhuma'}`,
+      });
+
+      return { success: true, message: "Usuário vinculado à empresa" };
     }),
 });

@@ -11,7 +11,8 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }).unique(),
   password: text("password"), // Hashed password for traditional login
   loginMethod: varchar("loginMethod", { length: 64 }).default("email"),
-  role: mysqlEnum("role", ["superadmin", "admin", "manager", "broker", "finance"]).default("broker").notNull(),
+  role: mysqlEnum("role", ["superadmin", "admin", "manager", "broker", "finance", "viewer"]).default("broker").notNull(),
+  managerId: varchar("managerId", { length: 64 }), // Gerente responsável pelo corretor
   companyId: varchar("companyId", { length: 64 }), // Company/Imobiliária reference
   isActive: boolean("isActive").default(true),
   // Segurança de login
@@ -49,6 +50,7 @@ export const companies = mysqlTable("companies", {
   contractResponsiblePhone: varchar("contractResponsiblePhone", { length: 20 }),
   contractStartDate: timestamp("contractStartDate"),
   contractNotes: text("contractNotes"),
+  notificationEmail: varchar("notificationEmail", { length: 320 }), // Email adicional para notificações
   // Status
   isActive: boolean("isActive").default(true),
   totalLogins: int("totalLogins").default(0),
@@ -475,7 +477,7 @@ export const actionLogs = mysqlTable("actionLogs", {
   userId: varchar("userId", { length: 64 }).notNull(),
   targetType: mysqlEnum("targetType", ["user", "company", "sale", "commission", "license"]).notNull(),
   targetId: varchar("targetId", { length: 64 }),
-  action: mysqlEnum("action", ["create", "update", "delete", "activate", "deactivate", "login", "reset_password", "block_user", "unblock_user"]).notNull(),
+  action: mysqlEnum("action", ["create", "update", "delete", "activate", "deactivate", "login", "reset_password", "block_user", "unblock_user", "assign_manager", "assign_company"]).notNull(),
   details: text("details"),
   createdAt: timestamp("createdAt").defaultNow(),
 });

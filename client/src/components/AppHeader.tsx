@@ -17,6 +17,7 @@ const roleLabels: Record<string, string> = {
   manager: "Gerente",
   broker: "Corretor",
   finance: "Financeiro",
+  viewer: "Visualizador",
 };
 
 const roleColors: Record<string, string> = {
@@ -25,6 +26,7 @@ const roleColors: Record<string, string> = {
   manager: "bg-green-600",
   broker: "bg-orange-500",
   finance: "bg-cyan-600",
+  viewer: "bg-gray-500",
 };
 
 interface NavItem {
@@ -35,11 +37,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Nova Proposta", path: "/proposals/new", roles: ["broker", "manager", "admin"] },
-  { label: "Propostas", path: "/proposals", roles: ["broker", "manager", "admin", "finance"] },
-  { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin"] },
+  { label: "Propostas", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
+  { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Corretores", path: "/brokers", roles: ["manager"] },
   { label: "Usuários", path: "/users", roles: ["manager"] },
-  { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin"] },
+  { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
+  { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },
+  { label: "Analytics", path: "/analytics", roles: ["finance"] },
+  { label: "Aprovação", path: "/sales-approval", roles: ["finance", "manager"] },
 ];
 
 export function AppHeader() {

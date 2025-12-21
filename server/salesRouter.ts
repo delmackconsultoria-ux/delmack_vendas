@@ -6,7 +6,8 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { sales, commissions, properties } from "../drizzle/schema";
+import { sales, commissions, properties, companies, users } from "../drizzle/schema";
+import { notifyOwner } from "./_core/notification";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { calculateCommission } from "./commissionService";
@@ -327,6 +328,32 @@ export const salesRouter = router({
             propertyAddress: input.propertyAddress,
           }
         );
+
+        // Enviar notificação por email
+        try {
+          const [company] = await db.select().from(companies).where(eq(companies.id, ctx.user.companyId || "1")).limit(1);
+          const notificationContent = `
+**Nova Proposta Registrada**
+
+**Comprador:** ${input.buyerName}
+**Vendedor:** ${input.sellerName || 'N/A'}
+**Endereço:** ${input.propertyAddress}, ${input.propertyCity}/${input.propertyState}
+**Valor da Venda:** R$ ${input.saleValue.toLocaleString('pt-BR')}
+**Tipo de Negócio:** ${input.businessType}
+**Comissão Total:** R$ ${commissionData.totalCommissionValue.toLocaleString('pt-BR')}
+**Registrado por:** ${ctx.user.name || 'Usuário'}
+**Data:** ${new Date().toLocaleDateString('pt-BR')}
+          `.trim();
+          
+          await notifyOwner({ title: `Nova Proposta - ${input.buyerName}`, content: notificationContent });
+          
+          // Se a empresa tiver email de notificação configurado, enviar também
+          if (company?.notificationEmail) {
+            await notifyOwner({ title: `Nova Proposta - ${input.buyerName}`, content: notificationContent });
+          }
+        } catch (notifyError) {
+          console.error("[Sales Router] Erro ao enviar notificação:", notifyError);
+        }
 
         return {
           success: true,

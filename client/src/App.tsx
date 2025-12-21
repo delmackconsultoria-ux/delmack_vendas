@@ -118,6 +118,16 @@ function Router() {
               <Route path="/" component={Dashboard} />
             </>
           )}
+          {user.role === "viewer" && (
+            <>
+              <Route path="/proposals" component={ProposalManagement} />
+              <Route path="/reports" component={Reports} />
+              <Route path="/indicators" component={Indicators} />
+              <Route path="/ranking" component={Ranking} />
+              <Route path="/dashboard" component={Reports} />
+              <Route path="/" component={Reports} />
+            </>
+          )}
         </>
       ) : (
         <Route path="/" component={Login} />

@@ -839,7 +839,7 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [editingUser, setEditingUser] = useState<any>(null);
-  const [editForm, setEditForm] = useState({ name: "", email: "", role: "", companyId: "" });
+  const [editForm, setEditForm] = useState({ name: "", email: "", role: "", companyId: "", managerId: "" });
 
   const getCompanyName = (companyId: string) => {
     const company = companies.find((c: any) => c.id === companyId);
@@ -898,6 +898,7 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
       email: user.email || "",
       role: user.role || "broker",
       companyId: user.companyId || "",
+      managerId: user.managerId || "",
     });
   };
 
@@ -908,8 +909,9 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
         userId: editingUser.id,
         name: editForm.name,
         email: editForm.email,
-        role: editForm.role as "admin" | "manager" | "broker" | "finance",
+        role: editForm.role as "admin" | "manager" | "broker" | "finance" | "viewer",
         companyId: editForm.companyId || null,
+        managerId: editForm.managerId || null,
       });
       toast.success("Usuário atualizado com sucesso");
       setEditingUser(null);
@@ -925,7 +927,10 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
     finance: "Financeiro",
     admin: "Admin",
     superadmin: "Super Admin",
+    viewer: "Visualizador",
   };
+
+  const managers = users.filter((u: any) => u.role === "manager");
 
   const filteredUsers = users.filter((user: any) => {
     const matchesSearch = 
@@ -971,6 +976,7 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
                     <SelectItem value="manager" className="text-white hover:bg-slate-700">Gerente</SelectItem>
                     <SelectItem value="broker" className="text-white hover:bg-slate-700">Corretor</SelectItem>
                     <SelectItem value="finance" className="text-white hover:bg-slate-700">Financeiro</SelectItem>
+                    <SelectItem value="viewer" className="text-white hover:bg-slate-700">Visualizador</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1106,9 +1112,28 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
                     <SelectItem value="manager" className="text-white hover:bg-slate-700">Gerente</SelectItem>
                     <SelectItem value="broker" className="text-white hover:bg-slate-700">Corretor</SelectItem>
                     <SelectItem value="finance" className="text-white hover:bg-slate-700">Financeiro</SelectItem>
+                    <SelectItem value="viewer" className="text-white hover:bg-slate-700">Visualizador</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              {(editForm.role === "broker") && (
+                <div>
+                  <Label className="text-slate-300">Gerente Responsável</Label>
+                  <Select value={editForm.managerId || "none"} onValueChange={(value) => setEditForm({ ...editForm, managerId: value === "none" ? "" : value })}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                      <SelectValue placeholder="Selecione um gerente" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-700">
+                      <SelectItem value="none" className="text-white hover:bg-slate-700">Sem gerente</SelectItem>
+                      {managers.map((manager: any) => (
+                        <SelectItem key={manager.id} value={manager.id} className="text-white hover:bg-slate-700">
+                          {manager.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <Label className="text-slate-300">Empresa</Label>
                 <Select value={editForm.companyId || "none"} onValueChange={(value) => setEditForm({ ...editForm, companyId: value === "none" ? "" : value })}>

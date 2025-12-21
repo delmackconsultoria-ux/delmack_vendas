@@ -435,3 +435,15 @@
 
 - [x] Header do Corretor não mostra todas as páginas (faltam Indicadores, Relatórios) - CORRIGIDO
 - [x] Header do Financeiro não mostra Propostas - CORRIGIDO
+
+
+## 🆕 Novas Funcionalidades Solicitadas (21/12/2025)
+
+- [x] 1. Limpar dados da empresa "B I IMOVEIS LTDA" - CONCLUÍDO
+- [x] 2. Email de notificação para propostas (Super Admin + email cadastrado) - CONCLUÍDO
+- [x] 3. Gestão de equipe de gerente (vincular corretores a gerentes) - CONCLUÍDO
+- [x] 4. Vínculo usuário/empresa com atualização automática de contagem - CONCLUÍDO
+- [x] 5. Perfil de visualização (viewer) - somente leitura - CONCLUÍDO
+- [x] 6. Adicionar Analytics ao menu do Financeiro - CONCLUÍDO
+- [x] 7. Adicionar Ranking ao menu de Corretor e Financeiro - CONCLUÍDO
+- [x] 8. Adicionar Aprovação de Vendas ao menu do Financeiro - CONCLUÍDO
