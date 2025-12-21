@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, name, email, role, companyId FROM users ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role, companyId FROM users ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "user_1766331590165_6tym1l7ck",
+      "name": "Angellica testes ",
+      "email": "angellicadelle@gmail.com",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "superadmin_1765831175979",
+      "name": "Super Admin Delmack",
+      "email": "delmackconsultoria@gmail.com",
+      "role": "superadmin",
+      "companyId": "NULL"
+    },
+    {
+      "id": "user-gerente-testes",
+      "name": "Gerente Testes",
+      "email": "gerente@testes.com.br",
+      "role": "manager",
+      "companyId": "company-baggio"
+    },
+    {
+      "id": "user-admin-testes",
+      "name": "Admin Testes",
+      "email": "admin@testes.com.br",
+      "role": "admin",
+      "companyId": "company-baggio"
+    },
+    {
+      "id": "user-corretor-testes",
+      "name": "Corretor Testes",
+      "email": "corretor@testes.com.br",
+      "role": "broker",
+      "companyId": "company-baggio"
+    },
+    {
+      "id": "user-financeiro-testes",
+      "name": "Financeiro Testes",
+      "email": "financeiro@testes.com.br",
+      "role": "finance",
+      "companyId": "company-baggio"
+    },
+    {
+      "id": "WGxQeeqMJJfugkqAYm7pZC",
+      "name": "Àgora Intermediações",
+      "email": "agoraintermediacoes@gmail.com",
+      "role": "broker",
+      "companyId": "NULL"
+    },
+    {
+      "id": "user_3",
+      "name": "Financeiro Baggio",
+      "email": "financeiro@baggio.com.br",
+      "role": "finance",
+      "companyId": "NULL"
+    },
+    {
+      "id": "user_2",
+      "name": "Gerente Baggio",
+      "email": "gerente@baggio.com.br",
+      "role": "manager",
+      "companyId": "NULL"
+    },
+    {
+      "id": "user_4",
+      "name": "Admin Baggio",
+      "email": "admin@baggio.com.br",
+      "role": "admin",
+      "companyId": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tcompanyId\nuser_1766331590165_6tym1l7ck\tAngellica testes \tangellicadelle@gmail.com\tbroker\tcompany_1766331506068\nsuperadmin_1765831175979\tSuper Admin Delmack\tdelmackconsultoria@gmail.com\tsuperadmin\tNULL\nuser-gerente-testes\tGerente Testes\tgerente@testes.com.br\tmanager\tcompany-baggio\nuser-admin-testes\tAdmin Testes\tadmin@testes.com.br\tadmin\tcompany-baggio\nuser-corretor-testes\tCorretor Testes\tcorretor@testes.com.br\tbroker\tcompany-baggio\nuser-financeiro-testes\tFinanceiro Testes\tfinanceiro@testes.com.br\tfinance\tcompany-baggio\nWGxQeeqMJJfugkqAYm7pZC\tÀgora Intermediações\tagoraintermediacoes@gmail.com\tbroker\tNULL\nuser_3\tFinanceiro Baggio\tfinanceiro@baggio.com.br\tfinance\tNULL\nuser_2\tGerente Baggio\tgerente@baggio.com.br\tmanager\tNULL\nuser_4\tAdmin Baggio\tadmin@baggio.com.br\tadmin\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

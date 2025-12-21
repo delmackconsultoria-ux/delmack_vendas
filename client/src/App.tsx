@@ -79,7 +79,7 @@ function Router() {
               <Route path="/indicators" component={Indicators} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/dashboard" component={() => <Redirect to="/" />} />
+              <Route path="/dashboard">{() => <Redirect to="/" />}</Route>
               <Route path="/" component={DashboardBroker} />
             </>
           )}

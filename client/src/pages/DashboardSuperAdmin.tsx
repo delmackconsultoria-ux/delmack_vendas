@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Users, Upload, LogOut, Plus, Eye, EyeOff, FileSpreadsheet, Settings, UserPlus } from "lucide-react";
+import { Building2, Users, Upload, LogOut, Plus, Eye, EyeOff, FileSpreadsheet, Settings, UserPlus, Copy, Trash2, Ban, Key, Check, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef } from "react";
@@ -34,6 +34,9 @@ export default function DashboardSuperAdmin() {
   const actionLogsQuery = trpc.superadmin.getActionLogs.useQuery({ limit: 10 });
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
+  const [showUsersModal, setShowUsersModal] = useState(false);
+  const [companyUsers, setCompanyUsers] = useState<any[]>([]);
+  const [createdPassword, setCreatedPassword] = useState<string | null>(null);
   const companyStatsQuery = trpc.superadmin.getCompanyStats.useQuery(
     { companyId: selectedCompany?.id || "" },
     { enabled: !!selectedCompany?.id }
@@ -241,12 +244,35 @@ export default function DashboardSuperAdmin() {
                     <Badge variant="outline" className="border-purple-600 text-purple-400">
                       {company.licenseType || "trial"}
                     </Badge>
-                    <span className="text-sm text-slate-400">{company.userCount || 0} usuários</span>
-                    <Button size="sm" variant="outline" className="border-slate-600 text-slate-300" onClick={() => { setSelectedCompanyId(company.id); setShowUploadModal(true); }}>
+                    <button 
+                      className="text-sm text-slate-400 hover:text-purple-400 cursor-pointer underline"
+                      onClick={() => { setSelectedCompany(company); setShowUsersModal(true); }}
+                    >
+                      {company.userCount || 0} usuários
+                    </button>
+                    <Button size="sm" variant="outline" className="border-slate-600 text-slate-300" onClick={() => { setSelectedCompanyId(company.id); setShowUploadModal(true); }} title="Upload de Usuários">
                       <Upload className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="ghost" className="text-purple-400" onClick={() => { setSelectedCompany(company); setShowDetailsModal(true); }}>
+                    <Button size="sm" variant="ghost" className="text-purple-400" onClick={() => { setSelectedCompany(company); setShowDetailsModal(true); }} title="Detalhes">
                       <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-red-400 hover:bg-red-600/20" 
+                      onClick={async () => {
+                        if (!confirm(`Deseja desativar a empresa ${company.name}? Todos os usuários também serão desativados.`)) return;
+                        try {
+                          await updateCompanyMutation.mutateAsync({ companyId: company.id, isActive: false });
+                          toast.success("Empresa desativada");
+                          companiesQuery.refetch();
+                        } catch (e) {
+                          toast.error("Erro ao desativar empresa");
+                        }
+                      }}
+                      title="Desativar Empresa"
+                    >
+                      <Ban className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -593,7 +619,22 @@ export default function DashboardSuperAdmin() {
                     }
                     try {
                       const result = await createUserMutation.mutateAsync(newUser as any);
-                      toast.success(`Usuário criado! Senha: ${result.password}`);
+                      setCreatedPassword(result.password);
+                      toast.success(
+                        <div className="flex items-center gap-2">
+                          <span>Usuário criado! Senha: <strong>{result.password}</strong></span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(result.password);
+                              toast.success("Senha copiada!");
+                            }}
+                            className="p-1 hover:bg-slate-700 rounded"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </button>
+                        </div>,
+                        { duration: 30000 }
+                      );
                       setShowUserModal(false);
                       setNewUser({ name: "", email: "", role: "broker", companyId: "" });
                       companiesQuery.refetch();
@@ -611,6 +652,152 @@ export default function DashboardSuperAdmin() {
           </Card>
         </div>
       )}
+
+      {/* Users List Modal */}
+      {showUsersModal && selectedCompany && (
+        <UsersListModal
+          company={selectedCompany}
+          onClose={() => { setShowUsersModal(false); setSelectedCompany(null); }}
+          onRefresh={() => companiesQuery.refetch()}
+        />
+      )}
+    </div>
+  );
+}
+
+// Componente separado para o modal de usuários
+function UsersListModal({ company, onClose, onRefresh }: { company: any; onClose: () => void; onRefresh: () => void }) {
+  const usersQuery = trpc.superadmin.listCompanyUsers.useQuery({ companyId: company.id });
+  const resetPasswordMutation = trpc.superadmin.resetPasswordWithReturn.useMutation();
+  const toggleActiveMutation = trpc.superadmin.toggleUserActive.useMutation();
+  const deleteMutation = trpc.superadmin.deleteUser.useMutation();
+
+  const handleResetPassword = async (userId: string) => {
+    try {
+      const result = await resetPasswordMutation.mutateAsync({ userId });
+      toast.success(
+        <div className="flex items-center gap-2">
+          <span>Nova senha: <strong>{result.password}</strong></span>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(result.password);
+              toast.success("Senha copiada!");
+            }}
+            className="p-1 hover:bg-slate-700 rounded"
+          >
+            <Copy className="h-4 w-4" />
+          </button>
+        </div>,
+        { duration: 30000 }
+      );
+      usersQuery.refetch();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao redefinir senha");
+    }
+  };
+
+  const handleToggleActive = async (userId: string, active: boolean) => {
+    try {
+      await toggleActiveMutation.mutateAsync({ userId, active });
+      toast.success(active ? "Usuário ativado" : "Usuário desativado");
+      usersQuery.refetch();
+      onRefresh();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao alterar status");
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (!confirm("Tem certeza que deseja remover este usuário?")) return;
+    try {
+      await deleteMutation.mutateAsync({ userId });
+      toast.success("Usuário removido");
+      usersQuery.refetch();
+      onRefresh();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao remover usuário");
+    }
+  };
+
+  const roleLabels: Record<string, string> = {
+    broker: "Corretor",
+    manager: "Gerente",
+    finance: "Financeiro",
+    admin: "Admin",
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto py-8">
+      <Card className="w-full max-w-4xl bg-slate-800 border-slate-700 my-auto max-h-[90vh] overflow-auto">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center justify-between">
+            <span className="flex items-center gap-2"><Users className="h-5 w-5" /> Usuários - {company.name}</span>
+            <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-400"><X className="h-5 w-5" /></Button>
+          </CardTitle>
+          <CardDescription className="text-slate-400">{usersQuery.data?.length || 0} usuários cadastrados</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {usersQuery.isLoading ? (
+            <p className="text-center text-slate-400 py-8">Carregando...</p>
+          ) : usersQuery.data?.length === 0 ? (
+            <p className="text-center text-slate-400 py-8">Nenhum usuário cadastrado nesta empresa</p>
+          ) : (
+            <div className="space-y-3">
+              {usersQuery.data?.map((user: any) => (
+                <div key={user.id} className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-medium text-white">{user.name}</h4>
+                      <Badge className={user.isActive ? "bg-green-600" : "bg-red-600"}>
+                        {user.isActive ? "Ativo" : "Inativo"}
+                      </Badge>
+                      <Badge variant="outline" className="border-purple-600 text-purple-400">
+                        {roleLabels[user.role] || user.role}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-slate-400">{user.email}</p>
+                    {user.lastSignedIn && (
+                      <p className="text-xs text-slate-500">Último acesso: {new Date(user.lastSignedIn).toLocaleString()}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-yellow-600 text-yellow-400 hover:bg-yellow-600/20"
+                      onClick={() => handleResetPassword(user.id)}
+                      disabled={resetPasswordMutation.isPending}
+                      title="Redefinir Senha"
+                    >
+                      <Key className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className={user.isActive ? "border-orange-600 text-orange-400 hover:bg-orange-600/20" : "border-green-600 text-green-400 hover:bg-green-600/20"}
+                      onClick={() => handleToggleActive(user.id, !user.isActive)}
+                      disabled={toggleActiveMutation.isPending}
+                      title={user.isActive ? "Desativar" : "Ativar"}
+                    >
+                      {user.isActive ? <Ban className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-red-600 text-red-400 hover:bg-red-600/20"
+                      onClick={() => handleDelete(user.id)}
+                      disabled={deleteMutation.isPending}
+                      title="Remover"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

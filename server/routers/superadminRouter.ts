@@ -422,4 +422,108 @@ export const superadminRouter = router({
 
       return { success: true, message: input.active ? "Usuário ativado com sucesso" : "Usuário desativado com sucesso" };
     }),
+
+  // Listar usuários de uma empresa
+  listCompanyUsers: protectedProcedure
+    .input(z.object({ companyId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) return [];
+      const result = await db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        isActive: users.isActive,
+        lastSignedIn: users.lastSignedIn,
+        createdAt: users.createdAt,
+        lockedUntil: users.lockedUntil,
+      }).from(users).where(eq(users.companyId, input.companyId)).orderBy(sql`${users.createdAt} DESC`);
+      return result;
+    }),
+
+  // Deletar empresa (soft delete - apenas desativa)
+  deleteCompany: protectedProcedure
+    .input(z.object({ companyId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      
+      // Desativar empresa
+      await db.update(companies).set({ isActive: false }).where(eq(companies.id, input.companyId));
+      
+      // Desativar todos os usuários da empresa
+      await db.update(users).set({ isActive: false }).where(eq(users.companyId, input.companyId));
+      
+      // Registrar ação
+      await db.insert(actionLogs).values({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: ctx.user.id,
+        targetType: "company",
+        targetId: input.companyId,
+        action: "delete",
+        details: `Empresa desativada`,
+      });
+      
+      return { success: true };
+    }),
+
+  // Deletar usuário (soft delete - apenas desativa)
+  deleteUser: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      
+      const [user] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
+      
+      await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+      
+      // Registrar ação
+      await db.insert(actionLogs).values({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: ctx.user.id,
+        targetType: "user",
+        targetId: input.userId,
+        action: "delete",
+        details: `Usuário ${user.email} removido`,
+      });
+      
+      return { success: true };
+    }),
+
+  // Redefinir senha com retorno da nova senha
+  resetPasswordWithReturn: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      const [user] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
+
+      const newPassword = generateStrongPassword();
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await db.update(users).set({
+        password: hashedPassword,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+      }).where(eq(users.id, input.userId));
+
+      return { success: true, password: newPassword, email: user.email };
+    }),
 });

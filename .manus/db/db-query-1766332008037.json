@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, email, role, companyId FROM users WHERE role != 'superadmin' ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role, companyId FROM users WHERE role != 'superadmin' ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "user_1766331590165_6tym1l7ck",
+      "name": "Angellica testes ",
+      "email": "angellicadelle@gmail.com",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "user-financeiro-testes",
+      "name": "Financeiro Testes",
+      "email": "financeiro@testes.com.br",
+      "role": "finance",
+      "companyId": "company-baggio"
+    },
+    {
+      "id": "user-corretor-testes",
+      "name": "Corretor Testes",
+      "email": "corretor@testes.com.br",
+      "role": "broker",
+      "companyId": "company-baggio"
+    },
+    {
+      "id": "user-admin-testes",
+      "name": "Admin Testes",
+      "email": "admin@testes.com.br",
+      "role": "admin",
+      "companyId": "company-baggio"
+    },
+    {
+      "id": "user-gerente-testes",
+      "name": "Gerente Testes",
+      "email": "gerente@testes.com.br",
+      "role": "manager",
+      "companyId": "company-baggio"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tcompanyId\nuser_1766331590165_6tym1l7ck\tAngellica testes \tangellicadelle@gmail.com\tbroker\tcompany_1766331506068\nuser-financeiro-testes\tFinanceiro Testes\tfinanceiro@testes.com.br\tfinance\tcompany-baggio\nuser-corretor-testes\tCorretor Testes\tcorretor@testes.com.br\tbroker\tcompany-baggio\nuser-admin-testes\tAdmin Testes\tadmin@testes.com.br\tadmin\tcompany-baggio\nuser-gerente-testes\tGerente Testes\tgerente@testes.com.br\tmanager\tcompany-baggio\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

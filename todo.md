@@ -361,3 +361,14 @@
 
 - [x] Busca Properfy não retorna dados - URL corrigida (refs BG não existem no sandbox)
 - [x] Tela de erro "Ops! Algo deu errado" - cookie JWT tratado corretamente
+
+
+## 🆕 Melhorias Super Admin
+
+- [x] Ícone de copiar na notificação de senha criada
+- [x] Listagem de usuários clicável por empresa
+- [x] Ver detalhes do usuário
+- [x] Redefinir senha do usuário
+- [x] Desabilitar/excluir usuário
+- [x] Desabilitar/excluir empresa
+- [x] Corrigir erro 404 ao acessar com usuário criado
