@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, ArrowLeft, CheckCircle, XCircle, FileUp, FileText, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 
 interface Sale {
   id: string;

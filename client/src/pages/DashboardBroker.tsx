@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, TrendingUp, Home, LogOut, Plus, Eye, Trophy } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 import {
   BarChart,
   Bar,
@@ -51,38 +52,8 @@ export default function DashboardBroker() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/")}>
-            <h1 className="text-2xl font-bold text-slate-900">Delmack</h1>
-          </div>
-
-          {/* Navigation Menu - Removido pois agora usa AppHeader */}
-
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium text-slate-900">{user.name}</p>
-              <Badge variant="outline" className="text-xs">Corretor</Badge>
-            </div>
-            <Link href="/ranking">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Trophy className="h-4 w-4" />
-                Ranking
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Header Padrão */}
+      <AppHeader />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, TrendingUp, Users, LogOut, Target, Activity, DollarSign } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 import { useEffect } from "react";
 import {
   BarChart,

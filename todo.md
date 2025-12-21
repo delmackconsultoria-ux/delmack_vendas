@@ -399,3 +399,33 @@
 - [x] Permitir excluir empresas (botão funcional)
 - [x] Clicar em "Usuários Totais" abre listagem de todos os usuários
 - [x] Na listagem de usuários: editar, desabilitar/ativar, redefinir senha
+
+
+## 🐛 Bugs Críticos a Corrigir
+
+- [ ] Exclusão de usuários não está funcionando (só aparece no histórico)
+- [ ] Exclusão de empresas não está funcionando
+- [ ] Contagem de empresas ativas incorreta (mostra 5, deveria mostrar 1)
+- [ ] Licenças Ativas mostra 0 (deveria mostrar quantidade correta)
+- [ ] Header padrão (AppHeader) NÃO está em todas as páginas (falta Ranking e outras)
+
+## 🆕 Novas Funcionalidades
+
+- [ ] Filtro por perfil (Corretor, Gerente, etc) na listagem de usuários
+- [ ] Editar dados do usuário (nome, email, perfil) no modal
+
+
+## 🆕 Correções Implementadas (21/12/2025)
+
+### Dashboard Super Admin - Gestão de Usuários
+- [x] Filtro por perfil na listagem de usuários (dropdown com todos os perfis)
+- [x] Filtro por status (Ativos/Inativos) na listagem de usuários
+- [x] Botão de edição de usuário (nome, email, perfil, empresa)
+- [x] Modal de edição de usuário com validação de email único
+- [x] Endpoint updateUser no superadminRouter
+
+### Verificações Realizadas
+- [x] Exclusão de usuários funcionando corretamente
+- [x] Exclusão de empresas funcionando corretamente
+- [x] Contagem de usuários ativos/inativos correta (7 ativos de 10 total)
+- [x] Header padrão presente em todas as páginas

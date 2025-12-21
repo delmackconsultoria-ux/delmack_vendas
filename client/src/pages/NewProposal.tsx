@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Save, Search, CheckCircle, Loader, CheckCircle2, AlertCircle, Upload, FileText, Calculator, XCircle, MapPin } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import ErrorModal from "@/components/ErrorModal";
@@ -601,6 +602,9 @@ export default function NewProposal() {
   if (formData.showPreview) {
     return (
       <div className="min-h-screen bg-slate-50">
+        {/* Header Padrão */}
+        <AppHeader />
+        
         <div className="container mx-auto py-8 px-4">
           <Card className="max-w-4xl mx-auto">
             <CardHeader>
@@ -826,17 +830,13 @@ export default function NewProposal() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Header Padrão */}
+      <AppHeader />
+      
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
+          {/* Título da Página */}
           <div className="mb-8">
-            <button
-              onClick={() => setLocation("/dashboard")}
-              className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-4"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Voltar
-            </button>
             <h1 className="text-3xl font-bold text-slate-900">Nova Proposta</h1>
             <p className="text-slate-600 mt-2">Preencha os campos para registrar uma nova proposta de venda</p>
           </div>

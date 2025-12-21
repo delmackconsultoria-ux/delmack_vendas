@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Plus, Search, Eye, Edit, FileText, Filter, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare } from "lucide-react";
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 
@@ -111,20 +112,18 @@ export default function ProposalManagement() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      {/* Header Padrão */}
+      <AppHeader />
+      
+      {/* Título da Página */}
+      <div className="bg-white border-b border-slate-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => setLocation("/")}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div>
-                <h1 className="text-xl font-bold text-slate-900">Gerenciamento de Propostas</h1>
-                <p className="text-sm text-slate-500">
-                  {user?.role === "broker" ? "Suas propostas" : "Todas as propostas"}
-                </p>
-              </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Gerenciamento de Propostas</h1>
+              <p className="text-sm text-slate-500">
+                {user?.role === "broker" ? "Suas propostas" : "Todas as propostas"}
+              </p>
             </div>
             <Button onClick={() => setLocation("/proposals/new")} className="bg-slate-900 hover:bg-slate-800">
               <Plus className="h-4 w-4 mr-2" />
@@ -132,7 +131,7 @@ export default function ProposalManagement() {
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 py-6 space-y-6">
         {/* Métricas */}

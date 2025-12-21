@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Link } from "wouter";
 import { ArrowLeft, Plus, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function CompanyManagement() {
   const { user } = useAuth();

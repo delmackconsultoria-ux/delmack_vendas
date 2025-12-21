@@ -24,16 +24,30 @@ export const superadminRouter = router({
       throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
     }
     const db = await getDb();
-    if (!db) return { totalCompanies: 0, totalUsers: 0, totalLogins: 0, activeUsers: 0 };
+    if (!db) return { totalCompanies: 0, activeCompanies: 0, totalUsers: 0, activeUsers: 0, activeLicenses: 0 };
+    
+    // Total de empresas
     const [companyCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(companies);
+    
+    // Empresas ativas
+    const [activeCompanyCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(companies).where(eq(companies.isActive, true));
+    
+    // Total de usuários
     const [userCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(users);
-    const [activeCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(users).where(eq(users.isActive, true));
-    const [loginCount] = await db.select({ total: sql<number>`COALESCE(SUM(totalLogins), 0)` }).from(companies);
+    
+    // Usuários ativos
+    const [activeUserCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(users).where(eq(users.isActive, true));
+    
+    // Licenças ativas (empresas ativas com licença válida ou perpetual)
+    const [licenseCount] = await db.select({ count: sql<number>`COUNT(*)` }).from(companies)
+      .where(sql`${companies.isActive} = true AND (${companies.licenseType} = 'perpetual' OR ${companies.licenseExpiresAt} > NOW() OR ${companies.licenseExpiresAt} IS NULL)`);
+    
     return {
       totalCompanies: Number(companyCount?.count || 0),
+      activeCompanies: Number(activeCompanyCount?.count || 0),
       totalUsers: Number(userCount?.count || 0),
-      totalLogins: Number(loginCount?.total || 0),
-      activeUsers: Number(activeCount?.count || 0),
+      activeUsers: Number(activeUserCount?.count || 0),
+      activeLicenses: Number(licenseCount?.count || 0),
     };
   }),
 
@@ -445,7 +459,7 @@ export const superadminRouter = router({
       return result;
     }),
 
-  // Deletar empresa (soft delete - apenas desativa)
+  // Deletar empresa (hard delete - remove do banco)
   deleteCompany: protectedProcedure
     .input(z.object({ companyId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -455,11 +469,11 @@ export const superadminRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       
-      // Desativar empresa
-      await db.update(companies).set({ isActive: false }).where(eq(companies.id, input.companyId));
+      // Deletar todos os usuários da empresa primeiro
+      await db.delete(users).where(eq(users.companyId, input.companyId));
       
-      // Desativar todos os usuários da empresa
-      await db.update(users).set({ isActive: false }).where(eq(users.companyId, input.companyId));
+      // Deletar empresa permanentemente
+      await db.delete(companies).where(eq(companies.id, input.companyId));
       
       // Registrar ação
       await db.insert(actionLogs).values({
@@ -474,7 +488,7 @@ export const superadminRouter = router({
       return { success: true };
     }),
 
-  // Deletar usuário (soft delete - apenas desativa)
+  // Deletar usuário (hard delete - remove do banco)
   deleteUser: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -487,7 +501,8 @@ export const superadminRouter = router({
       const [user] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
       
-      await db.update(users).set({ isActive: false }).where(eq(users.id, input.userId));
+      // Deletar usuário permanentemente
+      await db.delete(users).where(eq(users.id, input.userId));
       
       // Registrar ação
       await db.insert(actionLogs).values({
@@ -525,5 +540,55 @@ export const superadminRouter = router({
       }).where(eq(users.id, input.userId));
 
       return { success: true, password: newPassword, email: user.email };
+    }),
+
+  // Atualizar dados do usuário
+  updateUser: protectedProcedure
+    .input(z.object({
+      userId: z.string(),
+      name: z.string().optional(),
+      email: z.string().email().optional(),
+      role: z.enum(["admin", "manager", "broker", "finance"]).optional(),
+      companyId: z.string().nullable().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "superadmin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      const [user] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado" });
+
+      // Verificar se o email já está em uso por outro usuário
+      if (input.email && input.email !== user.email) {
+        const [existingUser] = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
+        if (existingUser) {
+          throw new TRPCError({ code: "CONFLICT", message: "Este email já está em uso por outro usuário" });
+        }
+      }
+
+      const updateData: any = {};
+      if (input.name !== undefined) updateData.name = input.name;
+      if (input.email !== undefined) updateData.email = input.email;
+      if (input.role !== undefined) updateData.role = input.role;
+      if (input.companyId !== undefined) updateData.companyId = input.companyId;
+
+      if (Object.keys(updateData).length > 0) {
+        await db.update(users).set(updateData).where(eq(users.id, input.userId));
+
+        // Registrar ação
+        await db.insert(actionLogs).values({
+          id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          userId: ctx.user.id,
+          targetType: "user",
+          targetId: input.userId,
+          action: "update",
+          details: `Usuário ${user.email} atualizado`,
+        });
+      }
+
+      return { success: true, message: "Usuário atualizado com sucesso" };
     }),
 });

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, TrendingDown, CheckCircle, LogOut, AlertCircle, BarChart3, X, ChevronDown } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 import { useState, useRef } from "react";
 import {
   BarChart,
@@ -105,38 +106,8 @@ export default function DashboardFinance() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setLocation("/")}>
-            <h1 className="text-2xl font-bold text-slate-900">Delmack</h1>
-          </div>
-
-          {/* Navigation Menu */}
-          <nav className="hidden md:flex items-center gap-6">
-            <button onClick={() => setLocation("/")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Dashboard</button>
-            <button onClick={() => setLocation("/indicators")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Indicadores</button>
-            <button onClick={() => setLocation("/analytics")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Gráficos</button>
-            <button onClick={() => setLocation("/reports")} className="text-sm font-medium text-slate-700 hover:text-slate-900">Relatórios</button>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium text-slate-900">{user.name}</p>
-              <Badge variant="outline" className="text-xs">Financeiro</Badge>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Header Padrão */}
+      <AppHeader />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" ref={mainRef}>

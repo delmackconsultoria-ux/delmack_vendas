@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Users, Upload, Plus, Eye, EyeOff, FileSpreadsheet, UserPlus, Copy, Trash2, Ban, Key, Check, X } from "lucide-react";
+import { Building2, Users, Upload, Plus, Eye, EyeOff, FileSpreadsheet, UserPlus, Copy, Trash2, Ban, Key, Check, X, Pencil } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef } from "react";
@@ -148,7 +148,8 @@ export default function DashboardSuperAdmin() {
               <Building2 className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{statsQuery.data?.totalCompanies || 0}</div>
+              <div className="text-3xl font-bold text-white">{statsQuery.data?.activeCompanies || 0}</div>
+              <p className="text-xs text-slate-400 mt-1">{statsQuery.data?.totalCompanies || 0} total</p>
             </CardContent>
           </Card>
           <Card 
@@ -161,7 +162,7 @@ export default function DashboardSuperAdmin() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-white">{statsQuery.data?.totalUsers || 0}</div>
-              <p className="text-xs text-purple-400 mt-1">Clique para gerenciar</p>
+              <p className="text-xs text-green-400 mt-1">{statsQuery.data?.activeUsers || 0} ativos</p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/50 border-slate-700">
@@ -170,7 +171,7 @@ export default function DashboardSuperAdmin() {
               <FileSpreadsheet className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{statsQuery.data?.totalLogins || 0}</div>
+              <div className="text-3xl font-bold text-white">{statsQuery.data?.activeLicenses || 0}</div>
             </CardContent>
           </Card>
         </div>
@@ -833,7 +834,12 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
   const resetPasswordMutation = trpc.superadmin.resetPasswordWithReturn.useMutation();
   const toggleActiveMutation = trpc.superadmin.toggleUserActive.useMutation();
   const deleteMutation = trpc.superadmin.deleteUser.useMutation();
+  const updateUserMutation = trpc.superadmin.updateUser.useMutation();
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editForm, setEditForm] = useState({ name: "", email: "", role: "", companyId: "" });
 
   const getCompanyName = (companyId: string) => {
     const company = companies.find((c: any) => c.id === companyId);
@@ -885,6 +891,34 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
     }
   };
 
+  const handleEditClick = (user: any) => {
+    setEditingUser(user);
+    setEditForm({
+      name: user.name || "",
+      email: user.email || "",
+      role: user.role || "broker",
+      companyId: user.companyId || "",
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingUser) return;
+    try {
+      await updateUserMutation.mutateAsync({
+        userId: editingUser.id,
+        name: editForm.name,
+        email: editForm.email,
+        role: editForm.role as "admin" | "manager" | "broker" | "finance",
+        companyId: editForm.companyId || null,
+      });
+      toast.success("Usuário atualizado com sucesso");
+      setEditingUser(null);
+      onRefresh();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao atualizar usuário");
+    }
+  };
+
   const roleLabels: Record<string, string> = {
     broker: "Corretor",
     manager: "Gerente",
@@ -893,11 +927,19 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
     superadmin: "Super Admin",
   };
 
-  const filteredUsers = users.filter((user: any) => 
-    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    getCompanyName(user.companyId).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users.filter((user: any) => {
+    const matchesSearch = 
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      getCompanyName(user.companyId).toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "active" && user.isActive) || 
+      (statusFilter === "inactive" && !user.isActive);
+    
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto py-8">
@@ -908,13 +950,44 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
             <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-400"><X className="h-5 w-5" /></Button>
           </CardTitle>
           <CardDescription className="text-slate-400">{users.length} usuários no sistema</CardDescription>
-          <div className="mt-4">
+          <div className="mt-4 space-y-3">
             <Input
               placeholder="Buscar por nome, email ou empresa..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-slate-700 border-slate-600 text-white"
             />
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <Label className="text-slate-400 text-xs mb-1 block">Filtrar por Perfil</Label>
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectValue placeholder="Todos os perfis" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectItem value="all" className="text-white hover:bg-slate-700">Todos os perfis</SelectItem>
+                    <SelectItem value="superadmin" className="text-white hover:bg-slate-700">Super Admin</SelectItem>
+                    <SelectItem value="admin" className="text-white hover:bg-slate-700">Admin</SelectItem>
+                    <SelectItem value="manager" className="text-white hover:bg-slate-700">Gerente</SelectItem>
+                    <SelectItem value="broker" className="text-white hover:bg-slate-700">Corretor</SelectItem>
+                    <SelectItem value="finance" className="text-white hover:bg-slate-700">Financeiro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1">
+                <Label className="text-slate-400 text-xs mb-1 block">Filtrar por Status</Label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectValue placeholder="Todos os status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectItem value="all" className="text-white hover:bg-slate-700">Todos</SelectItem>
+                    <SelectItem value="active" className="text-white hover:bg-slate-700">Ativos</SelectItem>
+                    <SelectItem value="inactive" className="text-white hover:bg-slate-700">Inativos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -945,6 +1018,15 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-600 text-blue-400 hover:bg-blue-600/20"
+                      onClick={() => handleEditClick(user)}
+                      title="Editar"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
                     <Button
                       size="sm"
                       variant="outline"
@@ -982,6 +1064,79 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal de Edição de Usuário */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60]">
+          <Card className="w-full max-w-md bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center justify-between">
+                <span>Editar Usuário</span>
+                <Button variant="ghost" size="sm" onClick={() => setEditingUser(null)} className="text-slate-400">
+                  <X className="h-5 w-5" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-slate-300">Nome</Label>
+                <Input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Email</Label>
+                <Input
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Perfil</Label>
+                <Select value={editForm.role} onValueChange={(value) => setEditForm({ ...editForm, role: value })}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectItem value="admin" className="text-white hover:bg-slate-700">Admin</SelectItem>
+                    <SelectItem value="manager" className="text-white hover:bg-slate-700">Gerente</SelectItem>
+                    <SelectItem value="broker" className="text-white hover:bg-slate-700">Corretor</SelectItem>
+                    <SelectItem value="finance" className="text-white hover:bg-slate-700">Financeiro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-slate-300">Empresa</Label>
+                <Select value={editForm.companyId || "none"} onValueChange={(value) => setEditForm({ ...editForm, companyId: value === "none" ? "" : value })}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectValue placeholder="Selecione uma empresa" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectItem value="none" className="text-white hover:bg-slate-700">Sem empresa</SelectItem>
+                    {companies.map((company: any) => (
+                      <SelectItem key={company.id} value={company.id} className="text-white hover:bg-slate-700">
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setEditingUser(null)} className="border-slate-600 text-slate-300">
+                  Cancelar
+                </Button>
+                <Button onClick={handleSaveEdit} disabled={updateUserMutation.isPending} className="bg-purple-600 hover:bg-purple-700">
+                  {updateUserMutation.isPending ? "Salvando..." : "Salvar"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
