@@ -46,30 +46,33 @@ export default function Analytics() {
     return null;
   }
 
-  // Dados mock para performance da equipe
-  const teamPerformance = [
+  // Verificar se é empresa de Testes para mostrar dados mock
+  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+
+  // Dados mock para performance da equipe (apenas para empresa de testes)
+  const teamPerformance = isTestCompany ? [
     { name: "João Silva", vendas: 12, comissoes: 45000, meta: 50000 },
     { name: "Maria Santos", vendas: 8, comissoes: 35000, meta: 50000 },
     { name: "Pedro Costa", vendas: 15, comissoes: 65000, meta: 50000 },
-  ];
+  ] : [];
 
-  // Dados mock para evolução de vendas
-  const salesEvolution = [
+  // Dados mock para evolução de vendas (apenas para empresa de testes)
+  const salesEvolution = isTestCompany ? [
     { mes: "Jan", vendas: 8, angariações: 15, canceladas: 2 },
     { mes: "Fev", vendas: 12, angariações: 18, canceladas: 1 },
     { mes: "Mar", vendas: 15, angariações: 22, canceladas: 3 },
     { mes: "Abr", vendas: 18, angariações: 25, canceladas: 2 },
     { mes: "Mai", vendas: 22, angariações: 28, canceladas: 4 },
     { mes: "Jun", vendas: 25, angariações: 32, canceladas: 3 },
-  ];
+  ] : [];
 
-  // Dados mock para comissões por status
-  const commissionsByStatus = [
+  // Dados mock para comissões por status (apenas para empresa de testes)
+  const commissionsByStatus = isTestCompany ? [
     { status: "Pendentes", value: 45000, fill: "#fbbf24" },
     { status: "Recebidas", value: 125000, fill: "#60a5fa" },
     { status: "Pagas", value: 380000, fill: "#10b981" },
     { status: "Canceladas", value: 12000, fill: "#ef4444" },
-  ];
+  ] : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -116,6 +119,15 @@ export default function Analytics() {
           </p>
         </div>
 
+        {/* Mensagem de dados vazios */}
+        {!isTestCompany && (
+          <Card className="bg-amber-50 border-amber-200 mb-8">
+            <CardContent className="pt-6">
+              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. Os gráficos serão exibidos quando houver propostas e vendas registradas.</p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {/* Team Sales */}
@@ -127,7 +139,7 @@ export default function Analytics() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">55</p>
+              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "55" : "0"}</p>
               <p className="text-xs text-slate-600 mt-2">Este mês</p>
             </CardContent>
           </Card>
@@ -141,7 +153,7 @@ export default function Analytics() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">3</p>
+              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "3" : "0"}</p>
               <p className="text-xs text-slate-600 mt-2">Membros da equipe</p>
             </CardContent>
           </Card>
@@ -155,7 +167,7 @@ export default function Analytics() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">R$ 145k</p>
+              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "R$ 145k" : "R$ 0"}</p>
               <p className="text-xs text-slate-600 mt-2">Este mês</p>
             </CardContent>
           </Card>
@@ -169,13 +181,14 @@ export default function Analytics() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">92%</p>
+              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "92%" : "0%"}</p>
               <p className="text-xs text-slate-600 mt-2">Do objetivo mensal</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Charts */}
+        {/* Charts - Apenas para empresa de testes */}
+        {isTestCompany && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Team Performance */}
           <Card className="border-0 shadow-md">
@@ -264,8 +277,8 @@ export default function Analytics() {
             </CardContent>
           </Card>
         </div>
+        )}
       </main>
     </div>
   );
 }
-

@@ -41,21 +41,28 @@ export default function Ranking() {
     return null;
   }
 
-  // Dados mock para ranking de vendas
-  const allRankingVendas = [
+  // Verificar se é empresa de Testes para mostrar dados mock
+  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+
+  // Dados mock para ranking de vendas (apenas para empresa de testes)
+  const mockRankingVendas = [
     { posicao: 1, nome: "Pedro Costa", vendas: 25, valor: 1562500, meta: 50000, percentualMeta: 156 },
     { posicao: 2, nome: "João Silva", vendas: 12, valor: 750000, meta: 50000, percentualMeta: 92 },
     { posicao: 3, nome: "Maria Santos", vendas: 8, valor: 500000, meta: 50000, percentualMeta: 62 },
     { posicao: 4, nome: "Ana Oliveira", vendas: 6, valor: 375000, meta: 50000, percentualMeta: 45 },
   ];
 
-  // Dados mock para ranking de angariações
-  const allRankingAngariacao = [
+  // Dados mock para ranking de angariações (apenas para empresa de testes)
+  const mockRankingAngariacao = [
     { posicao: 1, nome: "Maria Santos", angariacao: 32, valor: 1280000, meta: 30000, percentualMeta: 107 },
     { posicao: 2, nome: "Pedro Costa", angariacao: 28, valor: 1120000, meta: 30000, percentualMeta: 93 },
     { posicao: 3, nome: "João Silva", angariacao: 18, valor: 720000, meta: 30000, percentualMeta: 60 },
     { posicao: 4, nome: "Ana Oliveira", angariacao: 15, valor: 600000, meta: 30000, percentualMeta: 50 },
   ];
+
+  // Usar dados mock apenas para empresa de testes
+  const allRankingVendas = isTestCompany ? mockRankingVendas : [];
+  const allRankingAngariacao = isTestCompany ? mockRankingAngariacao : [];
 
   const isBroker = user.role === "broker";
   const isManager = user.role === "manager";
@@ -77,19 +84,19 @@ export default function Ranking() {
     brokerAngariacao = allRankingAngariacao.find(r => r.nome === "João Silva");
   }
 
-  // Dados para gráfico de barras comparativo
-  const comparisonData = [
+  // Dados para gráfico de barras comparativo (apenas para empresa de testes)
+  const comparisonData = isTestCompany ? [
     { nome: "Pedro Costa", vendas: 25, angariacao: 28 },
     { nome: "João Silva", vendas: 12, angariacao: 18 },
     { nome: "Maria Santos", vendas: 8, angariacao: 32 },
-  ];
+  ] : [];
 
-  // Dados para gráfico de pizza - distribuição de vendas
-  const vendaDistribution = [
+  // Dados para gráfico de pizza - distribuição de vendas (apenas para empresa de testes)
+  const vendaDistribution = isTestCompany ? [
     { name: "Pedro Costa", value: 1562500, fill: "#8b5cf6" },
     { name: "João Silva", value: 750000, fill: "#3b82f6" },
     { name: "Maria Santos", value: 500000, fill: "#10b981" },
-  ];
+  ] : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-50">
@@ -111,8 +118,17 @@ export default function Ranking() {
           </p>
         </div>
 
+        {/* Mensagem de dados vazios */}
+        {!isTestCompany && (
+          <Card className="bg-amber-50 border-amber-200 mb-8">
+            <CardContent className="pt-6">
+              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. O ranking será exibido quando houver propostas e vendas registradas.</p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Filters */}
-        {!isBroker && (
+        {!isBroker && isTestCompany && (
           <Card className="border-0 shadow-md mb-8 bg-gradient-to-br from-indigo-50 to-purple-50">
             <CardHeader>
               <CardTitle>Filtros</CardTitle>
@@ -165,7 +181,7 @@ export default function Ranking() {
         )}
 
         {/* Broker's Own Data */}
-        {isBroker && brokerVendas && brokerAngariacao && (
+        {isTestCompany && isBroker && brokerVendas && brokerAngariacao && (
           <Card className="border-0 shadow-md mb-8 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -207,6 +223,7 @@ export default function Ranking() {
         )}
 
         {/* Comparison Chart */}
+        {isTestCompany && (
         <Card className="border-0 shadow-md mb-8">
           <CardHeader>
             <CardTitle>Vendas vs Angariações</CardTitle>
@@ -228,8 +245,10 @@ export default function Ranking() {
             </ResponsiveContainer>
           </CardContent>
         </Card>
+        )}
 
         {/* Ranking Vendas */}
+        {isTestCompany && (
         <Card className="border-0 shadow-md mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -323,8 +342,10 @@ export default function Ranking() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         {/* Ranking Angariações */}
+        {isTestCompany && (
         <Card className="border-0 shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -418,6 +439,7 @@ export default function Ranking() {
             </div>
           </CardContent>
         </Card>
+        )}
       </main>
     </div>
   );

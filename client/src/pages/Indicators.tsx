@@ -24,6 +24,9 @@ export default function Indicators() {
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Verificar se é empresa de Testes para mostrar dados mock
+  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+
   // Mock data for monthly evolution (replace with real data from API)
   const mockMonthlyData = [
     { month: "Jan", value: 5200000, prontos: 3000000, lancamentos: 2200000, todos: 5200000 },
@@ -114,6 +117,17 @@ export default function Indicators() {
     return "text-red-600";
   };
 
+  // Dados vazios para empresas que não são de teste
+  const emptyIndicators: Indicator[] = indicators.map(ind => ({
+    ...ind,
+    meta: "-",
+    media: "-",
+    percentual: "0%",
+    trend: undefined
+  }));
+
+  const displayIndicators = isTestCompany ? indicators : emptyIndicators;
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -123,6 +137,14 @@ export default function Indicators() {
             Acompanhe os principais indicadores de desempenho
           </p>
         </div>
+        
+        {!isTestCompany && (
+          <Card className="bg-amber-50 border-amber-200">
+            <CardContent className="pt-6">
+              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. Os indicadores serão exibidos quando houver propostas e vendas registradas.</p>
+            </CardContent>
+          </Card>
+        )}
         {/* Summary Card - MOVED TO TOP */}
         <Card className="mb-8">
           <CardHeader>
@@ -132,15 +154,15 @@ export default function Indicators() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
                 <p className="text-sm text-green-700 font-medium mb-1">Positivos</p>
-                <p className="text-2xl font-bold text-green-600">14</p>
+                <p className="text-2xl font-bold text-green-600">{isTestCompany ? "14" : "0"}</p>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
                 <p className="text-sm text-red-700 font-medium mb-1">Negativos</p>
-                <p className="text-2xl font-bold text-red-600">8</p>
+                <p className="text-2xl font-bold text-red-600">{isTestCompany ? "8" : "0"}</p>
               </div>
               <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <p className="text-sm text-slate-700 font-medium mb-1">Indefinidos</p>
-                <p className="text-2xl font-bold text-slate-600">5</p>
+                <p className="text-2xl font-bold text-slate-600">{isTestCompany ? "5" : "0"}</p>
               </div>
             </div>
           </CardContent>
@@ -175,7 +197,7 @@ export default function Indicators() {
 
         {/* Indicators Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {indicators.map((indicator, idx) => (
+          {displayIndicators.map((indicator, idx) => (
             <Card
               key={idx}
               className="hover:shadow-lg transition-all cursor-pointer"
@@ -225,8 +247,8 @@ export default function Indicators() {
           }}
           indicatorName={selectedIndicator}
           indicatorType="value"
-          monthlyData={mockMonthlyData}
-          brokers={mockBrokers}
+          monthlyData={isTestCompany ? mockMonthlyData : []}
+          brokers={isTestCompany ? mockBrokers : []}
           userRole={user?.role as "broker" | "manager" | "finance" | "admin" | "viewer"}
         />
       )}

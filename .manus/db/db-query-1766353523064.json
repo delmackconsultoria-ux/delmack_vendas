@@ -1,0 +1,31 @@
+{
+  "query": "SELECT u.id, u.name, u.email, u.role, c.name as companyName FROM users u JOIN companies c ON u.companyId = c.id WHERE c.name LIKE '%B I IMOVEIS%' OR c.name LIKE '%Baggio%' LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT u.id, u.name, u.email, u.role, c.name as companyName FROM users u JOIN companies c ON u.companyId = c.id WHERE c.name LIKE '%B I IMOVEIS%' OR c.name LIKE '%Baggio%' LIMIT 5",
+  "rows": [
+    {
+      "id": "user_1766344606341_ywxxmwft8",
+      "name": "Darlan Santos Ribeiro ",
+      "email": "Darlan@baggioimoveis.com.br",
+      "role": "finance",
+      "companyName": "B I IMOVEIS LTDA"
+    },
+    {
+      "id": "user_1766344706404_bpb122o3e",
+      "name": "Camila Pires",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "role": "manager",
+      "companyName": "B I IMOVEIS LTDA"
+    },
+    {
+      "id": "user_1766351453637_typa30p2q",
+      "name": "Lucas ",
+      "email": "Lucas@baggioimoveis.com.br",
+      "role": "viewer",
+      "companyName": "B I IMOVEIS LTDA"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tcompanyName\nuser_1766344606341_ywxxmwft8\tDarlan Santos Ribeiro \tDarlan@baggioimoveis.com.br\tfinance\tB I IMOVEIS LTDA\nuser_1766344706404_bpb122o3e\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\tB I IMOVEIS LTDA\nuser_1766351453637_typa30p2q\tLucas \tLucas@baggioimoveis.com.br\tviewer\tB I IMOVEIS LTDA\n",
+  "stderr": "",
+  "execution_time_ms": 148
+}

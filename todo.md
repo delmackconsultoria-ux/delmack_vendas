@@ -508,3 +508,13 @@
 - [x] Viewer tem acesso a Analytics (Insights) no menu e rotas
 - [x] Viewer vê dados filtrados por empresa (sales, commissions, history)
 - [x] Todos os perfis veem apenas dados da própria empresa
+
+
+## 🆕 Remoção de Dados Mock para Empresas Não-Testes
+
+- [x] Modificar Indicators.tsx para mostrar dados vazios para empresas que não são "Testes"
+- [x] Modificar Ranking.tsx para mostrar dados vazios para empresas que não são "Testes"
+- [x] Modificar Analytics.tsx para mostrar dados vazios para empresas que não são "Testes"
+- [x] Adicionar mensagem informativa quando não há dados cadastrados
+- [x] Manter dados mock apenas para empresa "Testes" (para demonstração)
+- [x] Testado com usuário corretor@testes.com.br - dados mock aparecem corretamente
