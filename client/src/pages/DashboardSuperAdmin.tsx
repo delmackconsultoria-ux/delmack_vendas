@@ -46,6 +46,8 @@ export default function DashboardSuperAdmin() {
   );
   const allUsersQuery = trpc.superadmin.listAllUsers.useQuery(undefined, { enabled: showAllUsersModal });
   const deleteCompanyMutation = trpc.superadmin.deleteCompany.useMutation();
+  const [showEditCompanyModal, setShowEditCompanyModal] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<any>(null);
 
   const handleUpdateCompany = async (field: string, value: any) => {
     if (!selectedCompany) return;
@@ -240,6 +242,9 @@ export default function DashboardSuperAdmin() {
                     </button>
                     <Button size="sm" variant="outline" className="border-slate-600 text-slate-300" onClick={() => { setSelectedCompanyId(company.id); setShowUploadModal(true); }} title="Upload de Usuários">
                       <Upload className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="ghost" className="text-blue-400" onClick={() => { setEditingCompany({...company}); setShowEditCompanyModal(true); }} title="Editar Empresa">
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <Button size="sm" variant="ghost" className="text-purple-400" onClick={() => { setSelectedCompany(company); setShowDetailsModal(true); }} title="Detalhes">
                       <Eye className="h-4 w-4" />
@@ -459,6 +464,112 @@ export default function DashboardSuperAdmin() {
                 </Button>
                 <Button onClick={handleCreateCompany} className="bg-purple-600 hover:bg-purple-700">
                   Criar Empresa
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Edit Company Modal */}
+      {showEditCompanyModal && editingCompany && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Editar Empresa</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-slate-300">Razão Social *</Label>
+                <Input
+                  value={editingCompany.name || ""}
+                  onChange={(e) => setEditingCompany({ ...editingCompany, name: e.target.value })}
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Nome Fantasia</Label>
+                <Input
+                  value={editingCompany.tradeName || ""}
+                  onChange={(e) => setEditingCompany({ ...editingCompany, tradeName: e.target.value })}
+                  placeholder="Nome que aparece no header dos usuários"
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">CNPJ</Label>
+                <Input
+                  value={editingCompany.cnpj || ""}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length <= 14) {
+                      v = v.replace(/(\d{2})(\d)/, "$1.$2");
+                      v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                      v = v.replace(/(\d{3})(\d)/, "$1/$2");
+                      v = v.replace(/(\d{4})(\d)/, "$1-$2");
+                    }
+                    setEditingCompany({ ...editingCompany, cnpj: v });
+                  }}
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">E-mail</Label>
+                <Input
+                  value={editingCompany.email || ""}
+                  onChange={(e) => setEditingCompany({ ...editingCompany, email: e.target.value })}
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Telefone</Label>
+                <Input
+                  value={editingCompany.phone || ""}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length <= 11) {
+                      v = v.replace(/(\d{2})(\d)/, "($1) $2");
+                      v = v.replace(/(\d{5})(\d)/, "$1-$2");
+                    }
+                    setEditingCompany({ ...editingCompany, phone: v });
+                  }}
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-slate-300">Endereço</Label>
+                <Input
+                  value={editingCompany.address || ""}
+                  onChange={(e) => setEditingCompany({ ...editingCompany, address: e.target.value })}
+                  className="mt-1 bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowEditCompanyModal(false)} className="border-slate-600 text-slate-300">
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={async () => {
+                    try {
+                      await updateCompanyMutation.mutateAsync({
+                        companyId: editingCompany.id,
+                        name: editingCompany.name,
+                        tradeName: editingCompany.tradeName || null,
+                        cnpj: editingCompany.cnpj || null,
+                        email: editingCompany.email || null,
+                        phone: editingCompany.phone || null,
+                        address: editingCompany.address || null,
+                      });
+                      toast.success("Empresa atualizada!");
+                      setShowEditCompanyModal(false);
+                      companiesQuery.refetch();
+                    } catch (e) {
+                      toast.error("Erro ao atualizar empresa");
+                    }
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Salvar
                 </Button>
               </div>
             </CardContent>

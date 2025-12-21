@@ -1,0 +1,20 @@
+{
+  "query": "SELECT c.id, c.name, COUNT(u.id) as user_count FROM companies c LEFT JOIN users u ON u.companyId = c.id GROUP BY c.id, c.name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT c.id, c.name, COUNT(u.id) as user_count FROM companies c LEFT JOIN users u ON u.companyId = c.id GROUP BY c.id, c.name;",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "user_count": "0"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes",
+      "user_count": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tuser_count\ncompany_1766331506068\tB I IMOVEIS LTDA\t0\ncompany_1766344499112\tTestes\t3\n",
+  "stderr": "",
+  "execution_time_ms": 133
+}

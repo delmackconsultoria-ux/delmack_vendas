@@ -68,7 +68,7 @@ export async function createUser(data: {
   email: string;
   password: string;
   name: string;
-  role: 'admin' | 'manager' | 'broker' | 'finance';
+  role: 'admin' | 'manager' | 'broker' | 'finance' | 'viewer';
   companyId?: string;
 }) {
   const db = await getDb();

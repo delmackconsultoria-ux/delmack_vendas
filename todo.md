@@ -491,3 +491,11 @@
 - [x] Botão Cancelar - volta para listagem de propostas
 - [x] Botão Salvar Rascunho (laranja) - salva imediatamente com status "draft"
 - [x] Botão Enviar Proposta (azul) - valida campos obrigatórios, destaca em vermelho se faltarem
+
+
+## 🆕 Correções (21/12/2025 - Sessão 4)
+
+- [x] Viewer como role válido no backend (createUser e uploadUsers)
+- [x] Modal de edição de empresa com Nome Fantasia, CNPJ, telefone, endereço
+- [x] Botão de editar empresa (ícone lápis azul) na lista de empresas
+- [x] Contagem de usuários por empresa funcionando (query SQL correta)

@@ -60,6 +60,9 @@ export const superadminRouter = router({
     const result = await db.select({
       id: companies.id,
       name: companies.name,
+      tradeName: companies.tradeName,
+      cnpj: companies.cnpj,
+      address: companies.address,
       email: companies.email,
       phone: companies.phone,
       licenseType: companies.licenseType,
@@ -81,6 +84,12 @@ export const superadminRouter = router({
   updateCompany: protectedProcedure
     .input(z.object({
       companyId: z.string(),
+      name: z.string().optional(),
+      tradeName: z.string().optional(),
+      cnpj: z.string().optional(),
+      email: z.string().optional(),
+      phone: z.string().optional(),
+      address: z.string().optional(),
       licenseType: z.enum(["perpetual", "monthly", "quarterly", "semiannual", "annual"]).optional(),
       licenseStartDate: z.date().optional(),
       contractResponsible: z.string().optional(),
@@ -150,7 +159,7 @@ export const superadminRouter = router({
     .input(z.object({
       name: z.string().min(1),
       email: z.string().email(),
-      role: z.enum(["broker", "manager", "finance"]),
+      role: z.enum(["broker", "manager", "finance", "viewer"]),
       companyId: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -202,7 +211,7 @@ export const superadminRouter = router({
         name: z.string(),
         surname: z.string().optional(),
         email: z.string().email(),
-        role: z.enum(["broker", "manager", "finance"]),
+        role: z.enum(["broker", "manager", "finance", "viewer"]),
         company: z.string().optional(),
       })),
     }))
