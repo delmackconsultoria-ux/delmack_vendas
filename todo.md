@@ -429,3 +429,9 @@
 - [x] Exclusão de empresas funcionando corretamente
 - [x] Contagem de usuários ativos/inativos correta (7 ativos de 10 total)
 - [x] Header padrão presente em todas as páginas
+
+
+## 🐛 Bug Reportado (21/12/2025)
+
+- [x] Header do Corretor não mostra todas as páginas (faltam Indicadores, Relatórios) - CORRIGIDO
+- [x] Header do Financeiro não mostra Propostas - CORRIGIDO

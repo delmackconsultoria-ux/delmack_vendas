@@ -85,6 +85,7 @@ function Router() {
           )}
           {user.role === "finance" && (
             <>
+              <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/analytics" component={Analytics} />
