@@ -1,146 +1,74 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, ArrowLeft, CheckCircle, XCircle, FileUp, FileText, Download } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertCircle, CheckCircle, XCircle, Eye, ExternalLink } from "lucide-react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
+import { toast } from "sonner";
 
-interface Sale {
-  id: string;
-  buyerName: string;
-  saleValue: string | number;
-  status: "pending" | "received" | "paid" | "cancelled";
-  observation?: string;
-  createdAt: Date;
-  brokerVendedor?: string;
-  businessType?: string;
-  proposalDocumentUrl?: string;
-}
+const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
+  sale: { label: "Venda", color: "text-blue-600", bgColor: "bg-blue-100" },
+  manager_review: { label: "Em análise (Gerente)", color: "text-purple-600", bgColor: "bg-purple-100" },
+  finance_review: { label: "Em análise (Financeiro)", color: "text-indigo-600", bgColor: "bg-indigo-100" },
+  commission_paid: { label: "Comissão Paga", color: "text-green-600", bgColor: "bg-green-100" },
+  cancelled: { label: "Cancelada", color: "text-red-600", bgColor: "bg-red-100" },
+};
 
 export default function SalesApproval() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const [sales, setSales] = useState<Sale[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
+  const [selectedSale, setSelectedSale] = useState<any>(null);
   const [observation, setObservation] = useState("");
-  const [updatingStatus, setUpdatingStatus] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [actionType, setActionType] = useState<"approve" | "reject">("approve");
 
-  // Carregar vendas pendentes
-  useEffect(() => {
-    const loadSales = async () => {
-      try {
-        setLoading(true);
-        // TODO: Usar tRPC quando estiver pronto
-        // const { data } = await trpc.sales.listAllSales.useQuery({});
-        // setSales(data);
-        
-        // Verificar se é empresa de Testes para mostrar dados mock
-        const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
-        
-        if (isTestCompany) {
-          setSales([
-            {
-              id: "1",
-              buyerName: "João Silva",
-              saleValue: 450000,
-              status: "pending",
-              businessType: "venda",
-              createdAt: new Date(),
-            },
-            {
-              id: "2",
-              buyerName: "Maria Santos",
-              saleValue: 650000,
-              status: "pending",
-              businessType: "angariacao",
-              createdAt: new Date(),
-            },
-          ]);
-        } else {
-          setSales([]);
-        }
-      } catch (err) {
-        setError("Erro ao carregar vendas");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSales();
-  }, []);
-
-  const handleStatusChange = async (newStatus: "received" | "paid" | "cancelled") => {
-    if (!selectedSale) return;
-
-    setUpdatingStatus(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      // TODO: Usar tRPC quando estiver pronto
-      // await trpc.sales.updateSaleStatus.useMutation({
-      //   saleId: selectedSale.id,
-      //   status: newStatus,
-      //   observation: observation,
-      // });
-
-      // Atualizar estado local
-      setSales(
-        sales.map((s) =>
-          s.id === selectedSale.id
-            ? { ...s, status: newStatus, observation: observation }
-            : s
-        )
-      );
-
-      setSuccess(`Venda atualizada para ${newStatus}`);
+  const { data: salesData, isLoading, refetch } = trpc.sales.listMySales.useQuery();
+  const updateStatusMutation = trpc.sales.updateSaleStatus.useMutation({
+    onSuccess: () => {
+      toast.success(actionType === "approve" ? "Venda aprovada!" : "Venda cancelada!");
+      refetch();
+      setDialogOpen(false);
       setSelectedSale(null);
       setObservation("");
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err) {
-      setError("Erro ao atualizar status");
-    } finally {
-      setUpdatingStatus(false);
-    }
+  // Filtrar vendas por role
+  const pendingSales = salesData?.sales?.filter((s: any) => {
+    if (user?.role === "manager") return s.status === "sale" || s.status === "manager_review";
+    if (user?.role === "finance") return s.status === "finance_review";
+    return false;
+  }) || [];
+
+  const formatCurrency = (value: string | number | null) => {
+    if (!value) return "R$ 0,00";
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "received":
-        return "bg-blue-100 text-blue-800";
-      case "paid":
-        return "bg-green-100 text-green-800";
-      case "cancelled":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
+  const handleAction = (sale: any, type: "approve" | "reject") => {
+    setSelectedSale(sale);
+    setActionType(type);
+    setDialogOpen(true);
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Pendente";
-      case "received":
-        return "Recebido";
-      case "paid":
-        return "Pago";
-      case "cancelled":
-        return "Cancelado";
-      default:
-        return status;
+  const confirmAction = () => {
+    if (!selectedSale) return;
+    let newStatus: string;
+    if (actionType === "reject") {
+      newStatus = "cancelled";
+    } else if (user?.role === "manager") {
+      newStatus = selectedSale.status === "sale" ? "manager_review" : "finance_review";
+    } else {
+      newStatus = "commission_paid";
     }
+    updateStatusMutation.mutate({ saleId: selectedSale.id, status: newStatus as any, observation });
   };
 
   if (user?.role !== "finance" && user?.role !== "manager") {
@@ -152,9 +80,7 @@ export default function SalesApproval() {
               <AlertCircle className="h-5 w-5" />
               <p>Acesso restrito a financeiro e gerente</p>
             </div>
-            <Button onClick={() => setLocation("/")} className="w-full">
-              Voltar
-            </Button>
+            <Button onClick={() => setLocation("/")} className="w-full">Voltar</Button>
           </CardContent>
         </Card>
       </div>
@@ -162,223 +88,94 @@ export default function SalesApproval() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setLocation("/dashboard")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Aprovação de Vendas</h1>
-            <p className="text-sm text-slate-600">
-              Gerencie o status das vendas e comissões
-            </p>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-slate-50">
+      <AppHeader />
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Aprovação de Vendas</h1>
+        <p className="text-slate-500 mb-6">
+          {user?.role === "manager" ? "Aprovar vendas para enviar ao financeiro" : "Aprovar pagamento de comissões"}
+        </p>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3 text-red-600">
-                <AlertCircle className="h-5 w-5" />
-                <p>{error}</p>
-              </div>
+        {isLoading ? (
+          <div className="text-center py-8">Carregando...</div>
+        ) : pendingSales.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center text-slate-500">
+              Nenhuma venda pendente de aprovação
             </CardContent>
           </Card>
-        )}
-
-        {success && (
-          <Card className="mb-6 border-green-200 bg-green-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3 text-green-600">
-                <CheckCircle className="h-5 w-5" />
-                <p>{success}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Lista de vendas */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Vendas Pendentes</CardTitle>
-                <CardDescription>
-                  {sales.filter((s) => s.status === "pending").length} vendas aguardando aprovação
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="text-center py-8 text-slate-500">
-                    Carregando vendas...
-                  </div>
-                ) : sales.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500">
-                    Nenhuma venda encontrada
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {sales.map((sale) => (
-                      <div
-                        key={sale.id}
-                        onClick={() => setSelectedSale(sale)}
-                        className={`p-4 border rounded-lg cursor-pointer transition ${
-                          selectedSale?.id === sale.id
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-slate-200 hover:border-slate-300"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="font-semibold text-slate-900">
-                              {sale.buyerName}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                              Valor: R$ {typeof sale.saleValue === "string" ? parseFloat(sale.saleValue).toFixed(2) : sale.saleValue.toFixed(2)}
-                            </p>
-                            <p className="text-xs text-slate-500 mt-1">
-                              Tipo: {sale.businessType || "N/A"}
-                            </p>
-                            {sale.proposalDocumentUrl && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open(sale.proposalDocumentUrl, '_blank');
-                                }}
-                                className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
-                              >
-                                <FileText className="h-3 w-3" /> Ver Anexo
-                              </button>
-                            )}
-                          </div>
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
-                              sale.status
-                            )}`}
-                          >
-                            {getStatusLabel(sale.status)}
-                          </span>
-                        </div>
+        ) : (
+          <div className="space-y-4">
+            {pendingSales.map((sale: any) => (
+              <Card key={sale.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-semibold">{sale.buyerName || "Sem comprador"}</h3>
+                        <Badge className={`${STATUS_CONFIG[sale.status]?.bgColor} ${STATUS_CONFIG[sale.status]?.color} border-0`}>
+                          {STATUS_CONFIG[sale.status]?.label}
+                        </Badge>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Painel de detalhes e ações */}
-          <div>
-            {selectedSale ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Detalhes da Venda</CardTitle>
-                  <CardDescription>
-                    ID: {selectedSale.id}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <Label className="text-slate-600">Comprador</Label>
-                    <p className="font-semibold text-slate-900 mt-1">
-                      {selectedSale.buyerName}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label className="text-slate-600">Valor da Venda</Label>
-                    <p className="font-semibold text-slate-900 mt-1">
-                      R$ {typeof selectedSale.saleValue === "string" ? parseFloat(selectedSale.saleValue).toFixed(2) : selectedSale.saleValue.toFixed(2)}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label className="text-slate-600">Status Atual</Label>
-                    <p className={`font-semibold mt-1 px-3 py-1 rounded-full text-sm w-fit ${getStatusBadgeColor(selectedSale.status)}`}>
-                      {getStatusLabel(selectedSale.status)}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="observation">Observação</Label>
-                    <Textarea
-                      id="observation"
-                      placeholder="Adicione uma observação sobre a aprovação..."
-                      value={observation}
-                      onChange={(e) => setObservation(e.target.value)}
-                      className="mt-2"
-                      rows={4}
-                    />
-                  </div>
-
-                  {selectedSale.status === "pending" && (
-                    <div className="space-y-2 pt-4 border-t">
-                      <Button
-                        onClick={() => handleStatusChange("received")}
-                        disabled={updatingStatus}
-                        className="w-full gap-2 bg-blue-600 hover:bg-blue-700"
-                      >
-                        <CheckCircle className="h-4 w-4" />
-                        Marcar como Recebido
+                      <p className="text-lg font-bold text-green-600">{formatCurrency(sale.saleValue)}</p>
+                      <p className="text-sm text-slate-500">Tipo: {sale.businessType || "-"}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {sale.proposalDocumentUrl && (
+                        <Button variant="outline" size="sm" onClick={() => window.open(sale.proposalDocumentUrl, "_blank")}>
+                          <ExternalLink className="h-4 w-4 mr-1" /> Anexo
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/${sale.id}`)}>
+                        <Eye className="h-4 w-4 mr-1" /> Ver
                       </Button>
-                      <Button
-                        onClick={() => handleStatusChange("cancelled")}
-                        disabled={updatingStatus}
-                        variant="outline"
-                        className="w-full gap-2"
-                      >
-                        <XCircle className="h-4 w-4" />
-                        Rejeitar
+                      <Button variant="default" size="sm" onClick={() => handleAction(sale, "approve")}>
+                        <CheckCircle className="h-4 w-4 mr-1" /> Aprovar
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleAction(sale, "reject")}>
+                        <XCircle className="h-4 w-4 mr-1" /> Cancelar
                       </Button>
                     </div>
-                  )}
-
-                  {selectedSale.status === "received" && (
-                    <div className="space-y-2 pt-4 border-t">
-                      <Button
-                        onClick={() => handleStatusChange("paid")}
-                        disabled={updatingStatus}
-                        className="w-full gap-2 bg-green-600 hover:bg-green-700"
-                      >
-                        <CheckCircle className="h-4 w-4" />
-                        Marcar como Pago
-                      </Button>
-                    </div>
-                  )}
-
-                  <div className="pt-4 border-t">
-                    <Button
-                      variant="outline"
-                      className="w-full gap-2"
-                      onClick={() => setSelectedSale(null)}
-                    >
-                      Fechar
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center py-8 text-slate-500">
-                    <p>Selecione uma venda para ver os detalhes</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            ))}
           </div>
-        </div>
+        )}
       </main>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{actionType === "approve" ? "Aprovar Venda" : "Cancelar Venda"}</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="mb-4">
+              {actionType === "approve" 
+                ? (user?.role === "manager" 
+                    ? (selectedSale?.status === "sale" ? "Enviar para análise do gerente?" : "Enviar para o financeiro?")
+                    : "Confirmar pagamento da comissão?")
+                : "Tem certeza que deseja cancelar esta venda?"}
+            </p>
+            <Textarea
+              placeholder="Observação (opcional)"
+              value={observation}
+              onChange={(e) => setObservation(e.target.value)}
+              rows={3}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
+            <Button 
+              variant={actionType === "approve" ? "default" : "destructive"} 
+              onClick={confirmAction}
+              disabled={updateStatusMutation.isPending}
+            >
+              {updateStatusMutation.isPending ? "Processando..." : "Confirmar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-

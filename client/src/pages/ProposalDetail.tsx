@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Phone, Mail, MapPin } from "lucide-react";
+import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Edit, Download, Paperclip, History, ExternalLink } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation, useParams } from "wouter";
+import { toast } from "sonner";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
   draft: { label: "Rascunho", color: "text-slate-600", bgColor: "bg-slate-100" },
@@ -17,9 +19,12 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: str
 };
 
 export default function ProposalDetail() {
+  const { user } = useAuth();
   const [, setLocation] = useLocation();
   const params = useParams<{ id: string }>();
   const { data: sale, isLoading } = trpc.sales.getSaleById.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
+  const { data: history } = trpc.sales.getSaleHistory.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
+  const { data: docUrl } = trpc.sales.getProposalDocument.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
 
   if (isLoading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Carregando...</div>;
   if (!sale) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Proposta não encontrada</div>;
@@ -35,13 +40,91 @@ export default function ProposalDetail() {
     return new Date(date).toLocaleDateString("pt-BR");
   };
 
+  const formatDateTime = (date: string | Date | null | undefined) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleString("pt-BR");
+  };
+
+  const canEdit = (user?.role === "broker" && sale.status === "draft") || user?.role === "manager";
+
+  const handleExportPDF = () => {
+    const content = `
+PROPOSTA DE VENDA - ${sale.property?.propertyReference || "S/R"}
+===============================================
+
+STATUS: ${STATUS_CONFIG[sale.status]?.label || sale.status}
+DATA: ${formatDate(sale.createdAt)}
+
+IMÓVEL
+------
+Endereço: ${sale.property?.address || "-"}, ${sale.property?.number || "S/N"}
+Bairro: ${sale.property?.neighborhood || "-"}
+Cidade/Estado: ${sale.property?.city || "-"}/${sale.property?.state || "-"}
+CEP: ${sale.property?.zipCode || "-"}
+Condomínio: ${sale.condominiumName || "-"}
+
+COMPRADOR
+---------
+Nome: ${sale.buyerName || "-"}
+CPF/CNPJ: ${sale.buyerCpfCnpj || "-"}
+Telefone: ${sale.buyerPhone || "-"}
+Origem: ${sale.clientOrigin || "-"}
+
+VENDEDOR
+--------
+Nome: ${sale.sellerName || "-"}
+CPF/CNPJ: ${sale.sellerCpfCnpj || "-"}
+Telefone: ${sale.sellerPhone || "-"}
+
+VALORES
+-------
+Valor da Venda: ${formatCurrency(sale.saleValue)}
+Valor Divulgação: ${formatCurrency(sale.advertisementValue)}
+Forma Pagamento: ${sale.paymentMethod || "-"}
+Comissão Total: ${formatCurrency(sale.totalCommission)} (${sale.totalCommissionPercent || 0}%)
+Comissão Angariador: ${formatCurrency(sale.angariadorCommission)}
+Comissão Vendedor: ${formatCurrency(sale.vendedorCommission)}
+
+DATAS
+-----
+Data da Venda: ${formatDate(sale.saleDate)}
+Data Angariação: ${formatDate(sale.angariationDate)}
+Previsão Recebimento: ${formatDate(sale.expectedPaymentDate)}
+
+OBSERVAÇÕES
+-----------
+${sale.observation || "Nenhuma observação"}
+    `.trim();
+
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `proposta-${sale.property?.propertyReference || params.id}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Proposta exportada com sucesso!");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-50">
       <AppHeader />
       <main className="max-w-5xl mx-auto px-4 py-8">
-        <Button variant="ghost" onClick={() => setLocation("/proposals")} className="mb-4">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="ghost" onClick={() => setLocation("/proposals")}>
+            <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
+          </Button>
+          <div className="flex gap-2">
+            {canEdit && (
+              <Button variant="outline" onClick={() => setLocation(`/proposals/edit/${params.id}`)}>
+                <Edit className="h-4 w-4 mr-2" /> Editar
+              </Button>
+            )}
+            <Button variant="outline" onClick={handleExportPDF}>
+              <Download className="h-4 w-4 mr-2" /> Exportar
+            </Button>
+          </div>
+        </div>
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-slate-900">Detalhes da Proposta</h1>
@@ -51,6 +134,18 @@ export default function ProposalDetail() {
         </div>
 
         <div className="grid gap-6">
+          {/* Anexo */}
+          {(sale.proposalDocumentUrl || docUrl?.url) && (
+            <Card className="border-blue-200 bg-blue-50">
+              <CardHeader><CardTitle className="flex items-center gap-2"><Paperclip className="h-5 w-5" /> Anexo da Proposta</CardTitle></CardHeader>
+              <CardContent>
+                <Button variant="outline" onClick={() => window.open(docUrl?.url || sale.proposalDocumentUrl || "", "_blank")}>
+                  <ExternalLink className="h-4 w-4 mr-2" /> Visualizar Anexo
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Imóvel */}
           <Card>
             <CardHeader><CardTitle className="flex items-center gap-2"><Home className="h-5 w-5" /> Imóvel</CardTitle></CardHeader>
@@ -116,6 +211,29 @@ export default function ProposalDetail() {
               <CardContent><p className="text-slate-700 whitespace-pre-wrap">{sale.observation}</p></CardContent>
             </Card>
           )}
+
+          {/* Histórico */}
+          <Card>
+            <CardHeader><CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> Histórico de Alterações</CardTitle></CardHeader>
+            <CardContent>
+              {!history || history.length === 0 ? (
+                <p className="text-slate-500">Nenhuma alteração registrada</p>
+              ) : (
+                <div className="space-y-3">
+                  {history.map((item: any, idx: number) => (
+                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                      <div className="w-2 h-2 mt-2 rounded-full bg-indigo-500" />
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{item.action}</p>
+                        <p className="text-xs text-slate-500">{item.userName} - {formatDateTime(item.createdAt)}</p>
+                        {item.details && <p className="text-sm text-slate-600 mt-1">{item.details}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>

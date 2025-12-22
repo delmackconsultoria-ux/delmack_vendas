@@ -98,16 +98,22 @@ export default function ProposalManagement() {
   };
 
   const getNextStatuses = (currentStatus: string): string[] => {
-    const transitions: Record<string, string[]> = {
-      draft: ["pending", "cancelled"],
-      pending: ["sale", "cancelled"],
-      sale: ["manager_review", "cancelled"],
-      manager_review: ["finance_review", "cancelled"],
-      finance_review: ["commission_paid", "cancelled"],
-      commission_paid: [],
-      cancelled: [],
-    };
-    return transitions[currentStatus] || [];
+    // Fluxo: draft -> sale -> manager_review -> finance_review -> commission_paid
+    if (user?.role === "broker") {
+      if (currentStatus === "draft") return ["sale", "cancelled"];
+      if (currentStatus === "sale") return ["cancelled"];
+      return [];
+    }
+    if (user?.role === "manager") {
+      if (currentStatus === "sale") return ["manager_review"];
+      if (currentStatus === "manager_review") return ["finance_review", "cancelled"];
+      return [];
+    }
+    if (user?.role === "finance") {
+      if (currentStatus === "finance_review") return ["commission_paid", "cancelled"];
+      return [];
+    }
+    return [];
   };
 
   return (

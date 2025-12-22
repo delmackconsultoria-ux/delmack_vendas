@@ -469,8 +469,29 @@ export const salesRouter = router({
           throw new Error("Database not available");
         }
 
-        // Apenas gerentes e financeiro podem atualizar status
-        if (ctx.user.role !== "manager" && ctx.user.role !== "finance") {
+        // Verificar permissões por role e status
+        const currentSale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
+        if (!currentSale.length) throw new Error("Venda não encontrada");
+        
+        const currentStatus = currentSale[0].status;
+        
+        // Corretor pode: draft->sale, draft->cancelled, sale->cancelled
+        if (ctx.user.role === "broker") {
+          const allowed = (currentStatus === "draft" && ["sale", "cancelled"].includes(input.status)) ||
+                          (currentStatus === "sale" && input.status === "cancelled");
+          if (!allowed) throw new Error("Permissão negada");
+        }
+        // Gerente pode: sale->manager_review, manager_review->finance_review, manager_review->cancelled
+        else if (ctx.user.role === "manager") {
+          const allowed = (currentStatus === "sale" && input.status === "manager_review") ||
+                          (currentStatus === "manager_review" && ["finance_review", "cancelled"].includes(input.status));
+          if (!allowed) throw new Error("Permissão negada");
+        }
+        // Financeiro pode: finance_review->commission_paid, finance_review->cancelled
+        else if (ctx.user.role === "finance") {
+          const allowed = currentStatus === "finance_review" && ["commission_paid", "cancelled"].includes(input.status);
+          if (!allowed) throw new Error("Permissão negada");
+        } else {
           throw new Error("Permissão negada");
         }
 
