@@ -238,7 +238,7 @@ export const salesRouter = router({
           clientOrigin: input.clientOrigin || null,
           paymentMethod: input.paymentMethod || null,
           brokerAngariador: input.brokerAngariador,
-          brokerVendedor: input.brokerVendedor,
+          brokerVendedor: input.brokerVendedor || ctx.user.id,
           businessType: input.businessType,
           status: input.status || "pending",
           observation: input.observations || null,
@@ -441,8 +441,13 @@ export const salesRouter = router({
       let result;
 
       if (ctx.user.role === "broker") {
-        result = await db.select().from(sales)
-          .where(and(eq(sales.companyId, companyId), eq(sales.brokerVendedor, ctx.user.id)));
+        // Corretor vê vendas onde é vendedor OU angariador OU criador (brokerVendedor vazio)
+        const allSales = await db.select().from(sales).where(eq(sales.companyId, companyId));
+        result = allSales.filter(s => 
+          s.brokerVendedor === ctx.user.id || 
+          s.brokerAngariador === ctx.user.id ||
+          (!s.brokerVendedor && s.status === 'draft')
+        );
       } else {
         // manager, finance, viewer, admin - veem todas as vendas da empresa
         result = await db.select().from(sales)
@@ -507,17 +512,18 @@ export const salesRouter = router({
         
         const currentStatus = currentSale[0].status;
         
-        // Corretor pode: draft->sale, draft->cancelled, sale->cancelled
+        // Corretor pode: draft/pending->sale, draft/pending/sale->cancelled
         if (ctx.user.role === "broker") {
-          const allowed = (currentStatus === "draft" && ["sale", "cancelled"].includes(input.status)) ||
+          const allowed = (["draft", "pending"].includes(currentStatus || "") && ["sale", "cancelled"].includes(input.status)) ||
                           (currentStatus === "sale" && input.status === "cancelled");
           if (!allowed) throw new Error("Permissão negada");
         }
-        // Gerente pode: draft->sale, sale->manager_review, manager_review->finance_review, *->cancelled
+        // Gerente pode: draft/pending->sale, sale->manager_review, manager_review->finance_review, *->cancelled
         else if (ctx.user.role === "manager") {
-          const allowed = (currentStatus === "draft" && ["sale", "cancelled"].includes(input.status)) ||
+          const allowed = (["draft", "pending"].includes(currentStatus || "") && ["sale", "cancelled"].includes(input.status)) ||
                           (currentStatus === "sale" && ["manager_review", "cancelled"].includes(input.status)) ||
-                          (currentStatus === "manager_review" && ["finance_review", "cancelled"].includes(input.status));
+                          (currentStatus === "manager_review" && ["finance_review", "cancelled"].includes(input.status)) ||
+                          input.status === "cancelled";
           if (!allowed) throw new Error("Permissão negada");
         }
         // Financeiro pode: finance_review->commission_paid, finance_review->cancelled
