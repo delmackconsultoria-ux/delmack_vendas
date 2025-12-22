@@ -105,7 +105,8 @@ export default function ProposalManagement() {
       return [];
     }
     if (user?.role === "manager") {
-      if (currentStatus === "sale") return ["manager_review"];
+      if (currentStatus === "draft") return ["sale", "cancelled"];
+      if (currentStatus === "sale") return ["manager_review", "cancelled"];
       if (currentStatus === "manager_review") return ["finance_review", "cancelled"];
       return [];
     }

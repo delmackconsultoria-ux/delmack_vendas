@@ -481,9 +481,10 @@ export const salesRouter = router({
                           (currentStatus === "sale" && input.status === "cancelled");
           if (!allowed) throw new Error("Permissão negada");
         }
-        // Gerente pode: sale->manager_review, manager_review->finance_review, manager_review->cancelled
+        // Gerente pode: draft->sale, sale->manager_review, manager_review->finance_review, *->cancelled
         else if (ctx.user.role === "manager") {
-          const allowed = (currentStatus === "sale" && input.status === "manager_review") ||
+          const allowed = (currentStatus === "draft" && ["sale", "cancelled"].includes(input.status)) ||
+                          (currentStatus === "sale" && ["manager_review", "cancelled"].includes(input.status)) ||
                           (currentStatus === "manager_review" && ["finance_review", "cancelled"].includes(input.status));
           if (!allowed) throw new Error("Permissão negada");
         }
