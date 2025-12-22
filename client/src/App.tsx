@@ -75,6 +75,7 @@ function Router() {
           {user.role === "broker" && (
             <>
               <Route path="/proposals/new" component={NewProposal} />
+              <Route path="/proposals/edit/:id" component={NewProposal} />
               <Route path="/proposals/:id" component={ProposalDetail} />
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
@@ -101,6 +102,8 @@ function Router() {
           {user.role === "manager" && (
             <>
               <Route path="/proposals/new" component={NewProposal} />
+              <Route path="/proposals/edit/:id" component={NewProposal} />
+              <Route path="/proposals/:id" component={ProposalDetail} />
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />

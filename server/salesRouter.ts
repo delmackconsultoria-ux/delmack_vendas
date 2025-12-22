@@ -390,6 +390,38 @@ export const salesRouter = router({
       return { ...sale, property: prop[0] || null };
     }),
 
+  updateSale: protectedProcedure
+    .input(z.object({
+      saleId: z.string(),
+      buyerName: z.string().optional(),
+      buyerCpfCnpj: z.string().optional(),
+      buyerPhone: z.string().optional(),
+      sellerName: z.string().optional(),
+      sellerCpfCnpj: z.string().optional(),
+      sellerPhone: z.string().optional(),
+      saleValue: z.string().optional(),
+      saleDate: z.date().optional(),
+      businessType: z.string().optional(),
+      observation: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      
+      const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
+      if (!sale.length) throw new Error("Venda não encontrada");
+      
+      // Apenas rascunhos podem ser editados por corretor
+      if (ctx.user.role === "broker" && sale[0].status !== "draft") {
+        throw new Error("Apenas rascunhos podem ser editados");
+      }
+      
+      const { saleId, ...updateData } = input;
+      await db.update(sales).set({ ...updateData, updatedAt: new Date() }).where(eq(sales.id, saleId));
+      
+      return { success: true, message: "Proposta atualizada" };
+    }),
+
   listMySales: protectedProcedure.query(async ({ ctx }) => {
     try {
       const db = await getDb();

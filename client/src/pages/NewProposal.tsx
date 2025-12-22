@@ -152,8 +152,19 @@ interface CompletionStatus {
 
 export default function NewProposal() {
   const { user } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [brokers, setBrokers] = useState<Broker[]>([]);
+  
+  // Verificar se é modo de edição
+  const editMatch = location.match(/\/proposals\/edit\/(.+)/);
+  const editId = editMatch ? editMatch[1] : null;
+  const isEditMode = !!editId;
+  
+  // Buscar dados da proposta para edição
+  const { data: existingSale } = trpc.sales.getSaleById.useQuery(
+    { saleId: editId || "" },
+    { enabled: isEditMode }
+  );
 
   const [formData, setFormData] = useState<FormData>({
     propertyType: "baggio",
@@ -325,6 +336,36 @@ export default function NewProposal() {
       setBrokers(brokersList);
     }
   }, [brokersList]);
+
+  // Carregar dados existentes em modo de edição
+  useEffect(() => {
+    if (isEditMode && existingSale) {
+      setFormData(prev => ({
+        ...prev,
+        propertyAddress: existingSale.property?.address || "",
+        propertyNeighborhood: existingSale.property?.neighborhood || "",
+        propertyCity: existingSale.property?.city || "",
+        propertyState: existingSale.property?.state || "",
+        propertyZipCode: existingSale.property?.zipCode || "",
+        typeOfProperty: (existingSale as any).typeOfProperty || "",
+        bedrooms: existingSale.bedrooms?.toString() || "",
+        privateArea: existingSale.privateArea?.toString() || "",
+        totalArea: existingSale.totalArea?.toString() || "",
+        saleDate: existingSale.saleDate ? new Date(existingSale.saleDate).toISOString().split('T')[0] : "",
+        saleValue: existingSale.saleValue?.toString() || "",
+        buyerName: existingSale.buyerName || "",
+        buyerCpfCnpj: existingSale.buyerCpfCnpj || "",
+        buyerPhone: existingSale.buyerPhone || "",
+        sellerName: existingSale.sellerName || "",
+        sellerCpfCnpj: existingSale.sellerCpfCnpj || "",
+        sellerPhone: existingSale.sellerPhone || "",
+        businessType: existingSale.businessType || "",
+        brokerAngariador: existingSale.brokerAngariador || "",
+        brokerVendedor: existingSale.brokerVendedor || "",
+        observations: existingSale.observation || "",
+      }));
+    }
+  }, [isEditMode, existingSale]);
 
   // Initialize completionStatus on mount and when formData changes
   useEffect(() => {
@@ -889,11 +930,11 @@ export default function NewProposal() {
       
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Título da Página */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900">Nova Proposta</h1>
-            <p className="text-slate-600 mt-2">Preencha os campos para registrar uma nova proposta de venda</p>
-          </div>
+{/* Título da Página */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-slate-900">{isEditMode ? "Editar Proposta" : "Nova Proposta"}</h1>
+              <p className="text-slate-600 mt-2">{isEditMode ? "Atualize os dados da proposta" : "Preencha os campos para registrar uma nova proposta de venda"}</p>
+            </div>
 
           {/* Form */}
           <div className="space-y-6">

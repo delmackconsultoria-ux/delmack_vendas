@@ -292,15 +292,20 @@ export default function ProposalManagement() {
                             <Eye className="h-4 w-4 mr-1" />
                             Ver
                           </Button>
-                          {(user?.role === "manager" || user?.role === "finance" || (user?.role === "broker" && sale.status === "draft")) && (
+                          {(sale.status === "draft" || (user?.role === "manager" && ["draft", "sale"].includes(sale.status))) && (
+                            <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/edit/${sale.id}`)}>
+                              <Edit className="h-4 w-4 mr-1" />
+                              Editar
+                            </Button>
+                          )}
+                          {getNextStatuses(sale.status).length > 0 && (
                             <Button 
-                              variant="outline" 
+                              variant="default" 
                               size="sm"
                               onClick={() => setStatusDialog({ open: true, saleId: sale.id, currentStatus: sale.status })}
-                              disabled={getNextStatuses(sale.status).length === 0}
                             >
-                              <Edit className="h-4 w-4 mr-1" />
-                              Status
+                              <MessageSquare className="h-4 w-4 mr-1" />
+                              Alterar Status
                             </Button>
                           )}
                         </div>
