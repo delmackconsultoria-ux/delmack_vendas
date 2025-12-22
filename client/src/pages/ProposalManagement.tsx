@@ -103,11 +103,13 @@ export default function ProposalManagement() {
     // Fluxo: draft -> sale -> manager_review -> finance_review -> commission_paid
     if (user?.role === "broker") {
       if (currentStatus === "draft") return ["sale", "cancelled"];
+      if (currentStatus === "pending") return ["sale", "cancelled"];
       if (currentStatus === "sale") return ["cancelled"];
       return [];
     }
     if (user?.role === "manager") {
       if (currentStatus === "draft") return ["sale", "cancelled"];
+      if (currentStatus === "pending") return ["sale", "cancelled"];
       if (currentStatus === "sale") return ["manager_review", "cancelled"];
       if (currentStatus === "manager_review") return ["finance_review", "cancelled"];
       return [];
@@ -292,7 +294,7 @@ export default function ProposalManagement() {
                             <Eye className="h-4 w-4 mr-1" />
                             Ver
                           </Button>
-                          {(sale.status === "draft" || (user?.role === "manager" && ["draft", "sale"].includes(sale.status))) && (
+                          {(["draft", "pending"].includes(sale.status) || (user?.role === "manager" && ["draft", "pending", "sale"].includes(sale.status))) && (
                             <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/edit/${sale.id}`)}>
                               <Edit className="h-4 w-4 mr-1" />
                               Editar
