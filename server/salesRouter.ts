@@ -240,7 +240,7 @@ export const salesRouter = router({
           brokerAngariador: input.brokerAngariador,
           brokerVendedor: input.brokerVendedor,
           businessType: input.businessType,
-          status: "pending",
+          status: input.status || "pending",
           observation: input.observations || null,
           proposalDocumentUrl: null,
           // Novos campos do documento Word
