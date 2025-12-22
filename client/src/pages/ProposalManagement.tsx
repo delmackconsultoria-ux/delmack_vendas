@@ -78,9 +78,11 @@ export default function ProposalManagement() {
       const matchesSearch = searchTerm === "" || 
         sale.buyerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         sale.propertyId?.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSearch;
+      const matchesStatus = statusFilter === "all" || sale.status === statusFilter;
+      const matchesBroker = brokerFilter === "all" || sale.brokerVendedor === brokerFilter;
+      return matchesSearch && matchesStatus && matchesBroker;
     });
-  }, [salesData, searchTerm]);
+  }, [salesData, searchTerm, statusFilter, brokerFilter]);
 
   const formatCurrency = (value: number | string | null) => {
     if (!value) return "R$ 0,00";

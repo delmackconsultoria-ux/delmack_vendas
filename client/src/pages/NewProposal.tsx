@@ -338,8 +338,6 @@ export default function NewProposal() {
       "totalArea",
       "propertyAddress",
       "saleDate",
-      "storeAngariador",
-      "storeVendedor",
       "brokerAngariador",
       "brokerVendedor",
       "businessType",
@@ -431,8 +429,6 @@ export default function NewProposal() {
     "privateArea",
     "totalArea",
     "saleDate",
-    "storeAngariador",
-    "storeVendedor",
     "brokerAngariador",
     "brokerVendedor",
   ];
@@ -947,7 +943,7 @@ export default function NewProposal() {
                   <div>
                     <Label>Tipo do Imóvel *</Label>
                     <Select value={formData.typeOfProperty} onValueChange={(value) => handleInputChange("typeOfProperty", value)}>
-                      <SelectTrigger className={completionStatus.typeOfProperty ? "bg-green-50 border-green-300" : ""}>
+                      <SelectTrigger className={completionStatus.typeOfProperty ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.typeOfProperty ? "bg-red-50 border-red-400" : ""}>
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -966,7 +962,7 @@ export default function NewProposal() {
                       placeholder="Ex: 3"
                       value={formData.bedrooms}
                       onChange={(e) => handleInputChange("bedrooms", e.target.value)}
-                      className={completionStatus.bedrooms ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.bedrooms ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.bedrooms ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
@@ -976,7 +972,7 @@ export default function NewProposal() {
                       placeholder="Ex: 120.50"
                       value={formData.privateArea}
                       onChange={(e) => handleInputChange("privateArea", e.target.value)}
-                      className={completionStatus.privateArea ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.privateArea ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.privateArea ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
@@ -986,7 +982,7 @@ export default function NewProposal() {
                       placeholder="Ex: 150.00"
                       value={formData.totalArea}
                       onChange={(e) => handleInputChange("totalArea", e.target.value)}
-                      className={completionStatus.totalArea ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.totalArea ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.totalArea ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
@@ -1171,7 +1167,7 @@ export default function NewProposal() {
                       placeholder="Nome completo"
                       value={formData.sellerName}
                       onChange={(e) => handleInputChange("sellerName", e.target.value)}
-                      className={completionStatus.sellerName ? "bg-green-50 border-green-300" : ""}
+                      className={completionStatus.sellerName ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sellerName ? "bg-red-50 border-red-400" : ""}
                     />
                   </div>
                   <div>
