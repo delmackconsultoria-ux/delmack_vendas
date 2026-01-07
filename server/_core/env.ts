@@ -7,4 +7,11 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  // SMTP Email Configuration
+  smtpHost: process.env.SMTP_HOST ?? "email-ssl.com.br",
+  smtpPort: parseInt(process.env.SMTP_PORT ?? "465"),
+  smtpUser: process.env.SMTP_USER ?? "",
+  smtpPass: process.env.SMTP_PASS ?? "",
+  smtpFromName: process.env.SMTP_FROM_NAME ?? "Delmack - Sistema de Vendas",
+  frontendUrl: process.env.FRONTEND_URL ?? "https://delmack.manus.space",
 };

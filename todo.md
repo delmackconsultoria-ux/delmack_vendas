@@ -561,3 +561,33 @@
 - [x] Corretores - "Nenhum corretor encontrado"
 - [x] Relatórios - "Nenhum dado disponível"
 - [x] Aprovação - "Nenhuma venda encontrada"
+
+
+## 🆕 Sistema de Email e Calendário de Comissões (22/12/2025)
+
+- [ ] Instalar nodemailer
+- [ ] Criar serviço de email (server/_core/emailService.ts)
+- [ ] Adicionar variáveis de ambiente SMTP (email-ssl.com.br:465)
+- [ ] Enviar email ao criar nova proposta
+- [ ] Enviar email ao alterar status de proposta
+- [ ] Criar página de calendário de comissões para financeiro
+- [ ] Adicionar rota de calendário no App.tsx
+- [ ] Preparar documentação de deploy para servidor próprio
+- [ ] Criar script de deploy automático (deploy.sh)
+- [ ] Criar arquivo docker-compose.yml
+
+
+## 🆕 Alterações Solicitadas (22/12/2025)
+
+- [ ] Renomear "Proposta" para "Venda" em todo o sistema
+- [x] Adicionar campo "Responsável" (Lucas/Camila) no schema
+- [ ] Lucas responsável por vendas de lançamento
+- [ ] Camila responsável por vendas de prontos
+- [ ] Relatório de vendas por responsável
+- [x] Adicionar campo "Número da NF" no schema
+- [ ] Adicionar campo "Número da NF" no formulário
+- [ ] Integrar baixas de angariação da API Properfy com motivos
+- [x] Criar tabela de metas (goals) no schema
+- [ ] Implementar meta do time: R$ 15 milhões/mês (configurável)
+- [ ] Implementar meta individual: VGV / (corretor + angariador)
+- [ ] Dashboard com progresso de metas

@@ -145,6 +145,10 @@ export const sales = mysqlTable("sales", {
   vendedorCommission: decimal("vendedorCommission", { precision: 15, scale: 2 }), // Comissão Corretor Vendedor
   baggioCommission: decimal("baggioCommission", { precision: 15, scale: 2 }), // Comissão Baggio
   expectedPaymentDate: timestamp("expectedPaymentDate"), // Previsão de Recebimento
+  // Tipo de Venda e Responsável
+  saleType: mysqlEnum("saleType", ["lancamento", "pronto"]),
+  responsible: varchar("responsible", { length: 255 }), // Lucas ou Camila
+  invoiceNumber: varchar("invoiceNumber", { length: 100 }), // Número da NF
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
@@ -268,6 +272,22 @@ export const proposals = mysqlTable("proposals", {
 
 export type Proposal = typeof proposals.$inferSelect;
 export type InsertProposal = typeof proposals.$inferInsert;
+
+/**
+ * Goals/Metas
+ */
+export const goals = mysqlTable("goals", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  year: int("year").notNull(), // Ano da meta
+  month: int("month").notNull(), // Mês da meta (1-12)
+  teamGoal: decimal("teamGoal", { precision: 15, scale: 2 }).notNull(), // Meta do time em R$
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type Goal = typeof goals.$inferSelect;
+export type InsertGoal = typeof goals.$inferInsert;
 
 /**
  * Commission History/Histórico de Comissões
