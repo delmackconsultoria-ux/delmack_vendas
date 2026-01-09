@@ -36,10 +36,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Nova Proposta", path: "/proposals/new", roles: ["broker", "manager", "admin"] },
-  { label: "Propostas", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
+  { label: "Nova Venda", path: "/proposals/new", roles: ["broker", "manager", "admin"] },
+  { label: "Vendas", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
   { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Corretores", path: "/brokers", roles: ["manager"] },
+  { label: "Metas", path: "/goals", roles: ["manager"] },
   
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },

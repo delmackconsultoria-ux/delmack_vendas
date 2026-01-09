@@ -563,7 +563,7 @@ export default function NewProposal() {
     }
   };
 
-  // Enviar Proposta - valida campos e mostra prévia
+  // Enviar Venda - valida campos e mostra prévia
   const handleSubmitProposal = async () => {
     // Marcar que tentou enviar para destacar campos vazios em vermelho
     setAttemptedSave(true);
@@ -718,7 +718,7 @@ export default function NewProposal() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="h-6 w-6 text-green-600" />
-                Resumo da Proposta
+                Resumo da Venda
               </CardTitle>
               <CardDescription>Revise os dados antes de confirmar</CardDescription>
             </CardHeader>
@@ -945,8 +945,8 @@ export default function NewProposal() {
         <div className="max-w-4xl mx-auto">
 {/* Título da Página */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-slate-900">{isEditMode ? "Editar Proposta" : "Nova Proposta"}</h1>
-              <p className="text-slate-600 mt-2">{isEditMode ? "Atualize os dados da proposta" : "Preencha os campos para registrar uma nova proposta de venda"}</p>
+              <h1 className="text-3xl font-bold text-slate-900">{isEditMode ? "Editar Venda" : "Nova Venda"}</h1>
+              <p className="text-slate-600 mt-2">{isEditMode ? "Atualize os dados da venda" : "Preencha os campos para registrar uma nova venda"}</p>
             </div>
 
           {/* Form */}
@@ -1256,12 +1256,12 @@ export default function NewProposal() {
             {/* Sale Info Section */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Informações da Proposta</CardTitle>
+                <CardTitle className="text-lg">Informações da Venda</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Data da Proposta *</Label>
+                    <Label>Data da Venda *</Label>
                     <Input
                       type="date"
                       value={formData.saleDate}
@@ -1668,7 +1668,7 @@ export default function NewProposal() {
             {/* Upload de Proposta */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Anexo da Proposta de Compra</CardTitle>
+                <CardTitle className="text-lg">Anexo da Venda</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
@@ -1728,7 +1728,7 @@ export default function NewProposal() {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2 disabled:opacity-50"
               >
                 <CheckCircle className="h-4 w-4" />
-                Enviar Proposta
+                Enviar Venda
               </button>
             </div>
           </div>

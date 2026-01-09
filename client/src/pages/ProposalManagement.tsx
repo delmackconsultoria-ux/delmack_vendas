@@ -131,14 +131,14 @@ export default function ProposalManagement() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Gerenciamento de Propostas</h1>
+              <h1 className="text-xl font-bold text-slate-900">Gerenciamento de Vendas</h1>
               <p className="text-sm text-slate-500">
-                {user?.role === "broker" ? "Suas propostas" : "Todas as propostas"}
+                {user?.role === "broker" ? "Suas vendas" : "Todas as vendas"}
               </p>
             </div>
             <Button onClick={() => setLocation("/proposals/new")} className="bg-slate-900 hover:bg-slate-800">
               <Plus className="h-4 w-4 mr-2" />
-              Nova Proposta
+              Nova Venda
             </Button>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function ProposalManagement() {
                 <FileText className="h-5 w-5 text-slate-500" />
                 <div>
                   <p className="text-2xl font-bold">{metrics.total}</p>
-                  <p className="text-xs text-slate-500">Total Propostas</p>
+                  <p className="text-xs text-slate-500">Total Vendas</p>
                 </div>
               </div>
             </CardContent>
@@ -251,7 +251,7 @@ export default function ProposalManagement() {
         {/* Lista de Propostas */}
         <Card>
           <CardHeader>
-            <CardTitle>Propostas ({filteredSales.length})</CardTitle>
+            <CardTitle>Vendas ({filteredSales.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -327,7 +327,7 @@ export default function ProposalManagement() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
-              Alterar Status da Proposta
+              Alterar Status da Venda
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">

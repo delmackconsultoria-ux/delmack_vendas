@@ -21,6 +21,7 @@ import Ranking from "./pages/Ranking";
 import SalesApproval from "./pages/SalesApproval";
 import DocumentUpload from "./pages/DocumentUpload";
 import GoalsManagement from "./pages/GoalsManagement";
+import GoalsConfig from "./pages/GoalsConfig";
 import CompanyManagement from "./pages/CompanyManagement";
 import Analytics from "./pages/Analytics";
 
@@ -108,6 +109,7 @@ function Router() {
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/brokers" component={BrokerManagement} />
+              <Route path="/goals" component={GoalsConfig} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />

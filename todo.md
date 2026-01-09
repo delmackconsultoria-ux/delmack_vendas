@@ -591,3 +591,17 @@
 - [ ] Implementar meta do time: R$ 15 milhões/mês (configurável)
 - [ ] Implementar meta individual: VGV / (corretor + angariador)
 - [ ] Dashboard com progresso de metas
+
+
+## 🆕 Continuação - Renomear e Novas Funcionalidades
+
+- [x] Renomear "Nova Proposta" para "Nova Venda" em menus
+- [x] Renomear "Propostas" para "Vendas" em menus
+- [x] Renomear "Gerenciar Propostas" para "Gerenciar Vendas"
+- [x] Atualizar títulos de páginas
+- [x] Atualizar mensagens de sucesso/erro
+- [x] Criar página de configuração de metas (gerente)
+- [x] Adicionar menu "Metas" para gerente
+- [ ] Integrar baixas de angariação da API Properfy
+- [ ] Criar relatório de vendas por responsável (Lucas/Camila)
+- [ ] Adicionar VGV total e VGV por imóvel nos relatórios
