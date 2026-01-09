@@ -43,6 +43,9 @@ const createSaleSchema = z.object({
   angariationDate: z.string().datetime().optional(),
   saleValue: z.number().optional(),
   expectedPaymentDate: z.string().datetime().optional(),
+  saleType: z.enum(["lancamento", "pronto"]).optional(),
+  responsible: z.string().optional(),
+  invoiceNumber: z.string().optional(),
 
   // Buyer Information
   buyerName: z.string().optional(),
@@ -275,6 +278,9 @@ export const salesRouter = router({
           cartoryBank: input.cartoryBank || null,
           despachante: input.despachante || null,
           investmentType: input.investmentType || null,
+          saleType: input.saleType || null,
+          responsible: input.responsible || null,
+          invoiceNumber: input.invoiceNumber || null,
         });
 
         // Criar comissões automaticamente para angariador e vendedor

@@ -96,6 +96,9 @@ interface FormData {
   angariationDate: string;
   saleValue: string;
   expectedPaymentDate: string;
+  saleType: string; // Lançamento ou Pronto
+  responsible: string; // Lucas ou Camila (automático)
+  invoiceNumber: string; // Número da NF
 
   // Buyer Info
   buyerName: string;
@@ -190,6 +193,9 @@ export default function NewProposal() {
     angariationDate: "",
     saleValue: "",
     expectedPaymentDate: "",
+    saleType: "",
+    responsible: "",
+    invoiceNumber: "",
 
     buyerName: "",
     buyerCpfCnpj: "",
@@ -384,6 +390,8 @@ export default function NewProposal() {
       "businessType",
       "buyerCpfCnpj",
       "sellerCpfCnpj",
+      "saleType",
+      "invoiceNumber",
     ];
     const newCompletionStatus: CompletionStatus = {};
     requiredFieldsToCheck.forEach((field) => {
@@ -472,6 +480,8 @@ export default function NewProposal() {
     "saleDate",
     "brokerAngariador",
     "brokerVendedor",
+    "saleType",
+    "invoiceNumber",
   ];
 
   const isFormComplete = requiredFields.every((field) => completionStatus[field]);
@@ -643,6 +653,9 @@ export default function NewProposal() {
         totalArea: formData.totalArea ? parseFloat(formData.totalArea) : undefined,
         costPerM2: formData.costPerM2 ? parseFloat(formData.costPerM2) : undefined,
         propertyAge: formData.propertyAge ? parseInt(formData.propertyAge) : undefined,
+        saleType: formData.saleType as "lancamento" | "pronto" | undefined,
+        responsible: formData.responsible,
+        invoiceNumber: formData.invoiceNumber,
       };
 
       const result = await createSaleMutation.mutateAsync(payload);
@@ -1329,6 +1342,46 @@ export default function NewProposal() {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div>
+                    <Label>Tipo de Venda *</Label>
+                    <Select 
+                      value={formData.saleType} 
+                      onValueChange={(value) => {
+                        handleInputChange("saleType", value);
+                        // Atribuir responsável automaticamente
+                        const responsible = value === "lancamento" ? "Lucas" : value === "pronto" ? "Camila" : "";
+                        handleInputChange("responsible", responsible);
+                      }}
+                    >
+                      <SelectTrigger className={completionStatus.saleType ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.saleType ? "bg-red-50 border-red-400" : ""}>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="lancamento">Lançamento</SelectItem>
+                        <SelectItem value="pronto">Pronto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-slate-500 mt-1">Lançamento: Lucas | Pronto: Camila</p>
+                  </div>
+                  <div>
+                    <Label>Responsável</Label>
+                    <Input
+                      value={formData.responsible}
+                      disabled
+                      className="bg-slate-100"
+                      placeholder="Selecionado automaticamente"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Atribuído automaticamente pelo tipo de venda</p>
+                  </div>
+                  <div>
+                    <Label>Número da Nota Fiscal *</Label>
+                    <Input
+                      placeholder="Ex: NF-2025-001"
+                      value={formData.invoiceNumber}
+                      onChange={(e) => handleInputChange("invoiceNumber", e.target.value)}
+                      className={completionStatus.invoiceNumber ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.invoiceNumber ? "bg-red-50 border-red-400" : ""}
+                    />
                   </div>
                 </div>
               </CardContent>
