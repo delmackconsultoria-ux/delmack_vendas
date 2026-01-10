@@ -673,5 +673,83 @@ export const salesRouter = router({
       throw new Error("Erro ao obter resumo de comissões");
     }
   }),
+
+  /**
+   * Obter vendas por responsável (Lucas/Camila)
+   */
+  getSalesByResponsible: protectedProcedure
+    .input(
+      z.object({
+        year: z.number().int(),
+        month: z.number().int().min(1).max(12).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        const { user } = ctx;
+        if (!user.companyId) {
+          throw new Error("Usuário não está vinculado a uma empresa");
+        }
+
+        // Construir filtro de data
+        let dateFilter = `YEAR(saleDate) = ${input.year}`;
+        if (input.month) {
+          dateFilter += ` AND MONTH(saleDate) = ${input.month}`;
+        }
+
+        // Buscar vendas de Lucas (Lançamento)
+        const lucasQuery = `
+          SELECT 
+            COUNT(*) as quantity,
+            COALESCE(SUM(saleValue), 0) as totalVGV
+          FROM sales
+          WHERE companyId = ? 
+            AND ${dateFilter}
+            AND saleType = 'lancamento'
+            AND responsible = 'Lucas'
+            AND status != 'cancelled'
+        `;
+
+        // Buscar vendas de Camila (Pronto)
+        const camilaQuery = `
+          SELECT 
+            COUNT(*) as quantity,
+            COALESCE(SUM(saleValue), 0) as totalVGV
+          FROM sales
+          WHERE companyId = ? 
+            AND ${dateFilter}
+            AND saleType = 'pronto'
+            AND responsible = 'Camila'
+            AND status != 'cancelled'
+        `;
+
+        const lucasResult: any = await db.execute(lucasQuery);
+        const camilaResult: any = await db.execute(camilaQuery);
+
+        const lucasData = (lucasResult as any)[0] || { quantity: 0, totalVGV: 0 };
+        const camilaData = (camilaResult as any)[0] || { quantity: 0, totalVGV: 0 };
+
+        return {
+          lucas: {
+            quantity: parseInt(lucasData.quantity) || 0,
+            totalVGV: parseFloat(lucasData.totalVGV) || 0,
+          },
+          camila: {
+            quantity: parseInt(camilaData.quantity) || 0,
+            totalVGV: parseFloat(camilaData.totalVGV) || 0,
+          },
+          total: {
+            quantity: (parseInt(lucasData.quantity) || 0) + (parseInt(camilaData.quantity) || 0),
+            totalVGV: (parseFloat(lucasData.totalVGV) || 0) + (parseFloat(camilaData.totalVGV) || 0),
+          },
+        };
+      } catch (error) {
+        console.error("[Sales Router] Erro ao obter vendas por responsável:", error);
+        throw new Error("Erro ao obter vendas por responsável");
+      }
+    }),
 });
 

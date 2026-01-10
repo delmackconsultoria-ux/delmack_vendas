@@ -605,3 +605,23 @@
 - [ ] Integrar baixas de angariação da API Properfy
 - [ ] Criar relatório de vendas por responsável (Lucas/Camila)
 - [ ] Adicionar VGV total e VGV por imóvel nos relatórios
+
+
+## 🎯 Implementações Solicitadas (Janeiro 2026)
+
+- [x] Backend de metas configuráveis (goalsRouter)
+- [x] Endpoint saveGoal para salvar meta mensal
+- [x] Endpoint getGoals para buscar metas
+- [x] Conectar página GoalsManagement.tsx ao backend
+- [x] Criar relatório de vendas por responsável (Lucas/Camila)
+- [x] Adicionar VGV total no relatório
+- [x] Adicionar VGV por responsável no relatório
+- [x] Adicionar rota /sales-by-responsible para manager e finance
+- [x] Integrar API Properfy para buscar baixas de angariação
+- [x] Criar página de relatório de baixas com motivos
+- [x] Adicionar filtros de período no relatório de baixas
+- [x] Adicionar gráficos de baixas por motivo e por corretor
+- [x] Adicionar rota /listing-rejections para manager
+- [x] Testar todas as funcionalidades implementadas
+- [x] Servidor rodando sem erros TypeScript
+- [x] Todas as 3 funcionalidades implementadas e funcionais

@@ -15,6 +15,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import { createProperfyService } from "./properfy";
 import { TRPCError } from "@trpc/server";
+import { getListingRejections } from "./services/properfyService";
 
 export const properfyRouter = router({
   /**
@@ -248,5 +249,38 @@ export const properfyRouter = router({
       };
     }
   }),
+
+  /**
+   * Buscar baixas de angariação (listing rejections)
+   * Retorna lista de imóveis recusados com motivos
+   */
+  getListingRejections: protectedProcedure
+    .input(
+      z.object({
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        brokerName: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        console.log(`[Properfy] Usuário ${ctx.user?.email} buscando baixas de angariação`);
+
+        const result = await getListingRejections(
+          input.startDate,
+          input.endDate,
+          input.brokerName
+        );
+
+        return result;
+      } catch (error) {
+        console.error("[Properfy Router] Erro ao buscar baixas:", error);
+        
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Erro ao buscar baixas de angariação",
+        });
+      }
+    }),
 });
 

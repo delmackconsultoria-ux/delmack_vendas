@@ -32,6 +32,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import SuperAdminUsers from "./pages/SuperAdminUsers";
 import Profile from "./pages/Profile";
+import SalesByResponsible from "./pages/SalesByResponsible";
+import ListingRejections from "./pages/ListingRejections";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -96,32 +98,30 @@ function Router() {
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
+              <Route path="/sales-by-responsible" component={SalesByResponsible} />
               <Route path="/dashboard" component={DashboardFinance} />
               <Route path="/" component={DashboardFinance} />
             </>
           )}
+
           {user.role === "manager" && (
             <>
+              <Route path="/" component={DashboardManager} />
+              <Route path="/dashboard" component={DashboardManager} />
               <Route path="/proposals/new" component={NewProposal} />
               <Route path="/proposals/edit/:id" component={NewProposal} />
               <Route path="/proposals/:id" component={ProposalDetail} />
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
-              <Route path="/brokers" component={BrokerManagement} />
-              <Route path="/goals" component={GoalsConfig} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/dashboard" component={DashboardManager} />
-              <Route path="/" component={DashboardManager} />
-            </>
-          )}
-          {user.role === "admin" && (
-            <>
-              <Route path="/companies" component={CompanyManagement} />
-              <Route path="/dashboard" component={Dashboard} />
-              <Route path="/" component={Dashboard} />
+              <Route path="/goals" component={GoalsManagement} />
+              <Route path="/brokers" component={BrokerManagement} />
+              <Route path="/analytics" component={Analytics} />
+              <Route path="/sales-by-responsible" component={SalesByResponsible} />
+              <Route path="/listing-rejections" component={ListingRejections} />
             </>
           )}
           {user.role === "viewer" && (
