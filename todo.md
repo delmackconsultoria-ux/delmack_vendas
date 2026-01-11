@@ -655,3 +655,20 @@
 - [x] Servidor rodando sem erros TypeScript
 - [x] Dashboard de metas funcional
 - [x] Sistema de notificações implementado
+
+
+## 📚 Página de Tutoriais por Perfil
+
+- [x] Criar estrutura de dados de tutoriais por perfil
+- [x] Tutoriais para Corretor (Broker) - 3 tutoriais
+- [x] Tutoriais para Gerente (Manager) - 6 tutoriais
+- [x] Tutoriais para Financeiro (Finance) - 2 tutoriais
+- [x] Tutoriais para Admin - 3 tutoriais
+- [x] Tutoriais Gerais - 3 tutoriais
+- [x] Criar página Tutorials.tsx com navegação por perfil
+- [x] Adicionar componentes de tutorial (cards, steps)
+- [x] Adicionar busca/filtro de tutoriais
+- [x] Filtro por categoria
+- [x] Visualização detalhada passo a passo
+- [x] Adicionar rota /tutorials para todos os perfis
+- [x] Total de 17 tutoriais completos
