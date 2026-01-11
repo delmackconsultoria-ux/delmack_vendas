@@ -34,6 +34,8 @@ import SuperAdminUsers from "./pages/SuperAdminUsers";
 import Profile from "./pages/Profile";
 import SalesByResponsible from "./pages/SalesByResponsible";
 import ListingRejections from "./pages/ListingRejections";
+import GoalsDashboard from "./pages/GoalsDashboard";
+import GoalNotifications from "./pages/GoalNotifications";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -99,6 +101,8 @@ function Router() {
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/sales-by-responsible" component={SalesByResponsible} />
+              <Route path="/goals-dashboard" component={GoalsDashboard} />
+              <Route path="/goal-notifications" component={GoalNotifications} />
               <Route path="/dashboard" component={DashboardFinance} />
               <Route path="/" component={DashboardFinance} />
             </>
@@ -118,6 +122,8 @@ function Router() {
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/goals" component={GoalsManagement} />
+              <Route path="/goals-dashboard" component={GoalsDashboard} />
+              <Route path="/goal-notifications" component={GoalNotifications} />
               <Route path="/brokers" component={BrokerManagement} />
               <Route path="/analytics" component={Analytics} />
               <Route path="/sales-by-responsible" component={SalesByResponsible} />

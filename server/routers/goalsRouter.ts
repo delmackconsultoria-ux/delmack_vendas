@@ -166,4 +166,96 @@ export const goalsRouter = router({
         teamGoal: parseFloat(goal.teamGoal),
       }));
     }),
+
+  /**
+   * Obter progresso da meta do mês atual
+   */
+  getGoalProgress: protectedProcedure
+    .input(
+      z.object({
+        year: z.number().int().optional(),
+        month: z.number().int().min(1).max(12).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const { user } = ctx;
+      if (!user.companyId) {
+        throw new Error("Usuário não está vinculado a uma empresa");
+      }
+
+      // Usar mês/ano atual se não especificado
+      const now = new Date();
+      const targetYear = input.year || now.getFullYear();
+      const targetMonth = input.month || now.getMonth() + 1;
+
+      // Buscar meta do mês
+      const goalResult = await db
+        .select()
+        .from(goals)
+        .where(
+          and(
+            eq(goals.companyId, user.companyId),
+            eq(goals.year, targetYear),
+            eq(goals.month, targetMonth)
+          )
+        )
+        .limit(1);
+
+      const goalValue = goalResult.length > 0 
+        ? parseFloat(goalResult[0].teamGoal)
+        : 15000000; // Meta padrão R$ 15 milhões
+
+      // Calcular VGV acumulado do mês
+      const vgvQuery = `
+        SELECT COALESCE(SUM(saleValue), 0) as totalVGV
+        FROM sales
+        WHERE companyId = ?
+          AND YEAR(saleDate) = ?
+          AND MONTH(saleDate) = ?
+          AND status != 'cancelled'
+          AND status != 'draft'
+      `;
+
+      const vgvResult: any = await db.execute(vgvQuery);
+      const vgvAccumulated = parseFloat((vgvResult[0] as any)[0]?.totalVGV || 0);
+
+      // Calcular % atingida
+      const percentageAchieved = (vgvAccumulated / goalValue) * 100;
+
+      // Calcular dias do mês
+      const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
+      const currentDay = targetYear === now.getFullYear() && targetMonth === now.getMonth() + 1
+        ? now.getDate()
+        : daysInMonth;
+      const daysRemaining = daysInMonth - currentDay;
+
+      // Calcular progresso esperado (proporcional aos dias decorridos)
+      const expectedProgress = (currentDay / daysInMonth) * 100;
+      const isOnTrack = percentageAchieved >= expectedProgress;
+
+      // Calcular projeção de fechamento
+      const dailyAverage = currentDay > 0 ? vgvAccumulated / currentDay : 0;
+      const projectedTotal = dailyAverage * daysInMonth;
+      const projectedPercentage = (projectedTotal / goalValue) * 100;
+
+      return {
+        year: targetYear,
+        month: targetMonth,
+        goal: goalValue,
+        vgvAccumulated,
+        percentageAchieved,
+        daysInMonth,
+        currentDay,
+        daysRemaining,
+        expectedProgress,
+        isOnTrack,
+        dailyAverage,
+        projectedTotal,
+        projectedPercentage,
+        remaining: goalValue - vgvAccumulated,
+      };
+    }),
 });

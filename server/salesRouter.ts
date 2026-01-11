@@ -14,6 +14,7 @@ import { calculateCommission } from "./commissionService";
 import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch } from "./services/properfyService";
 import { storagePut, storageGet } from "./storage";
 import { logSaleCreation, getSaleHistory } from "./salesHistoryService";
+import { checkAndNotifyGoalProgress, calculateGoalProgress } from "./services/goalNotificationService";
 
 // Zod schema para validação de entrada
 const createSaleSchema = z.object({
@@ -359,6 +360,16 @@ export const salesRouter = router({
           }
         } catch (notifyError) {
           console.error("[Sales Router] Erro ao enviar notificação:", notifyError);
+        }
+
+        // Verificar progresso de meta e enviar notificações automáticas
+        try {
+          const progress = await calculateGoalProgress(ctx.user.companyId || "1");
+          if (progress) {
+            await checkAndNotifyGoalProgress(ctx.user.companyId || "1", progress);
+          }
+        } catch (goalNotifyError) {
+          console.error("[Sales Router] Erro ao verificar notificações de meta:", goalNotifyError);
         }
 
         return {
@@ -751,5 +762,36 @@ export const salesRouter = router({
         throw new Error("Erro ao obter vendas por responsável");
       }
     }),
+
+  /**
+   * Verificar e enviar notificações de progresso de meta
+   * Chamado após cada venda registrada
+   */
+  checkGoalNotifications: protectedProcedure.mutation(async ({ ctx }) => {
+    try {
+      const { user } = ctx;
+      if (!user.companyId) {
+        return { success: false, message: "Usuário não vinculado a empresa" };
+      }
+
+      // Calcular progresso atual
+      const progress = await calculateGoalProgress(user.companyId);
+      if (!progress) {
+        return { success: false, message: "Não foi possível calcular progresso" };
+      }
+
+      // Verificar e enviar notificações
+      await checkAndNotifyGoalProgress(user.companyId, progress);
+
+      return { 
+        success: true, 
+        message: "Notificações verificadas",
+        progress 
+      };
+    } catch (error) {
+      console.error("[Sales Router] Erro ao verificar notificações:", error);
+      return { success: false, message: "Erro ao verificar notificações" };
+    }
+  }),
 });
 
