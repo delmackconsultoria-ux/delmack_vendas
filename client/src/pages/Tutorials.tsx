@@ -16,7 +16,10 @@ import {
   DollarSign,
   Users,
   BarChart3,
-  Settings
+  Settings,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { useState } from "react";
@@ -29,6 +32,14 @@ interface Tutorial {
   duration: string;
   steps: string[];
   icon: any;
+  roles: string[];
+}
+
+interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
   roles: string[];
 }
 
@@ -368,12 +379,189 @@ const tutorials: Tutorial[] = [
   }
 ];
 
+const faqs: FAQ[] = [
+  // FAQs para Corretor (Broker)
+  {
+    id: "faq-broker-commission-payment",
+    question: "Quando recebo minha comissão?",
+    answer: "A comissão é paga após a imobiliária receber o valor do cliente e o financeiro processar o pagamento. Você pode acompanhar o status em 'Minhas Comissões': Pendente (aguardando recebimento), Recebido (imobiliária recebeu, aguardando pagamento) e Pago (você já recebeu).",
+    category: "Comissões",
+    roles: ["broker"]
+  },
+  {
+    id: "faq-broker-edit-sale",
+    question: "Posso editar uma venda já registrada?",
+    answer: "Sim, você pode editar vendas com status 'Rascunho' ou 'Pendente'. Acesse 'Minhas Propostas', clique na venda desejada e depois em 'Editar'. Vendas aprovadas ou canceladas não podem ser editadas.",
+    category: "Vendas",
+    roles: ["broker"]
+  },
+  {
+    id: "faq-broker-properfy-reference",
+    question: "Onde encontro a referência do imóvel Baggio?",
+    answer: "A referência do imóvel Baggio começa com 'BG' seguido de números (ex: BG66206001). Você encontra no site da Baggio, no material de divulgação ou no sistema Properfy. Use essa referência para buscar automaticamente os dados do imóvel.",
+    category: "Vendas",
+    roles: ["broker"]
+  },
+  {
+    id: "faq-broker-rejected-sale",
+    question: "Por que minha venda foi rejeitada?",
+    answer: "Vendas podem ser rejeitadas por: dados incompletos, valores incorretos, documentação pendente ou duplicidade. Quando rejeitada, você recebe notificação por email com o motivo. Corrija as informações e registre novamente.",
+    category: "Vendas",
+    roles: ["broker"]
+  },
+  {
+    id: "faq-broker-external-property",
+    question: "Como registro imóvel que não é Baggio?",
+    answer: "Ao criar nova proposta, selecione 'Imóvel Externo' e preencha manualmente: endereço completo, CEP, cidade, estado, valor de anúncio. Não é necessário referência para imóveis externos.",
+    category: "Vendas",
+    roles: ["broker"]
+  },
+
+  // FAQs para Gerente (Manager)
+  {
+    id: "faq-manager-goal-calculation",
+    question: "Como é calculada a meta mensal?",
+    answer: "Você define a meta em 'Configurar Metas'. O sistema calcula o progresso baseado no VGV (Valor Geral de Vendas) acumulado no mês. A projeção é calculada pela média diária multiplicada pelos dias do mês. Se não configurar, a meta padrão é R$ 15 milhões.",
+    category: "Metas",
+    roles: ["manager"]
+  },
+  {
+    id: "faq-manager-notifications",
+    question: "Quando recebo notificações de meta?",
+    answer: "Você recebe notificações automáticas por email quando atingir 50%, 75% e 100% da meta mensal. Também recebe alerta se o progresso estiver mais de 5% abaixo do esperado para o período. Cada notificação é enviada apenas uma vez por mês.",
+    category: "Metas",
+    roles: ["manager"]
+  },
+  {
+    id: "faq-manager-approve-criteria",
+    question: "Quais critérios usar para aprovar vendas?",
+    answer: "Verifique: dados completos do comprador e vendedor, valor de venda coerente com mercado, documentação anexada, comissões calculadas corretamente, corretores válidos. Se houver dúvidas, entre em contato com o corretor antes de aprovar.",
+    category: "Aprovações",
+    roles: ["manager"]
+  },
+  {
+    id: "faq-manager-broker-inactive",
+    question: "Como desativar um corretor?",
+    answer: "Acesse 'Gestão de Corretores', clique no corretor desejado e altere o status para 'Inativo'. Corretores inativos não aparecem nas listas de seleção, mas suas vendas anteriores permanecem no sistema.",
+    category: "Equipe",
+    roles: ["manager"]
+  },
+  {
+    id: "faq-manager-sales-responsible",
+    question: "Qual a diferença entre Lucas e Camila no relatório?",
+    answer: "Lucas é responsável por Lançamentos (imóveis novos) e Camila por Prontos (imóveis usados/prontos). O relatório 'Vendas por Responsável' compara o VGV e performance de cada um para avaliar balanceamento da equipe.",
+    category: "Relatórios",
+    roles: ["manager", "finance"]
+  },
+  {
+    id: "faq-manager-listing-rejections",
+    question: "Para que serve o relatório de baixas de angariação?",
+    answer: "Mostra imóveis que foram recusados/rejeitados com os motivos. Use para identificar padrões (ex: preço alto, localização ruim) e melhorar o processo de angariação. Também ajuda a avaliar performance individual dos corretores.",
+    category: "Relatórios",
+    roles: ["manager"]
+  },
+
+  // FAQs para Financeiro (Finance)
+  {
+    id: "faq-finance-commission-status",
+    question: "Qual a diferença entre os status de comissão?",
+    answer: "Pendente: imobiliária ainda não recebeu do cliente. Recebido: imobiliária recebeu, aguardando pagamento ao corretor. Pago: corretor já recebeu. Atualize os status conforme o fluxo de pagamentos para controle preciso.",
+    category: "Comissões",
+    roles: ["finance"]
+  },
+  {
+    id: "faq-finance-vgv-calculation",
+    question: "Como é calculado o VGV?",
+    answer: "VGV (Valor Geral de Vendas) é a soma de todos os valores de venda no período selecionado, excluindo vendas canceladas e rascunhos. Inclui vendas pendentes e aprovadas. Use os filtros de período para análises específicas.",
+    category: "Relatórios",
+    roles: ["finance", "manager"]
+  },
+  {
+    id: "faq-finance-payment-schedule",
+    question: "Existe um calendário de pagamentos?",
+    answer: "Atualmente não há calendário automático. Recomenda-se estabelecer uma data fixa mensal (ex: dia 5) e filtrar comissões com status 'Recebido' para processar pagamentos. Marque como 'Pago' após transferência.",
+    category: "Comissões",
+    roles: ["finance"]
+  },
+
+  // FAQs para Admin
+  {
+    id: "faq-admin-user-roles",
+    question: "Quais são os perfis de usuário disponíveis?",
+    answer: "Corretor (registra vendas, vê suas comissões), Gerente (aprova vendas, configura metas, acessa relatórios), Financeiro (gerencia comissões, relatórios financeiros), Admin (gestão completa do sistema). Cada perfil tem permissões específicas.",
+    category: "Administração",
+    roles: ["admin"]
+  },
+  {
+    id: "faq-admin-company-setup",
+    question: "Como adicionar uma nova imobiliária?",
+    answer: "Acesse 'Gestão de Empresas', clique em 'Adicionar Empresa', preencha: nome, CNPJ, endereço, contatos. Configure percentuais de comissão padrão e plano de assinatura. Depois adicione usuários vinculados à empresa.",
+    category: "Administração",
+    roles: ["admin"]
+  },
+  {
+    id: "faq-admin-reset-password",
+    question: "Como resetar senha de um usuário?",
+    answer: "Acesse 'Gestão de Usuários', clique no usuário desejado, depois em 'Resetar Senha'. O usuário receberá email com link para criar nova senha. Alternativamente, defina uma senha temporária e informe ao usuário.",
+    category: "Administração",
+    roles: ["admin"]
+  },
+
+  // FAQs Gerais
+  {
+    id: "faq-general-forgot-password",
+    question: "Esqueci minha senha, como recuperar?",
+    answer: "Na tela de login, clique em 'Esqueci minha senha', digite seu email cadastrado e clique em 'Enviar'. Você receberá um email com link para criar nova senha. O link é válido por 24 horas.",
+    category: "Geral",
+    roles: ["broker", "manager", "finance", "admin"]
+  },
+  {
+    id: "faq-general-update-profile",
+    question: "Como atualizar meus dados pessoais?",
+    answer: "Clique no seu nome no canto superior direito e selecione 'Perfil'. Você pode atualizar: nome, telefone, foto. Para alterar email, entre em contato com o administrador do sistema.",
+    category: "Geral",
+    roles: ["broker", "manager", "finance", "admin"]
+  },
+  {
+    id: "faq-general-mobile-access",
+    question: "O sistema funciona no celular?",
+    answer: "Sim! O sistema é totalmente responsivo e funciona em smartphones e tablets. Acesse pelo navegador do seu dispositivo usando o mesmo login. Todas as funcionalidades estão disponíveis na versão mobile.",
+    category: "Geral",
+    roles: ["broker", "manager", "finance", "admin"]
+  },
+  {
+    id: "faq-general-notifications",
+    question: "Não estou recebendo notificações por email",
+    answer: "Verifique: 1) Email cadastrado está correto no seu perfil, 2) Verifique caixa de spam/lixo eletrônico, 3) Adicione noreply@delmack.com aos contatos confiáveis. Se o problema persistir, contate o suporte.",
+    category: "Geral",
+    roles: ["broker", "manager", "finance", "admin"]
+  },
+  {
+    id: "faq-general-search-tips",
+    question: "Como buscar vendas mais rapidamente?",
+    answer: "Use a busca por: nome do comprador, referência do imóvel, endereço. Combine com filtros de período, status e corretor para refinar resultados. Vendas são ordenadas por data (mais recentes primeiro).",
+    category: "Geral",
+    roles: ["broker", "manager", "finance"]
+  },
+  {
+    id: "faq-general-data-security",
+    question: "Meus dados estão seguros?",
+    answer: "Sim! O sistema usa criptografia SSL/TLS para todas as comunicações, senhas são armazenadas com hash seguro, backups automáticos diários e acesso controlado por perfil. Seus dados são protegidos conforme LGPD.",
+    category: "Geral",
+    roles: ["broker", "manager", "finance", "admin"]
+  }
+];
+
 export default function Tutorials() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedTutorial, setSelectedTutorial] = useState<Tutorial | null>(null);
+  const [activeTab, setActiveTab] = useState<"tutorials" | "faq">("tutorials");
+  const [faqSearchTerm, setFaqSearchTerm] = useState("");
+  const [selectedFaqCategory, setSelectedFaqCategory] = useState<string>("all");
+  const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
   if (!user) {
     return null;
@@ -392,6 +580,20 @@ export default function Tutorials() {
 
   // Obter categorias únicas
   const categories = ["all", ...Array.from(new Set(userTutorials.map(t => t.category)))];
+
+  // Filtrar FAQs por perfil do usuário
+  const userFaqs = faqs.filter(f => f.roles.includes(user.role));
+
+  // Aplicar filtros de busca e categoria no FAQ
+  const filteredFaqs = userFaqs.filter(f => {
+    const matchesSearch = f.question.toLowerCase().includes(faqSearchTerm.toLowerCase()) ||
+                         f.answer.toLowerCase().includes(faqSearchTerm.toLowerCase());
+    const matchesCategory = selectedFaqCategory === "all" || f.category === selectedFaqCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Obter categorias únicas de FAQ
+  const faqCategories = ["all", ...Array.from(new Set(userFaqs.map(f => f.category)))];
 
   const getRoleName = (role: string) => {
     const names: Record<string, string> = {
@@ -423,6 +625,30 @@ export default function Tutorials() {
               </p>
             </div>
 
+            {/* Tabs */}
+            <div className="flex gap-2 mb-6">
+              <Button
+                onClick={() => setActiveTab("tutorials")}
+                className={activeTab === "tutorials" 
+                  ? "bg-orange-600 hover:bg-orange-700" 
+                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                }
+              >
+                <BookOpen className="h-4 w-4 mr-2" />
+                Tutoriais ({userTutorials.length})
+              </Button>
+              <Button
+                onClick={() => setActiveTab("faq")}
+                className={activeTab === "faq" 
+                  ? "bg-orange-600 hover:bg-orange-700" 
+                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                }
+              >
+                <HelpCircle className="h-4 w-4 mr-2" />
+                FAQ ({userFaqs.length})
+              </Button>
+            </div>
+
             {/* Busca e Filtros */}
             <Card className="mb-6">
               <CardContent className="pt-6">
@@ -430,18 +656,24 @@ export default function Tutorials() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <Input
-                      placeholder="Buscar tutoriais..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder={activeTab === "tutorials" ? "Buscar tutoriais..." : "Buscar perguntas..."}
+                      value={activeTab === "tutorials" ? searchTerm : faqSearchTerm}
+                      onChange={(e) => activeTab === "tutorials" 
+                        ? setSearchTerm(e.target.value) 
+                        : setFaqSearchTerm(e.target.value)
+                      }
                       className="pl-10"
                     />
                   </div>
                   <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    value={activeTab === "tutorials" ? selectedCategory : selectedFaqCategory}
+                    onChange={(e) => activeTab === "tutorials" 
+                      ? setSelectedCategory(e.target.value)
+                      : setSelectedFaqCategory(e.target.value)
+                    }
                     className="px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
-                    {categories.map((cat) => (
+                    {(activeTab === "tutorials" ? categories : faqCategories).map((cat) => (
                       <option key={cat} value={cat}>
                         {cat === "all" ? "Todas as Categorias" : cat}
                       </option>
@@ -451,9 +683,12 @@ export default function Tutorials() {
               </CardContent>
             </Card>
 
-            {/* Lista de Tutoriais */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredTutorials.map((tutorial) => {
+            {/* Conteúdo baseado na tab ativa */}
+            {activeTab === "tutorials" ? (
+              /* Lista de Tutoriais */
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredTutorials.map((tutorial) => {
                 const Icon = tutorial.icon;
                 return (
                   <Card 
@@ -488,18 +723,65 @@ export default function Tutorials() {
                     </CardContent>
                   </Card>
                 );
-              })}
-            </div>
+                  })}
+                </div>
 
-            {filteredTutorials.length === 0 && (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-600">
-                    Nenhum tutorial encontrado com os filtros selecionados
-                  </p>
-                </CardContent>
-              </Card>
+                {filteredTutorials.length === 0 && (
+                  <Card>
+                    <CardContent className="py-12 text-center">
+                      <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-600">
+                        Nenhum tutorial encontrado com os filtros selecionados
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            ) : (
+              /* Lista de FAQs */
+              <div className="space-y-4">
+                {filteredFaqs.map((faq) => (
+                  <Card key={faq.id} className="hover:shadow-md transition-shadow">
+                    <CardHeader
+                      className="cursor-pointer"
+                      onClick={() => setOpenFaqId(openFaqId === faq.id ? null : faq.id)}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <HelpCircle className="h-4 w-4 text-orange-600" />
+                            <Badge className="bg-blue-100 text-blue-700">
+                              {faq.category}
+                            </Badge>
+                          </div>
+                          <CardTitle className="text-lg">{faq.question}</CardTitle>
+                        </div>
+                        {openFaqId === faq.id ? (
+                          <ChevronUp className="h-5 w-5 text-slate-400 flex-shrink-0 ml-2" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-400 flex-shrink-0 ml-2" />
+                        )}
+                      </div>
+                    </CardHeader>
+                    {openFaqId === faq.id && (
+                      <CardContent>
+                        <p className="text-slate-700 leading-relaxed">{faq.answer}</p>
+                      </CardContent>
+                    )}
+                  </Card>
+                ))}
+
+                {filteredFaqs.length === 0 && (
+                  <Card>
+                    <CardContent className="py-12 text-center">
+                      <HelpCircle className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-600">
+                        Nenhuma pergunta encontrada com os filtros selecionados
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             )}
           </>
         ) : (

@@ -672,3 +672,19 @@
 - [x] Visualização detalhada passo a passo
 - [x] Adicionar rota /tutorials para todos os perfis
 - [x] Total de 17 tutoriais completos
+
+
+## ❓ FAQ Integrado aos Tutoriais
+
+- [x] Criar estrutura de dados de FAQ por perfil
+- [x] FAQs para Corretor (5 perguntas)
+- [x] FAQs para Gerente (6 perguntas)
+- [x] FAQs para Financeiro (3 perguntas)
+- [x] FAQs para Admin (3 perguntas)
+- [x] FAQs Gerais (6 perguntas)
+- [x] Integrar FAQ na página Tutorials.tsx
+- [x] Adicionar componente Accordion para perguntas/respostas
+- [x] Adicionar busca no FAQ
+- [x] Adicionar filtro por categoria no FAQ
+- [x] Adicionar tabs para alternar entre Tutoriais e FAQ
+- [x] Total de 23 perguntas frequentes
