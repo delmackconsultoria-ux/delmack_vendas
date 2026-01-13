@@ -688,3 +688,12 @@
 - [x] Adicionar filtro por categoria no FAQ
 - [x] Adicionar tabs para alternar entre Tutoriais e FAQ
 - [x] Total de 23 perguntas frequentes
+
+
+## 🔧 Melhorias Solicitadas
+
+- [x] Corrigir copyright (já estava correto)
+- [x] Adicionar popup de erro amigável no login
+- [x] Logout redirecionar para tela inicial
+- [x] Ajustar compatibilidade com tradutor (translate="no" nos inputs)
+- [x] Criar landing page comercial atrativa

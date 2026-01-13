@@ -21,7 +21,7 @@ export default function Login() {
       window.location.href = "/";
     },
     onError: () => {
-      setError("Email ou senha incorretos");
+      setError("Email ou senha incorretos. Verifique seus dados e tente novamente. Para redefinir sua senha ou criar uma nova conta, entre em contato com o suporte do sistema.");
     },
   });
 
@@ -78,6 +78,7 @@ export default function Login() {
                   placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  translate="no"
                   disabled={isLoading}
                   required
                   className="h-10"
@@ -96,6 +97,8 @@ export default function Login() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    translate="no"
+                    autoComplete="current-password"
                     disabled={isLoading}
                     required
                     className="h-10 pr-10"

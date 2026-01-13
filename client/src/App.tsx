@@ -37,6 +37,7 @@ import ListingRejections from "./pages/ListingRejections";
 import GoalsDashboard from "./pages/GoalsDashboard";
 import GoalNotifications from "./pages/GoalNotifications";
 import Tutorials from "./pages/Tutorials";
+import LandingPage from "./pages/LandingPage";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -71,9 +72,9 @@ function Router() {
           {/* Super Admin routes */}
           {user.role === "superadmin" && (
             <>
-              <Route path="/" component={DashboardSuperAdmin} />
               <Route path="/dashboard" component={DashboardSuperAdmin} />
               <Route path="/users" component={SuperAdminUsers} />
+              <Route path="/" component={DashboardSuperAdmin} />
             </>
           )}
 
@@ -88,8 +89,8 @@ function Router() {
               <Route path="/indicators" component={Indicators} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/dashboard">{() => <Redirect to="/" />}</Route>
               <Route path="/" component={DashboardBroker} />
+              <Route path="/dashboard" component={DashboardBroker} />
             </>
           )}
           {user.role === "finance" && (
@@ -147,7 +148,7 @@ function Router() {
           )}
         </>
       ) : (
-        <Route path="/" component={Login} />
+        <Route path="/" component={LandingPage} />
       )}
 
       {/* 404 */}
