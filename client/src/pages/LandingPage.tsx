@@ -45,7 +45,7 @@ export default function LandingPage() {
     {
       icon: Zap,
       title: "Integração Properfy",
-      description: "Busca automática de imóveis Baggio e sincronização de dados para agilizar cadastros"
+      description: "Busca automática de imóveis da imobiliária e sincronização de dados para agilizar cadastros"
     }
   ];
 
