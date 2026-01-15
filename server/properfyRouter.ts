@@ -251,6 +251,101 @@ export const properfyRouter = router({
   }),
 
   /**
+   * Debug: Testar API Properfy e ver resposta bruta
+   * Retorna os primeiros imóveis da API para diagnóstico
+   */
+  debugPropertySearch: protectedProcedure
+    .input(
+      z.object({
+        searchTerm: z.string().min(1),
+        searchType: z.enum(["reference", "cep", "address"]),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        console.log(`[Properfy Debug] Buscando: ${input.searchTerm} (tipo: ${input.searchType})`);
+
+        const PROPERFY_API_URL = (process.env.PROPERFY_API_URL || '').replace('/auth/token', '').replace(/\/$/, '');
+        const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN || '';
+
+        if (!PROPERFY_API_TOKEN) {
+          return {
+            success: false,
+            error: "Token Properfy não configurado",
+            debug: { hasToken: false, apiUrl: PROPERFY_API_URL }
+          };
+        }
+
+        // Buscar primeiros 10 imóveis para debug
+        const response = await fetch(`${PROPERFY_API_URL}/property/property?page=1&size=10`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          return {
+            success: false,
+            error: `API retornou status ${response.status}`,
+            debug: {
+              status: response.status,
+              statusText: response.statusText,
+              hasToken: true,
+              apiUrl: PROPERFY_API_URL
+            }
+          };
+        }
+
+        const data = await response.json();
+
+        // Buscar imóvel específico
+        const searchNormalized = input.searchTerm.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const found = data.data?.find((p: any) => {
+          const ref = (p.chrReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+          const innerRef = (p.chrInnerReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+          const cep = (p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
+          const address = (p.chrAddressStreet || '').toLowerCase();
+          
+          return ref === searchNormalized || 
+                 innerRef === searchNormalized ||
+                 cep === searchNormalized ||
+                 address.includes(input.searchTerm.toLowerCase());
+        });
+
+        return {
+          success: true,
+          found: !!found,
+          foundProperty: found || null,
+          debug: {
+            totalProperties: data.total || 0,
+            currentPage: data.current_page || 1,
+            lastPage: data.last_page || 1,
+            sampleProperties: (data.data || []).slice(0, 3).map((p: any) => ({
+              chrReference: p.chrReference,
+              chrInnerReference: p.chrInnerReference,
+              chrAddressStreet: p.chrAddressStreet,
+              chrAddressPostalCode: p.chrAddressPostalCode,
+              chrAddressCity: p.chrAddressCity,
+            })),
+            searchTerm: input.searchTerm,
+            searchNormalized,
+            hasToken: true,
+            apiUrl: PROPERFY_API_URL
+          }
+        };
+      } catch (error) {
+        console.error("[Properfy Debug] Erro:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Erro desconhecido",
+          debug: { exception: String(error) }
+        };
+      }
+    }),
+
+  /**
    * Buscar baixas de angariação (listing rejections)
    * Retorna lista de imóveis recusados com motivos
    */

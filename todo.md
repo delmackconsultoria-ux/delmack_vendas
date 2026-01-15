@@ -708,3 +708,14 @@
 - [x] KPIs topo Histórico: Total vendas, Aprovadas, Cancelamentos
 - [ ] Reorganizar colunas: Corretor, Tipo, Data alteração, Status, Valor, Comissão (já existem)
 - [x] Reordenar header gerente: Nova venda, Aprovação, Histórico, Metas, Corretores, Indicadores, Relatórios
+
+
+## 🔧 Debug API Properfy
+
+- [x] Criar endpoint de diagnóstico (debugPropertySearch)
+- [x] Ajustar lógica de busca por referência (busca em até 20 páginas/2000 imóveis)
+- [x] Melhorar normalização de busca (remove caracteres especiais)
+- [x] Ajustar busca por CEP (busca em até 10 páginas)
+- [x] Adicionar logs detalhados para debug
+- [x] Servidor rodando sem erros TypeScript
+- [x] Melhorias implementadas e prontas para teste
