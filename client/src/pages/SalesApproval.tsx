@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { AlertCircle, CheckCircle, XCircle, Eye, ExternalLink } from "lucide-react";
+import { AlertCircle, CheckCircle, XCircle, Eye, ExternalLink, TrendingUp, DollarSign, Clock } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
@@ -45,6 +45,24 @@ export default function SalesApproval() {
     if (user?.role === "finance") return s.status === "finance_review";
     return false;
   }) || [];
+
+  // Calcular KPIs
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  
+  const approvedThisMonth = salesData?.sales?.filter((s: any) => {
+    const saleDate = new Date(s.createdAt);
+    return saleDate.getMonth() === currentMonth && 
+           saleDate.getFullYear() === currentYear &&
+           (s.status === "finance_review" || s.status === "commission_paid");
+  }) || [];
+
+  const approvedCount = approvedThisMonth.length;
+  const approvedVGV = approvedThisMonth.reduce((sum: number, s: any) => sum + (parseFloat(s.saleValue) || 0), 0);
+  const approvedCommission = approvedThisMonth.reduce((sum: number, s: any) => sum + (parseFloat(s.commissionValue) || 0), 0);
+
+  const pendingVGV = pendingSales.reduce((sum: number, s: any) => sum + (parseFloat(s.saleValue) || 0), 0);
+  const pendingCommission = pendingSales.reduce((sum: number, s: any) => sum + (parseFloat(s.commissionValue) || 0), 0);
 
   const formatCurrency = (value: string | number | null) => {
     if (!value) return "R$ 0,00";
@@ -95,6 +113,57 @@ export default function SalesApproval() {
         <p className="text-slate-500 mb-6">
           {user?.role === "manager" ? "Aprovar vendas para enviar ao financeiro" : "Aprovar pagamento de comissões"}
         </p>
+
+        {/* KPIs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                Aprovadas no Mês
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-slate-900">{approvedCount}</p>
+                <p className="text-sm text-slate-600">VGV: {formatCurrency(approvedVGV)}</p>
+                <p className="text-sm text-slate-600">Comissões: {formatCurrency(approvedCommission)}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <Clock className="h-4 w-4 text-orange-600" />
+                Pendentes de Aprovação
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-slate-900">{pendingSales.length}</p>
+                <p className="text-sm text-slate-600">VGV Potencial: {formatCurrency(pendingVGV)}</p>
+                <p className="text-sm text-slate-600">Comissões Potenciais: {formatCurrency(pendingCommission)}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-blue-600" />
+                Total Geral
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-slate-900">{approvedCount + pendingSales.length}</p>
+                <p className="text-sm text-slate-600">VGV: {formatCurrency(approvedVGV + pendingVGV)}</p>
+                <p className="text-sm text-slate-600">Comissões: {formatCurrency(approvedCommission + pendingCommission)}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {isLoading ? (
           <div className="text-center py-8">Carregando...</div>

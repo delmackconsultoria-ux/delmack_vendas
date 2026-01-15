@@ -50,10 +50,11 @@ export default function ProposalManagement() {
 
   // Métricas
   const metrics = useMemo(() => {
-    if (!salesData?.sales) return { total: 0, sales: 0, cancelled: 0, conversionRate: 0, avgDays: 0 };
+    if (!salesData?.sales) return { total: 0, sales: 0, approved: 0, cancelled: 0, conversionRate: 0, avgDays: 0 };
     
     const total = salesData.sales.length;
     const salesCount = salesData.sales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length;
+    const approved = salesData.sales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length;
     const cancelled = salesData.sales.filter((s: any) => s.status === "cancelled").length;
     const conversionRate = total > 0 ? (salesCount / total) * 100 : 0;
     
@@ -69,7 +70,7 @@ export default function ProposalManagement() {
       avgDays = Math.round(totalDays / completedSales.length);
     }
     
-    return { total, sales: salesCount, cancelled, conversionRate, avgDays };
+    return { total, sales: salesCount, approved, cancelled, conversionRate, avgDays };
   }, [salesData]);
 
   const filteredSales = useMemo(() => {
@@ -131,9 +132,9 @@ export default function ProposalManagement() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Gerenciamento de Vendas</h1>
+              <h1 className="text-xl font-bold text-slate-900">Histórico de Vendas</h1>
               <p className="text-sm text-slate-500">
-                {user?.role === "broker" ? "Suas vendas" : "Todas as vendas"}
+                {user?.role === "broker" ? "Seu histórico completo" : "Histórico completo de vendas aprovadas e reprovadas"}
               </p>
             </div>
             <Button onClick={() => setLocation("/proposals/new")} className="bg-slate-900 hover:bg-slate-800">
@@ -153,7 +154,7 @@ export default function ProposalManagement() {
                 <FileText className="h-5 w-5 text-slate-500" />
                 <div>
                   <p className="text-2xl font-bold">{metrics.total}</p>
-                  <p className="text-xs text-slate-500">Total Vendas</p>
+                  <p className="text-xs text-slate-500">Total de Vendas</p>
                 </div>
               </div>
             </CardContent>
@@ -163,8 +164,8 @@ export default function ProposalManagement() {
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold text-green-600">{metrics.sales}</p>
-                  <p className="text-xs text-slate-500">Vendas</p>
+                  <p className="text-2xl font-bold text-green-600">{metrics.approved}</p>
+                  <p className="text-xs text-slate-500">Aprovadas</p>
                 </div>
               </div>
             </CardContent>
@@ -251,7 +252,7 @@ export default function ProposalManagement() {
         {/* Lista de Propostas */}
         <Card>
           <CardHeader>
-            <CardTitle>Vendas ({filteredSales.length})</CardTitle>
+            <CardTitle>Histórico ({filteredSales.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (

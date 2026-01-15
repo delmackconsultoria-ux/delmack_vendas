@@ -37,15 +37,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Nova Venda", path: "/proposals/new", roles: ["broker", "manager", "admin"] },
-  { label: "Vendas", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
-  { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
-  { label: "Corretores", path: "/brokers", roles: ["manager"] },
+  { label: "Aprovação", path: "/sales-approval", roles: ["finance", "manager"] },
+  { label: "Histórico", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
   { label: "Metas", path: "/goals", roles: ["manager"] },
-  
+  { label: "Corretores", path: "/brokers", roles: ["manager"] },
+  { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },
   { label: "Analytics", path: "/analytics", roles: ["finance", "viewer"] },
-  { label: "Aprovação", path: "/sales-approval", roles: ["finance", "manager"] },
 ];
 
 export function AppHeader() {

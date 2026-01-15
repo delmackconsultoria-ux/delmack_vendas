@@ -697,3 +697,14 @@
 - [x] Logout redirecionar para tela inicial
 - [x] Ajustar compatibilidade com tradutor (translate="no" nos inputs)
 - [x] Criar landing page comercial atrativa
+
+
+## 🔧 Melhorias Aprovação e Histórico
+
+- [x] Adicionar KPIs no topo de Aprovação (aprovadas: qtd, VGV, comissões)
+- [x] Adicionar KPIs pendentes (VGV potencial, comissões potenciais)
+- [x] Renomear "Vendas" para "Histórico"
+- [x] Alterar título para "Histórico de vendas"
+- [x] KPIs topo Histórico: Total vendas, Aprovadas, Cancelamentos
+- [ ] Reorganizar colunas: Corretor, Tipo, Data alteração, Status, Valor, Comissão (já existem)
+- [x] Reordenar header gerente: Nova venda, Aprovação, Histórico, Metas, Corretores, Indicadores, Relatórios
