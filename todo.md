@@ -731,3 +731,12 @@
 - [x] Adicionar logs detalhados com chrDocument
 - [x] Servidor rodando sem erros TypeScript
 - [x] Correções implementadas e prontas para teste real
+
+
+## 🔧 Ajuste Busca Properfy - Código antes do ponto
+
+- [x] Extrair código antes do ponto em chrDocument (BG96074001 de BG96074001.isnyv.md)
+- [x] Comparar código digitado com código antes do ponto
+- [x] Adicionar startsWith para busca parcial
+- [x] Servidor reiniciado com ajuste aplicado
+- [x] Pronto para teste em produção

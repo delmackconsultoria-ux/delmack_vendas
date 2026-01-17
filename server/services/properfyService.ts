@@ -120,12 +120,16 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
 
     // Função para verificar se o imóvel corresponde à busca
     const matchesSearch = (p: any): boolean => {
-      const doc = (p.chrDocument || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      // Extrair código antes do ponto em chrDocument (ex: BG96074001 de BG96074001.isnyv.md)
+      const docFull = (p.chrDocument || '').toUpperCase();
+      const docBeforeDot = docFull.split('.')[0].replace(/[^A-Z0-9]/g, '');
       const ref = (p.chrReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const innerRef = (p.chrInnerReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       
-      // Busca parcial: "BG96074001" encontra "BG96074001ISNYVMD"
-      return doc.includes(searchNormalized) || 
+      // Comparar código digitado com código antes do ponto
+      // Ex: usuário digita "BG96074001" → encontra "BG96074001.isnyv.md"
+      return docBeforeDot === searchNormalized || 
+             docBeforeDot.startsWith(searchNormalized) ||
              ref.includes(searchNormalized) || 
              innerRef.includes(searchNormalized);
     };
