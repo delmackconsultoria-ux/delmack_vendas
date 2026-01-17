@@ -719,3 +719,15 @@
 - [x] Adicionar logs detalhados para debug
 - [x] Servidor rodando sem erros TypeScript
 - [x] Melhorias implementadas e prontas para teste
+
+
+## 🔧 Correção CRÍTICA Properfy
+
+- [x] Alterar busca de chrReference para chrDocument
+- [x] Alterar busca de chrAddressPostalCode para chrAddressCityCode
+- [x] Implementar busca em TODAS as páginas (sem limite)
+- [x] Busca parcial em chrDocument (BG96074001 encontra BG96074001.isnyv.md)
+- [x] Atualizar mapPropertyData para priorizar chrDocument
+- [x] Adicionar logs detalhados com chrDocument
+- [x] Servidor rodando sem erros TypeScript
+- [x] Correções implementadas e prontas para teste real

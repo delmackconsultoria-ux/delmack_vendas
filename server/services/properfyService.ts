@@ -59,13 +59,13 @@ function normalizeString(str: string): string {
 function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
   return {
     id: property.id,
-    reference: property.chrReference || property.chrInnerReference || searchRef,
+    reference: property.chrDocument || property.chrReference || property.chrInnerReference || searchRef,
     address: property.chrAddressStreet || '',
     number: property.chrAddressNumber || 'S/N',
     city: property.chrAddressCity || '',
     state: property.chrAddressState || '',
     district: property.chrAddressDistrict || '',
-    postalCode: property.chrAddressPostalCode?.replace(/\D/g, '') || '',
+    postalCode: property.chrAddressCityCode?.replace(/\D/g, '') || property.chrAddressPostalCode?.replace(/\D/g, '') || '',
     propertyType: translatePropertyType(property.chrType || ''),
     value: property.dcmSale || property.dcmRent || 0,
     area: property.dcmAreaPrivate || property.dcmAreaTotal || 0,
@@ -94,7 +94,7 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
     const searchRef = reference.toUpperCase().trim();
     const searchNormalized = searchRef.replace(/[^A-Z0-9]/g, '');
     
-    console.log(`[Properfy] Buscando referência: ${searchRef} (normalizado: ${searchNormalized})`);
+    console.log(`[Properfy] Buscando código: ${searchRef} (normalizado: ${searchNormalized})`);
     
     // Primeira requisição para descobrir total de páginas
     const firstResponse = await fetch(`${PROPERFY_API_URL}/property/property?page=1&size=100`, {
@@ -118,16 +118,22 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
     
     console.log(`[Properfy] Total: ${totalProperties} imóveis em ${totalPages} páginas`);
 
-    // Buscar na primeira página
-    const property = firstData.data?.find((p: any) => {
+    // Função para verificar se o imóvel corresponde à busca
+    const matchesSearch = (p: any): boolean => {
+      const doc = (p.chrDocument || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const ref = (p.chrReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const innerRef = (p.chrInnerReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      return ref === searchNormalized || innerRef === searchNormalized || 
-             ref.includes(searchNormalized) || innerRef.includes(searchNormalized);
-    });
+      
+      // Busca parcial: "BG96074001" encontra "BG96074001ISNYVMD"
+      return doc.includes(searchNormalized) || 
+             ref.includes(searchNormalized) || 
+             innerRef.includes(searchNormalized);
+    };
 
+    // Buscar na primeira página
+    const property = firstData.data?.find(matchesSearch);
     if (property) {
-      console.log(`[Properfy] Imóvel encontrado na página 1`);
+      console.log(`[Properfy] Imóvel encontrado na página 1 (chrDocument: ${property.chrDocument})`);
       return {
         success: true,
         property: mapPropertyData(property, searchRef),
@@ -135,9 +141,8 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       };
     }
 
-    // Buscar nas demais páginas (limitar a 20 páginas = 2000 imóveis para evitar timeout)
-    const maxPages = Math.min(totalPages, 20);
-    for (let page = 2; page <= maxPages; page++) {
+    // Buscar em TODAS as demais páginas
+    for (let page = 2; page <= totalPages; page++) {
       const response = await fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
         method: 'GET',
         headers: {
@@ -146,19 +151,16 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
         }
       });
 
-      if (!response.ok) continue;
+      if (!response.ok) {
+        console.warn(`[Properfy] Erro ao buscar página ${page}`);
+        continue;
+      }
 
       const data = await response.json();
-      
-      const found = data.data?.find((p: any) => {
-        const ref = (p.chrReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-        const innerRef = (p.chrInnerReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-        return ref === searchNormalized || innerRef === searchNormalized ||
-               ref.includes(searchNormalized) || innerRef.includes(searchNormalized);
-      });
+      const found = data.data?.find(matchesSearch);
 
       if (found) {
-        console.log(`[Properfy] Imóvel encontrado na página ${page}`);
+        console.log(`[Properfy] Imóvel encontrado na página ${page} (chrDocument: ${found.chrDocument})`);
         return {
           success: true,
           property: mapPropertyData(found, searchRef),
@@ -167,10 +169,10 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       }
     }
 
-    console.log(`[Properfy] Imóvel não encontrado após buscar ${maxPages} páginas`);
+    console.log(`[Properfy] Imóvel não encontrado após buscar ${totalPages} páginas (${totalProperties} imóveis)`);
     return {
       success: false,
-      error: `Imóvel não encontrado. Buscamos em ${totalProperties} imóveis. Tente buscar por endereço ou CEP.`,
+      error: `Imóvel não encontrado. Buscamos em ${totalProperties} imóveis. Verifique o código.`,
       searchType: 'reference'
     };
 
@@ -200,9 +202,39 @@ export async function searchPropertyByCEP(cep: string): Promise<ProperfySearchRe
     const cepNormalized = cep.replace(/[^0-9]/g, '');
     console.log(`[Properfy] Buscando CEP: ${cepNormalized}`);
 
-    // Buscar em até 10 páginas
+    // Primeira requisição para descobrir total de páginas
+    const firstResponse = await fetch(`${PROPERFY_API_URL}/property/property?page=1&size=100`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!firstResponse.ok) {
+      if (firstResponse.status === 401) {
+        return { success: false, error: 'Token de acesso Properfy inválido ou expirado', searchType: 'cep' };
+      }
+      return { success: false, error: `Erro HTTP ${firstResponse.status}`, searchType: 'cep' };
+    }
+
+    const firstData = await firstResponse.json();
+    const totalPages = firstData.last_page || 1;
+    
+    console.log(`[Properfy] Buscando CEP em ${totalPages} páginas`);
+
+    // Buscar em TODAS as páginas
     const properties: ProperfyProperty[] = [];
-    for (let page = 1; page <= 10; page++) {
+    
+    // Buscar na primeira página
+    const matches1 = firstData.data?.filter((p: any) => {
+      const propCep = (p.chrAddressCityCode || p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
+      return propCep === cepNormalized;
+    }) || [];
+    properties.push(...matches1.map((p: any) => mapPropertyData(p, cepNormalized)));
+
+    // Buscar nas demais páginas
+    for (let page = 2; page <= totalPages; page++) {
       const response = await fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
         method: 'GET',
         headers: {
@@ -221,13 +253,11 @@ export async function searchPropertyByCEP(cep: string): Promise<ProperfySearchRe
       const data = await response.json();
       
       const matches = data.data?.filter((p: any) => {
-        const propCep = (p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
+        const propCep = (p.chrAddressCityCode || p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
         return propCep === cepNormalized;
       }) || [];
 
       properties.push(...matches.map((p: any) => mapPropertyData(p, cepNormalized)));
-
-      if (page >= (data.last_page || 1)) break;
     }
 
     if (properties.length > 0) {
