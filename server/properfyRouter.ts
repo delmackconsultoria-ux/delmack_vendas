@@ -35,8 +35,7 @@ export const properfyRouter = router({
           .string()
           .min(1, "Referência é obrigatória")
           .max(50, "Referência muito longa")
-          .transform((val) => val.toUpperCase())
-          .refine((val) => /^[A-Z0-9]+$/.test(val), "Referência deve conter apenas letras e números"),
+          .transform((val) => val.trim().toUpperCase()),
       })
     )
     .query(async ({ input, ctx }) => {

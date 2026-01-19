@@ -117,8 +117,19 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
     const totalProperties = firstData.total || 0;
     
     console.log(`[Properfy] Total: ${totalProperties} imóveis em ${totalPages} páginas`);
+    
+    // DEBUG: Mostrar estrutura do primeiro imóvel
+    if (firstData.data && firstData.data.length > 0) {
+      const firstProperty = firstData.data[0];
+      console.log('[Properfy DEBUG] Estrutura do primeiro imóvel:');
+      console.log('  chrDocument:', firstProperty.chrDocument);
+      console.log('  chrReference:', firstProperty.chrReference);
+      console.log('  chrInnerReference:', firstProperty.chrInnerReference);
+      console.log('  Campos disponíveis:', Object.keys(firstProperty).filter(k => k.startsWith('chr')).join(', '));
+    }
 
     // Função para verificar se o imóvel corresponde à busca
+    let checkedCount = 0;
     const matchesSearch = (p: any): boolean => {
       // Extrair código antes do ponto em chrDocument (ex: BG96074001 de BG96074001.isnyv.md)
       const docFull = (p.chrDocument || '').toUpperCase();
@@ -126,12 +137,30 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       const ref = (p.chrReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const innerRef = (p.chrInnerReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       
+      checkedCount++;
+      
+      // Log dos primeiros 3 imóveis para debug
+      if (checkedCount <= 3) {
+        console.log(`[Properfy DEBUG] Imóvel ${checkedCount}:`, {
+          chrDocument: p.chrDocument,
+          docBeforeDot,
+          searchNormalized,
+          match: docBeforeDot === searchNormalized
+        });
+      }
+      
       // Comparar código digitado com código antes do ponto
       // Ex: usuário digita "BG96074001" → encontra "BG96074001.isnyv.md"
-      return docBeforeDot === searchNormalized || 
-             docBeforeDot.startsWith(searchNormalized) ||
-             ref.includes(searchNormalized) || 
-             innerRef.includes(searchNormalized);
+      const matches = docBeforeDot === searchNormalized || 
+                      docBeforeDot.startsWith(searchNormalized) ||
+                      ref.includes(searchNormalized) || 
+                      innerRef.includes(searchNormalized);
+      
+      if (matches) {
+        console.log('[Properfy DEBUG] IMÓVEL ENCONTRADO!', { chrDocument: p.chrDocument, docBeforeDot });
+      }
+      
+      return matches;
     };
 
     // Buscar na primeira página

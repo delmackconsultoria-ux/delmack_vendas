@@ -740,3 +740,15 @@
 - [x] Adicionar startsWith para busca parcial
 - [x] Servidor reiniciado com ajuste aplicado
 - [x] Pronto para teste em produção
+
+
+## 🔍 Debug Busca Properfy - Logs Detalhados
+
+- [x] Adicionar log da estrutura completa do primeiro imóvel retornado
+- [x] Adicionar log de todos os campos disponíveis (campos chr*)
+- [x] Adicionar log dos primeiros 3 imóveis verificados
+- [x] Adicionar log quando imóvel for encontrado
+- [x] Testar busca e analisar logs do console
+- [x] Identificado erro 400 Bad Request
+- [x] Removida validação restritiva no properfyRouter
+- [x] Agora aceita qualquer caractere e normaliza automaticamente
