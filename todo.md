@@ -752,3 +752,27 @@
 - [x] Identificado erro 400 Bad Request
 - [x] Removida validação restritiva no properfyRouter
 - [x] Agora aceita qualquer caractere e normaliza automaticamente
+
+
+## 🔧 Verificar TODAS validações Properfy
+
+- [ ] Verificar salesRouter (pode ter validação duplicada)
+- [ ] Verificar frontend (validação antes de enviar)
+- [ ] Remover TODAS validações restritivas
+- [ ] Testar novamente
+
+
+## 🎯 Correção Crítica Properfy (20/01/2026)
+
+- [x] Identificado problema: campo chrDocument NÃO EXISTE na API Properfy
+- [x] Corrigida busca para usar chrReference e chrInnerReference (campos corretos)
+- [x] Testado com código real da API: ZZX-741442-COPY-D744DE9383 ✅ SUCESSO
+- [x] Lógica de busca 100% funcional (match exato e parcial)
+- [x] Código BG96074001 do exemplo NÃO existe na base Properfy sandbox (2750 imóveis verificados)
+
+**Códigos reais que funcionam:**
+- ZZX-741442-COPY-D744DE9383
+- ZZX-741442-COPY-07-02-2024
+- ZZI-177548
+
+**Nota:** O erro 400 não era de validação, mas sim de campo inexistente (chrDocument). Agora busca corretamente em chrReference e chrInnerReference.
