@@ -786,3 +786,15 @@
 - [ ] Confirmar funcionamento com usuário
 
 **Descoberta:** API sandbox não tem chrDocument, mas API PRODUÇÃO tem! Formato: BG + números + .isnyv.md
+
+
+## 🚨 BUG CRÍTICO - Erro 400 na busca Properfy (21/01/2026)
+
+- [x] Identificar validação Zod (OK - validação estava correta)
+- [x] Converter fetch manual para tRPC client (RESOLVIDO!)
+- [x] Adicionar logs detalhados no servidor e frontend
+- [ ] Testar com código BG96074001
+- [ ] Confirmar funcionamento com usuário
+
+**Sintoma:** Erro 400 no console do navegador ao buscar imóvel
+**Causa provável:** Validação Zod no tRPC rejeitando input antes de chegar na busca

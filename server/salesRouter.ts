@@ -103,7 +103,12 @@ export const salesRouter = router({
       reference: z.string().min(1),
       searchType: z.enum(['auto', 'reference', 'address', 'cep']).optional()
     }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      console.log('[Server] searchProperty chamado:', { 
+        reference: input.reference, 
+        searchType: input.searchType,
+        user: ctx.user?.name 
+      });
       // Se tipo específico foi solicitado, usar busca específica
       if (input.searchType === 'cep') {
         return await searchPropertyByCEP(input.reference);

@@ -264,16 +264,25 @@ export default function NewProposal() {
   }, [formData.saleValue, formData.businessType, formData.totalCommissionPercent]);
 
   // Buscar imóvel no Properfy (busca inteligente por referência, endereço ou CEP)
+  const utils = trpc.useUtils();
   const handleSearchPropertyfy = async (searchType: "auto" | "reference" | "address" | "cep" = "auto") => {
     const searchQuery = formData.propertyReference || formData.propertyAddress || formData.propertyZipCode;
     if (!searchQuery) return;
     
+    console.log('[Frontend] Buscando Properfy:', { searchQuery, searchType });
     setProperfySearch({ loading: true, error: "", found: false, searchType });
+    
     try {
-      const result = await fetch(`/api/trpc/sales.searchProperty?input=${encodeURIComponent(JSON.stringify({ reference: searchQuery, searchType }))}`);
-      const data = await result.json();
-      if (data.result?.data?.success && data.result?.data?.property) {
-        const prop = data.result.data.property;
+      // Usar utils.fetch para fazer query imperativa
+      const result = await utils.client.sales.searchProperty.query({ 
+        reference: searchQuery, 
+        searchType 
+      });
+      
+      console.log('[Frontend] Resultado Properfy:', result);
+      
+      if (result?.success && result?.property) {
+        const prop = result.property;
         setFormData(prev => ({
           ...prev,
           propertyReference: prop.reference || prev.propertyReference,
@@ -292,10 +301,11 @@ export default function NewProposal() {
         }));
         setProperfySearch({ loading: false, error: "", found: true, searchType });
       } else {
-        setProperfySearch({ loading: false, error: data.result?.data?.error || "Imóvel não encontrado no Properfy", found: false, searchType });
+        setProperfySearch({ loading: false, error: result?.error || "Imóvel não encontrado no Properfy", found: false, searchType });
       }
-    } catch {
-      setProperfySearch({ loading: false, error: "Erro ao conectar com Properfy. Preencha manualmente.", found: false, searchType });
+    } catch (error: any) {
+      console.error('[Frontend] Erro ao buscar Properfy:', error);
+      setProperfySearch({ loading: false, error: error?.message || "Erro ao conectar com Properfy. Preencha manualmente.", found: false, searchType });
     }
   };
 
