@@ -798,3 +798,15 @@
 
 **Sintoma:** Erro 400 no console do navegador ao buscar imóvel
 **Causa provável:** Validação Zod no tRPC rejeitando input antes de chegar na busca
+
+
+## 🚨 ERRO 524 - Timeout na busca Properfy (21/01/2026)
+
+- [x] Limitar número de páginas buscadas (máximo 10 páginas = 1000 imóveis)
+- [x] Implementar busca paralela (3 páginas por vez) para acelerar
+- [x] Early return automático (para assim que encontrar)
+- [ ] Testar com código BG96074001
+- [ ] Adicionar cache para evitar buscas repetidas (futura melhoria)
+
+**Sintoma:** Erro 524 + TRPCClientError "Unexpected token '<'"
+**Causa:** Busca em 28 páginas demora muito e servidor dá timeout, retorna HTML de erro ao invés de JSON

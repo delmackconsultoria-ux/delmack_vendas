@@ -185,38 +185,52 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       };
     }
 
-    // Buscar em TODAS as demais páginas
-    for (let page = 2; page <= totalPages; page++) {
-      const response = await fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        console.warn(`[Properfy] Erro ao buscar página ${page}`);
-        continue;
+    // Buscar em até 10 páginas (1000 imóveis) para evitar timeout
+    const maxPages = Math.min(totalPages, 10);
+    console.log(`[Properfy] Buscando em até ${maxPages} páginas (de ${totalPages} disponíveis)`);
+    
+    // Buscar em lotes de 3 páginas por vez (busca paralela)
+    for (let batchStart = 2; batchStart <= maxPages; batchStart += 3) {
+      const batchEnd = Math.min(batchStart + 2, maxPages);
+      const batchPromises = [];
+      
+      for (let page = batchStart; page <= batchEnd; page++) {
+        batchPromises.push(
+          fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => ({ page, data }))
+          .catch(() => ({ page, data: null }))
+        );
       }
-
-      const data = await response.json();
-      const found = data.data?.find(matchesSearch);
-
-      if (found) {
-        console.log(`[Properfy] Imóvel encontrado na página ${page} (chrDocument: ${found.chrDocument})`);
-        return {
-          success: true,
-          property: mapPropertyData(found, searchRef),
-          searchType: 'reference'
-        };
+      
+      const results = await Promise.all(batchPromises);
+      
+      for (const { page, data } of results) {
+        if (!data?.data) continue;
+        
+        const found = data.data.find(matchesSearch);
+        if (found) {
+          console.log(`[Properfy] Imóvel encontrado na página ${page} (chrDocument: ${found.chrDocument})`);
+          return {
+            success: true,
+            property: mapPropertyData(found, searchRef),
+            searchType: 'reference'
+          };
+        }
       }
     }
 
-    console.log(`[Properfy] Imóvel não encontrado após buscar ${totalPages} páginas (${totalProperties} imóveis)`);
+    const searchedProperties = maxPages * 100;
+    console.log(`[Properfy] Imóvel não encontrado após buscar ${maxPages} páginas (${searchedProperties} imóveis)`);
     return {
       success: false,
-      error: `Imóvel não encontrado. Buscamos em ${totalProperties} imóveis. Verifique o código.`,
+      error: `Imóvel não encontrado. Buscamos em ${searchedProperties} imóveis. Verifique o código ou tente buscar por endereço/CEP.`,
       searchType: 'reference'
     };
 
