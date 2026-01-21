@@ -776,3 +776,13 @@
 - ZZI-177548
 
 **Nota:** O erro 400 não era de validação, mas sim de campo inexistente (chrDocument). Agora busca corretamente em chrReference e chrInnerReference.
+
+
+## 🚨 CORREÇÃO URGENTE - chrDocument EXISTE (20/01/2026)
+
+- [x] REVERTER busca para chrDocument (campo correto na produção!)
+- [x] Extrair código antes do ponto (BG69874001 de BG69874001.isnyv.md)
+- [ ] Testar com código BG real da produção
+- [ ] Confirmar funcionamento com usuário
+
+**Descoberta:** API sandbox não tem chrDocument, mas API PRODUÇÃO tem! Formato: BG + números + .isnyv.md

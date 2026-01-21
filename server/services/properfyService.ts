@@ -131,8 +131,11 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
     // Função para verificar se o imóvel corresponde à busca
     let checkedCount = 0;
     const matchesSearch = (p: any): boolean => {
-      // CORREÇÃO: API Properfy NÃO possui campo chrDocument
-      // Buscar em chrReference e chrInnerReference (campos corretos)
+      // Buscar em chrDocument (campo de produção com formato BG69874001.isnyv.md)
+      // Extrair código ANTES do ponto: BG69874001 de BG69874001.isnyv.md
+      const docFull = (p.chrDocument || '').toUpperCase();
+      const docBeforeDot = docFull.split('.')[0].replace(/[^A-Z0-9]/g, '');
+      // Fallback para chrReference e chrInnerReference se chrDocument vazio
       const ref = (p.chrReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const innerRef = (p.chrInnerReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       
@@ -141,22 +144,31 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       // Log dos primeiros 3 imóveis para debug
       if (checkedCount <= 3) {
         console.log(`[Properfy DEBUG] Imóvel ${checkedCount}:`, {
+          chrDocument: p.chrDocument,
+          docBeforeDot,
           chrReference: p.chrReference,
           chrInnerReference: p.chrInnerReference,
-          ref,
-          innerRef,
-          searchNormalized
+          searchNormalized,
+          matchDoc: docBeforeDot === searchNormalized
         });
       }
       
-      // Busca exata ou parcial em chrReference e chrInnerReference
-      const matches = ref === searchNormalized || 
+      // Busca PRIORITÁRIA em chrDocument (produção)
+      // Busca exata primeiro, depois parcial
+      const matches = docBeforeDot === searchNormalized || 
+                      docBeforeDot.includes(searchNormalized) ||
+                      ref === searchNormalized || 
                       innerRef === searchNormalized ||
                       ref.includes(searchNormalized) || 
                       innerRef.includes(searchNormalized);
       
       if (matches) {
-        console.log('[Properfy DEBUG] IMÓVEL ENCONTRADO!', { chrReference: p.chrReference, chrInnerReference: p.chrInnerReference });
+        console.log('[Properfy DEBUG] IMÓVEL ENCONTRADO!', { 
+          chrDocument: p.chrDocument, 
+          docBeforeDot,
+          chrReference: p.chrReference, 
+          chrInnerReference: p.chrInnerReference 
+        });
       }
       
       return matches;
@@ -165,7 +177,7 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
     // Buscar na primeira página
     const property = firstData.data?.find(matchesSearch);
     if (property) {
-      console.log(`[Properfy] Imóvel encontrado na página 1 (chrReference: ${property.chrReference})`);
+      console.log(`[Properfy] Imóvel encontrado na página 1 (chrDocument: ${property.chrDocument || property.chrReference})`);
       return {
         success: true,
         property: mapPropertyData(property, searchRef),
