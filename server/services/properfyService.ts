@@ -185,13 +185,13 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       };
     }
 
-    // Buscar em até 10 páginas (1000 imóveis) para evitar timeout
-    const maxPages = Math.min(totalPages, 10);
-    console.log(`[Properfy] Buscando em até ${maxPages} páginas (de ${totalPages} disponíveis)`);
+    // Buscar em TODAS as páginas (base completa)
+    console.log(`[Properfy] Buscando em TODAS as ${totalPages} páginas (${totalProperties} imóveis)`);
     
-    // Buscar em lotes de 3 páginas por vez (busca paralela)
-    for (let batchStart = 2; batchStart <= maxPages; batchStart += 3) {
-      const batchEnd = Math.min(batchStart + 2, maxPages);
+    // Buscar em lotes de 5 páginas por vez (busca paralela otimizada)
+    for (let batchStart = 2; batchStart <= totalPages; batchStart += 5) {
+      const batchEnd = Math.min(batchStart + 4, totalPages);
+      console.log(`[Properfy] Buscando lote: páginas ${batchStart}-${batchEnd}`);
       const batchPromises = [];
       
       for (let page = batchStart; page <= batchEnd; page++) {
@@ -226,11 +226,10 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       }
     }
 
-    const searchedProperties = maxPages * 100;
-    console.log(`[Properfy] Imóvel não encontrado após buscar ${maxPages} páginas (${searchedProperties} imóveis)`);
+    console.log(`[Properfy] Imóvel não encontrado após buscar TODAS as ${totalPages} páginas (${totalProperties} imóveis)`);
     return {
       success: false,
-      error: `Imóvel não encontrado. Buscamos em ${searchedProperties} imóveis. Verifique o código ou tente buscar por endereço/CEP.`,
+      error: `Imóvel não encontrado. Buscamos em TODOS os ${totalProperties} imóveis da base. Verifique o código ou tente buscar por endereço/CEP.`,
       searchType: 'reference'
     };
 

@@ -810,3 +810,15 @@
 
 **Sintoma:** Erro 524 + TRPCClientError "Unexpected token '<'"
 **Causa:** Busca em 28 páginas demora muito e servidor dá timeout, retorna HTML de erro ao invés de JSON
+
+
+## 🚨 URGENTE - Buscar em TODA a base Properfy (21/01/2026)
+
+- [x] Remover limite de 10 páginas (buscar em TODAS as 28 páginas)
+- [x] Aumentar paralelismo para 5 páginas simultâneas
+- [x] Adicionar logs mostrando progresso (lote: páginas X-Y)
+- [ ] Testar com BG96074001 (deve estar após página 10)
+- [ ] Confirmar funcionamento com usuário
+
+**Requisito do usuário:** "preciso que voce busque sempre na base inteira"
+**Link do imóvel real:** https://baggioimoveis.com.br/imovel/casa-residencial-em-santo-inacio-para-venda-bg96074001/
