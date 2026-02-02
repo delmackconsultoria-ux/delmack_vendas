@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { createProperfyRestRouter } from "../properfy-rest";
+import { initProperfySyncScheduler } from "../jobs/properfySyncJob";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -62,6 +63,9 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Initialize Properfy sync scheduler (runs daily at 2 AM)
+    initProperfySyncScheduler();
   });
 }
 

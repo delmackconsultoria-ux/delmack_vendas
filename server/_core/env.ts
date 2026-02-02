@@ -14,4 +14,8 @@ export const ENV = {
   smtpPass: process.env.SMTP_PASS ?? "",
   smtpFromName: process.env.SMTP_FROM_NAME ?? "Delmack - Sistema de Vendas",
   frontendUrl: process.env.FRONTEND_URL ?? "https://delmack.manus.space",
+  // Properfy API Configuration
+  properfyApiUrl: process.env.PROPERFY_API_URL ?? "",
+  properfyEmail: process.env.PROPERFY_EMAIL ?? "",
+  properfyPassword: process.env.PROPERFY_PASSWORD ?? "",
 };

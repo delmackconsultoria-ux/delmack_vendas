@@ -17,6 +17,7 @@ import ProposalManagement from "./pages/ProposalManagement";
 import ProposalDetail from "./pages/ProposalDetail";
 import Reports from "./pages/Reports";
 import Indicators from "./pages/Indicators";
+import MonthlyIndicatorsConfig from "./pages/MonthlyIndicatorsConfig";
 import Ranking from "./pages/Ranking";
 import SalesApproval from "./pages/SalesApproval";
 import DocumentUpload from "./pages/DocumentUpload";
@@ -87,6 +88,7 @@ function Router() {
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/" component={DashboardBroker} />
@@ -98,6 +100,7 @@ function Router() {
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
               <Route path="/analytics" component={Analytics} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
@@ -121,6 +124,7 @@ function Router() {
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
@@ -140,6 +144,7 @@ function Router() {
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
+              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
               <Route path="/ranking" component={Ranking} />
               <Route path="/analytics" component={Analytics} />
               <Route path="/dashboard" component={Reports} />

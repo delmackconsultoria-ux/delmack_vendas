@@ -573,3 +573,71 @@ export const proposalCommentsRelations = relations(proposalComments, ({ one }) =
     references: [users.id],
   }),
 }));
+
+
+/**
+ * Monthly Indicators - Indicadores Mensais de Preenchimento Manual
+ * Armazena valores mensais de despesas e fundos inseridos por Gerente/Financeiro
+ */
+export const monthlyIndicators = mysqlTable("monthlyIndicators", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  month: varchar("month", { length: 7 }).notNull(), // Format: YYYY-MM
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  // Despesas e Fundos
+  generalExpense: decimal("generalExpense", { precision: 15, scale: 2 }), // Despesa Geral
+  taxExpense: decimal("taxExpense", { precision: 15, scale: 2 }), // Despesa com Impostos
+  innovationFund: decimal("innovationFund", { precision: 15, scale: 2 }), // Fundo Inovação
+  partnerResult: decimal("partnerResult", { precision: 15, scale: 2 }), // Resultado Sócios
+  emergencyFund: decimal("emergencyFund", { precision: 15, scale: 2 }), // Fundo Emergencial
+  // Auditoria
+  createdBy: varchar("createdBy", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type MonthlyIndicator = typeof monthlyIndicators.$inferSelect;
+export type InsertMonthlyIndicator = typeof monthlyIndicators.$inferInsert;
+
+export const monthlyIndicatorsRelations = relations(monthlyIndicators, ({ one }) => ({
+  company: one(companies, {
+    fields: [monthlyIndicators.companyId],
+    references: [companies.id],
+  }),
+  creator: one(users, {
+    fields: [monthlyIndicators.createdBy],
+    references: [users.id],
+  }),
+}));
+
+/**
+ * Properties Cache - Cache de Imóveis do Properfy
+ * Armazena dados sincronizados do Properfy para consultas rápidas
+ */
+export const propertiesCache = mysqlTable("propertiesCache", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  properfyId: varchar("properfyId", { length: 64 }).notNull(), // ID do imóvel no Properfy
+  chrReference: varchar("chrReference", { length: 255 }), // Referência interna
+  chrDocument: varchar("chrDocument", { length: 255 }), // Código BG (ex: BG96074001.isnyv.md)
+  chrStatus: varchar("chrStatus", { length: 50 }), // LISTED, REMOVED, RENTED, etc.
+  dteNewListing: timestamp("dteNewListing"), // Data de angariação
+  dteTermination: timestamp("dteTermination"), // Data de baixa
+  chrTerminationReason: varchar("chrTerminationReason", { length: 255 }), // Motivo da baixa
+  // Dados adicionais para cálculos
+  propertyType: varchar("propertyType", { length: 50 }), // Prontos, Lançamentos
+  saleValue: decimal("saleValue", { precision: 15, scale: 2 }), // Valor de venda
+  // Sincronização
+  lastSyncAt: timestamp("lastSyncAt").defaultNow(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type PropertyCache = typeof propertiesCache.$inferSelect;
+export type InsertPropertyCache = typeof propertiesCache.$inferInsert;
+
+export const propertiesCacheRelations = relations(propertiesCache, ({ one }) => ({
+  company: one(companies, {
+    fields: [propertiesCache.companyId],
+    references: [companies.id],
+  }),
+}));

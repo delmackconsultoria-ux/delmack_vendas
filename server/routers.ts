@@ -8,6 +8,7 @@ import { companyRouter } from "./companyRouter";
 import { brokersRouter } from "./brokersRouter";
 import { superadminRouter } from "./routers/superadminRouter";
 import { goalsRouter } from "./routers/goalsRouter";
+import { monthlyIndicatorsRouter } from "./routers/monthlyIndicatorsRouter";
 import { router } from "./_core/trpc";
 
 export const appRouter = router({
@@ -21,6 +22,7 @@ export const appRouter = router({
   brokers: brokersRouter,
   superadmin: superadminRouter,
   goals: goalsRouter,
+  monthlyIndicators: monthlyIndicatorsRouter,
   // TODO: add feature routers here
 });
 
