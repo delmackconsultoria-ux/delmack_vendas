@@ -103,3 +103,29 @@
 3. **Fechamento por Região:** Ignorar (não implementar)
 4. **Previsão de Pagamento:** Renomear e rastrear alterações (crítico para financeiro)
 5. **Importação:** Um Excel por mês/ano, manter dados organizados para histórico
+
+
+## 🔄 Novas Solicitações do Usuário (05/02/2026)
+
+### Correções de Nomenclatura
+- [x] Substituir "Proposta" por "Nova Venda" em toda a interface
+- [x] Verificar Home, Dashboard, Formulários, Botões, Mensagens
+
+### Formulário de Nova Venda - Campos Manuais
+- [x] Adicionar campo: Loja Angariadora (dropdown: Baggio/Rede UNA/Outros)
+- [x] Adicionar campo: Loja Vendedora (dropdown: Baggio/Rede UNA/Outros)
+- [x] Adicionar campo: Equipe (dropdown: TIME PRONTOS/TIME NOVOS)
+- [x] Adicionar campo: Região (dropdown: Campo Comprido/Vila Izabel/Ecoville/Outros)
+- [x] Adicionar campo: Gestão/Responsável (dropdown com lógica manual):
+  - Camila, Lucas, Marcio, Lucas e Camila
+  - Permite edição manual completa
+- [x] Adicionar campo: Status de Escrituração (dropdown: Escriturada/A Escriturar/Não se aplica)
+- [x] Adicionar campo: Banco (text input)
+- [x] Adicionar campo: Valor Financiado (currency input)
+- [x] Adicionar campo: % Retorno Bancário (percentage input)
+- [x] Campo calculado automático: Valor Retorno = Valor Financiado × (% Retorno / 100)
+
+### Análise de Equivalência Excel vs Sistema
+- [x] Comparar todas as abas do Excel com funcionalidades do sistema
+- [x] Listar funcionalidades/campos que ainda faltam
+- [x] Criar relatório de pendências para o usuário ✅ Ver `EQUIVALENCIA_EXCEL_SISTEMA.md`

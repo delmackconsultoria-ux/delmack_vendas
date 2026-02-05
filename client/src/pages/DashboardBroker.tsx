@@ -69,8 +69,8 @@ export default function DashboardBroker() {
         <div className="mb-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold mb-2">Registre uma Nova Proposta</h3>
-              <p className="text-blue-100">Comece agora a registrar suas propostas de venda</p>
+              <h3 className="text-2xl font-bold mb-2">Registre uma Nova Venda</h3>
+              <p className="text-blue-100">Comece agora a registrar suas vendas</p>
             </div>
             <Button
               onClick={() => setLocation("/proposals/new")}
@@ -78,7 +78,7 @@ export default function DashboardBroker() {
               size="lg"
             >
               <Plus className="h-5 w-5" />
-              Nova Proposta
+              Nova Venda
             </Button>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function DashboardBroker() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold text-slate-900">0</p>
-              <p className="text-xs text-slate-600 mt-2">Propostas registradas</p>
+              <p className="text-xs text-slate-600 mt-2">Vendas registradas</p>
             </CardContent>
           </Card>
 
@@ -210,16 +210,16 @@ export default function DashboardBroker() {
           <CardContent>
             <div className="text-center py-12">
               <Home className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600 font-medium">Nenhuma proposta registrada ainda</p>
+              <p className="text-slate-600 font-medium">Nenhuma venda registrada ainda</p>
               <p className="text-slate-500 text-sm mt-1">
-                Comece registrando sua primeira proposta
+                Comece registrando sua primeira venda
               </p>
               <Button
                 onClick={() => setLocation("/proposals/new")}
                 className="mt-4 bg-blue-600 hover:bg-blue-700"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Nova Proposta
+                Nova Venda
               </Button>
             </div>
           </CardContent>

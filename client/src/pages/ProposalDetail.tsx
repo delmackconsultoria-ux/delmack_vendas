@@ -27,7 +27,7 @@ export default function ProposalDetail() {
   const { data: docUrl } = trpc.sales.getProposalDocument.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
 
   if (isLoading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Carregando...</div>;
-  if (!sale) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Proposta não encontrada</div>;
+  if (!sale) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Venda não encontrada</div>;
 
   const formatCurrency = (value: string | number | null | undefined) => {
     if (!value) return "R$ 0,00";
@@ -100,7 +100,7 @@ ${sale.observation || "Nenhuma observação"}
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `proposta-${sale.property?.propertyReference || params.id}.txt`;
+    a.download = `venda-${sale.property?.propertyReference || params.id}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Proposta exportada com sucesso!");

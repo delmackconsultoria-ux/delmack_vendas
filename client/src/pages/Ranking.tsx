@@ -122,7 +122,7 @@ export default function Ranking() {
         {!isTestCompany && (
           <Card className="bg-amber-50 border-amber-200 mb-8">
             <CardContent className="pt-6">
-              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. O ranking será exibido quando houver propostas e vendas registradas.</p>
+              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. O ranking será exibido quando houver vendas registradas.</p>
             </CardContent>
           </Card>
         )}

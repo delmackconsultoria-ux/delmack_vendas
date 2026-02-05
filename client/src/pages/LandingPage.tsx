@@ -58,14 +58,14 @@ export default function LandingPage() {
         "Acompanhar comissões em tempo real",
         "Visualizar ranking de performance",
         "Upload de documentos",
-        "Histórico completo de propostas"
+        "Histórico completo de vendas"
       ]
     },
     {
       name: "Gerentes",
       color: "bg-green-600",
       features: [
-        "Aprovar vendas e propostas",
+        "Aprovar vendas",
         "Configurar metas mensais",
         "Dashboard de progresso",
         "Relatórios por responsável",

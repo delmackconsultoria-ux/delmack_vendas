@@ -65,6 +65,17 @@ const createSaleSchema = z.object({
   cartoryBank: z.string().optional(),
   despachante: z.string().optional(),
   investmentType: z.string().optional(),
+  
+  // New Fields (Excel Migration)
+  listingStore: z.string().optional(), // Loja Angariadora
+  sellingStore: z.string().optional(), // Loja Vendedora
+  team: z.string().optional(), // Equipe
+  region: z.string().optional(), // Região
+  deedStatus: z.string().optional(), // Status de Escrituração
+  managementResponsible: z.string().optional(), // Gestão/Responsável
+  bankName: z.string().optional(), // Banco
+  financedAmount: z.number().optional(), // Valor Financiado
+  bankReturnPercentage: z.number().optional(), // % Retorno Bancário
 
   // Commission Information
   brokerAngariadorType: z.enum(["internal", "external"]).optional(),
@@ -287,6 +298,19 @@ export const salesRouter = router({
           saleType: input.saleType || null,
           responsible: input.responsible || null,
           invoiceNumber: input.invoiceNumber || null,
+          // New Fields (Excel Migration)
+          listingStore: input.listingStore || null,
+          sellingStore: input.sellingStore || null,
+          team: input.team || null,
+          region: input.region || null,
+          deedStatus: input.deedStatus || null,
+          managementResponsible: input.managementResponsible || null,
+          bankName: input.bankName || null,
+          financedAmount: input.financedAmount?.toString() || null,
+          bankReturnPercentage: input.bankReturnPercentage?.toString() || null,
+          bankReturnAmount: input.financedAmount && input.bankReturnPercentage 
+            ? (input.financedAmount * (input.bankReturnPercentage / 100)).toString()
+            : null,
         });
 
         // Criar comissões automaticamente para angariador e vendedor

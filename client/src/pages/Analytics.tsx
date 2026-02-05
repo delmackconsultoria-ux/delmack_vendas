@@ -123,7 +123,7 @@ export default function Analytics() {
         {!isTestCompany && (
           <Card className="bg-amber-50 border-amber-200 mb-8">
             <CardContent className="pt-6">
-              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. Os gráficos serão exibidos quando houver propostas e vendas registradas.</p>
+              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. Os gráficos serão exibidos quando houver vendas registradas.</p>
             </CardContent>
           </Card>
         )}

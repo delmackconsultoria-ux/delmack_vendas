@@ -128,7 +128,7 @@ export default function DashboardFinance() {
             <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-amber-800 font-medium">Nenhum dado cadastrado para esta empresa.</p>
-              <p className="text-amber-700 text-sm mt-1">Os dados financeiros serão exibidos quando houver propostas e vendas registradas.</p>
+              <p className="text-amber-700 text-sm mt-1">Os dados financeiros serão exibidos quando houver vendas registradas.</p>
             </div>
           </div>
         )}

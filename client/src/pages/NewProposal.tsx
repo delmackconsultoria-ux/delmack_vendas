@@ -117,6 +117,17 @@ interface FormData {
   cartoryBank: string;
   despachante: string;
   investmentType: string;
+  
+  // New Fields (Excel Migration)
+  listingStore: string; // Loja Angariadora
+  sellingStore: string; // Loja Vendedora
+  team: string; // Equipe
+  region: string; // Região
+  deedStatus: string; // Status de Escrituração
+  managementResponsible: string; // Gestão/Responsável
+  bankName: string; // Banco
+  financedAmount: string; // Valor Financiado
+  bankReturnPercentage: string; // % Retorno Bancário
 
   // Broker Info
   brokerAngariadorType: "internal" | "external";
@@ -211,6 +222,17 @@ export default function NewProposal() {
     cartoryBank: "",
     despachante: "",
     investmentType: "",
+    
+    // New Fields (Excel Migration)
+    listingStore: "",
+    sellingStore: "",
+    team: "",
+    region: "",
+    deedStatus: "",
+    managementResponsible: "",
+    bankName: "",
+    financedAmount: "",
+    bankReturnPercentage: "",
 
     brokerAngariadorType: "internal",
     brokerAngariador: "",
@@ -690,7 +712,7 @@ export default function NewProposal() {
             contentType: proposalFile.type
           });
         } catch (uploadError) {
-          console.error('Erro ao fazer upload da proposta:', uploadError);
+          console.error('Erro ao fazer upload do documento:', uploadError);
         }
       }
       
@@ -1424,6 +1446,144 @@ export default function NewProposal() {
               </CardContent>
             </Card>
 
+            {/* Gestão e Detalhes Operacionais */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Gestão e Detalhes Operacionais</CardTitle>
+                <CardDescription>Informações de lojas, equipe, região e financiamento</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Loja Angariadora</Label>
+                    <Select value={formData.listingStore} onValueChange={(value) => handleInputChange("listingStore", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="baggio">Baggio</SelectItem>
+                        <SelectItem value="rede_una">Rede UNA</SelectItem>
+                        <SelectItem value="outros">Outros</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Loja Vendedora</Label>
+                    <Select value={formData.sellingStore} onValueChange={(value) => handleInputChange("sellingStore", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="baggio">Baggio</SelectItem>
+                        <SelectItem value="rede_una">Rede UNA</SelectItem>
+                        <SelectItem value="outros">Outros</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Equipe</Label>
+                    <Select value={formData.team} onValueChange={(value) => handleInputChange("team", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="time_prontos">TIME PRONTOS</SelectItem>
+                        <SelectItem value="time_novos">TIME NOVOS</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Região</Label>
+                    <Select value={formData.region} onValueChange={(value) => handleInputChange("region", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="campo_comprido">Campo Comprido</SelectItem>
+                        <SelectItem value="vila_izabel">Vila Izabel</SelectItem>
+                        <SelectItem value="ecoville">Ecoville</SelectItem>
+                        <SelectItem value="outros">Outros</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Gestão/Responsável</Label>
+                    <Select 
+                      value={formData.managementResponsible} 
+                      onValueChange={(value) => handleInputChange("managementResponsible", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="camila">Camila</SelectItem>
+                        <SelectItem value="lucas">Lucas</SelectItem>
+                        <SelectItem value="marcio">Marcio</SelectItem>
+                        <SelectItem value="lucas_e_camila">Lucas e Camila</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-slate-500 mt-1">Pode ser alterado manualmente</p>
+                  </div>
+                  <div>
+                    <Label>Status de Escrituração</Label>
+                    <Select value={formData.deedStatus} onValueChange={(value) => handleInputChange("deedStatus", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="escriturada">Escriturada</SelectItem>
+                        <SelectItem value="a_escriturar">A Escriturar</SelectItem>
+                        <SelectItem value="nao_se_aplica">Não se aplica</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Banco (Financiamento)</Label>
+                    <Input
+                      placeholder="Nome do banco"
+                      value={formData.bankName}
+                      onChange={(e) => handleInputChange("bankName", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Valor Financiado</Label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.financedAmount}
+                      onChange={(e) => handleInputChange("financedAmount", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>% Retorno Bancário</Label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.bankReturnPercentage}
+                      onChange={(e) => handleInputChange("bankReturnPercentage", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Valor Retorno (Calculado)</Label>
+                    <Input
+                      type="text"
+                      disabled
+                      className="bg-slate-100"
+                      value={
+                        formData.financedAmount && formData.bankReturnPercentage
+                          ? formatCurrency(
+                              parseFloat(formData.financedAmount) *
+                              (parseFloat(formData.bankReturnPercentage) / 100)
+                            )
+                          : "R$ 0,00"
+                      }
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Calculado automaticamente</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Broker Section */}
             <Card>
               <CardHeader>
@@ -1692,7 +1852,7 @@ export default function NewProposal() {
                     ) : (
                       <>
                         <Upload className="h-6 w-6 text-slate-400" />
-                        <span className="text-slate-500">Clique para anexar proposta (PDF, DOC, JPG)</span>
+                        <span className="text-slate-500">Clique para anexar documento de venda (PDF, DOC, JPG)</span>
                       </>
                     )}
                   </label>

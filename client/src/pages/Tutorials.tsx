@@ -54,7 +54,7 @@ const tutorials: Tutorial[] = [
     icon: FileText,
     roles: ["broker"],
     steps: [
-      "Acesse o menu lateral e clique em 'Nova Proposta'",
+      "Acesse o menu lateral e clique em 'Nova Venda'",
       "Escolha o tipo de imóvel: Baggio (use a referência) ou Externo (preencha manualmente)",
       "Se for Baggio, digite a referência (ex: BG66206001) e clique em 'Buscar no Properfy'",
       "Preencha os dados do comprador: nome, CPF/CNPJ, telefone",
@@ -94,7 +94,7 @@ const tutorials: Tutorial[] = [
     icon: FileText,
     roles: ["broker"],
     steps: [
-      "Acesse 'Minhas Propostas' no menu lateral",
+      "Acesse 'Minhas Vendas' no menu lateral",
       "Encontre a proposta desejada e clique nela",
       "Na página de detalhes, role até a seção 'Documentos'",
       "Clique em 'Fazer Upload de Documento'",
@@ -349,7 +349,7 @@ const tutorials: Tutorial[] = [
     icon: Search,
     roles: ["broker", "manager", "finance"],
     steps: [
-      "Acesse 'Propostas' ou 'Minhas Propostas' no menu lateral",
+      "Acesse 'Propostas' ou 'Minhas Vendas' no menu lateral",
       "Use a barra de busca para procurar por: nome, referência, endereço",
       "Use os filtros: Status, Período, Corretor, Tipo de Negócio",
       "Clique em 'Aplicar Filtros' para refinar resultados",
@@ -391,7 +391,7 @@ const faqs: FAQ[] = [
   {
     id: "faq-broker-edit-sale",
     question: "Posso editar uma venda já registrada?",
-    answer: "Sim, você pode editar vendas com status 'Rascunho' ou 'Pendente'. Acesse 'Minhas Propostas', clique na venda desejada e depois em 'Editar'. Vendas aprovadas ou canceladas não podem ser editadas.",
+    answer: "Sim, você pode editar vendas com status 'Rascunho' ou 'Pendente'. Acesse 'Minhas Vendas', clique na venda desejada e depois em 'Editar'. Vendas aprovadas ou canceladas não podem ser editadas.",
     category: "Vendas",
     roles: ["broker"]
   },
@@ -412,7 +412,7 @@ const faqs: FAQ[] = [
   {
     id: "faq-broker-external-property",
     question: "Como registro imóvel que não é Baggio?",
-    answer: "Ao criar nova proposta, selecione 'Imóvel Externo' e preencha manualmente: endereço completo, CEP, cidade, estado, valor de anúncio. Não é necessário referência para imóveis externos.",
+    answer: "Ao criar nova venda, selecione 'Imóvel Externo' e preencha manualmente: endereço completo, CEP, cidade, estado, valor de anúncio. Não é necessário referência para imóveis externos.",
     category: "Vendas",
     roles: ["broker"]
   },

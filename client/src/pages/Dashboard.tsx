@@ -104,10 +104,10 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-slate-600" />
-                Nova Proposta
+                Nova Venda
               </CardTitle>
               <CardDescription>
-                Registre uma nova proposta de venda
+                Registre uma nova venda de venda
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -115,7 +115,7 @@ export default function Dashboard() {
                 onClick={() => setLocation("/proposals/new")}
                 className="w-full bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-950"
               >
-                Nova Proposta
+                Nova Venda
               </Button>
             </CardContent>
           </Card>
@@ -124,7 +124,7 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-slate-600" />
-                Minhas Propostas
+                Minhas Vendas
               </CardTitle>
               <CardDescription>
                 Visualize todas as suas propostas registradas
@@ -136,7 +136,7 @@ export default function Dashboard() {
                 onClick={() => setLocation("/proposals")}
                 className="w-full"
               >
-                Ver Propostas
+                Ver Vendas
               </Button>
             </CardContent>
           </Card>
