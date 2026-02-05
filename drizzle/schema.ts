@@ -149,6 +149,28 @@ export const sales = mysqlTable("sales", {
   saleType: mysqlEnum("saleType", ["lancamento", "pronto"]),
   responsible: varchar("responsible", { length: 255 }), // Lucas ou Camila
   invoiceNumber: varchar("invoiceNumber", { length: 100 }), // Número da NF
+  // Novos campos para migração do Excel
+  listingDate: timestamp("listingDate"), // Data da Angariação (vem do Properfy dteNewListing)
+  listingStore: varchar("listingStore", { length: 100 }), // Loja Angariadora: Baggio/Rede UNA/Outros
+  sellingStore: varchar("sellingStore", { length: 100 }), // Loja Vendedora: Baggio/Rede UNA/Outros
+  team: varchar("team", { length: 100 }), // Equipe: TIME PRONTOS, TIME NOVOS, etc.
+  region: varchar("region", { length: 100 }), // Região: Campo Comprido/Vila Izabel/Ecoville/Outros
+  managementResponsible: varchar("managementResponsible", { length: 100 }), // Camila/Lucas/Marcio/Lucas e Camila
+  deedStatus: varchar("deedStatus", { length: 50 }), // Escriturada/A Escriturar/Não se aplica
+  bankName: varchar("bankName", { length: 255 }), // Banco: Caixa, Itaú, Bradesco, etc.
+  financedAmount: decimal("financedAmount", { precision: 15, scale: 2 }), // Valor Financiado
+  bankReturnPercentage: decimal("bankReturnPercentage", { precision: 5, scale: 2 }), // % Retorno Bancário
+  bankReturnAmount: decimal("bankReturnAmount", { precision: 15, scale: 2 }), // Valor Retorno (calculado)
+  observations: text("observations"), // Observações gerais
+  wasRemoved: boolean("wasRemoved").default(false), // Se foi baixado
+  priceDiscount: decimal("priceDiscount", { precision: 15, scale: 2 }), // Calculado: advertisementValue - saleValue
+  listingToSaleDays: int("listingToSaleDays"), // Calculado: dias entre listingDate e saleDate
+  // Comissões Recebidas
+  commissionPaymentDate: timestamp("commissionPaymentDate"), // Data de Recebimento da Comissão
+  commissionAmountReceived: decimal("commissionAmountReceived", { precision: 15, scale: 2 }), // Valor da Comissão Recebida
+  commissionPaymentBank: varchar("commissionPaymentBank", { length: 255 }), // Banco Pagador da Comissão
+  commissionPaymentMethod: varchar("commissionPaymentMethod", { length: 100 }), // PIX/TED/Boleto/Dinheiro
+  commissionPaymentObservations: text("commissionPaymentObservations"), // Observações do pagamento da comissão
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
@@ -639,5 +661,35 @@ export const propertiesCacheRelations = relations(propertiesCache, ({ one }) => 
   company: one(companies, {
     fields: [propertiesCache.companyId],
     references: [companies.id],
+  }),
+}));
+
+/**
+ * Sale Payment History - Rastreamento de alterações em Previsão de Pagamento
+ * Armazena histórico de todas as alterações no campo expectedPaymentDate
+ */
+export const salePaymentHistory = mysqlTable("salePaymentHistory", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  saleId: varchar("saleId", { length: 64 }).notNull(),
+  fieldChanged: varchar("fieldChanged", { length: 100 }).notNull(), // "expectedPaymentDate"
+  oldValue: text("oldValue"), // Valor anterior (pode ser null na primeira vez)
+  newValue: text("newValue").notNull(), // Novo valor
+  changedBy: varchar("changedBy", { length: 64 }).notNull(), // ID do usuário que alterou
+  changedByName: varchar("changedByName", { length: 255 }), // Nome do usuário
+  reason: text("reason"), // Motivo da alteração (opcional)
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type SalePaymentHistory = typeof salePaymentHistory.$inferSelect;
+export type InsertSalePaymentHistory = typeof salePaymentHistory.$inferInsert;
+
+export const salePaymentHistoryRelations = relations(salePaymentHistory, ({ one }) => ({
+  sale: one(sales, {
+    fields: [salePaymentHistory.saleId],
+    references: [sales.id],
+  }),
+  changedByUser: one(users, {
+    fields: [salePaymentHistory.changedBy],
+    references: [users.id],
   }),
 }));

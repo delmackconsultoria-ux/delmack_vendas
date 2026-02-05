@@ -141,6 +141,13 @@
       "when": 1770066295085,
       "tag": "0019_unusual_talon",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1770324583175,
+      "tag": "0020_loose_revanche",
+      "breakpoints": true
     }
   ]
 }
