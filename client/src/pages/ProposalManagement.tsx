@@ -31,6 +31,10 @@ export default function ProposalManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [brokerFilter, setBrokerFilter] = useState<string>("all");
+  
+  // Filtros de Mês/Ano
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [selectedYear, setSelectedYear] = useState<string>("all");
   const [statusDialog, setStatusDialog] = useState<{ open: boolean; saleId: string; currentStatus: string }>({ open: false, saleId: "", currentStatus: "" });
   const [newStatus, setNewStatus] = useState("");
   const [statusComment, setStatusComment] = useState("");
@@ -83,9 +87,27 @@ export default function ProposalManagement() {
         sale.propertyId?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "all" || sale.status === statusFilter;
       const matchesBroker = brokerFilter === "all" || sale.brokerVendedor === brokerFilter;
-      return matchesSearch && matchesStatus && matchesBroker;
+      
+      // Filtro de Mês/Ano
+      let matchesMonth = true;
+      let matchesYear = true;
+      if (selectedMonth !== "all" || selectedYear !== "all") {
+        const saleDate = sale.saleDate ? new Date(sale.saleDate) : null;
+        if (saleDate) {
+          const saleMonth = saleDate.getMonth() + 1; // 1-12
+          const saleYear = saleDate.getFullYear();
+          matchesMonth = selectedMonth === "all" || saleMonth === parseInt(selectedMonth);
+          matchesYear = selectedYear === "all" || saleYear === parseInt(selectedYear);
+        } else {
+          // Se não tem data de venda, não passa no filtro
+          matchesMonth = false;
+          matchesYear = false;
+        }
+      }
+      
+      return matchesSearch && matchesStatus && matchesBroker && matchesMonth && matchesYear;
     });
-  }, [salesData, searchTerm, statusFilter, brokerFilter]);
+  }, [salesData, searchTerm, statusFilter, brokerFilter, selectedMonth, selectedYear]);
 
   const formatCurrency = (value: number | string | null) => {
     if (!value) return "R$ 0,00";
@@ -254,6 +276,40 @@ export default function ProposalManagement() {
                   </SelectContent>
                 </Select>
               )}
+              
+              {/* Filtro de Mês */}
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-[160px] px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              >
+                <option value="all">Todos os meses</option>
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+              </select>
+              
+              {/* Filtro de Ano */}
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-[120px] px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              >
+                <option value="all">Todos os anos</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+              </select>
             </div>
           </CardContent>
         </Card>

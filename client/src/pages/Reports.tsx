@@ -28,6 +28,10 @@ export default function ReportsPage() {
   const [region, setRegion] = useState("all");
   const [minValue, setMinValue] = useState("");
   const [maxValue, setMaxValue] = useState("");
+  
+  // Filtros de Mês/Ano
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [selectedYear, setSelectedYear] = useState<string>("all");
 
   // Buscar dados reais de vendas da empresa
   const { data: salesData } = trpc.sales.listMySales.useQuery();
@@ -76,12 +80,27 @@ export default function ReportsPage() {
     // Filtrar vendas primeiro
     let filteredSales = sales;
     
-    // Filtro de data
-    if (startDate) {
-      filteredSales = filteredSales.filter((s: any) => new Date(s.createdAt) >= new Date(startDate));
-    }
-    if (endDate) {
-      filteredSales = filteredSales.filter((s: any) => new Date(s.createdAt) <= new Date(endDate));
+    // Filtro de Mês/Ano (prioridade sobre data customizada)
+    if (selectedMonth !== "all" || selectedYear !== "all") {
+      filteredSales = filteredSales.filter((s: any) => {
+        if (!s.saleDate) return false;
+        const saleDate = new Date(s.saleDate);
+        const saleMonth = saleDate.getMonth() + 1; // 1-12
+        const saleYear = saleDate.getFullYear();
+        
+        const monthMatch = selectedMonth === "all" || saleMonth === parseInt(selectedMonth);
+        const yearMatch = selectedYear === "all" || saleYear === parseInt(selectedYear);
+        
+        return monthMatch && yearMatch;
+      });
+    } else {
+      // Filtro de data customizada (apenas se mês/ano não estiver selecionado)
+      if (startDate) {
+        filteredSales = filteredSales.filter((s: any) => new Date(s.saleDate || s.createdAt) >= new Date(startDate));
+      }
+      if (endDate) {
+        filteredSales = filteredSales.filter((s: any) => new Date(s.saleDate || s.createdAt) <= new Date(endDate));
+      }
     }
     
     // Filtro de tipo de imóvel
@@ -352,6 +371,50 @@ export default function ReportsPage() {
                       </select>
                     </div>
 
+                    {/* Mês */}
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Mês
+                      </label>
+                      <select
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="all">Todos os meses</option>
+                        <option value="1">Janeiro</option>
+                        <option value="2">Fevereiro</option>
+                        <option value="3">Março</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Maio</option>
+                        <option value="6">Junho</option>
+                        <option value="7">Julho</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                      </select>
+                    </div>
+
+                    {/* Ano */}
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Ano
+                      </label>
+                      <select
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="all">Todos os anos</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                      </select>
+                    </div>
+
                     {/* Botão Filtros Avançados */}
                     <div className="flex items-end">
                       <button 
@@ -444,6 +507,8 @@ export default function ReportsPage() {
                       <div className="mt-4 flex justify-end">
                         <button
                           onClick={() => {
+                            setSelectedMonth("all");
+                            setSelectedYear("all");
                             setStartDate("");
                             setEndDate("");
                             setPropertyType("all");

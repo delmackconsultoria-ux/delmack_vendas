@@ -179,3 +179,31 @@
 - [ ] ETAPA 3: Aguardando mapeamento de nomes completos do usuário
 - [ ] ETAPA 4: Atualizar script de importação com normalização
 - [ ] ETAPA 5: Testar com perfil de corretor após mapeamento
+
+
+## 🔄 NOVA SOLICITAÇÃO (05/02/2026 - 19:35)
+
+### Filtros de Mês/Ano nas Páginas Principais
+**Motivo:** Dados importados são de Janeiro/2025, sistema pode estar filtrando apenas mês/ano atual
+
+- [x] Adicionar filtro de Mês/Ano na página **Relatórios** (`/reports`)
+  - [x] Dropdown de Mês (Janeiro-Dezembro)
+  - [x] Dropdown de Ano (2024, 2025, 2026...)
+  - [x] Opção "Todos os períodos"
+  - [x] Aplicar filtro em todas as visualizações e gráficos
+
+- [x] Adicionar filtro de Mês/Ano na página **Indicadores** (`/indicators`)
+  - [x] Dropdown de Mês (Janeiro-Dezembro)
+  - [x] Dropdown de Ano (2024, 2025, 2026...)
+  - [x] Opção "Todos os períodos"
+  - [ ] Recalcular indicadores com base no período selecionado (aguardando conexão com dados reais)
+
+- [x] Adicionar filtro de Mês/Ano na página **Histórico** (`/proposals`)
+  - [x] Dropdown de Mês (Janeiro-Dezembro)
+  - [x] Dropdown de Ano (2024, 2025, 2026...)
+  - [x] Opção "Todos os períodos"
+  - [x] Filtrar tabela de vendas por período
+
+- [ ] Testar com perfil Gerente (Camila Pires)
+  - [ ] Selecionar Janeiro/2025 e verificar se aparecem as 29 vendas importadas
+  - [ ] Validar que gráficos e indicadores refletem dados corretos
