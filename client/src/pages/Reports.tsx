@@ -63,12 +63,17 @@ export default function ReportsPage() {
 
     if (reportType === "sales-engagement") {
       return data.map((d: any) => ({ name: d.name, vendas: d.vendas, angariações: d.angariações }));
+    } else if (reportType === "engagement-value") {
+      return data.map((d: any) => ({ name: d.name, valor: d.angariações }));
     } else if (reportType === "engagement-qty") {
       return data.map((d: any) => ({ name: d.name, quantidade: d.qtdAngariações }));
     } else if (reportType === "cancellations-qty") {
       return data.map((d: any) => ({ name: d.name, quantidade: d.qtdBaixas }));
     } else if (reportType === "cancellations-value") {
       return data.map((d: any) => ({ name: d.name, valor: d.valorBaixas }));
+    } else if (reportType === "pivot-table") {
+      // Tabela pivotada: retornar dados em formato especial
+      return data.map((d: any) => ({ name: d.name, vendas: d.vendas, angariações: d.angariações }));
     }
     return [];
   };
@@ -77,12 +82,16 @@ export default function ReportsPage() {
     switch (reportType) {
       case "sales-engagement":
         return "Vendas + Angariações por Corretor";
+      case "engagement-value":
+        return "Valor de Angariações por Corretor";
       case "engagement-qty":
         return "Quantidade de Angariações por Corretor";
       case "cancellations-qty":
         return "Quantidade de Baixas por Corretor";
       case "cancellations-value":
         return "Valor de Baixas por Corretor";
+      case "pivot-table":
+        return "Tabela Pivotada (Valor x Corretor)";
       default:
         return "Relatório";
     }
@@ -92,12 +101,16 @@ export default function ReportsPage() {
     switch (reportType) {
       case "sales-engagement":
         return "Mostra o valor total de vendas e angariações por corretor";
+      case "engagement-value":
+        return "Mostra o valor total de angariações por corretor";
       case "engagement-qty":
         return "Mostra a quantidade de angariações realizadas por corretor";
       case "cancellations-qty":
         return "Mostra a quantidade de cancelamentos/baixas por corretor";
       case "cancellations-value":
         return "Mostra o valor total de cancelamentos/baixas por corretor";
+      case "pivot-table":
+        return "Mostra valores de vendas e angariações em formato de tabela pivotada";
       default:
         return "";
     }
@@ -157,9 +170,11 @@ export default function ReportsPage() {
                         className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="sales-engagement">Vendas + Angariações</option>
+                        <option value="engagement-value">Valor Angariações</option>
                         <option value="engagement-qty">Qtd Angariações</option>
                         <option value="cancellations-qty">Qtd Baixas</option>
                         <option value="cancellations-value">Valor Baixas</option>
+                        <option value="pivot-table">Tabela Pivotada</option>
                       </select>
                     </div>
 
@@ -260,7 +275,7 @@ export default function ReportsPage() {
                 <CardContent>
                   {chartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={400}>
-                      {reportType === "sales-engagement" ? (
+                      {reportType === "sales-engagement" || reportType === "pivot-table" ? (
                         <BarChart data={chartData}>
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="name" />
@@ -270,6 +285,15 @@ export default function ReportsPage() {
                           <Bar dataKey="vendas" fill="#3b82f6" name="Vendas" />
                           <Bar dataKey="angariações" fill="#8b5cf6" name="Angariações" />
                         </BarChart>
+                      ) : reportType === "engagement-value" || reportType === "cancellations-value" ? (
+                        <BarChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                          <Legend />
+                          <Bar dataKey="valor" fill="#3b82f6" name="Valor" />
+                        </BarChart>
                       ) : (
                         <BarChart data={chartData}>
                           <CartesianGrid strokeDasharray="3 3" />
@@ -277,7 +301,7 @@ export default function ReportsPage() {
                           <YAxis />
                           <Tooltip />
                           <Legend />
-                          <Bar dataKey={reportType === "engagement-qty" ? "quantidade" : reportType === "cancellations-qty" ? "quantidade" : "valor"} fill="#3b82f6" />
+                          <Bar dataKey="quantidade" fill="#3b82f6" name="Quantidade" />
                         </BarChart>
                       )}
                     </ResponsiveContainer>

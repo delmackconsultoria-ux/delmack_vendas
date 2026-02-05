@@ -1,47 +1,44 @@
-# TODO - Preparação para Produção
+# TODO - Implementação de Relatórios
 
-## 📊 Implementação de Funcionalidades (27/01/2026)
+## 📊 Relatórios na Aba de Relatórios (27/01/2026)
 
-### Sugestão 2: Campos de Preenchimento Manual
-- [x] Criar tabela `monthly_indicators` no schema
-- [x] Criar endpoints tRPC para CRUD de indicadores mensais
-- [x] Implementar interface de preenchimento para Gerente/Financeiro
-- [x] Campos: Despesa Geral, Despesa com Impostos, Fundo Inovação, Resultado Sócios, Fundo Emergencial
-- [x] Adicionar validação de permissões (apenas manager e finance)
-- [ ] Integrar valores manuais com página de Indicadores
+### Relatórios a Implementar:
 
-### Sugestão 3: Sincronização Automática Properfy
-- [x] Criar serviço de sincronização `properfySyncService.ts`
-- [x] Implementar busca de todos os imóveis ativos
-- [x] Salvar/atualizar status (chrStatus) no banco local
-- [x] Salvar/atualizar datas (dteNewListing, dteTermination)
-- [x] Criar job agendado diário (executar às 2h da manhã)
-- [x] Adicionar logs de sincronização
-- [x] Implementar tratamento de erros e retry
+1. **Valor por corretor (angariações + vendas)** ✅ IMPLEMENTADO
+   - [x] Mostrar soma de valores lado a lado
+   - [x] Sistema interno: vendas registradas
+   - [x] Properfy: imóveis angariados (dteNewListing)
 
-### Estrutura de Dados:
-```
-monthly_indicators:
-- id (PK)
-- month (YYYY-MM)
-- companyId
-- generalExpense (decimal)
-- taxExpense (decimal)
-- innovationFund (decimal)
-- partnerResult (decimal)
-- emergencyFund (decimal)
-- createdBy
-- createdAt
-- updatedAt
+2. **Valor por corretor (somente angariações)** ✅ IMPLEMENTADO
+   - [x] Soma de valores de imóveis angariados
+   - [x] Fonte: Properfy (imóveis com dteNewListing no período)
 
-properties_cache:
-- id (PK)
-- properfyId
-- chrReference
-- chrDocument
-- chrStatus
-- dteNewListing
-- dteTermination
-- lastSyncAt
-- companyId
-```
+3. **Quantidade por corretor (somente angariações)** ✅ IMPLEMENTADO
+   - [x] Contagem de imóveis angariados
+   - [x] Fonte: Properfy (imóveis com dteNewListing no período)
+
+4. **Quantidade de baixas por corretor** ⏳ Aguardando definição
+   - [ ] Aguardando: Como identificar corretor responsável pela baixa?
+   - [ ] Fonte: Properfy (chrStatus = 'REMOVED')
+
+5. **Valor de baixas por corretor** ⏳ Aguardando definição
+   - [ ] Aguardando: Como identificar corretor responsável pela baixa?
+   - [ ] Fonte: Properfy (chrStatus = 'REMOVED')
+
+6. **Escrituradas vs Não escrituradas** ⏳ Aguardando definição
+   - [ ] Aguardando: Onde será registrado esse status?
+   - [ ] Mostrar quantidade e valor de cada categoria + totais
+
+7. **Tabela pivotada (valor x corretor)** ✅ IMPLEMENTADO
+   - [x] Linhas: Valores (R$)
+   - [x] Colunas: Nome dos corretores
+   - [x] Células: Separado por "Vendas" e "Angariações"
+
+### Regras de Negócio:
+- **Properfy**: Fonte de status do imóvel, quantidade de anúncios, imóveis, angariações
+- **Sistema Interno (Delmack)**: ÚNICA FONTE DA VERDADE para vendas, recebimentos e comissões
+
+### Estrutura de Dados Necessária:
+- Tabela `sales`: vendas registradas com `brokerId` e `saleValue`
+- Tabela `propertiesCache`: cache de imóveis do Properfy com `chrStatus`, `dteNewListing`, `dcmSaleValue`
+- Relacionamento: `sales.propertyId` → `propertiesCache.id`
