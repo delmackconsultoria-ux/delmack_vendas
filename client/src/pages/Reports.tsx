@@ -21,6 +21,13 @@ export default function ReportsPage() {
   const { user } = useAuth();
   const [reportType, setReportType] = useState("sales-engagement");
   const [selectedBroker, setSelectedBroker] = useState("all");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [propertyType, setPropertyType] = useState("all");
+  const [region, setRegion] = useState("all");
+  const [minValue, setMinValue] = useState("");
+  const [maxValue, setMaxValue] = useState("");
 
   // Buscar dados reais de vendas da empresa
   const { data: salesData } = trpc.sales.listMySales.useQuery();
@@ -55,7 +62,54 @@ export default function ReportsPage() {
 
   // Determinar dados a exibir baseado no filtro
   const getChartData = () => {
-    let data = salesByBroker;
+    // Filtrar vendas primeiro
+    let filteredSales = sales;
+    
+    // Filtro de data
+    if (startDate) {
+      filteredSales = filteredSales.filter((s: any) => new Date(s.createdAt) >= new Date(startDate));
+    }
+    if (endDate) {
+      filteredSales = filteredSales.filter((s: any) => new Date(s.createdAt) <= new Date(endDate));
+    }
+    
+    // Filtro de tipo de imóvel
+    if (propertyType !== "all") {
+      filteredSales = filteredSales.filter((s: any) => s.propertyType === propertyType);
+    }
+    
+    // Filtro de região
+    if (region !== "all") {
+      filteredSales = filteredSales.filter((s: any) => s.region === region);
+    }
+    
+    // Filtro de faixa de valor
+    if (minValue) {
+      filteredSales = filteredSales.filter((s: any) => Number(s.saleValue) >= Number(minValue));
+    }
+    if (maxValue) {
+      filteredSales = filteredSales.filter((s: any) => Number(s.saleValue) <= Number(maxValue));
+    }
+    
+    // Recalcular dados por corretor com vendas filtradas
+    let data = brokers.map((broker: any) => {
+      const brokerSales = filteredSales.filter((s: any) => s.brokerId === broker.id);
+      const totalVendas = brokerSales.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+      const totalAngariações = brokerSales.reduce((sum: number, s: any) => sum + (Number(s.engagementValue) || 0), 0);
+      const qtdAngariações = brokerSales.filter((s: any) => s.engagementValue && Number(s.engagementValue) > 0).length;
+      const qtdBaixas = brokerSales.filter((s: any) => s.status === 'cancelled').length;
+      const valorBaixas = brokerSales.filter((s: any) => s.status === 'cancelled').reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+      
+      return {
+        id: broker.id,
+        name: broker.name,
+        vendas: totalVendas,
+        angariações: totalAngariações,
+        qtdAngariações,
+        qtdBaixas,
+        valorBaixas,
+      };
+    });
     
     if (selectedBroker !== "all") {
       data = data.filter((b: any) => b.id === selectedBroker);
@@ -197,14 +251,112 @@ export default function ReportsPage() {
                       </select>
                     </div>
 
-                    {/* Download Button */}
+                    {/* Botão Filtros Avançados */}
                     <div className="flex items-end">
-                      <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
-                        <Download className="h-4 w-4" />
-                        Baixar Relatório
+                      <button 
+                        onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                        className="w-full px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 flex items-center justify-center gap-2 border border-slate-300"
+                      >
+                        {showAdvancedFilters ? "Ocultar" : "Mostrar"} Filtros Avançados
                       </button>
                     </div>
                   </div>
+                  
+                  {/* Filtros Avançados (Colisável) */}
+                  {showAdvancedFilters && (
+                    <div className="mt-6 pt-6 border-t border-slate-200">
+                      <h3 className="text-sm font-semibold text-slate-700 mb-4">Filtros Avançados</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Período */}
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">Data Inicial</label>
+                          <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">Data Final</label>
+                          <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        {/* Tipo de Imóvel */}
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">Tipo de Imóvel</label>
+                          <select
+                            value={propertyType}
+                            onChange={(e) => setPropertyType(e.target.value)}
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="all">Todos</option>
+                            <option value="casa">Casa</option>
+                            <option value="apartamento">Apartamento</option>
+                            <option value="terreno">Terreno</option>
+                            <option value="comercial">Comercial</option>
+                            <option value="rural">Rural</option>
+                          </select>
+                        </div>
+                        
+                        {/* Região */}
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">Região/Cidade</label>
+                          <input
+                            type="text"
+                            value={region}
+                            onChange={(e) => setRegion(e.target.value)}
+                            placeholder="Digite a região"
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        {/* Faixa de Valor */}
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">Valor Mínimo (R$)</label>
+                          <input
+                            type="number"
+                            value={minValue}
+                            onChange={(e) => setMinValue(e.target.value)}
+                            placeholder="0"
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">Valor Máximo (R$)</label>
+                          <input
+                            type="number"
+                            value={maxValue}
+                            onChange={(e) => setMaxValue(e.target.value)}
+                            placeholder="Sem limite"
+                            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Botão Limpar Filtros */}
+                      <div className="mt-4 flex justify-end">
+                        <button
+                          onClick={() => {
+                            setStartDate("");
+                            setEndDate("");
+                            setPropertyType("all");
+                            setRegion("all");
+                            setMinValue("");
+                            setMaxValue("");
+                          }}
+                          className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                        >
+                          Limpar Filtros Avançados
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
