@@ -307,6 +307,41 @@ export default function ReportsPage() {
               Acompanhe o desempenho de vendas, angariações e indicadores com gráficos interativos
             </p>
           </div>
+          
+          {/* Filtros de Período (sempre visíveis) */}
+          <div className="mb-4 flex gap-3 items-center text-sm">
+            <span className="text-slate-600">Período:</span>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
+            >
+              <option value="all">Todos os meses</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
+            >
+              <option value="all">Todos os anos</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+          </div>
 
           {!hasData ? (
             <Card className="border-0 shadow-md">
@@ -368,50 +403,6 @@ export default function ReportsPage() {
                             {broker.name}
                           </option>
                         ))}
-                      </select>
-                    </div>
-
-                    {/* Mês */}
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Mês
-                      </label>
-                      <select
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="all">Todos os meses</option>
-                        <option value="1">Janeiro</option>
-                        <option value="2">Fevereiro</option>
-                        <option value="3">Março</option>
-                        <option value="4">Abril</option>
-                        <option value="5">Maio</option>
-                        <option value="6">Junho</option>
-                        <option value="7">Julho</option>
-                        <option value="8">Agosto</option>
-                        <option value="9">Setembro</option>
-                        <option value="10">Outubro</option>
-                        <option value="11">Novembro</option>
-                        <option value="12">Dezembro</option>
-                      </select>
-                    </div>
-
-                    {/* Ano */}
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Ano
-                      </label>
-                      <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(e.target.value)}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="all">Todos os anos</option>
-                        <option value="2026">2026</option>
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
                       </select>
                     </div>
 

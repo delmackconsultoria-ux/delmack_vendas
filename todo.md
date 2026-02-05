@@ -207,3 +207,19 @@
 - [ ] Testar com perfil Gerente (Camila Pires)
   - [ ] Selecionar Janeiro/2025 e verificar se aparecem as 29 vendas importadas
   - [ ] Validar que gráficos e indicadores refletem dados corretos
+
+
+## 🐛 BUGS REPORTADOS (05/02/2026 - 20:10)
+
+### Filtros de Mês/Ano - Problemas
+- [x] **Relatórios**: Filtros movidos para fora do condicional hasData (agora sempre visíveis)
+- [ ] **Indicadores**: Dados mockados (hardcoded) em vez de dados reais do banco
+- [x] **Todos os filtros**: Redesenhados para serem mais discretos e compactos
+
+### Tarefas de Correção
+- [x] Verificar por que filtros não renderizam em Reports.tsx (estavam dentro do condicional hasData)
+- [ ] Conectar Indicadores aos dados reais via trpc.sales.listMySales- [x] Redesenhar filtros para serem mais discretos:
+  - [x] Reduzir tamanho dos dropdowns (px-2 py-1 text-sm)
+  - [x] Usar cores neutras (border-slate-200 bg-white)
+  - [x] Agrupar em linha única com separadores
+  - [x] Remover Cards grandes e gradientes
