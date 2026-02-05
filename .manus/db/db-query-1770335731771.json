@@ -1,0 +1,226 @@
+{
+  "query": "-- Buscar todas as vendas e seus companyIds\nSELECT id, buyerName, saleValue, saleDate, companyId \nFROM sales \nORDER BY createdAt DESC \nLIMIT 30;\n\n-- Contar vendas por companyId\nSELECT companyId, COUNT(*) as total \nFROM sales \nGROUP BY companyId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute -- Buscar todas as vendas e seus companyIds\nSELECT id, buyerName, saleValue, saleDate, companyId \nFROM sales \nORDER BY createdAt DESC \nLIMIT 30;\n\n-- Contar vendas por companyId\nSELECT companyId, COUNT(*) as total \nFROM sales \nGROUP BY companyId;",
+  "rows": [
+    {
+      "id": "import_test_company_BG97136001_27",
+      "buyerName": "Comprador BG97136001",
+      "saleValue": "248000.00",
+      "saleDate": "2025-01-31 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_S REF_23",
+      "buyerName": "Comprador S REF",
+      "saleValue": "560000.00",
+      "saleDate": "2025-01-22 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96937001_24",
+      "buyerName": "Comprador BG96937001",
+      "saleValue": "245000.00",
+      "saleDate": "2025-01-25 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97009002_21",
+      "buyerName": "Comprador BG97009002",
+      "saleValue": "750000.00",
+      "saleDate": "2025-11-24 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96902001_26",
+      "buyerName": "Comprador BG96902001",
+      "saleValue": "300000.00",
+      "saleDate": "2025-01-29 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96121001_28",
+      "buyerName": "Comprador BG96121001",
+      "saleValue": "1664000.00",
+      "saleDate": "2025-01-31 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97066001_22",
+      "buyerName": "Comprador BG97066001",
+      "saleValue": "235000.00",
+      "saleDate": "2025-01-24 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97062001_25",
+      "buyerName": "Comprador BG97062001",
+      "saleValue": "120000.00",
+      "saleDate": "2025-01-28 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96235001_12",
+      "buyerName": "Comprador BG96235001",
+      "saleValue": "928000.00",
+      "saleDate": "2025-01-16 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_S REF_15",
+      "buyerName": "Comprador S REF",
+      "saleValue": "570000.00",
+      "saleDate": "2025-01-20 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96957002_13",
+      "buyerName": "Comprador BG96957002",
+      "saleValue": "1050000.00",
+      "saleDate": "2025-01-17 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96979001_11",
+      "buyerName": "Comprador BG96979001",
+      "saleValue": "520000.00",
+      "saleDate": "2025-01-13 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96939002_20",
+      "buyerName": "Comprador BG96939002",
+      "saleValue": "640000.00",
+      "saleDate": "2025-01-23 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96956001_18",
+      "buyerName": "Comprador BG96956001",
+      "saleValue": "265000.00",
+      "saleDate": "2025-01-20 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_S REF_16",
+      "buyerName": "Comprador S REF",
+      "saleValue": "340000.00",
+      "saleDate": "2025-01-20 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97074001_14",
+      "buyerName": "Comprador BG97074001",
+      "saleValue": "790000.00",
+      "saleDate": "2025-01-17 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97090001_17",
+      "buyerName": "Comprador BG97090001",
+      "saleValue": "160000.00",
+      "saleDate": "2025-01-21 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_S REF_19",
+      "buyerName": "Comprador S REF",
+      "saleValue": "205000.00",
+      "saleDate": "2025-01-22 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96373001_9",
+      "buyerName": "Comprador BG96373001",
+      "saleValue": "529939.56",
+      "saleDate": "2025-01-10 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97065001_6",
+      "buyerName": "Comprador BG97065001",
+      "saleValue": "220000.00",
+      "saleDate": "2025-01-08 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97071001_10",
+      "buyerName": "Comprador BG97071001",
+      "saleValue": "740000.00",
+      "saleDate": "2025-01-13 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96899001_4",
+      "buyerName": "Comprador BG96899001",
+      "saleValue": "283800.00",
+      "saleDate": "2025-01-02 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97043001_3",
+      "buyerName": "Comprador BG97043001",
+      "saleValue": "475000.00",
+      "saleDate": "2025-01-02 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96530001_7",
+      "buyerName": "Comprador BG96530001",
+      "saleValue": "267000.00",
+      "saleDate": "2025-01-08 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG97040001_8",
+      "buyerName": "Comprador BG97040001",
+      "saleValue": "140000.00",
+      "saleDate": "2025-01-06 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96998001_5",
+      "buyerName": "Comprador BG96998001",
+      "saleValue": "170000.00",
+      "saleDate": "2025-01-06 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96876001_2",
+      "buyerName": "Comprador BG96876001",
+      "saleValue": "325000.00",
+      "saleDate": "2025-01-07 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96298001_1",
+      "buyerName": "Comprador BG96298001",
+      "saleValue": "350000.00",
+      "saleDate": "2025-01-07 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "import_test_company_BG96867001_0",
+      "buyerName": "Comprador BG96867001",
+      "saleValue": "2400000.00",
+      "saleDate": "2025-01-02 00:00:00",
+      "companyId": "test_company"
+    },
+    {
+      "id": "accf9a46-db24-4c09-a0a0-d5ddbe25f0e1",
+      "buyerName": "sjndkjsfnjkds",
+      "saleValue": "0.00",
+      "saleDate": "2025-12-22 19:02:33",
+      "companyId": "company_1766344499112"
+    }
+  ],
+  "messages": [
+    "companyId\ttotal",
+    "test_company\t29",
+    "company_1766344499112\t11",
+    "1\t1",
+    "97d02a33-9242-425e-9328-952f7f0af253\t2"
+  ],
+  "stdout": "id\tbuyerName\tsaleValue\tsaleDate\tcompanyId\nimport_test_company_BG97136001_27\tComprador BG97136001\t248000.00\t2025-01-31 00:00:00\ttest_company\nimport_test_company_S REF_23\tComprador S REF\t560000.00\t2025-01-22 00:00:00\ttest_company\nimport_test_company_BG96937001_24\tComprador BG96937001\t245000.00\t2025-01-25 00:00:00\ttest_company\nimport_test_company_BG97009002_21\tComprador BG97009002\t750000.00\t2025-11-24 00:00:00\ttest_company\nimport_test_company_BG96902001_26\tComprador BG96902001\t300000.00\t2025-01-29 00:00:00\ttest_company\nimport_test_company_BG96121001_28\tComprador BG96121001\t1664000.00\t2025-01-31 00:00:00\ttest_company\nimport_test_company_BG97066001_22\tComprador BG97066001\t235000.00\t2025-01-24 00:00:00\ttest_company\nimport_test_company_BG97062001_25\tComprador BG97062001\t120000.00\t2025-01-28 00:00:00\ttest_company\nimport_test_company_BG96235001_12\tComprador BG96235001\t928000.00\t2025-01-16 00:00:00\ttest_company\nimport_test_company_S REF_15\tComprador S REF\t570000.00\t2025-01-20 00:00:00\ttest_company\nimport_test_company_BG96957002_13\tComprador BG96957002\t1050000.00\t2025-01-17 00:00:00\ttest_company\nimport_test_company_BG96979001_11\tComprador BG96979001\t520000.00\t2025-01-13 00:00:00\ttest_company\nimport_test_company_BG96939002_20\tComprador BG96939002\t640000.00\t2025-01-23 00:00:00\ttest_company\nimport_test_company_BG96956001_18\tComprador BG96956001\t265000.00\t2025-01-20 00:00:00\ttest_company\nimport_test_company_S REF_16\tComprador S REF\t340000.00\t2025-01-20 00:00:00\ttest_company\nimport_test_company_BG97074001_14\tComprador BG97074001\t790000.00\t2025-01-17 00:00:00\ttest_company\nimport_test_company_BG97090001_17\tComprador BG97090001\t160000.00\t2025-01-21 00:00:00\ttest_company\nimport_test_company_S REF_19\tComprador S REF\t205000.00\t2025-01-22 00:00:00\ttest_company\nimport_test_company_BG96373001_9\tComprador BG96373001\t529939.56\t2025-01-10 00:00:00\ttest_company\nimport_test_company_BG97065001_6\tComprador BG97065001\t220000.00\t2025-01-08 00:00:00\ttest_company\nimport_test_company_BG97071001_10\tComprador BG97071001\t740000.00\t2025-01-13 00:00:00\ttest_company\nimport_test_company_BG96899001_4\tComprador BG96899001\t283800.00\t2025-01-02 00:00:00\ttest_company\nimport_test_company_BG97043001_3\tComprador BG97043001\t475000.00\t2025-01-02 00:00:00\ttest_company\nimport_test_company_BG96530001_7\tComprador BG96530001\t267000.00\t2025-01-08 00:00:00\ttest_company\nimport_test_company_BG97040001_8\tComprador BG97040001\t140000.00\t2025-01-06 00:00:00\ttest_company\nimport_test_company_BG96998001_5\tComprador BG96998001\t170000.00\t2025-01-06 00:00:00\ttest_company\nimport_test_company_BG96876001_2\tComprador BG96876001\t325000.00\t2025-01-07 00:00:00\ttest_company\nimport_test_company_BG96298001_1\tComprador BG96298001\t350000.00\t2025-01-07 00:00:00\ttest_company\nimport_test_company_BG96867001_0\tComprador BG96867001\t2400000.00\t2025-01-02 00:00:00\ttest_company\naccf9a46-db24-4c09-a0a0-d5ddbe25f0e1\tsjndkjsfnjkds\t0.00\t2025-12-22 19:02:33\tcompany_1766344499112\ncompanyId\ttotal\ntest_company\t29\ncompany_1766344499112\t11\n1\t1\n97d02a33-9242-425e-9328-952f7f0af253\t2\n",
+  "stderr": "",
+  "execution_time_ms": 397
+}

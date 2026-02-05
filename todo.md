@@ -235,3 +235,13 @@
   - [ ] Verificar lógica de filtragem em Indicadores (usa dados mockados, não conectado ao banco)
   - [x] Verificar lógica de filtragem em Histórico (linhas 94-106: funcional)
 - [ ] Testar com dados de Janeiro/2025 (29 vendas importadas)
+
+
+## 🐛 BUG CRÍTICO (05/02/2026 - 20:45)
+
+### Dados não carregam para gestora
+- [ ] Investigar: Camila Pires (Gerente) não consegue ver dados mesmo selecionando Janeiro/2025
+- [ ] Verificar dados no banco: Confirmar que 29 vendas foram importadas corretamente
+- [ ] Verificar query listMySales: Confirmar que retorna dados para gerentes
+- [ ] Verificar filtro de empresa (companyId): Pode estar filtrando incorretamente
+- [ ] Testar solução com perfil de gestora

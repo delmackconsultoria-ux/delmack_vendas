@@ -1,0 +1,17 @@
+{
+  "query": "-- Buscar ID da empresa B I IMOVEIS LTDA\nSELECT id, name FROM companies WHERE name LIKE '%B I IMOVEIS%';\n\n-- Atualizar companyId das vendas importadas\nUPDATE sales \nSET companyId = (SELECT id FROM companies WHERE name LIKE '%B I IMOVEIS%' LIMIT 1)\nWHERE companyId = 'default_company';\n\n-- Verificar quantas vendas foram atualizadas\nSELECT COUNT(*) as total_atualizadas FROM sales \nWHERE companyId = (SELECT id FROM companies WHERE name LIKE '%B I IMOVEIS%' LIMIT 1);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute -- Buscar ID da empresa B I IMOVEIS LTDA\nSELECT id, name FROM companies WHERE name LIKE '%B I IMOVEIS%';\n\n-- Atualizar companyId das vendas importadas\nUPDATE sales \nSET companyId = (SELECT id FROM companies WHERE name LIKE '%B I IMOVEIS%' LIMIT 1)\nWHERE companyId = 'default_company';\n\n-- Verificar quantas vendas foram atualizadas\nSELECT COUNT(*) as total_atualizadas FROM sales \nWHERE companyId = (SELECT id FROM companies WHERE name LIKE '%B I IMOVEIS%' LIMIT 1);",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA"
+    }
+  ],
+  "messages": [
+    "total_atualizadas",
+    "0"
+  ],
+  "stdout": "id\tname\ncompany_1766331506068\tB I IMOVEIS LTDA\ntotal_atualizadas\n0\n",
+  "stderr": "",
+  "execution_time_ms": 451
+}
