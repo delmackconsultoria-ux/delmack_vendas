@@ -223,3 +223,15 @@
   - [x] Usar cores neutras (border-slate-200 bg-white)
   - [x] Agrupar em linha única com separadores
   - [x] Remover Cards grandes e gradientes
+
+
+## 🔄 NOVA SOLICITAÇÃO (05/02/2026 - 20:35)
+
+### Ajustes nos Filtros
+- [x] Remover filtro "Equipe/Corretor" da página Indicadores
+- [ ] Manter apenas filtros de Mês e Ano
+- [x] Garantir que filtros estejam funcionais para buscar dados importados:
+  - [x] Verificar lógica de filtragem em Relatórios (linhas 84-95: funcional)
+  - [ ] Verificar lógica de filtragem em Indicadores (usa dados mockados, não conectado ao banco)
+  - [x] Verificar lógica de filtragem em Histórico (linhas 94-106: funcional)
+- [ ] Testar com dados de Janeiro/2025 (29 vendas importadas)

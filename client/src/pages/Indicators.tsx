@@ -179,15 +179,6 @@ export default function Indicators() {
             <span className="text-slate-600">Filtros:</span>
             <div className="flex gap-3 items-center flex-wrap">
               <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value as "team" | "broker")}
-                className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
-              >
-                <option value="team">Equipe</option>
-                <option value="broker">Corretor</option>
-              </select>
-              <span className="text-slate-400">|</span>
-              <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
