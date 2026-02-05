@@ -793,6 +793,59 @@ export const salesRouter = router({
     }),
 
   /**
+   * Registrar pagamento de comissão
+   */
+  registerCommissionPayment: protectedProcedure
+    .input(
+      z.object({
+        saleId: z.string(),
+        commissionPaymentDate: z.string().datetime(),
+        commissionAmountReceived: z.number(),
+        commissionPaymentBank: z.string().optional(),
+        commissionPaymentMethod: z.string().optional(),
+        commissionPaymentObservations: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        if (!db) {
+          throw new Error("Database not available");
+        }
+
+        // Atualizar venda com dados de pagamento
+        await db
+          .update(sales)
+          .set({
+            commissionPaymentDate: new Date(input.commissionPaymentDate),
+            commissionAmountReceived: input.commissionAmountReceived.toString(),
+            commissionPaymentBank: input.commissionPaymentBank || null,
+            commissionPaymentMethod: input.commissionPaymentMethod || null,
+            commissionPaymentObservations: input.commissionPaymentObservations || null,
+            status: "commission_paid", // Atualizar status para "Comissão Paga"
+          })
+          .where(eq(sales.id, input.saleId));
+
+        // Atualizar status das comissões relacionadas
+        await db
+          .update(commissions)
+          .set({
+            status: "paid",
+            paymentDate: new Date(input.commissionPaymentDate),
+          })
+          .where(eq(commissions.saleId, input.saleId));
+
+        return {
+          success: true,
+          message: "Pagamento de comissão registrado com sucesso",
+        };
+      } catch (error) {
+        console.error("[Sales Router] Erro ao registrar pagamento:", error);
+        throw new Error("Erro ao registrar pagamento de comissão");
+      }
+    }),
+
+  /**
    * Verificar e enviar notificações de progresso de meta
    * Chamado após cada venda registrada
    */

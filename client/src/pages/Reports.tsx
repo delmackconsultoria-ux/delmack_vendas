@@ -128,6 +128,69 @@ export default function ReportsPage() {
     } else if (reportType === "pivot-table") {
       // Tabela pivotada: retornar dados em formato especial
       return data.map((d: any) => ({ name: d.name, vendas: d.vendas, angariações: d.angariações }));
+    } else if (reportType === "sales-by-region") {
+      // Vendas por Região
+      const regions = ["Campo Comprido", "Vila Izabel", "Ecoville", "Outros"];
+      return regions.map((reg) => {
+        const regionSales = filteredSales.filter((s: any) => s.region === reg);
+        const quantidade = regionSales.length;
+        const valor = regionSales.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+        return { name: reg, quantidade, valor };
+      });
+    } else if (reportType === "avg-sale-time") {
+      // Tempo Médio de Venda (em dias, por mês)
+      const salesByMonth: Record<string, { total: number; count: number }> = {};
+      filteredSales.forEach((s: any) => {
+        if (s.listingDate && s.saleDate) {
+          const listing = new Date(s.listingDate);
+          const sale = new Date(s.saleDate);
+          const days = Math.ceil((sale.getTime() - listing.getTime()) / (1000 * 60 * 60 * 24));
+          const month = sale.toLocaleDateString("pt-BR", { year: "numeric", month: "short" });
+          if (!salesByMonth[month]) salesByMonth[month] = { total: 0, count: 0 };
+          salesByMonth[month].total += days;
+          salesByMonth[month].count += 1;
+        }
+      });
+      return Object.entries(salesByMonth).map(([month, data]) => ({
+        name: month,
+        dias: Math.round(data.total / data.count),
+      }));
+    } else if (reportType === "goal-achievement") {
+      // Atingimento de Metas (meta vs realizado por corretor)
+      // Assumindo meta fixa de R$ 1.000.000 por corretor (pode ser ajustado)
+      const metaFixa = 1000000;
+      return data.map((d: any) => {
+        const realizado = d.vendas;
+        const percentual = (realizado / metaFixa) * 100;
+        return {
+          name: d.name,
+          meta: metaFixa,
+          realizado,
+          percentual: Math.round(percentual),
+        };
+      });
+    } else if (reportType === "partnership-analysis") {
+      // Análise de Parcerias (Baggio-Baggio, Baggio-Outros, Outros-Baggio)
+      const partnerships: Record<string, { quantidade: number; valor: number }> = {
+        "Baggio-Baggio": { quantidade: 0, valor: 0 },
+        "Baggio-Outros": { quantidade: 0, valor: 0 },
+        "Outros-Baggio": { quantidade: 0, valor: 0 },
+        "Outros-Outros": { quantidade: 0, valor: 0 },
+      };
+      filteredSales.forEach((s: any) => {
+        const listing = s.listingStore || "Outros";
+        const selling = s.sellingStore || "Outros";
+        const key = `${listing}-${selling}`;
+        if (partnerships[key]) {
+          partnerships[key].quantidade += 1;
+          partnerships[key].valor += Number(s.saleValue) || 0;
+        }
+      });
+      return Object.entries(partnerships).map(([name, data]) => ({
+        name,
+        quantidade: data.quantidade,
+        valor: data.valor,
+      }));
     }
     return [];
   };
@@ -146,6 +209,14 @@ export default function ReportsPage() {
         return "Valor de Baixas por Corretor";
       case "pivot-table":
         return "Tabela Pivotada (Valor x Corretor)";
+      case "sales-by-region":
+        return "Vendas por Região";
+      case "avg-sale-time":
+        return "Tempo Médio de Venda";
+      case "goal-achievement":
+        return "Atingimento de Metas";
+      case "partnership-analysis":
+        return "Análise de Parcerias";
       default:
         return "Relatório";
     }
@@ -165,6 +236,14 @@ export default function ReportsPage() {
         return "Mostra o valor total de cancelamentos/baixas por corretor";
       case "pivot-table":
         return "Mostra valores de vendas e angariações em formato de tabela pivotada";
+      case "sales-by-region":
+        return "Distribuição de vendas por região geográfica";
+      case "avg-sale-time":
+        return "Tempo médio entre angariação e venda por período";
+      case "goal-achievement":
+        return "Comparação entre meta e realizado por corretor";
+      case "partnership-analysis":
+        return "Análise de vendas por tipo de parceria (Baggio x Outros)";
       default:
         return "";
     }
@@ -229,6 +308,10 @@ export default function ReportsPage() {
                         <option value="cancellations-qty">Qtd Baixas</option>
                         <option value="cancellations-value">Valor Baixas</option>
                         <option value="pivot-table">Tabela Pivotada</option>
+                        <option value="sales-by-region">Vendas por Região</option>
+                        <option value="avg-sale-time">Tempo Médio de Venda</option>
+                        <option value="goal-achievement">Atingimento de Metas</option>
+                        <option value="partnership-analysis">Análise de Parcerias</option>
                       </select>
                     </div>
 
@@ -444,6 +527,45 @@ export default function ReportsPage() {
                           <YAxis />
                           <Tooltip formatter={(value: any) => formatCurrency(value)} />
                           <Legend />
+                          <Bar dataKey="valor" fill="#3b82f6" name="Valor" />
+                        </BarChart>
+                      ) : reportType === "sales-by-region" ? (
+                        <BarChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                          <Legend />
+                          <Bar dataKey="quantidade" fill="#10b981" name="Quantidade" />
+                          <Bar dataKey="valor" fill="#3b82f6" name="Valor" />
+                        </BarChart>
+                      ) : reportType === "avg-sale-time" ? (
+                        <LineChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip formatter={(value: any) => `${value} dias`} />
+                          <Legend />
+                          <Line type="monotone" dataKey="dias" stroke="#f59e0b" strokeWidth={2} name="Dias" />
+                        </LineChart>
+                      ) : reportType === "goal-achievement" ? (
+                        <BarChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                          <Legend />
+                          <Bar dataKey="meta" fill="#94a3b8" name="Meta" />
+                          <Bar dataKey="realizado" fill="#10b981" name="Realizado" />
+                        </BarChart>
+                      ) : reportType === "partnership-analysis" ? (
+                        <BarChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                          <Legend />
+                          <Bar dataKey="quantidade" fill="#8b5cf6" name="Quantidade" />
                           <Bar dataKey="valor" fill="#3b82f6" name="Valor" />
                         </BarChart>
                       ) : (

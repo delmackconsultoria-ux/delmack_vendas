@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CommissionsReceived from "@/components/CommissionsReceived";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Plus, Search, Eye, Edit, FileText, Filter, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare } from "lucide-react";
@@ -145,9 +147,16 @@ export default function ProposalManagement() {
         </div>
       </div>
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
-        {/* Métricas */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <main className="container mx-auto px-4 py-6">
+        <Tabs defaultValue="history" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+            <TabsTrigger value="history">Histórico de Vendas</TabsTrigger>
+            <TabsTrigger value="commissions">Comissões Recebidas</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="history" className="space-y-6">
+            {/* Métricas */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
@@ -320,6 +329,12 @@ export default function ProposalManagement() {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="commissions">
+            <CommissionsReceived />
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Dialog de Alteração de Status */}
