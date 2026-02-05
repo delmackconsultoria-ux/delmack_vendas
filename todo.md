@@ -164,3 +164,18 @@
 - [x] Listar TODOS os campos, tabelas, gráficos e funcionalidades
 - [x] Marcar status: ✅ Implementado | ⚠️ Parcial | ❌ Falta
 - [x] Incluir instruções para importação de histórico
+
+
+## 🐛 BUG REPORTADO (05/02/2026 - 19:15)
+
+### Dados não aparecem para corretores
+- [x] Investigar: Carolina Cardoso (corretora) não vê dados importados
+- [x] Verificar: Empresa da Carolina vs Empresa dos dados importados
+- [x] Problema identificado: Filtros do sistema estão incorretos
+  - Gerentes/Financeiro devem ver TODAS as vendas da empresa
+  - Corretores devem ver APENAS suas próprias vendas
+- [x] ETAPA 1: Corrigir queries do backend (salesRouter já estava correto, Reports corrigido)
+- [x] ETAPA 2: Analisar nomes de corretores no Excel (15 corretores encontrados)
+- [ ] ETAPA 3: Aguardando mapeamento de nomes completos do usuário
+- [ ] ETAPA 4: Atualizar script de importação com normalização
+- [ ] ETAPA 5: Testar com perfil de corretor após mapeamento

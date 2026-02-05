@@ -1,0 +1,58 @@
+{
+  "query": "\nSELECT id, buyerName, companyId, brokerAngariador, brokerVendedor, saleValue \nFROM sales \nLIMIT 3;\n\nSELECT id, name, email \nFROM users \nWHERE name LIKE '%Carolina%' \nLIMIT 2;\n\nSHOW TABLES;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT id, buyerName, companyId, brokerAngariador, brokerVendedor, saleValue \nFROM sales \nLIMIT 3;\n\nSELECT id, name, email \nFROM users \nWHERE name LIKE '%Carolina%' \nLIMIT 2;\n\nSHOW TABLES;\n",
+  "rows": [
+    {
+      "id": "088cb15c-2999-4133-8d7f-1916c862673f",
+      "buyerName": "ANGELLICA PASSOS DELLE",
+      "companyId": "company_1766344499112",
+      "brokerAngariador": "user-corretor-testes",
+      "brokerVendedor": "user-corretor-testes",
+      "saleValue": "5800.00"
+    },
+    {
+      "id": "1e6cdbcc-c790-4421-8ebc-6af716d590ec",
+      "buyerName": "ANGELLICA PASSOS DELLE",
+      "companyId": "company_1766344499112",
+      "brokerAngariador": "user-corretor-testes",
+      "brokerVendedor": "user-corretor-testes",
+      "saleValue": "56589.00"
+    },
+    {
+      "id": "2297dcc2-e540-469a-9fd8-72652a3af33b",
+      "buyerName": "feafag",
+      "companyId": "97d02a33-9242-425e-9328-952f7f0af253",
+      "brokerAngariador": "7faf90de-680c-4255-acb9-8bb182cbc381",
+      "brokerVendedor": "7faf90de-680c-4255-acb9-8bb182cbc381",
+      "saleValue": "443.00"
+    }
+  ],
+  "messages": [
+    "id\tname\temail",
+    "user_1766355139159_spekva56z\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br",
+    "Tables_in_FWQUTMFHrecTsndnoBiUKo",
+    "__drizzle_migrations",
+    "actionLogs",
+    "bonuses",
+    "commissionApprovals",
+    "commissionHistory",
+    "commissionRules",
+    "commissions",
+    "companies",
+    "goals",
+    "models",
+    "monthlyIndicators",
+    "properties",
+    "propertiesCache",
+    "propertyHistory",
+    "proposalComments",
+    "proposals",
+    "salePaymentHistory",
+    "sales",
+    "salesHistory",
+    "users"
+  ],
+  "stdout": "id\tbuyerName\tcompanyId\tbrokerAngariador\tbrokerVendedor\tsaleValue\n088cb15c-2999-4133-8d7f-1916c862673f\tANGELLICA PASSOS DELLE\tcompany_1766344499112\tuser-corretor-testes\tuser-corretor-testes\t5800.00\n1e6cdbcc-c790-4421-8ebc-6af716d590ec\tANGELLICA PASSOS DELLE\tcompany_1766344499112\tuser-corretor-testes\tuser-corretor-testes\t56589.00\n2297dcc2-e540-469a-9fd8-72652a3af33b\tfeafag\t97d02a33-9242-425e-9328-952f7f0af253\t7faf90de-680c-4255-acb9-8bb182cbc381\t7faf90de-680c-4255-acb9-8bb182cbc381\t443.00\nid\tname\temail\nuser_1766355139159_spekva56z\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br\nTables_in_FWQUTMFHrecTsndnoBiUKo\n__drizzle_migrations\nactionLogs\nbonuses\ncommissionApprovals\ncommissionHistory\ncommissionRules\ncommissions\ncompanies\ngoals\nmodels\nmonthlyIndicators\nproperties\npropertiesCache\npropertyHistory\nproposalComments\nproposals\nsalePaymentHistory\nsales\nsalesHistory\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 432
+}

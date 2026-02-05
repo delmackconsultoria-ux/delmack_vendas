@@ -1,0 +1,8 @@
+{
+  "query": "\nSELECT id, buyerName, companyId, brokerId, saleValue \nFROM sales \nLIMIT 5;\n\nSELECT id, name, companyId \nFROM brokers \nLIMIT 10;\n\nSELECT id, name, email, companyId \nFROM users \nWHERE name LIKE '%Carolina%' \nLIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT id, buyerName, companyId, brokerId, saleValue \nFROM sales \nLIMIT 5;\n\nSELECT id, name, companyId \nFROM brokers \nLIMIT 10;\n\nSELECT id, name, email, companyId \nFROM users \nWHERE name LIKE '%Carolina%' \nLIMIT 5;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 2: Unknown column 'brokerid' in 'field list'"
+  ]
+}

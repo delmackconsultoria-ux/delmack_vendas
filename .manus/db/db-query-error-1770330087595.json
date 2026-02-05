@@ -1,0 +1,12 @@
+{
+  "query": "\nSELECT id, buyerName, companyId, brokerAngariador, brokerVendedor, saleValue \nFROM sales \nLIMIT 3;\n\nSELECT id, name, companyId \nFROM brokers \nLIMIT 5;\n\nSELECT id, name, email \nFROM users \nWHERE name LIKE '%Carolina%' \nLIMIT 2;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT id, buyerName, companyId, brokerAngariador, brokerVendedor, saleValue \nFROM sales \nLIMIT 3;\n\nSELECT id, name, companyId \nFROM brokers \nLIMIT 5;\n\nSELECT id, name, email \nFROM users \nWHERE name LIKE '%Carolina%' \nLIMIT 2;\n",
+  "returncode": 1,
+  "logs": [
+    "id\tbuyerName\tcompanyId\tbrokerAngariador\tbrokerVendedor\tsaleValue",
+    "088cb15c-2999-4133-8d7f-1916c862673f\tANGELLICA PASSOS DELLE\tcompany_1766344499112\tuser-corretor-testes\tuser-corretor-testes\t5800.00",
+    "1e6cdbcc-c790-4421-8ebc-6af716d590ec\tANGELLICA PASSOS DELLE\tcompany_1766344499112\tuser-corretor-testes\tuser-corretor-testes\t56589.00",
+    "2297dcc2-e540-469a-9fd8-72652a3af33b\tfeafag\t97d02a33-9242-425e-9328-952f7f0af253\t7faf90de-680c-4255-acb9-8bb182cbc381\t7faf90de-680c-4255-acb9-8bb182cbc381\t443.00",
+    "ERROR 1146 (42S02) at line 6: Table 'fwqutmfhrectsndnobiuko.brokers' doesn't exist"
+  ]
+}

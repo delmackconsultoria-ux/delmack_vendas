@@ -36,12 +36,23 @@ export default function ReportsPage() {
 
   // Calcular dados agregados por corretor
   const salesByBroker = brokers.map((broker: any) => {
-    const brokerSales = sales.filter((s: any) => s.brokerId === broker.id);
-    const totalVendas = brokerSales.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
-    const totalAngariações = brokerSales.reduce((sum: number, s: any) => sum + (Number(s.engagementValue) || 0), 0);
-    const qtdAngariações = brokerSales.filter((s: any) => s.engagementValue && Number(s.engagementValue) > 0).length;
-    const qtdBaixas = brokerSales.filter((s: any) => s.status === 'cancelled').length;
-    const valorBaixas = brokerSales.filter((s: any) => s.status === 'cancelled').reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+    // Vendas onde o corretor é vendedor OU angariador
+    const brokerSales = sales.filter((s: any) => 
+      s.brokerVendedor === broker.id || s.brokerAngariador === broker.id
+    );
+    
+    // Vendas onde o corretor é VENDEDOR
+    const vendasComoVendedor = sales.filter((s: any) => s.brokerVendedor === broker.id);
+    const totalVendas = vendasComoVendedor.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+    
+    // Angariações onde o corretor é ANGARIADOR
+    const angariaçõesComoAngariador = sales.filter((s: any) => s.brokerAngariador === broker.id);
+    const totalAngariações = angariaçõesComoAngariador.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+    const qtdAngariações = angariaçõesComoAngariador.length;
+    
+    // Baixas (canceladas)
+    const qtdBaixas = brokerSales.filter((s: any) => s.status === 'cancelled' || s.wasRemoved).length;
+    const valorBaixas = brokerSales.filter((s: any) => s.status === 'cancelled' || s.wasRemoved).reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
     
     return {
       id: broker.id,
@@ -93,12 +104,19 @@ export default function ReportsPage() {
     
     // Recalcular dados por corretor com vendas filtradas
     let data = brokers.map((broker: any) => {
-      const brokerSales = filteredSales.filter((s: any) => s.brokerId === broker.id);
-      const totalVendas = brokerSales.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
-      const totalAngariações = brokerSales.reduce((sum: number, s: any) => sum + (Number(s.engagementValue) || 0), 0);
-      const qtdAngariações = brokerSales.filter((s: any) => s.engagementValue && Number(s.engagementValue) > 0).length;
-      const qtdBaixas = brokerSales.filter((s: any) => s.status === 'cancelled').length;
-      const valorBaixas = brokerSales.filter((s: any) => s.status === 'cancelled').reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+      const brokerSales = filteredSales.filter((s: any) => 
+        s.brokerVendedor === broker.id || s.brokerAngariador === broker.id
+      );
+      
+      const vendasComoVendedor = filteredSales.filter((s: any) => s.brokerVendedor === broker.id);
+      const totalVendas = vendasComoVendedor.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+      
+      const angariaçõesComoAngariador = filteredSales.filter((s: any) => s.brokerAngariador === broker.id);
+      const totalAngariações = angariaçõesComoAngariador.reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
+      const qtdAngariações = angariaçõesComoAngariador.length;
+      
+      const qtdBaixas = brokerSales.filter((s: any) => s.status === 'cancelled' || s.wasRemoved).length;
+      const valorBaixas = brokerSales.filter((s: any) => s.status === 'cancelled' || s.wasRemoved).reduce((sum: number, s: any) => sum + (Number(s.saleValue) || 0), 0);
       
       return {
         id: broker.id,
