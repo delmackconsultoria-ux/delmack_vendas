@@ -79,15 +79,15 @@
 - [ ] Gráfico: Análise de Parcerias (barras agrupadas: Baggio-Baggio, Baggio-Outros, Outros-Baggio)
 
 ### FASE 6: Script de Importação do Excel
-- [ ] Criar script Python para ler Excel por mês/ano
-- [ ] Mapear colunas do Excel para campos do banco
-- [ ] Implementar lógica de importação:
-  - [ ] Aba GERAL (vendas)
-  - [ ] Aba Comissões Pendentes
-  - [ ] Aba Comissões Recebidas
-- [ ] Validar e normalizar dados
-- [ ] Gerar relatório de importação
-- [ ] Testar com `01Relatório_Jan_2025.xlsx`
+- [x] Criar script Python para ler Excel por mês/ano
+- [x] Mapear colunas do Excel para campos do banco
+- [x] Implementar lógica de importação:
+  - [x] Aba GERAL (vendas)
+  - [ ] Aba Comissões Pendentes (pendente)
+  - [ ] Aba Comissões Recebidas (pendente)
+- [x] Validar e normalizar dados
+- [x] Gerar relatório de importação
+- [x] Testar com `01Relatório_Jan_2025.xlsx` ✅ 29 vendas importadas com sucesso
 
 ### FASE 7: Indicadores de Tempo
 - [ ] Adicionar indicador: "Tempo Médio de Venda" (média de listingToSaleDays)
