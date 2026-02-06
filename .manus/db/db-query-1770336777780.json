@@ -1,0 +1,26 @@
+{
+  "query": "\n-- Verificar companyId da empresa Baggio\nSELECT id, name FROM companies WHERE name LIKE '%BAGGIO%' OR name LIKE '%B I IMOVEIS%';\n\n-- Verificar companyId das vendas\nSELECT companyId, COUNT(*) as total, MIN(saleDate) as primeira_venda, MAX(saleDate) as ultima_venda\nFROM sales \nGROUP BY companyId;\n\n-- Verificar vendas de Janeiro/2025\nSELECT id, buyerName, saleValue, saleDate, companyId \nFROM sales \nWHERE YEAR(saleDate) = 2025 AND MONTH(saleDate) = 1\nLIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Verificar companyId da empresa Baggio\nSELECT id, name FROM companies WHERE name LIKE '%BAGGIO%' OR name LIKE '%B I IMOVEIS%';\n\n-- Verificar companyId das vendas\nSELECT companyId, COUNT(*) as total, MIN(saleDate) as primeira_venda, MAX(saleDate) as ultima_venda\nFROM sales \nGROUP BY companyId;\n\n-- Verificar vendas de Janeiro/2025\nSELECT id, buyerName, saleValue, saleDate, companyId \nFROM sales \nWHERE YEAR(saleDate) = 2025 AND MONTH(saleDate) = 1\nLIMIT 5;\n",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA"
+    }
+  ],
+  "messages": [
+    "companyId\ttotal\tprimeira_venda\tultima_venda",
+    "97d02a33-9242-425e-9328-952f7f0af253\t2\t2025-10-24 00:00:00\t2025-10-24 00:00:00",
+    "company_1766331506068\t29\t2025-01-02 00:00:00\t2025-11-24 00:00:00",
+    "company_1766344499112\t11\t2025-12-21 00:00:00\t2025-12-22 19:02:33",
+    "1\t1\t2025-10-25 00:00:00\t2025-10-25 00:00:00",
+    "id\tbuyerName\tsaleValue\tsaleDate\tcompanyId",
+    "import_test_company_BG96121001_28\tComprador BG96121001\t1664000.00\t2025-01-31 00:00:00\tcompany_1766331506068",
+    "import_test_company_BG96235001_12\tComprador BG96235001\t928000.00\t2025-01-16 00:00:00\tcompany_1766331506068",
+    "import_test_company_BG96298001_1\tComprador BG96298001\t350000.00\t2025-01-07 00:00:00\tcompany_1766331506068",
+    "import_test_company_BG96373001_9\tComprador BG96373001\t529939.56\t2025-01-10 00:00:00\tcompany_1766331506068",
+    "import_test_company_BG96530001_7\tComprador BG96530001\t267000.00\t2025-01-08 00:00:00\tcompany_1766331506068"
+  ],
+  "stdout": "id\tname\ncompany_1766331506068\tB I IMOVEIS LTDA\ncompanyId\ttotal\tprimeira_venda\tultima_venda\n97d02a33-9242-425e-9328-952f7f0af253\t2\t2025-10-24 00:00:00\t2025-10-24 00:00:00\ncompany_1766331506068\t29\t2025-01-02 00:00:00\t2025-11-24 00:00:00\ncompany_1766344499112\t11\t2025-12-21 00:00:00\t2025-12-22 19:02:33\n1\t1\t2025-10-25 00:00:00\t2025-10-25 00:00:00\nid\tbuyerName\tsaleValue\tsaleDate\tcompanyId\nimport_test_company_BG96121001_28\tComprador BG96121001\t1664000.00\t2025-01-31 00:00:00\tcompany_1766331506068\nimport_test_company_BG96235001_12\tComprador BG96235001\t928000.00\t2025-01-16 00:00:00\tcompany_1766331506068\nimport_test_company_BG96298001_1\tComprador BG96298001\t350000.00\t2025-01-07 00:00:00\tcompany_1766331506068\nimport_test_company_BG96373001_9\tComprador BG96373001\t529939.56\t2025-01-10 00:00:00\tcompany_1766331506068\nimport_test_company_BG96530001_7\tComprador BG96530001\t267000.00\t2025-01-08 00:00:00\tcompany_1766331506068\n",
+  "stderr": "",
+  "execution_time_ms": 456
+}

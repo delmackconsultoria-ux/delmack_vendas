@@ -1,0 +1,15 @@
+{
+  "query": "\n-- Verificar companyId da empresa Baggio\nSELECT id, name FROM companies WHERE name LIKE '%BAGGIO%' OR name LIKE '%B I IMOVEIS%';\n\n-- Verificar companyId das 29 vendas importadas\nSELECT companyId, COUNT(*) as total, MIN(saleDate) as primeira_venda, MAX(saleDate) as ultima_venda\nFROM sales \nGROUP BY companyId;\n\n-- Verificar vendas de Janeiro/2025\nSELECT id, buyerName, salePrice, saleDate, companyId \nFROM sales \nWHERE YEAR(saleDate) = 2025 AND MONTH(saleDate) = 1\nLIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Verificar companyId da empresa Baggio\nSELECT id, name FROM companies WHERE name LIKE '%BAGGIO%' OR name LIKE '%B I IMOVEIS%';\n\n-- Verificar companyId das 29 vendas importadas\nSELECT companyId, COUNT(*) as total, MIN(saleDate) as primeira_venda, MAX(saleDate) as ultima_venda\nFROM sales \nGROUP BY companyId;\n\n-- Verificar vendas de Janeiro/2025\nSELECT id, buyerName, salePrice, saleDate, companyId \nFROM sales \nWHERE YEAR(saleDate) = 2025 AND MONTH(saleDate) = 1\nLIMIT 5;\n",
+  "returncode": 1,
+  "logs": [
+    "id\tname",
+    "company_1766331506068\tB I IMOVEIS LTDA",
+    "companyId\ttotal\tprimeira_venda\tultima_venda",
+    "company_1766331506068\t29\t2025-01-02 00:00:00\t2025-11-24 00:00:00",
+    "97d02a33-9242-425e-9328-952f7f0af253\t2\t2025-10-24 00:00:00\t2025-10-24 00:00:00",
+    "1\t1\t2025-10-25 00:00:00\t2025-10-25 00:00:00",
+    "company_1766344499112\t11\t2025-12-21 00:00:00\t2025-12-22 19:02:33",
+    "ERROR 1054 (42S22) at line 11: Unknown column 'saleprice' in 'field list'"
+  ]
+}

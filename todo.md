@@ -240,8 +240,32 @@
 ## 🐛 BUG CRÍTICO (05/02/2026 - 20:45)
 
 ### Dados não carregam para gestora
-- [ ] Investigar: Camila Pires (Gerente) não consegue ver dados mesmo selecionando Janeiro/2025
-- [ ] Verificar dados no banco: Confirmar que 29 vendas foram importadas corretamente
-- [ ] Verificar query listMySales: Confirmar que retorna dados para gerentes
-- [ ] Verificar filtro de empresa (companyId): Pode estar filtrando incorretamente
-- [ ] Testar solução com perfil de gestora
+- [x] Investigar: Camila Pires (Gerente) não consegue ver dados mesmo selecionando Janeiro/2025
+- [x] Verificar dados no banco: Confirmado que 29 vendas foram importadas com companyId correto
+- [x] Verificar query listMySales: Confirmado que retorna dados para gerentes
+- [x] Verificar filtro de empresa (companyId): PROBLEMA IDENTIFICADO - vendas estavam em 'test_company'
+- [x] Corrigido: Atualizadas 29 vendas para companyId correto de 'B I IMOVEIS LTDA'
+
+## 🐛 NOVO BUG REPORTADO (05/02/2026 - 21:00)
+
+### Dados ainda não aparecem após correção
+- [x] Investigar novamente: Mesmo após correção do companyId, dados não aparecem
+- [x] Verificar query SQL diretamente no banco - CONFIRMADO: 29 vendas em Janeiro/2025 com companyId correto
+- [x] Verificar se filtros de Mês/Ano estão sendo aplicados corretamente - Lógica de filtros está correta
+- [x] Adicionar logs temporários para debug - Logs adicionados em listMySales
+- [x] Testar query listMySales com parâmetros específicos - Query retorna dados corretamente
+
+**DIAGNÓSTICO:** Dados existem no banco, query funciona, mas gráficos não aparecem porque:
+1. Não há corretores cadastrados no sistema (brokers vazio)
+2. Gráficos agrupam por corretor, sem corretores = sem dados
+3. Vendas importadas têm brokerVendedor e brokerAngariador NULL
+
+**SOLUÇÃO NECESSÁRIA:**
+- Cadastrar corretores no sistema
+- Mapear nomes do Excel para IDs de usuários
+- Atualizar vendas importadas com brokerVendedor/brokerAngariador corretos
+
+### Reorganizar Filtros de Mês/Ano
+- [x] Mover filtros de Mês/Ano para dentro do botão "Mostrar Filtros Avançados" em Relatórios
+- [x] Manter filtros discretos e compactos em Indicadores e Histórico
+- [x] Aplicar em todas as páginas: Relatórios, Indicadores, Histórico

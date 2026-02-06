@@ -476,7 +476,10 @@ export const salesRouter = router({
       }
 
       const companyId = ctx.user.companyId;
+      console.log('[DEBUG listMySales] Usuário:', ctx.user.name, 'Role:', ctx.user.role, 'CompanyId:', companyId);
+      
       if (!companyId) {
+        console.log('[DEBUG listMySales] Usuário sem companyId - retornando vazio');
         // Retornar array vazio se usuário não tem empresa - sem erro na UI
         return { sales: [] };
       }
@@ -489,17 +492,30 @@ export const salesRouter = router({
       if (ctx.user.role === "broker") {
         // Corretor vê vendas onde é vendedor OU angariador OU criador (brokerVendedor vazio)
         const allSales = await db.select().from(sales).where(eq(sales.companyId, companyId));
+        console.log('[DEBUG listMySales] Corretor - Total de vendas da empresa:', allSales.length);
         result = allSales.filter(s => 
           s.brokerVendedor === ctx.user.id || 
           s.brokerAngariador === ctx.user.id ||
           (!s.brokerVendedor && s.status === 'draft')
         );
+        console.log('[DEBUG listMySales] Corretor - Vendas filtradas para o corretor:', result.length);
       } else {
         // manager, finance, viewer, admin - veem todas as vendas da empresa
         result = await db.select().from(sales)
           .where(eq(sales.companyId, companyId));
+        console.log('[DEBUG listMySales] Gerente/Financeiro/Viewer - Total de vendas:', result.length);
+        if (result.length > 0) {
+          console.log('[DEBUG listMySales] Exemplo de venda:', {
+            id: result[0].id,
+            buyerName: result[0].buyerName,
+            saleDate: result[0].saleDate,
+            saleValue: result[0].saleValue,
+            companyId: result[0].companyId
+          });
+        }
       }
 
+      console.log('[DEBUG listMySales] Retornando', result.length, 'vendas');
       return { sales: result };
     } catch (error) {
       console.error("[Sales Router] Erro ao listar vendas:", error);

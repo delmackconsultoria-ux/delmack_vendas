@@ -1,0 +1,20 @@
+{
+  "query": "\n-- Verificar empresa Baggio\nSELECT id, name FROM companies WHERE name LIKE '%BAGGIO%' OR name LIKE '%B I IMOVEIS%';\n\n-- Verificar usuários e suas empresas\nSELECT u.id, u.name, u.email, u.role, u.companyId, c.name as companyName\nFROM users u\nLEFT JOIN companies c ON u.companyId = c.id\nWHERE u.name LIKE '%Camila%' OR u.name LIKE '%Carolina%' OR u.name LIKE '%Darlan%' OR u.name LIKE '%Lucas%';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Verificar empresa Baggio\nSELECT id, name FROM companies WHERE name LIKE '%BAGGIO%' OR name LIKE '%B I IMOVEIS%';\n\n-- Verificar usuários e suas empresas\nSELECT u.id, u.name, u.email, u.role, u.companyId, c.name as companyName\nFROM users u\nLEFT JOIN companies c ON u.companyId = c.id\nWHERE u.name LIKE '%Camila%' OR u.name LIKE '%Carolina%' OR u.name LIKE '%Darlan%' OR u.name LIKE '%Lucas%';\n",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA"
+    }
+  ],
+  "messages": [
+    "id\tname\temail\trole\tcompanyId\tcompanyName",
+    "user_1766351453637_typa30p2q\tLucas \tLucas@baggioimoveis.com.br\tviewer\tcompany_1766331506068\tB I IMOVEIS LTDA",
+    "user_1766355139159_spekva56z\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br\tbroker\tcompany_1766331506068\tB I IMOVEIS LTDA",
+    "user_1766355269539_rf51il6kt\tDarlan Santos Ribeiro \tDarlan@baggioimoveis.com.br\tfinance\tcompany_1766331506068\tB I IMOVEIS LTDA",
+    "user_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\tcompany_1766331506068\tB I IMOVEIS LTDA"
+  ],
+  "stdout": "id\tname\ncompany_1766331506068\tB I IMOVEIS LTDA\nid\tname\temail\trole\tcompanyId\tcompanyName\nuser_1766351453637_typa30p2q\tLucas \tLucas@baggioimoveis.com.br\tviewer\tcompany_1766331506068\tB I IMOVEIS LTDA\nuser_1766355139159_spekva56z\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br\tbroker\tcompany_1766331506068\tB I IMOVEIS LTDA\nuser_1766355269539_rf51il6kt\tDarlan Santos Ribeiro \tDarlan@baggioimoveis.com.br\tfinance\tcompany_1766331506068\tB I IMOVEIS LTDA\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\tcompany_1766331506068\tB I IMOVEIS LTDA\n",
+  "stderr": "",
+  "execution_time_ms": 422
+}
