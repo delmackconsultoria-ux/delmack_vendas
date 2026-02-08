@@ -131,49 +131,30 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
     // Função para verificar se o imóvel corresponde à busca
     let checkedCount = 0;
     const matchesSearch = (p: any): boolean => {
-      // Buscar em chrDocument (campo de produção com formato BG69874001.isnyv.md)
-      // Extrair código ANTES do ponto: BG69874001 de BG69874001.isnyv.md
-      const docFull = (p.chrDocument || '').toUpperCase();
-      const docBeforeDot = docFull.split('.')[0].replace(/[^A-Z0-9]/g, '');
-      // Fallback para chrReference e chrInnerReference se chrDocument vazio
-      const ref = (p.chrReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      const innerRef = (p.chrInnerReference || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const ref = (p.chrReference || '').toUpperCase().trim();
       
       checkedCount++;
       
       // Log dos primeiros 3 imóveis para debug
       if (checkedCount <= 3) {
         console.log(`[Properfy DEBUG] Imóvel ${checkedCount}:`, {
-          chrDocument: p.chrDocument,
-          docBeforeDot,
           chrReference: p.chrReference,
-          chrInnerReference: p.chrInnerReference,
           searchNormalized,
-          matchDoc: docBeforeDot === searchNormalized
+          match: ref === searchNormalized
         });
       }
       
-      // Busca PRIORITÁRIA em chrDocument (produção)
-      // Busca exata primeiro, depois parcial
-      const matches = docBeforeDot === searchNormalized || 
-                      docBeforeDot.includes(searchNormalized) ||
-                      ref === searchNormalized || 
-                      innerRef === searchNormalized ||
-                      ref.includes(searchNormalized) || 
-                      innerRef.includes(searchNormalized);
+      // Busca EXATA em chrReference (NUNCA busca parcial para evitar dados errados)
+      const matches = ref === searchNormalized;
       
       if (matches) {
         console.log('[Properfy DEBUG] IMÓVEL ENCONTRADO!', { 
-          chrDocument: p.chrDocument, 
-          docBeforeDot,
-          chrReference: p.chrReference, 
-          chrInnerReference: p.chrInnerReference 
+          chrReference: p.chrReference
         });
       }
       
       return matches;
     };
-
     // Buscar na primeira página
     const property = firstData.data?.find(matchesSearch);
     if (property) {

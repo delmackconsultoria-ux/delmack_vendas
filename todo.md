@@ -322,3 +322,20 @@
 - [x] CAUSA IDENTIFICADA: Usuário digitou código de cidade (4106402) ao invés de CEP (81610-040)
 - [x] Corrigir busca por CEP para usar apenas chrAddressPostalCode (CEP real)
 - [x] Otimizar busca por CEP limitando a 50 páginas
+
+## 🐛 NOVO BUG: Dados errados ao buscar imóvel (08/02/2026 - 15:00)
+
+### Busca retorna imóvel errado
+- [ ] Investigar: Busca por "BG97728001" retornou imóvel diferente
+- [ ] Dados errados: Área Total 234,12 (correto: 121,95), Quartos 0 (correto: 3)
+- [ ] Endereço errado: Rua Professor Assis Gonçalves (não é o imóvel BG96925001)
+- [ ] Verificar lógica de busca por referência (chrDocument vs chrReference)
+- [ ] Corrigir mapeamento de campos da API para formulário
+
+## 🚨 CRÍTICO: Busca Properfy preenchendo dados errados (08/02/2026 - 15:30)
+
+- [x] Verificar qual campo usar: chrDocument vs chrReference - RESOLVIDO: chrDocument está vazio, usar chrReference
+- [x] Corrigir busca para NUNCA preencher dados se imóvel não for encontrado - Implementado match EXATO (sem busca parcial)
+- [x] Implementar busca paginada rápida e eficiente - Já existe (50 páginas, lotes de 5 paralelos)
+- [x] Retornar apenas mensagem de erro quando não encontrar - Já implementado
+- [ ] Testar com BG96925001 e garantir que não preenche dados errados
