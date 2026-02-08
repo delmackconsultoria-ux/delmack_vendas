@@ -308,3 +308,17 @@
 - [x] Adicionar PROPERFY_API_URL e PROPERFY_API_TOKEN via webdev_request_secrets
 - [x] Testar conexão com API da Properfy - SUCESSO: 4.982 imóveis encontrados
 - [x] Validar busca de imóveis por referência - SUCESSO: Busca por TESTESETORTI funcionando
+
+## 🐛 BUGS REPORTADOS (08/02/2026 - 14:50)
+
+### Timeout na busca por referência
+- [x] Investigar erro 524 (timeout) ao buscar referência "BG96925001"
+- [x] Otimizar busca para não iterar todas as 4.982 páginas - LIMITADO A 50 PÁGINAS (5.000 imóveis)
+- [x] Reduzir timeout implementando busca em lotes de 5 páginas paralelas
+- [ ] Testar busca com referência BG96925001 após otimizações
+
+### Endereço errado ao buscar por CEP
+- [x] Investigar por que busca por CEP retorna endereço errado
+- [x] CAUSA IDENTIFICADA: Usuário digitou código de cidade (4106402) ao invés de CEP (81610-040)
+- [x] Corrigir busca por CEP para usar apenas chrAddressPostalCode (CEP real)
+- [x] Otimizar busca por CEP limitando a 50 páginas

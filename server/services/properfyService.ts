@@ -185,11 +185,12 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       };
     }
 
-    // Buscar em TODAS as páginas (base completa)
-    console.log(`[Properfy] Buscando em TODAS as ${totalPages} páginas (${totalProperties} imóveis)`);
+    // Buscar em até 50 páginas (5.000 imóveis) para evitar timeout
+    const maxPages = Math.min(totalPages, 50);
+    console.log(`[Properfy] Buscando em até ${maxPages} páginas (${Math.min(totalProperties, maxPages * 100)} imóveis)`);
     
     // Buscar em lotes de 5 páginas por vez (busca paralela otimizada)
-    for (let batchStart = 2; batchStart <= totalPages; batchStart += 5) {
+    for (let batchStart = 2; batchStart <= maxPages; batchStart += 5) {
       const batchEnd = Math.min(batchStart + 4, totalPages);
       console.log(`[Properfy] Buscando lote: páginas ${batchStart}-${batchEnd}`);
       const batchPromises = [];
@@ -226,10 +227,10 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       }
     }
 
-    console.log(`[Properfy] Imóvel não encontrado após buscar TODAS as ${totalPages} páginas (${totalProperties} imóveis)`);
+    console.log(`[Properfy] Imóvel não encontrado após buscar ${maxPages} páginas (${Math.min(totalProperties, maxPages * 100)} imóveis)`);
     return {
       success: false,
-      error: `Imóvel não encontrado. Buscamos em TODOS os ${totalProperties} imóveis da base. Verifique o código ou tente buscar por endereço/CEP.`,
+      error: `Imóvel não encontrado nos primeiros ${Math.min(totalProperties, maxPages * 100)} imóveis. Tente buscar por endereço ou CEP.`,
       searchType: 'reference'
     };
 
@@ -278,20 +279,22 @@ export async function searchPropertyByCEP(cep: string): Promise<ProperfySearchRe
     const firstData = await firstResponse.json();
     const totalPages = firstData.last_page || 1;
     
-    console.log(`[Properfy] Buscando CEP em ${totalPages} páginas`);
+    // Buscar em até 50 páginas para evitar timeout
+    const maxPages = Math.min(totalPages, 50);
+    console.log(`[Properfy] Buscando CEP em até ${maxPages} páginas`);
 
     // Buscar em TODAS as páginas
     const properties: ProperfyProperty[] = [];
     
     // Buscar na primeira página
     const matches1 = firstData.data?.filter((p: any) => {
-      const propCep = (p.chrAddressCityCode || p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
+      const propCep = (p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
       return propCep === cepNormalized;
     }) || [];
     properties.push(...matches1.map((p: any) => mapPropertyData(p, cepNormalized)));
 
     // Buscar nas demais páginas
-    for (let page = 2; page <= totalPages; page++) {
+    for (let page = 2; page <= maxPages; page++) {
       const response = await fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
         method: 'GET',
         headers: {
@@ -310,7 +313,7 @@ export async function searchPropertyByCEP(cep: string): Promise<ProperfySearchRe
       const data = await response.json();
       
       const matches = data.data?.filter((p: any) => {
-        const propCep = (p.chrAddressCityCode || p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
+        const propCep = (p.chrAddressPostalCode || '').replace(/[^0-9]/g, '');
         return propCep === cepNormalized;
       }) || [];
 
