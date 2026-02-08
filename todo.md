@@ -269,3 +269,28 @@
 - [x] Mover filtros de Mês/Ano para dentro do botão "Mostrar Filtros Avançados" em Relatórios
 - [x] Manter filtros discretos e compactos em Indicadores e Histórico
 - [x] Aplicar em todas as páginas: Relatórios, Indicadores, Histórico
+
+## 🆕 NOVOS CAMPOS E MELHORIAS (06/02/2026)
+
+### Adicionar Novos Campos ao Formulário de Venda
+- [x] Adicionar campo "Percentual da Entrada" (número, %)
+- [x] Adicionar campo "Número do Contrato" (texto)
+- [x] Adicionar campo "Data de Assinatura do Contrato" (data)
+- [x] Renomear "Banco (Financiamento)" para "Banco Financiador"
+- [x] Posicionar novos campos de forma adequada no formulário
+- [x] Atualizar schema do banco com novos campos
+- [x] Atualizar backend (salesRouter) para salvar novos campos
+
+### Implementar Sistema de Histórico de Datas
+- [ ] Analisar Excel para identificar todas as colunas de datas
+- [ ] Criar tabela de histórico de alterações de status
+- [ ] Registrar automaticamente mudanças de status com timestamp
+- [ ] Implementar cálculo de tempo médio entre etapas (Angariação → Venda, etc.)
+- [ ] Importar histórico antigo do Excel quando disponível
+
+### Atualizar Script de Importação
+- [ ] Analisar todas as colunas do Excel 01Relatório_Jan_2025.xlsx
+- [ ] Mapear TODAS as colunas para campos do sistema
+- [ ] Incluir importação de observações
+- [ ] Incluir importação de novos campos (percentual entrada, contrato, etc.)
+- [ ] Testar importação completa

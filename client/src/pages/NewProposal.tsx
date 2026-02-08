@@ -128,6 +128,10 @@ interface FormData {
   bankName: string; // Banco
   financedAmount: string; // Valor Financiado
   bankReturnPercentage: string; // % Retorno Bancário
+  downPaymentPercentage: string; // Percentual da Entrada
+  contractNumber: string; // Número do Contrato
+  contractSignatureDate: string; // Data de Assinatura do Contrato
+  portfolioStatus: string; // Situação Carteira
 
   // Broker Info
   brokerAngariadorType: "internal" | "external";
@@ -233,6 +237,10 @@ export default function NewProposal() {
     bankName: "",
     financedAmount: "",
     bankReturnPercentage: "",
+    downPaymentPercentage: "",
+    contractNumber: "",
+    contractSignatureDate: "",
+    portfolioStatus: "",
 
     brokerAngariadorType: "internal",
     brokerAngariador: "",
@@ -1538,7 +1546,7 @@ export default function NewProposal() {
                     </Select>
                   </div>
                   <div>
-                    <Label>Banco (Financiamento)</Label>
+                    <Label>Banco Financiador</Label>
                     <Input
                       placeholder="Nome do banco"
                       value={formData.bankName}
@@ -1555,12 +1563,46 @@ export default function NewProposal() {
                     />
                   </div>
                   <div>
+                    <Label>Percentual da Entrada (%)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="Ex: 30"
+                      value={formData.downPaymentPercentage}
+                      onChange={(e) => handleInputChange("downPaymentPercentage", e.target.value)}
+                    />
+                  </div>
+                  <div>
                     <Label>% Retorno Bancário</Label>
                     <Input
                       type="number"
                       placeholder="0.00"
                       value={formData.bankReturnPercentage}
                       onChange={(e) => handleInputChange("bankReturnPercentage", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Número do Contrato</Label>
+                    <Input
+                      placeholder="Ex: 2025-001"
+                      value={formData.contractNumber}
+                      onChange={(e) => handleInputChange("contractNumber", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Data de Assinatura do Contrato</Label>
+                    <Input
+                      type="date"
+                      value={formData.contractSignatureDate}
+                      onChange={(e) => handleInputChange("contractSignatureDate", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Situação Carteira</Label>
+                    <Input
+                      placeholder="Ex: Em análise"
+                      value={formData.portfolioStatus}
+                      onChange={(e) => handleInputChange("portfolioStatus", e.target.value)}
                     />
                   </div>
                   <div>

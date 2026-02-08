@@ -76,6 +76,10 @@ const createSaleSchema = z.object({
   bankName: z.string().optional(), // Banco
   financedAmount: z.number().optional(), // Valor Financiado
   bankReturnPercentage: z.number().optional(), // % Retorno Bancário
+  downPaymentPercentage: z.number().optional(), // Percentual da Entrada
+  contractNumber: z.string().optional(), // Número do Contrato
+  contractSignatureDate: z.string().datetime().optional(), // Data de Assinatura do Contrato
+  portfolioStatus: z.string().optional(), // Situação Carteira
 
   // Commission Information
   brokerAngariadorType: z.enum(["internal", "external"]).optional(),
@@ -311,6 +315,10 @@ export const salesRouter = router({
           bankReturnAmount: input.financedAmount && input.bankReturnPercentage 
             ? (input.financedAmount * (input.bankReturnPercentage / 100)).toString()
             : null,
+          downPaymentPercentage: input.downPaymentPercentage?.toString() || null,
+          contractNumber: input.contractNumber || null,
+          contractSignatureDate: input.contractSignatureDate ? new Date(input.contractSignatureDate) : null,
+          portfolioStatus: input.portfolioStatus || null,
         });
 
         // Criar comissões automaticamente para angariador e vendedor

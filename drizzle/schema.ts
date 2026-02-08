@@ -163,6 +163,11 @@ export const sales = mysqlTable("sales", {
   bankReturnAmount: decimal("bankReturnAmount", { precision: 15, scale: 2 }), // Valor Retorno (calculado)
   observations: text("observations"), // Observações gerais
   wasRemoved: boolean("wasRemoved").default(false), // Se foi baixado
+  // Novos campos adicionados 06/02/2026
+  downPaymentPercentage: decimal("downPaymentPercentage", { precision: 5, scale: 2 }), // Percentual da Entrada
+  contractNumber: varchar("contractNumber", { length: 100 }), // Número do Contrato
+  contractSignatureDate: timestamp("contractSignatureDate"), // Data de Assinatura do Contrato
+  portfolioStatus: varchar("portfolioStatus", { length: 100 }), // Situação Carteira
   priceDiscount: decimal("priceDiscount", { precision: 15, scale: 2 }), // Calculado: advertisementValue - saleValue
   listingToSaleDays: int("listingToSaleDays"), // Calculado: dias entre listingDate e saleDate
   // Comissões Recebidas

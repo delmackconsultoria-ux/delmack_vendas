@@ -145,9 +145,10 @@ def import_sales_from_excel(file_path, company_id='default_company'):
         'VENDEDOR': 'brokerVendedorName',
         'DE ONDE VEIO O CLIENTE': 'clientOrigin',
         'FORMA DE PAGAMENTO': 'paymentMethod',
-        'SITUAÇÃO CARTEIRA': 'status',
+        'SITUAÇÃO CARTEIRA': 'portfolioStatus',  # Alterado de 'status' para 'portfolioStatus'
         'EQUIPE': 'team',
         'TEMPO VENDA': 'listingToSaleDays',
+        'APOIO PREMIAÇÃO': 'supportAward',  # Novo campo
     }
     
     # Estatísticas
@@ -195,6 +196,7 @@ def import_sales_from_excel(file_path, company_id='default_company'):
                 'clientOrigin': normalize_text(row.get('DE ONDE VEIO O CLIENTE')),
                 'paymentMethod': normalize_text(row.get('FORMA DE PAGAMENTO')),
                 'status': 'sale',  # Status padrão para vendas importadas
+                'portfolioStatus': normalize_text(row.get('SITUAÇÃO CARTEIRA')),  # Novo campo
                 'team': normalize_text(row.get('EQUIPE')),
                 'region': normalize_text(row.get('REGIÃO')),
                 'bankName': normalize_text(row.get('BANCO')),
@@ -239,13 +241,13 @@ def import_sales_from_excel(file_path, company_id='default_company'):
                     id, companyId, propertyId, buyerName, saleValue, saleDate,
                     listingDate, advertisementValue, businessType, listingStore, sellingStore,
                     totalCommission, totalCommissionPercent, brokerAngariadorName, brokerVendedorName,
-                    clientOrigin, paymentMethod, status, team, region, bankName,
+                    clientOrigin, paymentMethod, status, portfolioStatus, team, region, bankName,
                     financedAmount, bankReturnPercentage, bankReturnAmount, deedStatus,
                     managementResponsible, observations, priceDiscount, listingToSaleDays,
                     registeredAt, createdAt, updatedAt
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), NOW()
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), NOW()
                 )
             """
             
@@ -268,6 +270,7 @@ def import_sales_from_excel(file_path, company_id='default_company'):
                 sale_data['clientOrigin'],
                 sale_data['paymentMethod'],
                 sale_data['status'],
+                sale_data.get('portfolioStatus'),  # Novo campo
                 sale_data['team'],
                 sale_data['region'],
                 sale_data['bankName'],
