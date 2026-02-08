@@ -294,3 +294,17 @@
 - [ ] Incluir importação de observações
 - [ ] Incluir importação de novos campos (percentual entrada, contrato, etc.)
 - [ ] Testar importação completa
+
+## 🔧 ATUALIZAÇÃO DE CREDENCIAIS (08/02/2026)
+
+### Configurar Variáveis de Ambiente para Produção
+- [ ] Atualizar PROPERFY_API_URL para URL real: https://adm.baggioimoveis.com.br/api/property/property
+- [ ] Atualizar PROPERFY_API_TOKEN com token real
+- [ ] Atualizar PROPERFY_EMAIL e PROPERFY_PASSWORD com credenciais reais
+- [ ] Criar arquivo .env.example atualizado para referência
+- [ ] Validar configurações
+
+### Configurar Properfy no Ambiente de Desenvolvimento
+- [x] Adicionar PROPERFY_API_URL e PROPERFY_API_TOKEN via webdev_request_secrets
+- [x] Testar conexão com API da Properfy - SUCESSO: 4.982 imóveis encontrados
+- [x] Validar busca de imóveis por referência - SUCESSO: Busca por TESTESETORTI funcionando
