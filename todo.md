@@ -398,3 +398,24 @@
 - [x] Exemplo: BG97087003 deveria preencher "Eleva Arvoredo" - CONFIRMADO
 - [x] Adicionar mapeamento do campo de condomínio em searchProperty - chrCondoName
 - [ ] Testar preenchimento automático
+
+
+## 🎨 MELHORIAS SOLICITADAS (09/02/2026 - 14:20)
+
+### Destacar campos preenchidos pela API em verde
+- [x] Identificar todos os campos que são preenchidos automaticamente pela busca Properfy
+- [x] Aplicar background verde claro (bg-green-50) em todos os campos preenchidos pela API
+- [x] Garantir consistência visual em todos os campos auto-preenchidos
+- [x] Criar helper getProperfyFieldClassName para gerenciar classes CSS
+
+### Preencher custo por m² e idade do imóvel automaticamente
+- [x] Verificar se API Properfy retorna custo por m² - CALCULADO: dcmSale / dcmAreaPrivate
+- [x] Verificar se API Properfy retorna idade do imóvel - SIM: intBuiltYear (ano de construção)
+- [x] Adicionar mapeamento desses campos no properfyService.ts (pricePerSqm e propertyAge)
+- [x] Preencher automaticamente no formulário quando buscar imóvel
+
+### Otimizar velocidade da busca Properfy
+- [x] Analisar gargalos na busca atual - já usa busca paralela em lotes
+- [x] Implementar busca paralela - já implementada, aumentada de 5 para 10 páginas por lote
+- [x] Reduzir número de páginas buscadas - reduzido de 50 para 30 páginas (3.000 imóveis)
+- [ ] Adicionar feedback visual de progresso durante busca (opcional)

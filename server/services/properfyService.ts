@@ -23,6 +23,8 @@ export interface ProperfyProperty {
   parkingSpaces: number;
   description: string;
   condominiumName: string;
+  pricePerSqm: number; // Custo por m² (Valor / Área Privativa)
+  propertyAge: number; // Idade do imóvel em anos (Ano atual - Ano de construção)
 }
 
 export interface ProperfySearchResult {
@@ -94,7 +96,15 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
     parkingSpaces: property.intGarage || 0,
     description: property.txtDescription || '',
     // Corrigido: campo correto é chrCondoName (não chrCondominiumName)
-    condominiumName: property.chrCondoName || ''
+    condominiumName: property.chrCondoName || '',
+    // Custo por m²: Valor de venda / Área privativa
+    pricePerSqm: property.dcmSale && property.dcmAreaPrivate 
+      ? Math.round(property.dcmSale / property.dcmAreaPrivate) 
+      : 0,
+    // Idade do imóvel: Ano atual - Ano de construção
+    propertyAge: property.intBuiltYear 
+      ? new Date().getFullYear() - property.intBuiltYear 
+      : 0
   };
 }
 
@@ -186,13 +196,13 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       };
     }
 
-    // Buscar em até 50 páginas (5.000 imóveis) para evitar timeout
-    const maxPages = Math.min(totalPages, 50);
+    // Buscar em até 30 páginas (3.000 imóveis) para otimizar velocidade
+    const maxPages = Math.min(totalPages, 30);
     console.log(`[Properfy] Buscando em até ${maxPages} páginas (${Math.min(totalProperties, maxPages * 100)} imóveis)`);
     
-    // Buscar em lotes de 5 páginas por vez (busca paralela otimizada)
-    for (let batchStart = 2; batchStart <= maxPages; batchStart += 5) {
-      const batchEnd = Math.min(batchStart + 4, totalPages);
+    // Buscar em lotes de 10 páginas por vez (busca paralela otimizada)
+    for (let batchStart = 2; batchStart <= maxPages; batchStart += 10) {
+      const batchEnd = Math.min(batchStart + 9, totalPages);
       console.log(`[Properfy] Buscando lote: páginas ${batchStart}-${batchEnd}`);
       const batchPromises = [];
       

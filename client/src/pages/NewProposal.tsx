@@ -14,6 +14,7 @@ import { useLocation } from "wouter";
 import ErrorModal from "@/components/ErrorModal";
 import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP, formatPhone, BRAZILIAN_STATES, maskCPFOrCNPJ, maskCEP, maskPhone } from "@/lib/validators";
 import { calculateCommissions, formatCurrency, BusinessType } from "@/lib/commissionCalculator";
+import { getProperfyFieldClassName } from "@/lib/properfyFieldHelper";
 
 // Tipos de Negócio atualizados conforme manual de comissionamento
 const BUSINESS_TYPES = [
@@ -328,6 +329,8 @@ export default function NewProposal() {
           totalArea: prop.totalArea?.toString() || prev.totalArea,
           bedrooms: prop.bedrooms?.toString() || prev.bedrooms,
           condominiumName: prop.condominiumName || prev.condominiumName,
+          costPerM2: prop.pricePerSqm?.toString() || prev.costPerM2,
+          propertyAge: prop.propertyAge?.toString() || prev.propertyAge,
         }));
         setProperfySearch({ loading: false, error: "", found: true, searchType });
       } else {
@@ -1037,7 +1040,7 @@ export default function NewProposal() {
                   <div>
                     <Label>Tipo do Imóvel *</Label>
                     <Select value={formData.typeOfProperty} onValueChange={(value) => handleInputChange("typeOfProperty", value)}>
-                      <SelectTrigger className={completionStatus.typeOfProperty ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.typeOfProperty ? "bg-red-50 border-red-400" : ""}>
+                      <SelectTrigger className={getProperfyFieldClassName("typeOfProperty", formData.typeOfProperty, completionStatus.typeOfProperty, attemptedSave, true)}>
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1056,7 +1059,7 @@ export default function NewProposal() {
                       placeholder="Ex: 3"
                       value={formData.bedrooms}
                       onChange={(e) => handleInputChange("bedrooms", e.target.value)}
-                      className={completionStatus.bedrooms ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.bedrooms ? "bg-red-50 border-red-400" : ""}
+                      className={getProperfyFieldClassName("bedrooms", formData.bedrooms, completionStatus.bedrooms, attemptedSave, true)}
                     />
                   </div>
                   <div>
@@ -1066,7 +1069,7 @@ export default function NewProposal() {
                       placeholder="Ex: 120.50"
                       value={formData.privateArea}
                       onChange={(e) => handleInputChange("privateArea", e.target.value)}
-                      className={completionStatus.privateArea ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.privateArea ? "bg-red-50 border-red-400" : ""}
+                      className={getProperfyFieldClassName("privateArea", formData.privateArea, completionStatus.privateArea, attemptedSave, true)}
                     />
                   </div>
                   <div>
@@ -1076,7 +1079,7 @@ export default function NewProposal() {
                       placeholder="Ex: 150.00"
                       value={formData.totalArea}
                       onChange={(e) => handleInputChange("totalArea", e.target.value)}
-                      className={completionStatus.totalArea ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.totalArea ? "bg-red-50 border-red-400" : ""}
+                      className={getProperfyFieldClassName("totalArea", formData.totalArea, completionStatus.totalArea, attemptedSave, true)}
                     />
                   </div>
                   <div>
@@ -1086,6 +1089,7 @@ export default function NewProposal() {
                       placeholder="Ex: 5000.00"
                       value={formData.costPerM2}
                       onChange={(e) => handleInputChange("costPerM2", e.target.value)}
+                      className={getProperfyFieldClassName("costPerM2", formData.costPerM2)}
                     />
                   </div>
                   <div>
@@ -1095,6 +1099,7 @@ export default function NewProposal() {
                       placeholder="Ex: 5"
                       value={formData.propertyAge}
                       onChange={(e) => handleInputChange("propertyAge", e.target.value)}
+                      className={getProperfyFieldClassName("propertyAge", formData.propertyAge)}
                     />
                   </div>
                 </div>
@@ -1115,6 +1120,7 @@ export default function NewProposal() {
                       value={formData.propertyZipCode}
                       onChange={handleCEPChange}
                       maxLength={9}
+                      className={getProperfyFieldClassName("propertyZipCode", formData.propertyZipCode)}
                     />
                     <p className="text-xs text-slate-500 mt-1">Digite o CEP para preencher o endereço automaticamente</p>
                   </div>
@@ -1124,6 +1130,7 @@ export default function NewProposal() {
                       placeholder="Nome do condomínio"
                       value={formData.condominiumName}
                       onChange={(e) => handleInputChange("condominiumName", e.target.value)}
+                      className={getProperfyFieldClassName("condominiumName", formData.condominiumName)}
                     />
                   </div>
                   <div className="col-span-2">
@@ -1132,7 +1139,7 @@ export default function NewProposal() {
                       placeholder="Rua/Avenida"
                       value={formData.propertyAddress}
                       onChange={(e) => handleInputChange("propertyAddress", e.target.value)}
-                      className={completionStatus.propertyAddress ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.propertyAddress ? "bg-red-50 border-red-400" : ""}
+                      className={getProperfyFieldClassName("propertyAddress", formData.propertyAddress, completionStatus.propertyAddress, attemptedSave, true)}
                     />
                   </div>
                   <div>
@@ -1141,6 +1148,7 @@ export default function NewProposal() {
                       placeholder="123"
                       value={formData.propertyNumber}
                       onChange={(e) => handleInputChange("propertyNumber", e.target.value)}
+                      className={getProperfyFieldClassName("propertyNumber", formData.propertyNumber)}
                     />
                   </div>
                   <div>
@@ -1157,6 +1165,7 @@ export default function NewProposal() {
                       placeholder="Bairro"
                       value={formData.propertyNeighborhood}
                       onChange={(e) => handleInputChange("propertyNeighborhood", e.target.value)}
+                      className={getProperfyFieldClassName("propertyNeighborhood", formData.propertyNeighborhood)}
                     />
                   </div>
                   <div>
@@ -1165,12 +1174,13 @@ export default function NewProposal() {
                       placeholder="Cidade"
                       value={formData.propertyCity}
                       onChange={(e) => handleInputChange("propertyCity", e.target.value)}
+                      className={getProperfyFieldClassName("propertyCity", formData.propertyCity)}
                     />
                   </div>
                   <div>
                     <Label>Estado *</Label>
                     <Select value={formData.propertyState} onValueChange={(value) => handleInputChange("propertyState", value)}>
-                      <SelectTrigger>
+                      <SelectTrigger className={getProperfyFieldClassName("propertyState", formData.propertyState)}>
                         <SelectValue placeholder="Selecione o estado" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1334,6 +1344,7 @@ export default function NewProposal() {
                       placeholder="0.00"
                       value={formData.advertisementValue}
                       onChange={(e) => handleInputChange("advertisementValue", e.target.value)}
+                      className={getProperfyFieldClassName("advertisementValue", formData.advertisementValue)}
                     />
                   </div>
                   <div>
