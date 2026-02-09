@@ -117,22 +117,33 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
  * Retorna null se não encontrar
  */
 async function searchInLocalDatabase(searchNormalized: string): Promise<any | null> {
+  console.log(`[Properfy LOCAL] Iniciando busca local para: ${searchNormalized}`);
+  
   const db = await getDb();
   if (!db) {
-    console.warn('[Properfy] Database not available for local search');
+    console.warn('[Properfy LOCAL] Database not available for local search');
     return null;
   }
 
   try {
+    console.log('[Properfy LOCAL] Executando query no banco...');
     const result = await db
       .select()
       .from(properfyProperties)
       .where(eq(properfyProperties.chrReference, searchNormalized))
       .limit(1);
 
-    return result.length > 0 ? result[0] : null;
+    console.log(`[Properfy LOCAL] Query executada. Resultados encontrados: ${result.length}`);
+    
+    if (result.length > 0) {
+      console.log(`[Properfy LOCAL] Imóvel encontrado! ID: ${result[0].id}, Ref: ${result[0].chrReference}`);
+      return result[0];
+    } else {
+      console.log('[Properfy LOCAL] Nenhum imóvel encontrado no banco local');
+      return null;
+    }
   } catch (error) {
-    console.error('[Properfy] Error searching local database:', error);
+    console.error('[Properfy LOCAL] Erro ao buscar no banco local:', error);
     return null;
   }
 }

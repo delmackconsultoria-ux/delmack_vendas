@@ -126,26 +126,36 @@ export const salesRouter = router({
       });
       
       try {
+        console.log('[Server] Iniciando busca Properfy...');
+        
         // Timeout de 60 segundos (1 minuto) conforme solicitado
         const timeoutPromise = new Promise<ProperfySearchResult>((_, reject) => 
-          setTimeout(() => reject(new Error('TIMEOUT')), 60000)
+          setTimeout(() => {
+            console.log('[Server] TIMEOUT atingido após 60 segundos');
+            reject(new Error('TIMEOUT'));
+          }, 60000)
         );
         
         let searchPromise: Promise<ProperfySearchResult>;
         
         // Se tipo específico foi solicitado, usar busca específica
         if (input.searchType === 'cep') {
+          console.log('[Server] Usando busca por CEP');
           searchPromise = searchPropertyByCEP(input.reference);
         } else if (input.searchType === 'address') {
+          console.log('[Server] Usando busca por endereço');
           searchPromise = searchPropertyByAddress(input.reference);
         } else if (input.searchType === 'reference') {
+          console.log('[Server] Usando busca por referência');
           searchPromise = searchPropertyByReference(input.reference);
         } else {
-          // Busca inteligente automática
+          console.log('[Server] Usando busca inteligente (smartSearch)');
           searchPromise = smartSearch(input.reference);
         }
         
+        console.log('[Server] Aguardando resultado da busca...');
         const result = await Promise.race([searchPromise, timeoutPromise]);
+        console.log('[Server] Busca concluída:', { success: result.success });
         return result;
         
       } catch (error: any) {

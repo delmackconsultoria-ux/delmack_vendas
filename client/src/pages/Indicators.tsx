@@ -3,11 +3,13 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import React from "react";
 import IndicatorDetailModal from "@/components/IndicatorDetailModal";
 import { AppLayout } from "@/components/AppLayout";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 interface Indicator {
   name: string;
@@ -23,6 +25,29 @@ export default function Indicators() {
   const [filterType, setFilterType] = useState<"team" | "broker">("team");
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  
+  // Mutation para sincronização manual
+  const syncMutation = trpc.system.syncPropertyfyNow.useMutation({
+    onSuccess: (data) => {
+      if (data.success && data.stats) {
+        toast.success(`Sincronização concluída! ${data.stats.inserted} imóveis atualizados.`);
+      } else {
+        toast.error(data.message || 'Erro ao sincronizar');
+      }
+      setIsSyncing(false);
+    },
+    onError: (error) => {
+      toast.error(`Erro: ${error.message}`);
+      setIsSyncing(false);
+    }
+  });
+  
+  const handleSyncPropertyfy = () => {
+    setIsSyncing(true);
+    toast.info('Sincronizando base Properfy... Isso pode levar alguns minutos.');
+    syncMutation.mutate();
+  };
   
   // Filtros de Mês/Ano
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
@@ -138,11 +163,24 @@ export default function Indicators() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Indicadores de Vendas</h1>
-          <p className="text-muted-foreground mt-2">
-            Acompanhe os principais indicadores de desempenho
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Indicadores de Vendas</h1>
+            <p className="text-muted-foreground mt-2">
+              Acompanhe os principais indicadores de desempenho
+            </p>
+          </div>
+          {(user?.role === 'admin' || user?.role === 'manager' || user?.role === 'finance') && (
+            <Button
+              onClick={handleSyncPropertyfy}
+              disabled={isSyncing}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+              {isSyncing ? 'Sincronizando...' : 'Sincronizar Properfy'}
+            </Button>
+          )}
         </div>
         
         {!isTestCompany && (

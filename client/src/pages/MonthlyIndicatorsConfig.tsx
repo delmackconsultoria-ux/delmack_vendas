@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, RefreshCw } from "lucide-react";
 
 export default function MonthlyIndicatorsConfig() {
   const { user } = useAuth();
@@ -15,6 +15,29 @@ export default function MonthlyIndicatorsConfig() {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
+  const [isSyncing, setIsSyncing] = useState(false);
+  
+  // Mutation para sincronização manual Properfy
+  const syncMutation = trpc.system.syncPropertyfyNow.useMutation({
+    onSuccess: (data) => {
+      if (data.success && data.stats) {
+        toast.success(`Sincronização concluída! ${data.stats.inserted} imóveis atualizados.`);
+      } else {
+        toast.error(data.message || 'Erro ao sincronizar');
+      }
+      setIsSyncing(false);
+    },
+    onError: (error) => {
+      toast.error(`Erro: ${error.message}`);
+      setIsSyncing(false);
+    }
+  });
+  
+  const handleSyncPropertyfy = () => {
+    setIsSyncing(true);
+    toast.info('Sincronizando base Properfy... Isso pode levar alguns minutos.');
+    syncMutation.mutate();
+  };
 
   // Query current indicator
   const { data: indicator, isLoading, refetch } = trpc.monthlyIndicators.getByMonth.useQuery({
@@ -83,11 +106,22 @@ export default function MonthlyIndicatorsConfig() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Configuração de Indicadores Mensais</h1>
-          <p className="text-muted-foreground mt-2">
-            Preencha os valores de despesas e fundos para o mês selecionado
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Configuração de Indicadores Mensais</h1>
+            <p className="text-muted-foreground mt-2">
+              Preencha os valores de despesas e fundos para o mês selecionado
+            </p>
+          </div>
+          <Button
+            onClick={handleSyncPropertyfy}
+            disabled={isSyncing}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Sincronizando...' : 'Sincronizar Properfy'}
+          </Button>
         </div>
 
         <Card>

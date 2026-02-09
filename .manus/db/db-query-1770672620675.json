@@ -1,0 +1,19 @@
+{
+  "query": "SELECT COUNT(*) as total FROM properfyProperties; SELECT * FROM properfyProperties WHERE chrReference = 'BG97087003' LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total FROM properfyProperties; SELECT * FROM properfyProperties WHERE chrReference = 'BG97087003' LIMIT 1;",
+  "rows": [
+    {
+      "total": "4985"
+    },
+    {
+      "total": "id\tchrReference\tchrInnerReference\tchrType\tchrStatus\tchrTransactionType\tdcmAreaTotal\tdcmAreaPrivate\tdcmAreaUsable\tdcmAreaBuilt\tintRooms\tintBedrooms\tintSuites\tintBathrooms\tintGarage\tdcmSale\tdcmRentNetValue\tdcmCondoValue\tdcmPropertyTax\tchrAddressPostalCode\tchrAddressStreet\tchrAddressNumber\tchrAddressComplement\tchrAddressNeighborhood\tchrAddressCity\tchrAddressCityCode\tchrAddressState\tchrCondoName\tfkCondo\tintBuiltYear\tintFloors\tlastSyncedAt\tcreatedAt\tupdatedAt"
+    },
+    {
+      "total": "4886\tBG97087003\tBG03940011-COPY-958E903799\tAPARTMENT\tLISTED\tSALE\t55.48\t55.48\t55.48\t55.48\t4\t2\tNULL\t1\t1\t455000.00\t2388.98\t480.00\t0.00\t81.230-162\tRua Luiz Ronaldo Canalli\t3175\tapto 206 torre 02\tNULL\tCuritiba\t4106902\tPR\tEleva Arvoredo\tNULL\t2024\tNULL\t2026-02-09 21:13:56\t2026-02-09 21:13:56\t2026-02-09 21:13:56"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n4985\nid\tchrReference\tchrInnerReference\tchrType\tchrStatus\tchrTransactionType\tdcmAreaTotal\tdcmAreaPrivate\tdcmAreaUsable\tdcmAreaBuilt\tintRooms\tintBedrooms\tintSuites\tintBathrooms\tintGarage\tdcmSale\tdcmRentNetValue\tdcmCondoValue\tdcmPropertyTax\tchrAddressPostalCode\tchrAddressStreet\tchrAddressNumber\tchrAddressComplement\tchrAddressNeighborhood\tchrAddressCity\tchrAddressCityCode\tchrAddressState\tchrCondoName\tfkCondo\tintBuiltYear\tintFloors\tlastSyncedAt\tcreatedAt\tupdatedAt\n4886\tBG97087003\tBG03940011-COPY-958E903799\tAPARTMENT\tLISTED\tSALE\t55.48\t55.48\t55.48\t55.48\t4\t2\tNULL\t1\t1\t455000.00\t2388.98\t480.00\t0.00\t81.230-162\tRua Luiz Ronaldo Canalli\t3175\tapto 206 torre 02\tNULL\tCuritiba\t4106902\tPR\tEleva Arvoredo\tNULL\t2024\tNULL\t2026-02-09 21:13:56\t2026-02-09 21:13:56\t2026-02-09 21:13:56\n",
+  "stderr": "",
+  "execution_time_ms": 245
+}

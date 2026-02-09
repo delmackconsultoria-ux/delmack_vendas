@@ -503,3 +503,24 @@
 - [ ] Testar busca por BG97087003 e BG97142005
 - [ ] Validar que busca é instantânea (< 100ms)
 - [ ] Validar que todos os campos são preenchidos corretamente
+
+
+## 🐛 BUG CRÍTICO (09/02/2026 - 18:15)
+
+### Busca instantânea não está funcionando
+- [ ] Busca retorna timeout ao invés de buscar no banco local
+- [ ] Verificar se função searchInLocalDatabase está sendo chamada
+- [ ] Verificar se dados foram sincronizados corretamente na tabela properfyProperties
+- [ ] Verificar logs do servidor para identificar causa do erro
+- [ ] Corrigir problema e garantir busca instantânea funcione
+
+
+## 🔧 NOVA FUNCIONALIDADE (09/02/2026 - 18:30)
+
+### Endpoint manual de sincronização Properfy
+- [x] Criar procedure tRPC `system.syncPropertyfyNow` para gerentes e financeiro
+- [x] Adicionar botão "Sincronizar Properfy" na página de Indicadores
+- [x] Adicionar botão "Sincronizar Properfy" na página de Configurações de Indicadores
+- [x] Mostrar progresso da sincronização em tempo real (toast + spinner)
+- [x] Exibir resultado da sincronização (total de imóveis, tempo, erros)
+- [ ] Testar sincronização manual com perfis manager e finance
