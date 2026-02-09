@@ -1,0 +1,41 @@
+CREATE TABLE `properfyProperties` (
+	`id` int NOT NULL,
+	`chrReference` varchar(100) NOT NULL,
+	`chrInnerReference` varchar(100),
+	`chrType` varchar(50),
+	`chrStatus` varchar(50),
+	`chrTransactionType` varchar(50),
+	`dcmAreaTotal` decimal(10,2),
+	`dcmAreaPrivate` decimal(10,2),
+	`dcmAreaUsable` decimal(10,2),
+	`dcmAreaBuilt` decimal(10,2),
+	`intRooms` int,
+	`intBedrooms` int,
+	`intSuites` int,
+	`intBathrooms` int,
+	`intGarage` int,
+	`dcmSale` decimal(15,2),
+	`dcmRentNetValue` decimal(15,2),
+	`dcmCondoValue` decimal(15,2),
+	`dcmPropertyTax` decimal(15,2),
+	`chrAddressPostalCode` varchar(20),
+	`chrAddressStreet` text,
+	`chrAddressNumber` varchar(20),
+	`chrAddressComplement` varchar(255),
+	`chrAddressNeighborhood` varchar(255),
+	`chrAddressCity` varchar(255),
+	`chrAddressCityCode` varchar(20),
+	`chrAddressState` varchar(2),
+	`chrCondoName` varchar(255),
+	`fkCondo` int,
+	`intBuiltYear` int,
+	`intFloors` int,
+	`lastSyncedAt` timestamp DEFAULT (now()),
+	`createdAt` timestamp DEFAULT (now()),
+	`updatedAt` timestamp DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `properfyProperties_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE INDEX `idx_properfy_reference` ON `properfyProperties` (`chrReference`);--> statement-breakpoint
+CREATE INDEX `idx_properfy_postal_code` ON `properfyProperties` (`chrAddressPostalCode`);--> statement-breakpoint
+CREATE INDEX `idx_properfy_city_code` ON `properfyProperties` (`chrAddressCityCode`);

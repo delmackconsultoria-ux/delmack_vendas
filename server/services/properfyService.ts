@@ -1,6 +1,10 @@
 // Serviço de integração com API Properfy
 // Suporta busca por referência, endereço ou CEP
 // Usar URL base de produção (remover /auth/token se presente no env)
+import { getDb } from '../db';
+import { properfyProperties } from '../../drizzle/schema';
+import { eq } from 'drizzle-orm';
+
 const envUrl = process.env.PROPERFY_API_URL || 'https://sandbox.properfy.com.br/api';
 const PROPERFY_API_URL = envUrl.replace('/auth/token', '').replace(/\/$/, '');
 const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN || '';
@@ -109,22 +113,63 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
 }
 
 /**
- * Busca imóvel por referência (código interno ou externo)
+ * Busca imóvel no banco de dados local (properfyProperties)
+ * Retorna null se não encontrar
  */
-export async function searchPropertyByReference(reference: string): Promise<ProperfySearchResult> {
-  if (!PROPERFY_API_TOKEN) {
-    return {
-      success: false,
-      error: 'API Properfy não configurada. Preencha os dados manualmente.',
-      searchType: 'reference'
-    };
+async function searchInLocalDatabase(searchNormalized: string): Promise<any | null> {
+  const db = await getDb();
+  if (!db) {
+    console.warn('[Properfy] Database not available for local search');
+    return null;
   }
 
   try {
-    const searchRef = reference.toUpperCase().trim();
-    const searchNormalized = searchRef.replace(/[^A-Z0-9]/g, '');
-    
-    console.log(`[Properfy] Buscando código: ${searchRef} (normalizado: ${searchNormalized})`);
+    const result = await db
+      .select()
+      .from(properfyProperties)
+      .where(eq(properfyProperties.chrReference, searchNormalized))
+      .limit(1);
+
+    return result.length > 0 ? result[0] : null;
+  } catch (error) {
+    console.error('[Properfy] Error searching local database:', error);
+    return null;
+  }
+}
+
+/**
+ * Busca imóvel por referência (código interno ou externo)
+ * NOVA IMPLEMENTAÇÃO: Busca primeiro no banco local (properfyProperties)
+ * Se não encontrar, faz fallback para API Properfy
+ */
+export async function searchPropertyByReference(reference: string): Promise<ProperfySearchResult> {
+  const searchRef = reference.toUpperCase().trim();
+  const searchNormalized = searchRef.replace(/[^A-Z0-9]/g, '');
+  
+  console.log(`[Properfy] Buscando código: ${searchRef} (normalizado: ${searchNormalized})`);
+
+  try {
+    // STEP 1: Buscar no banco local primeiro (INSTANTÂNEO)
+    const localProperty = await searchInLocalDatabase(searchNormalized);
+    if (localProperty) {
+      console.log(`[Properfy] Imóvel encontrado no banco local (ID: ${localProperty.id})`);
+      return {
+        success: true,
+        property: mapPropertyData(localProperty, searchRef),
+        searchType: 'reference'
+      };
+    }
+
+    console.log('[Properfy] Imóvel não encontrado no banco local, buscando na API...');
+
+    // STEP 2: Fallback para API Properfy se não encontrar localmente
+    if (!PROPERFY_API_TOKEN) {
+      return {
+        success: false,
+        error: 'Imóvel não encontrado. Preencha os dados manualmente.',
+        searchType: 'reference'
+      };
+    }
     
     // Primeira requisição para descobrir total de páginas
     const firstResponse = await fetch(`${PROPERFY_API_URL}/property/property?page=1&size=100`, {

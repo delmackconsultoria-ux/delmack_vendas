@@ -1,179 +1,246 @@
-import { ENV } from "../_core/env";
-import { batchUpsertPropertiesCache } from "../db/propertiesCache";
+import { getDb } from "../db";
+import { properfyProperties } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
-interface ProperfyProperty {
-  id: string;
-  chrReference?: string;
-  chrDocument?: string;
+const PROPERFY_API_URL = process.env.PROPERFY_API_URL;
+const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN;
+
+interface ProperfyPropertyRaw {
+  id: number;
+  chrReference: string;
+  chrInnerReference?: string;
+  chrType?: string;
   chrStatus?: string;
-  dteNewListing?: string;
-  dteTermination?: string;
-  chrTerminationReason?: string;
-  chrTypeListing?: string;
-  dcmSaleValue?: number;
-}
-
-interface ProperfySyncResult {
-  success: boolean;
-  propertiesSynced: number;
-  errors: string[];
-  lastSyncAt: Date;
+  chrTransactionType?: string;
+  dcmAreaTotal?: number;
+  dcmAreaPrivate?: number;
+  dcmAreaUsable?: number;
+  dcmAreaBuilt?: number;
+  intRooms?: number;
+  intBedrooms?: number;
+  intSuites?: number;
+  intBathrooms?: number;
+  intGarage?: number;
+  dcmSale?: number;
+  dcmRentNetValue?: number;
+  dcmCondoValue?: number;
+  dcmPropertyTax?: number;
+  chrAddressPostalCode?: string;
+  chrAddressStreet?: string;
+  chrAddressNumber?: string;
+  chrAddressComplement?: string;
+  chrAddressNeighborhood?: string;
+  chrAddressCity?: string;
+  chrAddressCityCode?: string;
+  chrAddressState?: string;
+  chrCondoName?: string;
+  fkCondo?: number;
+  intBuiltYear?: number;
+  intFloors?: number;
 }
 
 /**
- * Authenticate with Properfy API
+ * Sync all properties from Properfy API to local database
+ * This function fetches all properties and upserts them into properfyProperties table
  */
-async function authenticatePropertyfy(): Promise<string | null> {
+export async function syncAllProperties(): Promise<{ success: boolean; message: string; stats?: { total: number; inserted: number; updated: number; errors: number } }> {
+  console.log('[ProperfySync] Starting full sync...');
+  
+  if (!PROPERFY_API_URL || !PROPERFY_API_TOKEN) {
+    const error = '[ProperfySync] Missing PROPERFY_API_URL or PROPERFY_API_TOKEN';
+    console.error(error);
+    return { success: false, message: error };
+  }
+
+  const db = await getDb();
+  if (!db) {
+    const error = '[ProperfySync] Database not available';
+    console.error(error);
+    return { success: false, message: error };
+  }
+
   try {
-    const response = await fetch(`${ENV.properfyApiUrl}/auth/token`, {
-      method: "POST",
+    const startTime = Date.now();
+    let totalProperties = 0;
+    let insertedCount = 0;
+    let updatedCount = 0;
+    let errorCount = 0;
+
+    // Fetch first page to get total count
+    console.log('[ProperfySync] Fetching first page to determine total...');
+    const firstPageResponse = await fetch(`${PROPERFY_API_URL}/property/property?page=1&size=100`, {
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        vrcEmail: ENV.properfyEmail,
-        vrcPass: ENV.properfyPassword,
-      }),
+        'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
     });
 
-    if (!response.ok) {
-      console.error("[ProperfySync] Authentication failed:", response.status);
-      return null;
+    if (!firstPageResponse.ok) {
+      throw new Error(`API returned ${firstPageResponse.status}`);
     }
 
-    const data = await response.json();
-    return data.token || data.access_token || null;
-  } catch (error) {
-    console.error("[ProperfySync] Authentication error:", error);
-    return null;
-  }
-}
+    const firstPageData = await firstPageResponse.json();
+    const totalPages = firstPageData.last_page || 1;
+    totalProperties = firstPageData.max || 0;
 
-/**
- * Fetch all properties from Properfy
- */
-async function fetchAllProperties(token: string): Promise<ProperfyProperty[]> {
-  const allProperties: ProperfyProperty[] = [];
-  let currentPage = 1;
-  let hasMorePages = true;
+    console.log(`[ProperfySync] Found ${totalProperties} properties across ${totalPages} pages`);
 
-  while (hasMorePages) {
-    try {
-      const response = await fetch(
-        `${ENV.properfyApiUrl}/properties?page=${currentPage}&per_page=100`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.error(`[ProperfySync] Failed to fetch page ${currentPage}:`, response.status);
-        break;
-      }
-
-      const data = await response.json();
-      const properties = data.data || data.properties || [];
-
-      if (properties.length === 0) {
-        hasMorePages = false;
-      } else {
-        allProperties.push(...properties);
-        console.log(`[ProperfySync] Fetched page ${currentPage}: ${properties.length} properties`);
-        currentPage++;
-
-        // Check if there are more pages
-        if (data.meta && data.meta.last_page) {
-          hasMorePages = currentPage <= data.meta.last_page;
-        } else if (properties.length < 100) {
-          hasMorePages = false;
+    // Process first page
+    if (firstPageData.data && Array.isArray(firstPageData.data)) {
+      for (const property of firstPageData.data) {
+        try {
+          await upsertProperty(db, property);
+          insertedCount++;
+        } catch (error) {
+          console.error(`[ProperfySync] Error upserting property ${property.id}:`, error);
+          errorCount++;
         }
       }
-
-      // Add delay to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500));
-    } catch (error) {
-      console.error(`[ProperfySync] Error fetching page ${currentPage}:`, error);
-      hasMorePages = false;
-    }
-  }
-
-  return allProperties;
-}
-
-/**
- * Sync properties from Properfy to local cache
- */
-export async function syncProperfyProperties(companyId: string): Promise<ProperfySyncResult> {
-  const errors: string[] = [];
-  const startTime = Date.now();
-
-  console.log("[ProperfySync] Starting sync for company:", companyId);
-
-  try {
-    // Step 1: Authenticate
-    const token = await authenticatePropertyfy();
-    if (!token) {
-      errors.push("Failed to authenticate with Properfy");
-      return {
-        success: false,
-        propertiesSynced: 0,
-        errors,
-        lastSyncAt: new Date(),
-      };
     }
 
-    console.log("[ProperfySync] Authentication successful");
+    // Fetch remaining pages in parallel batches
+    const batchSize = 20; // Process 20 pages at a time
+    for (let batchStart = 2; batchStart <= totalPages; batchStart += batchSize) {
+      const batchEnd = Math.min(batchStart + batchSize - 1, totalPages);
+      console.log(`[ProperfySync] Processing pages ${batchStart}-${batchEnd}...`);
 
-    // Step 2: Fetch all properties
-    const properties = await fetchAllProperties(token);
-    console.log(`[ProperfySync] Fetched ${properties.length} properties from Properfy`);
+      const batchPromises = [];
+      for (let page = batchStart; page <= batchEnd; page++) {
+        batchPromises.push(
+          fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => ({ page, data }))
+          .catch(err => {
+            console.error(`[ProperfySync] Error fetching page ${page}:`, err);
+            return { page, data: null };
+          })
+        );
+      }
 
-    if (properties.length === 0) {
-      errors.push("No properties found in Properfy");
-      return {
-        success: false,
-        propertiesSynced: 0,
-        errors,
-        lastSyncAt: new Date(),
-      };
+      const results = await Promise.all(batchPromises);
+
+      for (const { page, data } of results) {
+        if (!data?.data || !Array.isArray(data.data)) {
+          console.warn(`[ProperfySync] No data in page ${page}`);
+          continue;
+        }
+
+        for (const property of data.data) {
+          try {
+            await upsertProperty(db, property);
+            insertedCount++;
+          } catch (error) {
+            console.error(`[ProperfySync] Error upserting property ${property.id}:`, error);
+            errorCount++;
+          }
+        }
+      }
     }
-
-    // Step 3: Transform and save to cache
-    const cacheData = properties.map(prop => ({
-      companyId,
-      properfyId: prop.id,
-      chrReference: prop.chrReference || null,
-      chrDocument: prop.chrDocument || null,
-      chrStatus: prop.chrStatus || null,
-      dteNewListing: prop.dteNewListing ? new Date(prop.dteNewListing) : null,
-      dteTermination: prop.dteTermination ? new Date(prop.dteTermination) : null,
-      chrTerminationReason: prop.chrTerminationReason || null,
-      propertyType: prop.chrTypeListing || null,
-      saleValue: prop.dcmSaleValue?.toString() || null,
-    }));
-
-    const syncedCount = await batchUpsertPropertiesCache(cacheData);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`[ProperfySync] Sync completed in ${duration}s: ${syncedCount} properties synced`);
+    const message = `[ProperfySync] Sync completed in ${duration}s. Total: ${totalProperties}, Inserted/Updated: ${insertedCount}, Errors: ${errorCount}`;
+    console.log(message);
 
     return {
       success: true,
-      propertiesSynced: syncedCount,
-      errors,
-      lastSyncAt: new Date(),
+      message,
+      stats: {
+        total: totalProperties,
+        inserted: insertedCount,
+        updated: updatedCount,
+        errors: errorCount
+      }
     };
+
   } catch (error) {
-    console.error("[ProperfySync] Sync error:", error);
-    errors.push(error instanceof Error ? error.message : "Unknown error");
-    return {
-      success: false,
-      propertiesSynced: 0,
-      errors,
-      lastSyncAt: new Date(),
-    };
+    const errorMessage = `[ProperfySync] Sync failed: ${error instanceof Error ? error.message : String(error)}`;
+    console.error(errorMessage);
+    return { success: false, message: errorMessage };
+  }
+}
+
+/**
+ * Upsert a single property into the database
+ */
+async function upsertProperty(db: any, property: ProperfyPropertyRaw): Promise<void> {
+  const values = {
+    id: property.id,
+    chrReference: property.chrReference || '',
+    chrInnerReference: property.chrInnerReference || null,
+    chrType: property.chrType || null,
+    chrStatus: property.chrStatus || null,
+    chrTransactionType: property.chrTransactionType || null,
+    dcmAreaTotal: property.dcmAreaTotal?.toString() || null,
+    dcmAreaPrivate: property.dcmAreaPrivate?.toString() || null,
+    dcmAreaUsable: property.dcmAreaUsable?.toString() || null,
+    dcmAreaBuilt: property.dcmAreaBuilt?.toString() || null,
+    intRooms: property.intRooms || null,
+    intBedrooms: property.intBedrooms || null,
+    intSuites: property.intSuites || null,
+    intBathrooms: property.intBathrooms || null,
+    intGarage: property.intGarage || null,
+    dcmSale: property.dcmSale?.toString() || null,
+    dcmRentNetValue: property.dcmRentNetValue?.toString() || null,
+    dcmCondoValue: property.dcmCondoValue?.toString() || null,
+    dcmPropertyTax: property.dcmPropertyTax?.toString() || null,
+    chrAddressPostalCode: property.chrAddressPostalCode || null,
+    chrAddressStreet: property.chrAddressStreet || null,
+    chrAddressNumber: property.chrAddressNumber || null,
+    chrAddressComplement: property.chrAddressComplement || null,
+    chrAddressNeighborhood: property.chrAddressNeighborhood || null,
+    chrAddressCity: property.chrAddressCity || null,
+    chrAddressCityCode: property.chrAddressCityCode || null,
+    chrAddressState: property.chrAddressState || null,
+    chrCondoName: property.chrCondoName || null,
+    fkCondo: property.fkCondo || null,
+    intBuiltYear: property.intBuiltYear || null,
+    intFloors: property.intFloors || null,
+    lastSyncedAt: new Date(),
+  };
+
+  // Check if property exists
+  const existing = await db
+    .select()
+    .from(properfyProperties)
+    .where(eq(properfyProperties.id, property.id))
+    .limit(1);
+
+  if (existing.length > 0) {
+    // Update existing
+    await db
+      .update(properfyProperties)
+      .set(values)
+      .where(eq(properfyProperties.id, property.id));
+  } else {
+    // Insert new
+    await db.insert(properfyProperties).values(values);
+  }
+}
+
+/**
+ * Get last sync timestamp
+ */
+export async function getLastSyncTime(): Promise<Date | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    const result = await db
+      .select({ lastSyncedAt: properfyProperties.lastSyncedAt })
+      .from(properfyProperties)
+      .orderBy(properfyProperties.lastSyncedAt)
+      .limit(1);
+
+    return result.length > 0 ? result[0].lastSyncedAt : null;
+  } catch (error) {
+    console.error('[ProperfySync] Error getting last sync time:', error);
+    return null;
   }
 }

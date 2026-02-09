@@ -155,6 +155,13 @@
       "when": 1770570658390,
       "tag": "0021_mature_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "5",
+      "when": 1770671304454,
+      "tag": "0022_remarkable_trauma",
+      "breakpoints": true
     }
   ]
 }

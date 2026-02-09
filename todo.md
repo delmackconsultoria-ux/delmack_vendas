@@ -472,3 +472,34 @@
 - [x] Otimizar busca para máxima velocidade e paralelismo - lotes de 20 páginas paralelas
 - [x] Aumentar número de páginas buscadas para garantir que encontre imóvel - 30 páginas (3.000 imóveis)
 - [ ] Testar com BG97142005 para validar que encontra antes do timeout
+
+
+## 🚀 IMPLEMENTAÇÃO OPÇÃO 4: PRÉ-CARREGAR BASE PROPERFY (09/02/2026 - 17:05)
+
+### Criar tabela properfy_properties no banco
+- [x] Criar migration com schema completo dos imóveis Properfy
+- [x] Adicionar índices para busca rápida (chrReference, chrAddressCityCode)
+- [x] Executar migration com `pnpm db:push`
+
+### Criar serviço de sincronização
+- [x] Criar `server/services/properfySyncService.ts`
+- [x] Implementar função `syncAllProperties()` que busca todos os imóveis da API
+- [x] Implementar lógica de upsert (inserir novos, atualizar existentes)
+- [x] Adicionar logs detalhados do progresso da sincronização
+
+### Criar job agendado
+- [x] Criar `server/jobs/properfySyncJob.ts`
+- [x] Configurar job para rodar diariamente às 3h da manhã
+- [x] Job usa setTimeout/setInterval (nativo Node.js, sem dependência externa)
+
+### Modificar busca para usar banco local
+- [x] Atualizar `searchPropertyByReference` para buscar na tabela local
+- [x] Manter mesma interface de retorno (compatibilidade)
+- [x] Adicionar fallback para API se imóvel não estiver no banco
+- [x] Garantir que preenchimento de campos funciona igual
+
+### Testes e validação
+- [x] Executar sincronização manual para popular banco - 4.985 imóveis sincronizados!
+- [ ] Testar busca por BG97087003 e BG97142005
+- [ ] Validar que busca é instantânea (< 100ms)
+- [ ] Validar que todos os campos são preenchidos corretamente

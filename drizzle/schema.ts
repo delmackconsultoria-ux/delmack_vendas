@@ -1,4 +1,4 @@
-import { mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, int, boolean } from "drizzle-orm/mysql-core";
+import { mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, int, boolean, index } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
 
 /**
@@ -698,3 +698,68 @@ export const salePaymentHistoryRelations = relations(salePaymentHistory, ({ one 
     references: [users.id],
   }),
 }));
+
+/**
+ * Properfy Properties Cache - Local copy of Properfy properties for fast search
+ * Synced daily from Properfy API at 3 AM
+ */
+export const properfyProperties = mysqlTable("properfyProperties", {
+  id: int("id").primaryKey(),
+  
+  // Basic info
+  chrReference: varchar("chrReference", { length: 100 }).notNull(),
+  chrInnerReference: varchar("chrInnerReference", { length: 100 }),
+  chrType: varchar("chrType", { length: 50 }),
+  chrStatus: varchar("chrStatus", { length: 50 }),
+  chrTransactionType: varchar("chrTransactionType", { length: 50 }),
+  
+  // Areas
+  dcmAreaTotal: decimal("dcmAreaTotal", { precision: 10, scale: 2 }),
+  dcmAreaPrivate: decimal("dcmAreaPrivate", { precision: 10, scale: 2 }),
+  dcmAreaUsable: decimal("dcmAreaUsable", { precision: 10, scale: 2 }),
+  dcmAreaBuilt: decimal("dcmAreaBuilt", { precision: 10, scale: 2 }),
+  
+  // Rooms
+  intRooms: int("intRooms"),
+  intBedrooms: int("intBedrooms"),
+  intSuites: int("intSuites"),
+  intBathrooms: int("intBathrooms"),
+  intGarage: int("intGarage"),
+  
+  // Financial
+  dcmSale: decimal("dcmSale", { precision: 15, scale: 2 }),
+  dcmRentNetValue: decimal("dcmRentNetValue", { precision: 15, scale: 2 }),
+  dcmCondoValue: decimal("dcmCondoValue", { precision: 15, scale: 2 }),
+  dcmPropertyTax: decimal("dcmPropertyTax", { precision: 15, scale: 2 }),
+  
+  // Address
+  chrAddressPostalCode: varchar("chrAddressPostalCode", { length: 20 }),
+  chrAddressStreet: text("chrAddressStreet"),
+  chrAddressNumber: varchar("chrAddressNumber", { length: 20 }),
+  chrAddressComplement: varchar("chrAddressComplement", { length: 255 }),
+  chrAddressNeighborhood: varchar("chrAddressNeighborhood", { length: 255 }),
+  chrAddressCity: varchar("chrAddressCity", { length: 255 }),
+  chrAddressCityCode: varchar("chrAddressCityCode", { length: 20 }),
+  chrAddressState: varchar("chrAddressState", { length: 2 }),
+  
+  // Condo
+  chrCondoName: varchar("chrCondoName", { length: 255 }),
+  fkCondo: int("fkCondo"),
+  
+  // Building info
+  intBuiltYear: int("intBuiltYear"),
+  intFloors: int("intFloors"),
+  
+  // Sync metadata
+  lastSyncedAt: timestamp("lastSyncedAt").defaultNow(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  // Indexes for fast search
+  referenceIdx: index("idx_properfy_reference").on(table.chrReference),
+  postalCodeIdx: index("idx_properfy_postal_code").on(table.chrAddressPostalCode),
+  cityCodeIdx: index("idx_properfy_city_code").on(table.chrAddressCityCode),
+}));
+
+export type ProperfyProperty = typeof properfyProperties.$inferSelect;
+export type InsertProperfyProperty = typeof properfyProperties.$inferInsert;
