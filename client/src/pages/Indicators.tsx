@@ -83,6 +83,8 @@ export default function Indicators() {
     { name: "Negócios no mês", meta: "R$ 15.000.000,00", media: "R$ 6.071.208,23", percentual: "40%", trend: "up" },
     { name: "Negócios no mês (unidades)", meta: "24", media: "R$ 12,13", percentual: "51%", trend: "up" },
     { name: "Vendas Canceladas", meta: "", media: "R$ 104.375,00", percentual: "#DIV/0!" },
+    // VSO (Venda/Oferta) = Número de Negócios do Mês ÷ Carteira do Mês Anterior
+    // Exemplo: 12 negócios no mês / 240 imóveis na carteira do mês anterior = 5%
     { name: "VSO - venda/oferta", meta: "5,00%", media: "#DIV/0!", percentual: "#DIV/0!" },
     { name: "Comissão Recebida", meta: "R$ 525.000,00", media: "R$ 238.250,81", percentual: "45%", trend: "up" },
     { name: "Comissão Vendida", meta: "R$ 600.000,00", media: "R$ 191.652,06", percentual: "32%", trend: "down" },

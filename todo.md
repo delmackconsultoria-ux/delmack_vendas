@@ -419,3 +419,18 @@
 - [x] Implementar busca paralela - já implementada, aumentada de 5 para 10 páginas por lote
 - [x] Reduzir número de páginas buscadas - reduzido de 50 para 30 páginas (3.000 imóveis)
 - [ ] Adicionar feedback visual de progresso durante busca (opcional)
+
+
+## 🔧 NOVAS REGRAS DE NEGÓCIO (09/02/2026 - 14:30)
+
+### Edição de Previsão de Recebimento
+- [x] Permitir que corretores, gerentes e financeiro editem a data de previsão de recebimento
+- [x] Funcionalidade deve estar disponível em qualquer status da venda
+- [x] Criar interface de edição rápida (inline com botão de editar)
+- [x] Registrar histórico de alterações com usuário e timestamp
+- [ ] Testar permissões para os 3 perfis (broker, manager, finance)
+
+### Fórmula VSO (Venda/Oferta)
+- [x] Confirmar implementação da fórmula: VSO = Número de Negócios do Mês ÷ Carteira do Mês Anterior
+- [x] Verificar se cálculo está correto nos indicadores - ainda não implementado (manual)
+- [x] Documentar fórmula no código para referência futura - comentado em Indicators.tsx

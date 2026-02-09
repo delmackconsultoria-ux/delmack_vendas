@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Edit, Download, Paperclip, History, ExternalLink } from "lucide-react";
+import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Edit, Download, Paperclip, History, ExternalLink, Check, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
   draft: { label: "Rascunho", color: "text-slate-600", bgColor: "bg-slate-100" },
@@ -22,9 +24,24 @@ export default function ProposalDetail() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const params = useParams<{ id: string }>();
-  const { data: sale, isLoading } = trpc.sales.getSaleById.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
-  const { data: history } = trpc.sales.getSaleHistory.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
+  const { data: sale, isLoading, refetch } = trpc.sales.getSaleById.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
+  const { data: history, refetch: refetchHistory } = trpc.sales.getSaleHistory.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
   const { data: docUrl } = trpc.sales.getProposalDocument.useQuery({ saleId: params.id || "" }, { enabled: !!params.id });
+  
+  const [editingPaymentDate, setEditingPaymentDate] = useState(false);
+  const [newPaymentDate, setNewPaymentDate] = useState("");
+  
+  const updatePaymentDateMutation = trpc.sales.updateExpectedPaymentDate.useMutation({
+    onSuccess: () => {
+      toast.success("Previsão de recebimento atualizada");
+      setEditingPaymentDate(false);
+      refetch();
+      refetchHistory();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar previsão de recebimento");
+    },
+  });
 
   if (isLoading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Carregando...</div>;
   if (!sale) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Venda não encontrada</div>;
@@ -199,7 +216,69 @@ ${sale.observation || "Nenhuma observação"}
             <CardContent className="grid md:grid-cols-3 gap-4">
               <div><p className="text-sm text-slate-500">Data da Venda</p><p className="font-medium">{formatDate(sale.saleDate)}</p></div>
               <div><p className="text-sm text-slate-500">Data Angariação</p><p className="font-medium">{formatDate(sale.angariationDate)}</p></div>
-              <div><p className="text-sm text-slate-500">Previsão Recebimento</p><p className="font-medium">{formatDate(sale.expectedPaymentDate)}</p></div>
+              <div>
+                <p className="text-sm text-slate-500">Previsão Recebimento</p>
+                {editingPaymentDate ? (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Input
+                      type="date"
+                      value={newPaymentDate}
+                      onChange={(e) => setNewPaymentDate(e.target.value)}
+                      className="h-8 text-sm"
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      onClick={() => {
+                        if (!newPaymentDate) {
+                          toast.error("Selecione uma data");
+                          return;
+                        }
+                        const isoDate = new Date(newPaymentDate + 'T12:00:00').toISOString();
+                        updatePaymentDateMutation.mutate({
+                          saleId: sale.id,
+                          expectedPaymentDate: isoDate,
+                        });
+                      }}
+                      disabled={updatePaymentDateMutation.isPending}
+                    >
+                      <Check className="h-4 w-4 text-green-600" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      onClick={() => {
+                        setEditingPaymentDate(false);
+                        setNewPaymentDate("");
+                      }}
+                    >
+                      <X className="h-4 w-4 text-slate-600" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{formatDate(sale.expectedPaymentDate)}</p>
+                    {['broker', 'manager', 'finance'].includes(user?.role || '') && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0"
+                        onClick={() => {
+                          const currentDate = sale.expectedPaymentDate 
+                            ? new Date(sale.expectedPaymentDate).toISOString().split('T')[0]
+                            : new Date().toISOString().split('T')[0];
+                          setNewPaymentDate(currentDate);
+                          setEditingPaymentDate(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3 text-slate-500" />
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
               <div><p className="text-sm text-slate-500">Criado em</p><p className="font-medium">{formatDate(sale.createdAt)}</p></div>
             </CardContent>
           </Card>

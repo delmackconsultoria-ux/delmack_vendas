@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import { calculateCommission } from "./commissionService";
 import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch } from "./services/properfyService";
 import { storagePut, storageGet } from "./storage";
-import { logSaleCreation, getSaleHistory } from "./salesHistoryService";
+import { logSaleCreation, getSaleHistory, logSaleUpdate } from "./salesHistoryService";
 import { checkAndNotifyGoalProgress, calculateGoalProgress } from "./services/goalNotificationService";
 
 // Zod schema para validação de entrada
@@ -474,6 +474,50 @@ export const salesRouter = router({
       await db.update(sales).set({ ...updateData, updatedAt: new Date() }).where(eq(sales.id, saleId));
       
       return { success: true, message: "Proposta atualizada" };
+    }),
+
+  /**
+   * Atualizar previsão de recebimento (permitido para broker, manager, finance)
+   */
+  updateExpectedPaymentDate: protectedProcedure
+    .input(z.object({
+      saleId: z.string(),
+      expectedPaymentDate: z.string().datetime(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      
+      // Verificar se venda existe
+      const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
+      if (!sale.length) throw new Error("Venda não encontrada");
+      
+      // Permitido para broker, manager e finance em qualquer status
+      if (!['broker', 'manager', 'finance'].includes(ctx.user.role)) {
+        throw new Error("Permissão negada");
+      }
+      
+      // Atualizar data
+      await db.update(sales).set({ 
+        expectedPaymentDate: new Date(input.expectedPaymentDate),
+        updatedAt: new Date() 
+      }).where(eq(sales.id, input.saleId));
+      
+      // Registrar no histórico
+      await logSaleUpdate(
+        input.saleId,
+        sale[0].companyId || '',
+        ctx.user.id,
+        ctx.user.name || 'Usuário',
+        [{
+          field: 'expectedPaymentDate',
+          oldValue: sale[0].expectedPaymentDate,
+          newValue: new Date(input.expectedPaymentDate),
+        }],
+        'Atualização manual da previsão de recebimento'
+      );
+      
+      return { success: true, message: "Previsão de recebimento atualizada" };
     }),
 
   listMySales: protectedProcedure.query(async ({ ctx }) => {
