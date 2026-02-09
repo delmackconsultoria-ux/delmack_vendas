@@ -462,3 +462,13 @@
 - [x] Adicionar tratamento de erro robusto para evitar crash do frontend - try/catch com mensagem amigável
 - [x] Garantir que erro nunca retorne HTML ao invés de JSON - tratamento no procedure
 - [ ] Testar com códigos reais (BG97087003, BG97142005)
+
+
+## 🐛 BUG CRÍTICO (09/02/2026 - 16:40)
+
+### Timeout muito curto na busca Properfy
+- [x] Timeout de 25 segundos está gerando erro antes de encontrar imóvel
+- [x] Aumentar timeout para 60 segundos (1 minuto) conforme solicitado
+- [x] Otimizar busca para máxima velocidade e paralelismo - lotes de 20 páginas paralelas
+- [x] Aumentar número de páginas buscadas para garantir que encontre imóvel - 30 páginas (3.000 imóveis)
+- [ ] Testar com BG97142005 para validar que encontra antes do timeout

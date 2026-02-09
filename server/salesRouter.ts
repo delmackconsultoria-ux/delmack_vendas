@@ -126,9 +126,9 @@ export const salesRouter = router({
       });
       
       try {
-        // Timeout de 25 segundos para evitar erro 524
+        // Timeout de 60 segundos (1 minuto) conforme solicitado
         const timeoutPromise = new Promise<ProperfySearchResult>((_, reject) => 
-          setTimeout(() => reject(new Error('TIMEOUT')), 25000)
+          setTimeout(() => reject(new Error('TIMEOUT')), 60000)
         );
         
         let searchPromise: Promise<ProperfySearchResult>;
