@@ -11,7 +11,7 @@ import { notifyOwner } from "./_core/notification";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { calculateCommission } from "./commissionService";
-import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch } from "./services/properfyService";
+import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch, ProperfySearchResult } from "./services/properfyService";
 import { storagePut, storageGet } from "./storage";
 import { logSaleCreation, getSaleHistory, logSaleUpdate } from "./salesHistoryService";
 import { checkAndNotifyGoalProgress, calculateGoalProgress } from "./services/goalNotificationService";
@@ -124,18 +124,47 @@ export const salesRouter = router({
         searchType: input.searchType,
         user: ctx.user?.name 
       });
-      // Se tipo específico foi solicitado, usar busca específica
-      if (input.searchType === 'cep') {
-        return await searchPropertyByCEP(input.reference);
+      
+      try {
+        // Timeout de 25 segundos para evitar erro 524
+        const timeoutPromise = new Promise<ProperfySearchResult>((_, reject) => 
+          setTimeout(() => reject(new Error('TIMEOUT')), 25000)
+        );
+        
+        let searchPromise: Promise<ProperfySearchResult>;
+        
+        // Se tipo específico foi solicitado, usar busca específica
+        if (input.searchType === 'cep') {
+          searchPromise = searchPropertyByCEP(input.reference);
+        } else if (input.searchType === 'address') {
+          searchPromise = searchPropertyByAddress(input.reference);
+        } else if (input.searchType === 'reference') {
+          searchPromise = searchPropertyByReference(input.reference);
+        } else {
+          // Busca inteligente automática
+          searchPromise = smartSearch(input.reference);
+        }
+        
+        const result = await Promise.race([searchPromise, timeoutPromise]);
+        return result;
+        
+      } catch (error: any) {
+        console.error('[Server] Erro na busca Properfy:', error);
+        
+        if (error.message === 'TIMEOUT') {
+          return {
+            success: false,
+            error: 'Busca demorou muito. Tente novamente ou preencha manualmente.',
+            searchType: input.searchType || 'auto'
+          };
+        }
+        
+        return {
+          success: false,
+          error: 'Erro ao buscar imóvel. Preencha os dados manualmente.',
+          searchType: input.searchType || 'auto'
+        };
       }
-      if (input.searchType === 'address') {
-        return await searchPropertyByAddress(input.reference);
-      }
-      if (input.searchType === 'reference') {
-        return await searchPropertyByReference(input.reference);
-      }
-      // Busca inteligente automática
-      return await smartSearch(input.reference);
     }),
 
   /**

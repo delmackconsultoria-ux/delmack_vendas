@@ -450,3 +450,15 @@
 - [ ] Avaliar cache de resultados recentes (futura melhoria)
 - [x] Avaliar redução de páginas buscadas ou aumento de paralelismo - reduzido para 20 páginas, lotes de 15
 - [ ] Testar velocidade de busca com códigos reais
+
+
+## 🐛 BUG CRÍTICO (09/02/2026 - 15:20)
+
+### Erro 524 (Timeout) na busca Properfy
+- [x] Busca está demorando muito e causando timeout do servidor (erro 524)
+- [x] Servidor retorna HTML de erro ao invés de JSON ("Unexpected token '<', "<!DOCTYPE "...")
+- [x] Adicionar timeout adequado nas requisições da API Properfy - 25 segundos
+- [x] Reduzir número de páginas buscadas para evitar timeout - reduzido para 10 páginas
+- [x] Adicionar tratamento de erro robusto para evitar crash do frontend - try/catch com mensagem amigável
+- [x] Garantir que erro nunca retorne HTML ao invés de JSON - tratamento no procedure
+- [ ] Testar com códigos reais (BG97087003, BG97142005)

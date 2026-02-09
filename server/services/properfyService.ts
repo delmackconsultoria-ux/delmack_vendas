@@ -32,7 +32,7 @@ export interface ProperfySearchResult {
   property?: ProperfyProperty;
   properties?: ProperfyProperty[];
   error?: string;
-  searchType?: 'reference' | 'address' | 'cep';
+  searchType?: 'reference' | 'address' | 'cep' | 'auto';
 }
 
 function translatePropertyType(type: string): string {
@@ -196,13 +196,13 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       };
     }
 
-    // Buscar em até 20 páginas (2.000 imóveis) para máxima velocidade
-    const maxPages = Math.min(totalPages, 20);
+    // Buscar em até 10 páginas (1.000 imóveis) para evitar timeout
+    const maxPages = Math.min(totalPages, 10);
     console.log(`[Properfy] Buscando em até ${maxPages} páginas (${Math.min(totalProperties, maxPages * 100)} imóveis)`);
     
-    // Buscar em lotes de 15 páginas por vez (busca paralela ultra-otimizada)
-    for (let batchStart = 2; batchStart <= maxPages; batchStart += 15) {
-      const batchEnd = Math.min(batchStart + 14, totalPages);
+    // Buscar em lotes de 10 páginas por vez (busca paralela rápida)
+    for (let batchStart = 2; batchStart <= maxPages; batchStart += 10) {
+      const batchEnd = Math.min(batchStart + 9, totalPages);
       console.log(`[Properfy] Buscando lote: páginas ${batchStart}-${batchEnd}`);
       const batchPromises = [];
       
