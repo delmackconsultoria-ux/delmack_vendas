@@ -83,8 +83,8 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
     district: property.chrAddressDistrict || '',
     // Corrigido: CEP real (chrAddressPostalCode) tem prioridade sobre código de cidade
     postalCode: property.chrAddressPostalCode?.replace(/\D/g, '') || property.chrAddressCityCode?.replace(/\D/g, '') || '',
-    // Corrigido: usar intPropertyType (número) ao invés de chrType (texto)
-    propertyType: translatePropertyTypeInt(property.intPropertyType) || translatePropertyType(property.chrType || ''),
+    // Corrigido: usar chrType (intPropertyType não existe na API)
+    propertyType: translatePropertyType(property.chrType || ''),
     value: property.dcmSale || property.dcmRent || 0,
     area: property.dcmAreaPrivate || property.dcmAreaTotal || 0,
     totalArea: property.dcmAreaTotal || 0,
@@ -93,7 +93,8 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
     bathrooms: property.intBathrooms || 0,
     parkingSpaces: property.intGarage || 0,
     description: property.txtDescription || '',
-    condominiumName: property.chrCondominiumName || property.chrCondominium || ''
+    // Corrigido: campo correto é chrCondoName (não chrCondominiumName)
+    condominiumName: property.chrCondoName || ''
   };
 }
 

@@ -381,3 +381,20 @@
 - [x] Remover opções de busca por CEP e endereço do frontend
 - [x] Atualizar placeholder: "Digite o código de referência (ex: BG97142005)"
 - [x] Atualizar mensagem de ajuda para indicar apenas código
+
+
+## 🐛 BUGS REPORTADOS (09/02/2026 - 13:05) - CONTINUAÇÃO
+
+### Tipo de imóvel AINDA vem como "Outro" após correções
+- [x] Investigar dados reais da API para BG97087003 (Apartamento - Eleva Arvoredo)
+- [x] Investigar dados reais da API para BG97142005 (Casa - Vista Alegre) - timeout
+- [x] Verificar se chrType está retornando valor correto - SIM: "APARTMENT", "RESIDENTIAL_HOUSE"
+- [x] Verificar se intPropertyType está retornando valor correto - NÃO EXISTE NA API!
+- [x] Adicionar logs para debug dos valores retornados
+- [x] Corrigir mapeamento definitivamente - removido intPropertyType, usando apenas chrType
+
+### Nome do condomínio não está sendo preenchido
+- [x] Verificar qual campo da API contém o nome do condomínio - chrCondoName (não chrCondominiumName)
+- [x] Exemplo: BG97087003 deveria preencher "Eleva Arvoredo" - CONFIRMADO
+- [x] Adicionar mapeamento do campo de condomínio em searchProperty - chrCondoName
+- [ ] Testar preenchimento automático
