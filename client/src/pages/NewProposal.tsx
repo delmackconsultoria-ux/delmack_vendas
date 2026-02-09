@@ -1000,7 +1000,7 @@ export default function NewProposal() {
                 <div className="flex gap-2">
                   <div className="flex-1 relative">
                     <Input
-                      placeholder="Busque por referência, CEP ou endereço"
+                      placeholder="Digite o código de referência (ex: BG97142005)"
                       value={formData.propertyReference}
                       onChange={(e) => handleInputChange("propertyReference", e.target.value)}
                       onKeyPress={(e) => e.key === "Enter" && handleSearchPropertyfy()}
@@ -1013,7 +1013,7 @@ export default function NewProposal() {
                     Buscar
                   </Button>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">Você pode buscar por: código de referência, CEP (ex: 80010-000) ou endereço</p>
+                <p className="text-xs text-slate-500 mt-1">Digite o código de referência do imóvel (ex: BG97142005, BG96925001)</p>
                 {properfySearch.error && (
                   <p className="text-amber-600 text-sm mt-2 flex items-center gap-1">
                     <AlertCircle className="h-4 w-4" /> {properfySearch.error}

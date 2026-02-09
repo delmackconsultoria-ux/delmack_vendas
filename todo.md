@@ -365,3 +365,19 @@
 - [x] Criar função translatePropertyTypeInt para mapear números (1=casa, 2=apartamento, etc.)
 - [ ] Implementar seletor quando houver múltiplos imóveis no mesmo CEP/endereço
 - [ ] Testar busca com BG97142005 após correções
+
+## 🐛 BUGS REPORTADOS (09/02/2026 - 09:45)
+
+### Tipo de imóvel ainda vem como "Outro"
+- [x] Investigar por que translatePropertyType não está funcionando
+- [x] Verificar valor de intPropertyType retornado pela API para BG97142005 - VAZIO (None)
+- [x] Verificar chrType - RESIDENTIAL_HOUSE
+- [x] Corrigir mapeamento adicionando "RESIDENTIAL_HOUSE" -> "casa"
+
+### Busca por CEP/endereço não encontra imóveis
+- [x] Busca por endereço "Rua Manoel Amálio de Souza, 218" não encontra - LENTA
+- [x] Busca por CEP "80820560" não encontra - LENTA
+- [x] DECISÃO: Simplificar para buscar APENAS por código de referência
+- [x] Remover opções de busca por CEP e endereço do frontend
+- [x] Atualizar placeholder: "Digite o código de referência (ex: BG97142005)"
+- [x] Atualizar mensagem de ajuda para indicar apenas código

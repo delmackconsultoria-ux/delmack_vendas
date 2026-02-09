@@ -37,6 +37,7 @@ function translatePropertyType(type: string): string {
   const types: Record<string, string> = {
     'APARTMENT': 'apartamento',
     'HOUSE': 'casa',
+    'RESIDENTIAL_HOUSE': 'casa',
     'LAND': 'terreno',
     'COMMERCIAL': 'comercial',
     'RURAL': 'rural',
