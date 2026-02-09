@@ -339,3 +339,29 @@
 - [x] Implementar busca paginada rápida e eficiente - Já existe (50 páginas, lotes de 5 paralelos)
 - [x] Retornar apenas mensagem de erro quando não encontrar - Já implementado
 - [ ] Testar com BG96925001 e garantir que não preenche dados errados
+
+## 🐛 BUGS REPORTADOS (08/02/2026 - 18:30)
+
+### Busca por CEP não funciona mais
+- [ ] Busca por CEP 80820560 retorna "Imóvel não encontrado"
+- [ ] Causa: Ao corrigir bug anterior, busca por CEP foi removida acidentalmente
+- [ ] Reativar função searchByCEP no properfyService.ts
+
+### Mapeamento de campos incorreto da API Properfy
+- [ ] Imóvel BG97142005 (Casa) aparece como "Outros"
+- [ ] Quantidade de quartos vem errada
+- [ ] Verificar campos corretos na API: intPropertyType, intBedrooms, etc.
+- [ ] Corrigir função mapPropertyData para usar campos corretos
+
+### Múltiplos imóveis no mesmo CEP/endereço
+- [ ] Quando houver mais de um imóvel no mesmo CEP, permitir usuário escolher
+- [ ] Implementar modal/seletor com lista de imóveis encontrados
+- [ ] Mostrar: Referência, Endereço, Tipo, Quartos para facilitar identificação
+
+### Mapeamento de campos corrigido (08/02/2026 - 16:00)
+- [x] Tipo de imóvel: Casa aparece como "Outros" - CORRIGIDO: usar intPropertyType ao invés de chrType
+- [x] Quartos: Quantidade errada - CORRIGIDO: usar intTotalBedrooms ao invés de intBedrooms
+- [x] CEP: Ordem errada - CORRIGIDO: chrAddressPostalCode tem prioridade sobre chrAddressCityCode
+- [x] Criar função translatePropertyTypeInt para mapear números (1=casa, 2=apartamento, etc.)
+- [ ] Implementar seletor quando houver múltiplos imóveis no mesmo CEP/endereço
+- [ ] Testar busca com BG97142005 após correções

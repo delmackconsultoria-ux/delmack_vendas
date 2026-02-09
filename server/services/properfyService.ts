@@ -48,6 +48,21 @@ function translatePropertyType(type: string): string {
   return types[type?.toUpperCase()] || 'outro';
 }
 
+function translatePropertyTypeInt(typeInt: number): string {
+  // Mapeamento baseado nos dados reais da API Properfy
+  const types: Record<number, string> = {
+    1: 'casa',           // HOUSE
+    2: 'apartamento',    // APARTMENT
+    3: 'terreno',        // LAND
+    4: 'comercial',      // COMMERCIAL
+    5: 'rural',          // RURAL
+    6: 'galpao',         // WAREHOUSE
+    7: 'loja',           // STORE
+    8: 'escritorio',     // OFFICE
+  };
+  return types[typeInt] || 'outro';
+}
+
 function normalizeString(str: string): string {
   return str
     .toLowerCase()
@@ -65,12 +80,15 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
     city: property.chrAddressCity || '',
     state: property.chrAddressState || '',
     district: property.chrAddressDistrict || '',
-    postalCode: property.chrAddressCityCode?.replace(/\D/g, '') || property.chrAddressPostalCode?.replace(/\D/g, '') || '',
-    propertyType: translatePropertyType(property.chrType || ''),
+    // Corrigido: CEP real (chrAddressPostalCode) tem prioridade sobre código de cidade
+    postalCode: property.chrAddressPostalCode?.replace(/\D/g, '') || property.chrAddressCityCode?.replace(/\D/g, '') || '',
+    // Corrigido: usar intPropertyType (número) ao invés de chrType (texto)
+    propertyType: translatePropertyTypeInt(property.intPropertyType) || translatePropertyType(property.chrType || ''),
     value: property.dcmSale || property.dcmRent || 0,
     area: property.dcmAreaPrivate || property.dcmAreaTotal || 0,
     totalArea: property.dcmAreaTotal || 0,
-    bedrooms: property.intBedrooms || 0,
+    // Corrigido: usar intTotalBedrooms ao invés de intBedrooms
+    bedrooms: property.intTotalBedrooms || property.intBedrooms || 0,
     bathrooms: property.intBathrooms || 0,
     parkingSpaces: property.intGarage || 0,
     description: property.txtDescription || '',
