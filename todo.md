@@ -434,3 +434,19 @@
 - [x] Confirmar implementação da fórmula: VSO = Número de Negócios do Mês ÷ Carteira do Mês Anterior
 - [x] Verificar se cálculo está correto nos indicadores - ainda não implementado (manual)
 - [x] Documentar fórmula no código para referência futura - comentado em Indicators.tsx
+
+
+## 🎨 MELHORIAS DE UX (09/02/2026 - 15:10)
+
+### Formatação monetária com vírgula
+- [x] Adicionar formatação de valores com vírgula no campo "Custo por m²"
+- [x] Adicionar formatação de valores com vírgula no campo "Valor de divulgação"
+- [x] Garantir que valores sejam salvos corretamente no backend (conversão de vírgula para ponto)
+- [x] Valores da API Properfy também formatados com vírgula automaticamente
+- [ ] Testar entrada e exibição de valores formatados
+
+### Otimizar velocidade da busca Properfy
+- [x] Reduzir ainda mais o tempo de busca e preenchimento automático
+- [ ] Avaliar cache de resultados recentes (futura melhoria)
+- [x] Avaliar redução de páginas buscadas ou aumento de paralelismo - reduzido para 20 páginas, lotes de 15
+- [ ] Testar velocidade de busca com códigos reais

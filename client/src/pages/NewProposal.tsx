@@ -15,6 +15,7 @@ import ErrorModal from "@/components/ErrorModal";
 import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP, formatPhone, BRAZILIAN_STATES, maskCPFOrCNPJ, maskCEP, maskPhone } from "@/lib/validators";
 import { calculateCommissions, formatCurrency, BusinessType } from "@/lib/commissionCalculator";
 import { getProperfyFieldClassName } from "@/lib/properfyFieldHelper";
+import { formatWhileTyping, parseCurrencyInput } from "@/lib/currencyFormatter";
 
 // Tipos de Negócio atualizados conforme manual de comissionamento
 const BUSINESS_TYPES = [
@@ -324,12 +325,12 @@ export default function NewProposal() {
           propertyNeighborhood: prop.district || prev.propertyNeighborhood,
           propertyZipCode: prop.postalCode || prev.propertyZipCode,
           typeOfProperty: prop.propertyType?.toLowerCase() || prev.typeOfProperty,
-          advertisementValue: prop.value?.toString() || prev.advertisementValue,
+          advertisementValue: prop.value ? prop.value.toString().replace('.', ',') : prev.advertisementValue,
           privateArea: prop.area?.toString() || prev.privateArea,
           totalArea: prop.totalArea?.toString() || prev.totalArea,
           bedrooms: prop.bedrooms?.toString() || prev.bedrooms,
           condominiumName: prop.condominiumName || prev.condominiumName,
-          costPerM2: prop.pricePerSqm?.toString() || prev.costPerM2,
+          costPerM2: prop.pricePerSqm ? prop.pricePerSqm.toString().replace('.', ',') : prev.costPerM2,
           propertyAge: prop.propertyAge?.toString() || prev.propertyAge,
         }));
         setProperfySearch({ loading: false, error: "", found: true, searchType });
@@ -551,7 +552,7 @@ export default function NewProposal() {
         propertyCity: formData.propertyCity,
         propertyState: formData.propertyState,
         propertyZipCode: formData.propertyZipCode,
-        advertisementValue: formData.advertisementValue ? parseFloat(formData.advertisementValue) : undefined,
+        advertisementValue: formData.advertisementValue ? parseCurrencyInput(formData.advertisementValue) : undefined,
         condominiumName: formData.condominiumName,
         saleDate: saleDateObj.toISOString(),
         angariationDate: angariationDateObj ? angariationDateObj.toISOString() : undefined,
@@ -591,7 +592,7 @@ export default function NewProposal() {
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : undefined,
         privateArea: formData.privateArea ? parseFloat(formData.privateArea) : undefined,
         totalArea: formData.totalArea ? parseFloat(formData.totalArea) : undefined,
-        costPerM2: formData.costPerM2 ? parseFloat(formData.costPerM2) : undefined,
+        costPerM2: formData.costPerM2 ? parseCurrencyInput(formData.costPerM2) : undefined,
         propertyAge: formData.propertyAge ? parseInt(formData.propertyAge) : undefined,
         status: "draft" as const, // Salva como rascunho
       };
@@ -653,7 +654,7 @@ export default function NewProposal() {
         propertyCity: formData.propertyCity,
         propertyState: formData.propertyState,
         propertyZipCode: formData.propertyZipCode,
-        advertisementValue: formData.advertisementValue ? parseFloat(formData.advertisementValue) : undefined,
+        advertisementValue: formData.advertisementValue ? parseCurrencyInput(formData.advertisementValue) : undefined,
         condominiumName: formData.condominiumName,
         saleDate: saleDateObj.toISOString(),
         angariationDate: angariationDateObj ? angariationDateObj.toISOString() : undefined,
@@ -694,7 +695,7 @@ export default function NewProposal() {
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : undefined,
         privateArea: formData.privateArea ? parseFloat(formData.privateArea) : undefined,
         totalArea: formData.totalArea ? parseFloat(formData.totalArea) : undefined,
-        costPerM2: formData.costPerM2 ? parseFloat(formData.costPerM2) : undefined,
+        costPerM2: formData.costPerM2 ? parseCurrencyInput(formData.costPerM2) : undefined,
         propertyAge: formData.propertyAge ? parseInt(formData.propertyAge) : undefined,
         saleType: formData.saleType as "lancamento" | "pronto" | undefined,
         responsible: formData.responsible,
@@ -1085,10 +1086,13 @@ export default function NewProposal() {
                   <div>
                     <Label>Custo por m² (Área Privativa)</Label>
                     <Input
-                      type="number"
-                      placeholder="Ex: 5000.00"
+                      type="text"
+                      placeholder="Ex: 5000,00"
                       value={formData.costPerM2}
-                      onChange={(e) => handleInputChange("costPerM2", e.target.value)}
+                      onChange={(e) => {
+                        const formatted = formatWhileTyping(e.target.value);
+                        handleInputChange("costPerM2", formatted);
+                      }}
                       className={getProperfyFieldClassName("costPerM2", formData.costPerM2)}
                     />
                   </div>
@@ -1340,10 +1344,13 @@ export default function NewProposal() {
                   <div>
                     <Label>Valor de Divulgação</Label>
                     <Input
-                      type="number"
-                      placeholder="0.00"
+                      type="text"
+                      placeholder="0,00"
                       value={formData.advertisementValue}
-                      onChange={(e) => handleInputChange("advertisementValue", e.target.value)}
+                      onChange={(e) => {
+                        const formatted = formatWhileTyping(e.target.value);
+                        handleInputChange("advertisementValue", formatted);
+                      }}
                       className={getProperfyFieldClassName("advertisementValue", formData.advertisementValue)}
                     />
                   </div>

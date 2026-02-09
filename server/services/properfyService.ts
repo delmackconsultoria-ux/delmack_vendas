@@ -196,13 +196,13 @@ export async function searchPropertyByReference(reference: string): Promise<Prop
       };
     }
 
-    // Buscar em até 30 páginas (3.000 imóveis) para otimizar velocidade
-    const maxPages = Math.min(totalPages, 30);
+    // Buscar em até 20 páginas (2.000 imóveis) para máxima velocidade
+    const maxPages = Math.min(totalPages, 20);
     console.log(`[Properfy] Buscando em até ${maxPages} páginas (${Math.min(totalProperties, maxPages * 100)} imóveis)`);
     
-    // Buscar em lotes de 10 páginas por vez (busca paralela otimizada)
-    for (let batchStart = 2; batchStart <= maxPages; batchStart += 10) {
-      const batchEnd = Math.min(batchStart + 9, totalPages);
+    // Buscar em lotes de 15 páginas por vez (busca paralela ultra-otimizada)
+    for (let batchStart = 2; batchStart <= maxPages; batchStart += 15) {
+      const batchEnd = Math.min(batchStart + 14, totalPages);
       console.log(`[Properfy] Buscando lote: páginas ${batchStart}-${batchEnd}`);
       const batchPromises = [];
       
