@@ -2,6 +2,9 @@
 // Suporta busca por referência, endereço ou CEP
 // Usar URL base de produção (remover /auth/token se presente no env)
 import { getDb } from '../db';
+
+// DEBUG: Versão do código backend - 2026-02-10 02:35 UTC
+console.log('[properfyService] Módulo carregado! Versão: 2026-02-10 02:35 UTC - Correções aplicadas');
 import { properfyProperties } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
@@ -79,6 +82,11 @@ function normalizeString(str: string): string {
 }
 
 function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
+  console.log('[mapPropertyData] Mapeando dados do imóvel...');
+  console.log('[mapPropertyData] intBedrooms:', property.intBedrooms);
+  console.log('[mapPropertyData] intRooms:', property.intRooms);
+  console.log('[mapPropertyData] dcmSale:', property.dcmSale);
+  console.log('[mapPropertyData] dcmAreaPrivate:', property.dcmAreaPrivate);
   return {
     id: property.id,
     reference: property.chrDocument || property.chrReference || property.chrInnerReference || searchRef,
@@ -136,8 +144,11 @@ async function searchInLocalDatabase(searchNormalized: string): Promise<any | nu
     console.log(`[Properfy LOCAL] Query executada. Resultados encontrados: ${result.length}`);
     
     if (result.length > 0) {
-      console.log(`[Properfy LOCAL] Imóvel encontrado! ID: ${result[0].id}, Ref: ${result[0].chrReference}`);
-      return result[0];
+      const prop = result[0];
+      console.log(`[Properfy LOCAL] Imóvel encontrado! ID: ${prop.id}, Ref: ${prop.chrReference}`);
+      console.log(`[Properfy LOCAL] Dados de quartos: intBedrooms=${prop.intBedrooms}, intRooms=${prop.intRooms}, intSuites=${prop.intSuites}`);
+      console.log(`[Properfy LOCAL] Dados financeiros: dcmSale=${prop.dcmSale}, dcmAreaPrivate=${prop.dcmAreaPrivate}`);
+      return prop;
     } else {
       console.log('[Properfy LOCAL] Nenhum imóvel encontrado no banco local');
       return null;

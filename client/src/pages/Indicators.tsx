@@ -2,6 +2,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { useState } from "react";
@@ -28,24 +29,25 @@ export default function Indicators() {
   const [isSyncing, setIsSyncing] = useState(false);
   
   // Mutation para sincronização manual
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
+  const [syncResult, setSyncResult] = useState<{success: boolean; message: string; stats?: any} | null>(null);
+  
   const syncMutation = trpc.system.syncPropertyfyNow.useMutation({
     onSuccess: (data) => {
-      if (data.success && data.stats) {
-        toast.success(`Sincronização concluída! ${data.stats.inserted} imóveis atualizados.`);
-      } else {
-        toast.error(data.message || 'Erro ao sincronizar');
-      }
+      setSyncResult(data);
+      setSyncDialogOpen(true);
       setIsSyncing(false);
     },
     onError: (error) => {
-      toast.error(`Erro: ${error.message}`);
+      setSyncResult({ success: false, message: `Erro: ${error.message}` });
+      setSyncDialogOpen(true);
       setIsSyncing(false);
     }
   });
   
   const handleSyncPropertyfy = () => {
     setIsSyncing(true);
-    toast.info('Sincronizando base Properfy... Isso pode levar alguns minutos.');
+    toast.info('Sincronização iniciada em background. Você pode mudar de página que a sincronização continuará.');
     syncMutation.mutate();
   };
   
@@ -309,6 +311,45 @@ export default function Indicators() {
           userRole={user?.role as "broker" | "manager" | "finance" | "admin" | "viewer"}
         />
       )}
+      
+      {/* Dialog de confirmação de sincronização */}
+      <Dialog open={syncDialogOpen} onOpenChange={setSyncDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {syncResult?.success ? '✅ Sincronização Concluída!' : '❌ Erro na Sincronização'}
+            </DialogTitle>
+            <DialogDescription>
+              {syncResult?.success && syncResult.stats ? (
+                <div className="space-y-2 mt-4">
+                  <p className="text-green-700 font-medium">
+                    A base Properfy foi sincronizada com sucesso!
+                  </p>
+                  <div className="bg-green-50 p-4 rounded-lg space-y-1">
+                    <p><strong>Total de imóveis:</strong> {syncResult.stats.total || 0}</p>
+                    <p><strong>Novos imóveis:</strong> {syncResult.stats.inserted || 0}</p>
+                    <p><strong>Atualizados:</strong> {syncResult.stats.updated || 0}</p>
+                    {syncResult.stats.duration && (
+                      <p><strong>Tempo total:</strong> {Math.round(syncResult.stats.duration / 1000)}s</p>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600 mt-3">
+                    💡 <strong>Dica:</strong> A sincronização roda em background no servidor. 
+                    Mesmo se você mudar de página, ela continua até o fim.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-red-700 mt-4">{syncResult?.message || 'Erro desconhecido'}</p>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setSyncDialogOpen(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }

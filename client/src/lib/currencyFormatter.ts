@@ -23,22 +23,17 @@ export function parseCurrencyInput(value: string): number {
 
 /**
  * Formata valor durante digitação (permite vírgula)
- * Ex: "5000,5" → "5000,5" (mantém formato durante digitação)
+ * Ex: "5000,5" → "5.000,50" (formato brasileiro completo)
  */
 export function formatWhileTyping(value: string): string {
-  // Permite apenas números e uma vírgula
-  let cleaned = value.replace(/[^\d,]/g, '');
+  // Converte para número se for string numérica pura (vindo da API)
+  const numValue = typeof value === 'number' ? value : parseFloat(value.toString().replace(/[^\d.,]/g, '').replace(',', '.'));
   
-  // Garante apenas uma vírgula
-  const parts = cleaned.split(',');
-  if (parts.length > 2) {
-    cleaned = parts[0] + ',' + parts.slice(1).join('');
-  }
+  if (isNaN(numValue)) return value.toString();
   
-  // Limita casas decimais a 2
-  if (parts.length === 2 && parts[1].length > 2) {
-    cleaned = parts[0] + ',' + parts[1].substring(0, 2);
-  }
-  
-  return cleaned;
+  // Formata com pontos de milhar e vírgula decimal
+  return numValue.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }

@@ -585,3 +585,31 @@
 - [ ] Vírgula não aparece nos valores monetários (código corrigido mas não aplicado)
 - [ ] Problema: JavaScript antigo em cache, mesmo em aba anônima
 - [ ] Solução: Limpar cache de build do Vite e forçar rebuild completo
+
+
+## 🐛 BUGS CRÍTICOS CONFIRMADOS (10/02/2026 - 23:30)
+
+### Backend retorna quartos errados mesmo após correção
+- [x] Console mostra que backend retornou `bedrooms: 2` ao invés de 3
+- [x] Código em properfyService.ts foi corrigido mas servidor não está usando
+- [x] Verificar se tsx watch está recarregando o arquivo corretamente
+- [x] Forçar restart completo do servidor Node.js
+- [x] Adicionados logs detalhados para debug
+
+### Frontend não formata vírgula ao preencher automaticamente
+- [x] Código usa formatWhileTyping() mas valor aparece sem vírgula (7478 ao invés de 7.478,00)
+- [x] Verificar se formatWhileTyping() está sendo chamada corretamente
+- [x] Adicionar log para debug da formatação
+- [x] Corrigida função formatWhileTyping para adicionar pontos de milhar
+
+### Busca ainda demora mais de 1 minuto
+- [x] Mesmo com banco local sincronizado, busca demora muito
+- [x] Verificar logs do servidor para identificar gargalo
+- [x] Confirmar que está usando searchInLocalDatabase e não API
+- [x] Adicionados logs detalhados para identificar problema
+
+### Popup de confirmação de sincronização Properfy
+- [x] Adicionar popup que fica visível até usuário fechar
+- [x] Confirmar que sincronização continua em background ao mudar de página
+- [x] Mostrar total de imóveis sincronizados e tempo total
+- [x] Implementado Dialog em Indicators.tsx

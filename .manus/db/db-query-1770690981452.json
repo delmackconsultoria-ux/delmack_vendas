@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, chrReference, LENGTH(chrReference) as len, HEX(chrReference) as hex_value FROM properfyProperties WHERE chrReference LIKE '%BG97142005%' LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, chrReference, LENGTH(chrReference) as len, HEX(chrReference) as hex_value FROM properfyProperties WHERE chrReference LIKE '%BG97142005%' LIMIT 5",
+  "rows": [
+    {
+      "id": "4388",
+      "chrReference": "BG97142005",
+      "len": "10",
+      "hex_value": "42473937313432303035"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tchrReference\tlen\thex_value\n4388\tBG97142005\t10\t42473937313432303035\n",
+  "stderr": "",
+  "execution_time_ms": 107
+}
