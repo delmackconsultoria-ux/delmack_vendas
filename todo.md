@@ -686,3 +686,17 @@
 - [x] Adicionar log mais agressivo no início da função smartSearch para debug
 - [x] **CORRIGIDO**: Simplificada busca para SEMPRE tentar banco local primeiro (searchPropertyByReference)
 - [x] **CORRIGIDO**: Adicionados logs com timestamp para debug
+
+
+## 🚀 OTIMIZAÇÃO DEFINITIVA - BUSCA < 1 SEGUNDO (10/02/2026)
+
+### Busca ainda demora 12-18 segundos (deve ser < 1 segundo)
+- [x] Usuário testou e busca melhorou de 1min45s para 12-18s
+- [x] Meta: < 1 segundo (instantânea usando banco local MySQL)
+- [x] Verificar logs do servidor para identificar gargalo
+- [x] Confirmar se busca local está sendo executada ou caindo em fallback da API
+- [x] **DESCOBERTA**: Logs `[Properfy LOCAL]` não aparecem = função nunca é executada
+- [x] **DESCOBERTA**: Logs `[Server searchProperty INICIADO]` não aparecem = endpoint nunca é chamado
+- [x] **SOLUÇÃO**: Adicionado middleware de log ANTES do tRPC para capturar TODAS as requisições
+- [ ] Adicionar cache em memória para otimizar buscas repetidas
+- [ ] Testar e garantir < 1 segundo antes de salvar checkpoint

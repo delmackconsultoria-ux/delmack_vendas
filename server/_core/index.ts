@@ -39,6 +39,17 @@ async function startServer() {
   registerOAuthRoutes(app);
   // REST API para Properfy
   app.use("/api/rest/properfy", createProperfyRestRouter());
+  // Middleware de log ANTES do tRPC para debug
+  app.use("/api/trpc", (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [tRPC Middleware] ${req.method} ${req.url}`);
+    if (req.method === 'POST' || req.method === 'GET') {
+      console.log(`[${timestamp}] [tRPC Middleware] Body:`, JSON.stringify(req.body || {}).substring(0, 200));
+      console.log(`[${timestamp}] [tRPC Middleware] Query:`, JSON.stringify(req.query || {}).substring(0, 200));
+    }
+    next();
+  });
+  
   // tRPC API
   app.use(
     "/api/trpc",
