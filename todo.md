@@ -661,3 +661,28 @@
 - [x] Confirmar que busca é assíncrona (não bloqueia UI)
 - [x] Usuário pode preencher outros campos enquanto busca carrega
 - [x] **JÁ FUNCIONA**: Busca é assíncrona, não bloqueia formulário
+
+
+## 🚨 BUGS CRÍTICOS - BUSCA PROPERFY AINDA LENTA (10/02/2026 - 00:23)
+
+### BG97142005 não é encontrado (42 segundos)
+- [ ] Busca por BG97142005 demora 42 segundos e retorna "Imóvel não encontrado"
+- [ ] Console mostra `success: false, error: "Imóvel não encontrado"`
+- [ ] Busca local NÃO encontrou no banco, caiu no fallback da API que também falhou
+- [ ] Verificar se imóvel BG97142005 realmente está no banco local
+- [ ] Verificar se normalização do código está correta (LIKE não está funcionando)
+
+### BG96925001 demora 2min 20s (INACEITÁVEL!)
+- [ ] Busca por BG96925001 demora 2 minutos e 20 segundos
+- [ ] Console mostra `success: true` mas demorou muito
+- [ ] Preencheu corretamente: Apartamento, 2 quartos, 96.36m², R$ 6.009,00/m²
+- [ ] Está usando API Properfy ao invés de banco local (por isso demora)
+- [ ] Logs `[Properfy LOCAL]` não aparecem no console = busca local não está sendo executada
+
+### Busca local não está sendo executada
+- [x] Correção anterior (LIKE ao invés de eq) não foi aplicada ou não funcionou
+- [x] Servidor pode não ter recarregado o módulo properfyService.ts
+- [x] Verificar logs do servidor para confirmar se função searchInLocalDatabase é chamada
+- [x] Adicionar log mais agressivo no início da função smartSearch para debug
+- [x] **CORRIGIDO**: Simplificada busca para SEMPRE tentar banco local primeiro (searchPropertyByReference)
+- [x] **CORRIGIDO**: Adicionados logs com timestamp para debug

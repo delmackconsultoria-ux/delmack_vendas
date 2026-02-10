@@ -121,31 +121,32 @@ export const salesRouter = router({
       searchType: z.enum(['auto', 'reference', 'address', 'cep']).optional()
     }))
     .query(async ({ input, ctx }) => {
-      console.log('\n========== [Server] searchProperty INICIADO ==========');
-      console.log('[Server] Input:', { 
+      const timestamp = new Date().toISOString();
+      console.log(`\n========== [Server ${timestamp}] searchProperty INICIADO ==========`);
+      console.log('[Server] Input:', JSON.stringify({ 
         reference: input.reference, 
         searchType: input.searchType,
         user: ctx.user?.name 
-      });
+      }, null, 2));
       
       try {
         console.log('[Server] Determinando tipo de busca...');
         
         let result: ProperfySearchResult;
         
-        // Se tipo específico foi solicitado, usar busca específica
-        if (input.searchType === 'cep') {
-          console.log('[Server] Chamando searchPropertyByCEP...');
-          result = await searchPropertyByCEP(input.reference);
-        } else if (input.searchType === 'address') {
-          console.log('[Server] Chamando searchPropertyByAddress...');
-          result = await searchPropertyByAddress(input.reference);
-        } else if (input.searchType === 'reference') {
-          console.log('[Server] Chamando searchPropertyByReference...');
-          result = await searchPropertyByReference(input.reference);
-        } else {
-          console.log('[Server] Chamando smartSearch...');
-          result = await smartSearch(input.reference);
+        // SEMPRE tentar busca por referência primeiro (banco local)
+        console.log('[Server] Tentando busca por referência no banco local...');
+        result = await searchPropertyByReference(input.reference);
+        
+        // Se não encontrar e searchType for específico, tentar busca alternativa
+        if (!result.success) {
+          if (input.searchType === 'cep') {
+            console.log('[Server] Fallback: Chamando searchPropertyByCEP...');
+            result = await searchPropertyByCEP(input.reference);
+          } else if (input.searchType === 'address') {
+            console.log('[Server] Fallback: Chamando searchPropertyByAddress...');
+            result = await searchPropertyByAddress(input.reference);
+          }
         }
         
         console.log('[Server] Busca concluída! Success:', result.success);
