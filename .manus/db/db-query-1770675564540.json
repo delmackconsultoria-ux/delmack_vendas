@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, chrReference, chrType, chrCondoName, dcmAreaPrivate, dcmAreaTotal FROM properfyProperties WHERE chrReference = 'BG97087003' LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, chrReference, chrType, chrCondoName, dcmAreaPrivate, dcmAreaTotal FROM properfyProperties WHERE chrReference = 'BG97087003' LIMIT 1;",
+  "rows": [
+    {
+      "id": "4886",
+      "chrReference": "BG97087003",
+      "chrType": "APARTMENT",
+      "chrCondoName": "Eleva Arvoredo",
+      "dcmAreaPrivate": "55.48",
+      "dcmAreaTotal": "55.48"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tchrReference\tchrType\tchrCondoName\tdcmAreaPrivate\tdcmAreaTotal\n4886\tBG97087003\tAPARTMENT\tEleva Arvoredo\t55.48\t55.48\n",
+  "stderr": "",
+  "execution_time_ms": 110
+}

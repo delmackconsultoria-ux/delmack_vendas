@@ -3,6 +3,8 @@
  * Suporta todos os campos do formulário expandido de vendas
  */
 
+console.log('[salesRouter] Módulo carregado! Versão:', new Date().toISOString());
+
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
@@ -119,55 +121,40 @@ export const salesRouter = router({
       searchType: z.enum(['auto', 'reference', 'address', 'cep']).optional()
     }))
     .query(async ({ input, ctx }) => {
-      console.log('[Server] searchProperty chamado:', { 
+      console.log('\n========== [Server] searchProperty INICIADO ==========');
+      console.log('[Server] Input:', { 
         reference: input.reference, 
         searchType: input.searchType,
         user: ctx.user?.name 
       });
       
       try {
-        console.log('[Server] Iniciando busca Properfy...');
+        console.log('[Server] Determinando tipo de busca...');
         
-        // Timeout de 60 segundos (1 minuto) conforme solicitado
-        const timeoutPromise = new Promise<ProperfySearchResult>((_, reject) => 
-          setTimeout(() => {
-            console.log('[Server] TIMEOUT atingido após 60 segundos');
-            reject(new Error('TIMEOUT'));
-          }, 60000)
-        );
-        
-        let searchPromise: Promise<ProperfySearchResult>;
+        let result: ProperfySearchResult;
         
         // Se tipo específico foi solicitado, usar busca específica
         if (input.searchType === 'cep') {
-          console.log('[Server] Usando busca por CEP');
-          searchPromise = searchPropertyByCEP(input.reference);
+          console.log('[Server] Chamando searchPropertyByCEP...');
+          result = await searchPropertyByCEP(input.reference);
         } else if (input.searchType === 'address') {
-          console.log('[Server] Usando busca por endereço');
-          searchPromise = searchPropertyByAddress(input.reference);
+          console.log('[Server] Chamando searchPropertyByAddress...');
+          result = await searchPropertyByAddress(input.reference);
         } else if (input.searchType === 'reference') {
-          console.log('[Server] Usando busca por referência');
-          searchPromise = searchPropertyByReference(input.reference);
+          console.log('[Server] Chamando searchPropertyByReference...');
+          result = await searchPropertyByReference(input.reference);
         } else {
-          console.log('[Server] Usando busca inteligente (smartSearch)');
-          searchPromise = smartSearch(input.reference);
+          console.log('[Server] Chamando smartSearch...');
+          result = await smartSearch(input.reference);
         }
         
-        console.log('[Server] Aguardando resultado da busca...');
-        const result = await Promise.race([searchPromise, timeoutPromise]);
-        console.log('[Server] Busca concluída:', { success: result.success });
+        console.log('[Server] Busca concluída! Success:', result.success);
+        console.log('========== [Server] searchProperty FINALIZADO ==========\n');
         return result;
         
       } catch (error: any) {
-        console.error('[Server] Erro na busca Properfy:', error);
-        
-        if (error.message === 'TIMEOUT') {
-          return {
-            success: false,
-            error: 'Busca demorou muito. Tente novamente ou preencha manualmente.',
-            searchType: input.searchType || 'auto'
-          };
-        }
+        console.error('[Server] ERRO na busca Properfy:', error);
+        console.error('[Server] Stack:', error.stack);
         
         return {
           success: false,

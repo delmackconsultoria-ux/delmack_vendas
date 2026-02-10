@@ -524,3 +524,25 @@
 - [x] Mostrar progresso da sincronização em tempo real (toast + spinner)
 - [x] Exibir resultado da sincronização (total de imóveis, tempo, erros)
 - [ ] Testar sincronização manual com perfis manager e finance
+
+
+## 🐛 BUG CRÍTICO (09/02/2026 - 22:10)
+
+### Busca instantânea ainda dá timeout
+- [ ] Busca por BG97087003 ainda retorna "Busca demorou muito" mesmo após sincronização
+- [ ] Verificar logs do servidor para identificar por que não está usando banco local
+- [ ] Confirmar que função searchInLocalDatabase está sendo chamada
+- [ ] Verificar se dados estão realmente no banco (SELECT * FROM properfyProperties WHERE chrReference = 'BG97087003')
+- [ ] Corrigir problema e garantir busca instantânea funcional
+
+## 🎨 MELHORIAS UX (09/02/2026 - 22:10)
+
+### Popup de confirmação na sincronização Properfy
+- [ ] Adicionar notificação toast/popup clara quando sincronização terminar
+- [ ] Mostrar total de imóveis sincronizados
+- [ ] Mostrar tempo total da sincronização
+- [ ] Indicar se houve erros durante a sincronização
+
+### Esclarecer funcionamento em background
+- [ ] Documentar que sincronização continua mesmo mudando de página (roda no servidor)
+- [ ] Adicionar tooltip ou texto explicativo no botão "Sincronizar Properfy"
