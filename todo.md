@@ -1006,3 +1006,23 @@
 - [ ] Popular página Relatórios com todos os gráficos/dados do Excel (próxima fase)
 - [x] NÃO criar vendas históricas individuais (dados não existem)
 - [x] Limpar tabela historicalSales (1.588 registros vazios removidos)
+
+
+## 🐛 NOVOS BUGS/TAREFAS REPORTADOS (10/02/2026 - 18:15)
+
+### 1. Erro 404 no logout AINDA ACONTECENDO
+- [x] Correção anterior não funcionou (getLoginUrl() redirecionava para OAuth externo)
+- [x] Investigar rota "/" e verificar se requer autenticação
+- [x] CORRIGIDO: useAuth.ts agora redireciona para '/login' ao invés de getLoginUrl()
+
+### 2. Modal de evolução de indicadores removido
+- [x] Ao clicar em indicador, abria modal com gráfico de evolução mensal
+- [x] Restaurar IndicatorDetailModal com dados reais do Excel
+- [x] Manter gráfico de linha mostrando evolução dos 12 meses
+- [x] CORRIGIDO: Modal restaurado com endpoint indicators.getMonthlyEvolution
+
+### 3. Página Relatórios sem dados históricos
+- [x] Popular página Relatórios com dados consolidados do Excel
+- [x] Adicionar gráficos de evolução mensal
+- [x] CORRIGIDO: Adicionada seção "Relatórios Históricos 2024" com gráficos de linha
+- [x] Usuário pode selecionar indicador e ver evolução mensal + tabela de dados

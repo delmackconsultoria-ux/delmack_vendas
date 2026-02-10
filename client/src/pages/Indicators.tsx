@@ -9,6 +9,7 @@ import React from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import IndicatorDetailModal from "@/components/IndicatorDetailModal";
 
 interface Indicator {
   name: string;
@@ -29,6 +30,8 @@ export default function Indicators() {
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("2024");
   const [isSyncing, setIsSyncing] = useState(false);
+  const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Buscar indicadores reais do backend
   const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getByMonth.useQuery(
@@ -364,6 +367,34 @@ export default function Indicators() {
   const negativos = indicators.filter(i => i.trend === "down").length;
   const indefinidos = indicators.filter(i => !i.trend).length;
 
+  // Buscar dados mensais do indicador selecionado
+  const { data: monthlyEvolutionData } = trpc.indicators.getMonthlyEvolution.useQuery(
+    {
+      indicatorName: selectedIndicator || "",
+      year: parseInt(selectedYear) || 2024,
+    },
+    {
+      enabled: !!selectedIndicator && modalOpen,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Função para obter dados mensais de um indicador específico
+  const getMonthlyDataForIndicator = (indicatorName: string) => {
+    if (monthlyEvolutionData?.success && monthlyEvolutionData.monthlyData) {
+      return monthlyEvolutionData.monthlyData;
+    }
+
+    // Fallback: retornar dados vazios
+    return MONTH_NAMES.map((monthName) => ({
+      month: monthName,
+      value: 0,
+      prontos: 0,
+      lancamentos: 0,
+      todos: 0,
+    }));
+  };
+
   return (
     <AppLayout>
       <div className="container mx-auto py-8 px-4">
@@ -469,7 +500,14 @@ export default function Indicators() {
         {!isLoading && indicators.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {indicators.map((indicator, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+              <Card 
+                key={index} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => {
+                  setSelectedIndicator(indicator.name);
+                  setModalOpen(true);
+                }}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-sm font-medium">
@@ -516,6 +554,22 @@ export default function Indicators() {
               </p>
             </CardContent>
           </Card>
+        )}
+
+        {/* Modal de Evolução de Indicador */}
+        {selectedIndicator && (
+          <IndicatorDetailModal
+            isOpen={modalOpen}
+            onClose={() => {
+              setModalOpen(false);
+              setSelectedIndicator(null);
+            }}
+            indicatorName={selectedIndicator}
+            indicatorType="value"
+            monthlyData={getMonthlyDataForIndicator(selectedIndicator)}
+            brokers={[]}
+            userRole={user?.role as any || "viewer"}
+          />
         )}
       </div>
     </AppLayout>

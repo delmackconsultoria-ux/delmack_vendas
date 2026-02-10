@@ -666,8 +666,155 @@ export default function ReportsPage() {
               </Card>
             </>
           )}
+
+          {/* Seção de Relatórios Históricos 2024 */}
+          <div className="mt-8 border-t pt-8">
+            <h2 className="text-2xl font-bold mb-4">Relatórios Históricos 2024</h2>
+            <p className="text-slate-600 mb-6">
+              Dados consolidados extraídos dos relatórios mensais de 2024
+            </p>
+            
+            <HistoricalReports2024 />
+          </div>
         </div>
       </div>
     </>
+  );
+}
+
+// Componente de Relatórios Históricos 2024
+function HistoricalReports2024() {
+  const [selectedIndicator, setSelectedIndicator] = useState("Negócios no mês");
+
+  // Buscar dados mensais do indicador selecionado
+  const { data: monthlyData, isLoading } = trpc.indicators.getMonthlyEvolution.useQuery(
+    {
+      indicatorName: selectedIndicator,
+      year: 2024,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const INDICATOR_OPTIONS = [
+    "Negócios no mês",
+    "Negócios no mês (unidades)",
+    "Comissão Recebida",
+    "Comissão Vendida",
+    "Comissão Pendentes Final do mês",
+    "Carteira de Divulgação ( em número)",
+    "Angariações mês",
+    "Baixas no mês (em quantidade)",
+    "Valor médio do imóvel de venda",
+  ];
+
+  const chartData = monthlyData?.monthlyData || [];
+
+  return (
+    <div className="space-y-6">
+      {/* Seletor de Indicador */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Selecione o Indicador</CardTitle>
+          <CardDescription>
+            Escolha um indicador para visualizar a evolução mensal de 2024
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <select
+            value={selectedIndicator}
+            onChange={(e) => setSelectedIndicator(e.target.value)}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            {INDICATOR_OPTIONS.map((indicator) => (
+              <option key={indicator} value={indicator}>
+                {indicator}
+              </option>
+            ))}
+          </select>
+        </CardContent>
+      </Card>
+
+      {/* Gráfico de Evolução Mensal */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Evolução Mensal - {selectedIndicator}</CardTitle>
+          <CardDescription>
+            Dados consolidados de Janeiro a Dezembro de 2024
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="h-80 flex items-center justify-center">
+              <div className="text-slate-500">Carregando...</div>
+            </div>
+          ) : chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value: any) => {
+                    if (selectedIndicator.includes("Comissão") || selectedIndicator.includes("Negócios no mês") && !selectedIndicator.includes("unidades")) {
+                      return `R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                    }
+                    return Math.round(Number(value));
+                  }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  dot={{ fill: "#3b82f6", r: 4 }}
+                  activeDot={{ r: 6 }}
+                  name={selectedIndicator}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-80 flex items-center justify-center text-slate-500">
+              Nenhum dado disponível para este indicador
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Tabela de Dados */}
+      {chartData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Dados Mensais - {selectedIndicator}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left py-2 px-4 font-semibold text-slate-700">Mês</th>
+                    <th className="text-right py-2 px-4 font-semibold text-slate-700">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chartData.map((row: any, idx: number) => (
+                    <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
+                      <td className="py-2 px-4 text-slate-900">{row.month}</td>
+                      <td className="text-right py-2 px-4 text-slate-900 font-semibold">
+                        {selectedIndicator.includes("Comissão") || (selectedIndicator.includes("Negócios no mês") && !selectedIndicator.includes("unidades"))
+                          ? `R$ ${Number(row.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+                          : Math.round(Number(row.value))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }

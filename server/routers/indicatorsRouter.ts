@@ -97,6 +97,61 @@ export const indicatorsRouter = router({
     }),
 
   /**
+   * Obter evolução mensal de um indicador específico
+   */
+  getMonthlyEvolution: protectedProcedure
+    .input(
+      z.object({
+        indicatorName: z.string(),
+        year: z.number().min(2020).max(2030).optional(),
+      })
+    )
+    .query(({ input }) => {
+      const { indicatorName, year = 2024 } = input;
+
+      if (year !== 2024) {
+        return {
+          success: false,
+          message: "Dados disponíveis apenas para 2024",
+          monthlyData: [],
+        };
+      }
+
+      const monthlyData: any[] = [];
+
+      MONTH_NAMES.forEach((monthName, index) => {
+        const monthData = indicatorsData[monthName];
+        if (!monthData || !monthData[indicatorName]) {
+          monthlyData.push({
+            month: monthName,
+            value: 0,
+            prontos: 0,
+            lancamentos: 0,
+            todos: 0,
+          });
+          return;
+        }
+
+        const indicator = monthData[indicatorName];
+        const value = indicator.total || indicator.mediaAnual || 0;
+
+        monthlyData.push({
+          month: monthName,
+          value: Number(value),
+          prontos: 0, // TODO: Adicionar se houver dados por tipo
+          lancamentos: 0,
+          todos: Number(value),
+        });
+      });
+
+      return {
+        success: true,
+        indicatorName,
+        monthlyData,
+      };
+    }),
+
+  /**
    * Obter lista de todos os meses disponíveis
    */
   getAvailableMonths: protectedProcedure.query(() => {
