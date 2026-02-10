@@ -685,6 +685,10 @@ export default function ReportsPage() {
 // Componente de Relatórios Históricos 2024
 function HistoricalReports2024() {
   const [selectedIndicator, setSelectedIndicator] = useState("Negócios no mês");
+  const [selectedBroker, setSelectedBroker] = useState("all");
+
+  // Buscar lista de corretores
+  const { data: brokers = [] } = trpc.brokers.listBrokers.useQuery();
 
   // Buscar dados mensais do indicador selecionado
   const { data: monthlyData, isLoading } = trpc.indicators.getMonthlyEvolution.useQuery(
@@ -722,17 +726,53 @@ function HistoricalReports2024() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <select
-            value={selectedIndicator}
-            onChange={(e) => setSelectedIndicator(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            {INDICATOR_OPTIONS.map((indicator) => (
-              <option key={indicator} value={indicator}>
-                {indicator}
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Seletor de Indicador */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Indicador
+              </label>
+              <select
+                value={selectedIndicator}
+                onChange={(e) => setSelectedIndicator(e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {INDICATOR_OPTIONS.map((indicator) => (
+                  <option key={indicator} value={indicator}>
+                    {indicator}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Seletor de Corretor */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Corretor
+              </label>
+              <select
+                value={selectedBroker}
+                onChange={(e) => setSelectedBroker(e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">Todos os Corretores (Consolidado)</option>
+                {brokers.map((broker: any) => (
+                  <option key={broker.id} value={broker.id}>
+                    {broker.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Aviso sobre dados consolidados */}
+          {selectedBroker !== "all" && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                ⚠️ <strong>Atenção:</strong> Os dados históricos de 2024 estão disponíveis apenas de forma consolidada (todos os corretores). O filtro por corretor individual funciona apenas para dados de 2025 em diante.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

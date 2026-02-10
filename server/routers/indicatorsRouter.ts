@@ -107,7 +107,20 @@ export const indicatorsRouter = router({
       })
     )
     .query(({ input }) => {
-      const { indicatorName, year = 2024 } = input;
+      let { indicatorName, year = 2024 } = input;
+
+      // Mapeamento de nomes da UI para nomes no JSON
+      const indicatorNameMapping: Record<string, string> = {
+        "Negócios no mês (valor)": "Negócios no mês",
+        "Comissão Pendente": "Comissão Pendentes Final do mês",
+        "Carteira de Divulgação (em número)": "Carteira de Divulgação ( em número)",
+        "VSO - venda/oferta": "VSO - venda /oferta",
+        "Baixas no mês (quantidade)": "Baixas no mês (em quantidade)",
+      };
+
+      // Aplicar mapeamento se existir
+      const mappedName = indicatorNameMapping[indicatorName] || indicatorName;
+      indicatorName = mappedName;
 
       if (year !== 2024) {
         return {

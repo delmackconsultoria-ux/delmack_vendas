@@ -1026,3 +1026,18 @@
 - [x] Adicionar gráficos de evolução mensal
 - [x] CORRIGIDO: Adicionada seção "Relatórios Históricos 2024" com gráficos de linha
 - [x] Usuário pode selecionar indicador e ver evolução mensal + tabela de dados
+
+
+## 🐛 NOVOS BUGS/TAREFAS (10/02/2026 - 18:30)
+
+### 1. Modal de evolução de indicadores mostra dados vazios
+- [x] Ao clicar em "Negócios no mês (valor)", modal abre mas gráfico mostra valores R$ 0,00
+- [x] Total, Média, Máximo, Mínimo todos aparecem como R$ 0,00
+- [x] CORRIGIDO: Problema era mapeamento de nomes (UI usa "Negócios no mês (valor)" mas JSON tem "Negócios no mês")
+- [x] Adicionado mapeamento no endpoint indicators.getMonthlyEvolution
+
+### 2. Adicionar filtro por corretor em Relatórios Históricos 2024
+- [x] Seção "Relatórios Históricos 2024" precisa de filtro por corretor
+- [x] CORRIGIDO: Filtro adicionado, mas dados históricos são consolidados (sem separação por corretor)
+- [x] Aviso exibido quando usuário seleciona corretor específico
+- [x] Limitação: Excel files não contêm dados por corretor individual
