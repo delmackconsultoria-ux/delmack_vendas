@@ -1,0 +1,170 @@
+{
+  "query": "SELECT id, name, email, companyId, role, loginMethod FROM users WHERE email LIKE '%@baggioimoveis.com.br' ORDER BY createdAt DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, companyId, role, loginMethod FROM users WHERE email LIKE '%@baggioimoveis.com.br' ORDER BY createdAt DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "tkrpv3bQxeb4XuDa",
+      "name": "Fabiano Buziak",
+      "email": "fabiano@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "hWVzj6o7YC9qEsnO",
+      "name": "Marco Antonio do Nascimento João",
+      "email": "marcojoao@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "XZriWUdGCaxjJZrZ",
+      "name": "Priscilla Gomes Ziolkowski",
+      "email": "priscillagomes@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "SkkGSjiMlWfIDGlP",
+      "name": "Fabio Simões",
+      "email": "fabio@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "_NMODURqWYOCipgt",
+      "name": "Sandra Maria Alves de Lima Przybysz",
+      "email": "sandra.lima@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "alPFDbR10pSjNbp0",
+      "name": "Edmar Antunes",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "2VInLmDh7hPrvuvj",
+      "name": "Maria Carolina Munhoz de Miranda Nicolodi",
+      "email": "carolina.munhoz@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "MFsyjWoC1GgwCqtS",
+      "name": "Rosani Felix dos Santos",
+      "email": "rosani@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "E5RSZQeG0eEArpsM",
+      "name": "Charles Luciano Lucca",
+      "email": "charles.lucca@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "DaAbrQn5dHcHd89k",
+      "name": "Diego Ferreira dos Santos",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "UjIM7HpiYDb6c8X7",
+      "name": "Regiana Mirian Baggio Favarini",
+      "email": "regiana@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "TPKivMeGPN_04Wvp",
+      "name": "Joseli do Rocio Bueno",
+      "email": "joseli@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "zsxRmUgDBj4lMgQI",
+      "name": "Allan Sobiech",
+      "email": "allan.sobiech@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "lUSSogknDH3lUI89",
+      "name": "Priscilla Pires Andrelle",
+      "email": "priscilla.andrelle@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "IRZ5ILHEQ0ONOHb9",
+      "name": "Adriana Simões Barbosa Karter",
+      "email": "adriana.simoes@baggioimoveis.com.br",
+      "companyId": "B I IMOVEIS LTDA",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "bGIqIZHMpe-yBhds",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "loginMethod": "password"
+    },
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "name": "Camila Pires",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "manager",
+      "loginMethod": "email"
+    },
+    {
+      "id": "user_1766355269539_rf51il6kt",
+      "name": "Darlan Santos Ribeiro ",
+      "email": "Darlan@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "finance",
+      "loginMethod": "email"
+    },
+    {
+      "id": "user_1766355139159_spekva56z",
+      "name": "Carolina Cardoso ",
+      "email": "carolina.cardoso@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "loginMethod": "email"
+    },
+    {
+      "id": "user_1766351453637_typa30p2q",
+      "name": "Lucas ",
+      "email": "Lucas@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "viewer",
+      "loginMethod": "email"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\trole\tloginMethod\ntkrpv3bQxeb4XuDa\tFabiano Buziak\tfabiano@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tpassword\nhWVzj6o7YC9qEsnO\tMarco Antonio do Nascimento João\tmarcojoao@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nXZriWUdGCaxjJZrZ\tPriscilla Gomes Ziolkowski\tpriscillagomes@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nSkkGSjiMlWfIDGlP\tFabio Simões\tfabio@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\n_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nalPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tpassword\n2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nMFsyjWoC1GgwCqtS\tRosani Felix dos Santos\trosani@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tpassword\nE5RSZQeG0eEArpsM\tCharles Luciano Lucca\tcharles.lucca@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nDaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tpassword\nUjIM7HpiYDb6c8X7\tRegiana Mirian Baggio Favarini\tregiana@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nTPKivMeGPN_04Wvp\tJoseli do Rocio Bueno\tjoseli@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nzsxRmUgDBj4lMgQI\tAllan Sobiech\tallan.sobiech@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nlUSSogknDH3lUI89\tPriscilla Pires Andrelle\tpriscilla.andrelle@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nIRZ5ILHEQ0ONOHb9\tAdriana Simões Barbosa Karter\tadriana.simoes@baggioimoveis.com.br\tB I IMOVEIS LTDA\tbroker\tpassword\nbGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tpassword\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tcompany_1766331506068\tmanager\temail\nuser_1766355269539_rf51il6kt\tDarlan Santos Ribeiro \tDarlan@baggioimoveis.com.br\tcompany_1766331506068\tfinance\temail\nuser_1766355139159_spekva56z\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br\tcompany_1766331506068\tbroker\temail\nuser_1766351453637_typa30p2q\tLucas \tLucas@baggioimoveis.com.br\tcompany_1766331506068\tviewer\temail\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

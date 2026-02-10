@@ -1,0 +1,17 @@
+{
+  "query": "SELECT \n  COUNT(*) as total_vendas,\n  COUNT(DISTINCT acquisitionBrokerName) as total_angariadores,\n  COUNT(DISTINCT saleBrokerName) as total_vendedores,\n  SUM(salePrice) as valor_total_vendas,\n  SUM(commissionAmount) as comissao_total\nFROM historicalSales\nWHERE companyId = 'B I IMOVEIS LTDA';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  COUNT(*) as total_vendas,\n  COUNT(DISTINCT acquisitionBrokerName) as total_angariadores,\n  COUNT(DISTINCT saleBrokerName) as total_vendedores,\n  SUM(salePrice) as valor_total_vendas,\n  SUM(commissionAmount) as comissao_total\nFROM historicalSales\nWHERE companyId = 'B I IMOVEIS LTDA';",
+  "rows": [
+    {
+      "total_vendas": "1588",
+      "total_angariadores": "17",
+      "total_vendedores": "26",
+      "valor_total_vendas": "875986940.00",
+      "comissao_total": "62504557.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_vendas\ttotal_angariadores\ttotal_vendedores\tvalor_total_vendas\tcomissao_total\n1588\t17\t26\t875986940.00\t62504557.00\n",
+  "stderr": "",
+  "execution_time_ms": 102
+}

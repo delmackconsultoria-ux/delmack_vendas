@@ -763,3 +763,42 @@ export const properfyProperties = mysqlTable("properfyProperties", {
 
 export type ProperfyProperty = typeof properfyProperties.$inferSelect;
 export type InsertProperfyProperty = typeof properfyProperties.$inferInsert;
+
+/**
+ * Historical Sales (Vendas Históricas 2024 e anteriores)
+ * Tabela separada para dados importados do Excel sem campos obrigatórios
+ */
+export const historicalSales = mysqlTable("historicalSales", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  // Dados do Imóvel
+  propertyReference: varchar("propertyReference", { length: 100 }), // Referência Properfy (ex: BG93417004 ou "S REF")
+  propertyAddress: text("propertyAddress"), // Endereço completo
+  propertyNeighborhood: varchar("propertyNeighborhood", { length: 255 }), // Bairro
+  businessType: varchar("businessType", { length: 100 }), // Prontos/Lançamentos
+  // Datas
+  saleDate: timestamp("saleDate"), // Data da Venda
+  acquisitionDate: timestamp("acquisitionDate"), // Data da Angariação
+  // Valores
+  listingPrice: decimal("listingPrice", { precision: 15, scale: 2 }), // Valor de Divulgação
+  salePrice: decimal("salePrice", { precision: 15, scale: 2 }), // Valor Venda
+  commissionAmount: decimal("commissionAmount", { precision: 15, scale: 2 }), // Comissão (R$)
+  commissionPercentage: decimal("commissionPercentage", { precision: 5, scale: 2 }), // % Comissão
+  // Corretores
+  acquisitionBrokerName: varchar("acquisitionBrokerName", { length: 255 }), // Angariador
+  saleBrokerName: varchar("saleBrokerName", { length: 255 }), // Vendedor
+  // Lojas
+  acquisitionStore: varchar("acquisitionStore", { length: 100 }), // Loja Angariadora
+  saleStore: varchar("saleStore", { length: 100 }), // Loja Vendedora
+  // Outros
+  clientSource: varchar("clientSource", { length: 255 }), // De onde veio o cliente
+  paymentMethod: varchar("paymentMethod", { length: 255 }), // Forma de Pagamento
+  // Status (sempre "commission_paid" para histórico)
+  status: varchar("status", { length: 50 }).default("commission_paid"),
+  // Metadados
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type HistoricalSale = typeof historicalSales.$inferSelect;
+export type InsertHistoricalSale = typeof historicalSales.$inferInsert;

@@ -340,6 +340,24 @@ export async function getCompanySales(companyId: string) {
 }
 
 /**
+ * Get sales for a specific broker
+ * Busca vendas onde o corretor aparece como angariador OU vendedor
+ */
+export async function getBrokerSales(brokerId: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const { or } = await import('drizzle-orm');
+
+  return db.select().from(sales).where(
+    or(
+      eq(sales.brokerAngariador, brokerId),
+      eq(sales.brokerVendedor, brokerId)
+    )
+  );
+}
+
+/**
  * Get sale by ID with related data
  */
 export async function getSaleWithDetails(saleId: string) {
@@ -409,3 +427,87 @@ export async function createCommission(data: any) {
   return { id: commissionId, ...data };
 }
 
+/**
+ * ========================================
+ * HISTORICAL SALES (Vendas Históricas)
+ * ========================================
+ * Funções para consultar vendas importadas do Excel (2024 e anteriores)
+ * Estas vendas NÃO passam por fluxo de aprovação (status fixo: "commission_paid")
+ */
+
+import { historicalSales, type HistoricalSale } from "../drizzle/schema";
+
+/**
+ * Get all historical sales for a company
+ */
+export async function getCompanyHistoricalSales(companyId: string): Promise<HistoricalSale[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(historicalSales).where(eq(historicalSales.companyId, companyId));
+}
+
+/**
+ * Get historical sales for a specific broker (by name)
+ * Busca vendas onde o corretor aparece como angariador OU vendedor
+ */
+export async function getBrokerHistoricalSales(companyId: string, brokerName: string): Promise<HistoricalSale[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  const { or } = await import('drizzle-orm');
+
+  return db.select().from(historicalSales).where(
+    and(
+      eq(historicalSales.companyId, companyId),
+      or(
+        eq(historicalSales.acquisitionBrokerName, brokerName),
+        eq(historicalSales.saleBrokerName, brokerName)
+      )
+    )
+  );
+}
+
+/**
+ * Get historical sale by ID
+ */
+export async function getHistoricalSaleById(id: string): Promise<HistoricalSale | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db.select().from(historicalSales).where(eq(historicalSales.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+/**
+ * Count historical sales for a company
+ */
+export async function countCompanyHistoricalSales(companyId: string): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const { count } = await import('drizzle-orm');
+  const result = await db.select({ count: count() }).from(historicalSales).where(eq(historicalSales.companyId, companyId));
+  return result[0]?.count || 0;
+}
+
+/**
+ * Count historical sales for a broker
+ */
+export async function countBrokerHistoricalSales(companyId: string, brokerName: string): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const { or, count } = await import('drizzle-orm');
+
+  const result = await db.select({ count: count() }).from(historicalSales).where(
+    and(
+      eq(historicalSales.companyId, companyId),
+      or(
+        eq(historicalSales.acquisitionBrokerName, brokerName),
+        eq(historicalSales.saleBrokerName, brokerName)
+      )
+    )
+  );
+  return result[0]?.count || 0;
+}

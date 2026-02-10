@@ -40,6 +40,7 @@ export default function ProposalManagement() {
   const [statusComment, setStatusComment] = useState("");
 
   const { data: salesData, isLoading, refetch } = trpc.sales.listMySales.useQuery();
+  const { data: historicalSalesData, isLoading: isLoadingHistorical } = trpc.historicalSales.list.useQuery({});
 
   const { data: brokersData } = trpc.brokers.listBrokers.useQuery(undefined, {
     enabled: user?.role === "manager",
@@ -54,18 +55,24 @@ export default function ProposalManagement() {
     },
   });
 
-  // Métricas
+  // Métricas (incluindo vendas históricas)
   const metrics = useMemo(() => {
-    if (!salesData?.sales) return { total: 0, sales: 0, approved: 0, cancelled: 0, conversionRate: 0, avgDays: 0 };
+    const currentSales = salesData?.sales || [];
+    const historicalSales = historicalSalesData || [];
     
-    const total = salesData.sales.length;
-    const salesCount = salesData.sales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length;
-    const approved = salesData.sales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length;
-    const cancelled = salesData.sales.filter((s: any) => s.status === "cancelled").length;
+    if (currentSales.length === 0 && historicalSales.length === 0) {
+      return { total: 0, sales: 0, approved: 0, cancelled: 0, conversionRate: 0, avgDays: 0 };
+    }
+    
+    // Vendas históricas são todas "comissão paga"
+    const total = currentSales.length + historicalSales.length;
+    const salesCount = currentSales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length + historicalSales.length;
+    const approved = currentSales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length + historicalSales.length;
+    const cancelled = currentSales.filter((s: any) => s.status === "cancelled").length;
     const conversionRate = total > 0 ? (salesCount / total) * 100 : 0;
     
-    // Calcular tempo médio de proposta para venda
-    const completedSales = salesData.sales.filter((s: any) => s.status === "commission_paid" && s.saleDate && s.createdAt);
+    // Calcular tempo médio de proposta para venda (apenas vendas atuais)
+    const completedSales = currentSales.filter((s: any) => s.status === "commission_paid" && s.saleDate && s.createdAt);
     let avgDays = 0;
     if (completedSales.length > 0) {
       const totalDays = completedSales.reduce((acc: number, sale: any) => {
@@ -77,11 +84,30 @@ export default function ProposalManagement() {
     }
     
     return { total, sales: salesCount, approved, cancelled, conversionRate, avgDays };
-  }, [salesData]);
+  }, [salesData, historicalSalesData]);
 
   const filteredSales = useMemo(() => {
-    if (!salesData?.sales) return [];
-    return salesData.sales.filter((sale: any) => {
+    const currentSales = salesData?.sales || [];
+    const historicalSales = historicalSalesData || [];
+    
+    // Transformar vendas históricas para o mesmo formato
+    const transformedHistorical = historicalSales.map((h: any) => ({
+      id: h.id,
+      buyerName: "Comprador: " + (h.propertyAddress || "N/A"),
+      propertyId: h.propertyReference || "S REF",
+      saleValue: h.salePrice,
+      createdAt: h.saleDate,
+      saleDate: h.saleDate,
+      status: "commission_paid",
+      registeredByName: h.saleBrokerName || h.acquisitionBrokerName,
+      brokerVendedor: h.saleBrokerName,
+      isHistorical: true, // Flag para identificar
+    }));
+    
+    const allSales = [...currentSales, ...transformedHistorical];
+    
+    if (allSales.length === 0) return [];
+    return allSales.filter((sale: any) => {
       const matchesSearch = searchTerm === "" || 
         sale.buyerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         sale.propertyId?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -107,7 +133,7 @@ export default function ProposalManagement() {
       
       return matchesSearch && matchesStatus && matchesBroker && matchesMonth && matchesYear;
     });
-  }, [salesData, searchTerm, statusFilter, brokerFilter, selectedMonth, selectedYear]);
+  }, [salesData, historicalSalesData, searchTerm, statusFilter, brokerFilter, selectedMonth, selectedYear]);
 
   const formatCurrency = (value: number | string | null) => {
     if (!value) return "R$ 0,00";
@@ -320,7 +346,7 @@ export default function ProposalManagement() {
             <CardTitle>Histórico ({filteredSales.length})</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {(isLoading || isLoadingHistorical) ? (
               <div className="text-center py-8 text-slate-500">Carregando...</div>
             ) : filteredSales.length === 0 ? (
               <div className="text-center py-8 text-slate-500">Nenhuma proposta encontrada</div>
@@ -329,7 +355,7 @@ export default function ProposalManagement() {
                 {filteredSales.map((sale: any) => {
                   const statusConfig = STATUS_CONFIG[sale.status] || STATUS_CONFIG.pending;
                   return (
-                    <div key={sale.id} className="border rounded-lg p-4 hover:bg-slate-50 transition-colors">
+                    <div key={sale.id} className={`border rounded-lg p-4 hover:bg-slate-50 transition-colors ${sale.isHistorical ? 'bg-amber-50/30 border-amber-200' : ''}`}>
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">

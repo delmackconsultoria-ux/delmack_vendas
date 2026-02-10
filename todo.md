@@ -703,3 +703,168 @@
 - [x] Criar índice B-tree na coluna chrReference para acelerar buscas
 - [x] Otimizar busca para usar match exato (eq) ao invés de LIKE
 - [x] Validar performance: 63ms com match exato (vs 86ms com LIKE)
+
+
+## 🗑️ LIMPEZA E IMPORTAÇÃO DE DADOS REAIS (10/02/2026)
+
+### Limpeza de Dados da Baggio
+- [ ] Verificar dados atuais no banco (vendas, comissões, histórico)
+- [ ] Deletar vendas da empresa "B I IMOVEIS LTDA"
+- [ ] Deletar comissões relacionadas
+- [ ] Deletar histórico de alterações (salePaymentHistory)
+- [ ] Manter usuários existentes da Baggio
+- [ ] Manter empresa "Testes" e seus dados
+- [ ] Validar que properfyProperties foi mantida (4.985 imóveis)
+
+### Criação de 16 Contas de Corretor
+- [x] Ler planilha CORRETORESBAGGIO.xlsx
+- [x] Extrair dados: nome, email
+- [x] Criar script de cadastro em lote
+- [x] Gerar senhas automáticas seguras (12 caracteres)
+- [x] Executar cadastro dos 16 corretores
+- [x] Validar que todos têm perfil "broker" (corretor)
+- [x] Validar que todos pertencem à empresa Baggio
+
+### Importação de Dados Históricos
+- [ ] Aguardar envio do ZIP com dados históricos
+- [ ] Analisar estrutura dos arquivos do ZIP
+- [ ] Mapear nomes de corretores:
+  - "Priscilla" → "Priscilla Gomes Ziolkowski"
+  - "Priscilla Pires" → "Priscilla Pires Andrelle"
+- [ ] Criar script de importação
+- [ ] Executar importação
+- [ ] Validar dados importados
+
+### Validação de Permissões
+- [ ] Gerente deve ver todos os dados
+- [ ] Visualizador deve ver todos os dados
+- [ ] Financeiro deve ver todos os dados
+- [ ] Corretores devem ver apenas suas próprias venda## 🔗 INTEGRAÇÃO DE VENDAS HISTÓRICAS (10/02/2026)
+
+### Problema Identificado
+- [x] Usuários criados sem empresa vinculada corretamente (FALSO POSITIVO - empresa estava vinculada)
+- [x] Senhas inseridas em texto plano (sem hash bcrypt)
+- [x] Login falha para todos os 16 corretores
+
+### Correções Aplicadas
+- [x] Verificar usuários sem companyId no banco (todos tinham empresa vinculada)
+- [x] Gerar hash bcrypt para todas as 16 senhas
+- [x] Atualizar senhas com hash bcrypt no banco
+- [ ] Testar login de um corretor (ex: odair@baggioimoveis.com.br com senha &FYgkcUW$g1D)
+- [ ] Validar que todos os 16 corretores aparecem na listagem da empresa
+
+### Backend (Server)
+- [x] Criar helpers no server/db.ts para consultar historicalSales
+- [x] Criar endpoints tRPC (historicalSalesRouter)
+- [x] Implementar filtros por corretor (broker vê apenas suas vendas)
+- [x] Implementar filtros por mês/ano
+- [x] Implementar estatísticas (total, valor, comissão)
+
+### Frontend (Client)
+- [x] Atualizar página Histórico para buscar de ambas as tabelas
+- [x] Unificar visualização (sales + historicalSales)
+- [x] Adicionar indicador visual (fundo amarelo) para vendas históricas
+- [x] Atualizar métricas para incluir vendas históricas
+- [ ] Atualizar Indicadores para incluir vendas históricas
+- [ ] Atualizar Relatórios para incluir vendas históricas IMPORTAÇÃO DE DADOS HISTÓRICOS 2024
+
+### Mapeamento de Corretores
+- [x] Extrair e analisar 12 arquivos Excel (Jan-Dez 2024)
+- [x] Identificar 29 nomes únicos de corretores
+- [x] Criar dicionário de mapeamento Excel → Banco
+- [x] Identificar 16 corretores ativos
+- [x] Identificar 13 ex-corretores (saíram da empresa)
+- [x] Criar usuários inativos para ex-corretores no banco (13 usuários criados)
+
+### Importação de Vendas
+- [x] Criar tabela historicalSales separada para dados históricos
+- [x] Criar script de importação de vendas
+- [x] Mapear campos Excel → campos do banco
+- [x] Importar 1.588 vendas de 2024 (Jan-Dez)
+- [x] Validar total de vendas importadas (100% sucesso)
+- [x] Validar corretores vinculados (18 angariadores, 28 vendedores)
+
+### Importação de Comissões
+- [x] Comissões já incluídas nas vendas históricas (campo commissionAmount)
+- [x] Status "commission_paid" aplicado a todas as vendas de 2024
+
+### Validação Final
+- [ ] Testar acesso de corretor (ver apenas seus dados)
+- [ ] Testar acesso de gerente (ver todos os dados)
+- [ ] Testar acesso de financeiro (ver todos os dados)
+- [ ] Testar acesso de visualizador (ver todos os dados)
+- [ ] Verificar se ex-corretores aparecem no histórico
+
+
+## 🔗 INTEGRAÇÃO DE VENDAS HISTÓRICAS COM SISTEMA
+
+### Backend (tRPC + DB)
+- [ ] Criar helpers em server/db.ts para consultar historicalSales
+- [ ] Criar endpoint tRPC para listar vendas históricas (com filtro por corretor)
+- [ ] Criar endpoint tRPC para contar vendas históricas
+- [ ] Criar endpoint tRPC para somar valores de vendas históricas
+
+### Frontend - Página Histórico
+- [ ] Atualizar query para buscar de historicalSales (não sales)
+- [ ] Implementar filtro por corretor (brokers veem apenas suas vendas)
+- [ ] Implementar filtro por mês/ano
+- [ ] Mostrar cards com estatísticas corretas (1.588 vendas)
+
+### Frontend - Indicadores
+- [ ] Atualizar queries para incluir vendas históricas
+- [ ] Somar vendas de sales + historicalSales
+- [ ] Atualizar gráficos para incluir dados históricos
+
+### Frontend - Relatórios
+- [ ] Atualizar queries para incluir vendas históricas
+- [ ] Unificar visualização de sales + historicalSales
+- [ ] Garantir que relatórios mostram dados completos
+
+### Testes de Permissões
+- [ ] Testar Odair (corretor): Ver apenas suas vendas históricas
+- [ ] Testar Camila (gerente): Ver TODAS as 1.588 vendas
+- [ ] Testar Financeiro: Ver todas as vendas
+- [ ] Testar Visualizador: Ver todas as vendas (read-only)
+
+
+## 📊 INTEGRAÇÃO DE VENDAS HISTÓRICAS 2024 (10/02/2026)
+
+### Importação de Dados Históricos
+- [x] Criar tabela `historicalSales` separada para dados de 2024
+- [x] Importar 1.588 vendas de 2024 (Jan-Dez) do ZIP
+- [x] Criar 13 usuários inativos para ex-corretores
+- [x] Mapear 29 corretores únicos do Excel para usuários do banco
+- [x] Validar dados importados (100% sucesso)
+
+### Backend (Server)
+- [x] Criar helpers no server/db.ts para consultar historicalSales
+- [x] Criar função getBrokerSales para vendas atuais de corretor
+- [x] Criar endpoints tRPC (historicalSalesRouter)
+- [x] Implementar filtros por corretor (broker vê apenas suas vendas)
+- [x] Implementar filtros por mês/ano
+- [x] Implementar estatísticas (total, valor, comissão)
+
+### Frontend (Client)
+- [x] Atualizar página Histórico para buscar de ambas as tabelas
+- [x] Unificar visualização (sales + historicalSales)
+- [x] Adicionar indicador visual (fundo amarelo) para vendas históricas
+- [x] Atualizar métricas para incluir vendas históricas
+
+### Indicadores com Dados Reais
+- [x] Criar indicatorsRouter com cálculos reais
+- [x] Implementar helpers para buscar dados (sales + historicalSales)
+- [x] Adicionar indicatorsRouter ao appRouter
+- [ ] Refatorar página Indicators.tsx para usar dados reais (27 indicadores)
+- [ ] Usar fórmulas do Excel como referência para cálculos
+- [ ] Testar indicadores com diferentes perfis (corretor, gerente, financeiro)
+
+### Relatórios
+- [ ] Atualizar Relatórios para incluir vendas históricas
+- [ ] Integrar gráficos com dados de 2024
+
+### Validação Final
+- [ ] Testar acesso de corretor (Odair - ver apenas seus dados)
+- [ ] Testar acesso de gerente (Camila - ver todos os dados)
+- [ ] Testar acesso de financeiro (ver todos os dados)
+- [ ] Testar acesso de visualizador (ver todos os dados)
+- [ ] Verificar se ex-corretores aparecem no histórico

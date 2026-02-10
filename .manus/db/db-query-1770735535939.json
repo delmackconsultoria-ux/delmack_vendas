@@ -1,0 +1,16 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM sales WHERE companyId = 'B I IMOVEIS LTDA') as vendas_baggio,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'B I IMOVEIS LTDA') as comissoes_baggio,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'test_company') as vendas_testes,\n  (SELECT COUNT(*) FROM users WHERE companyId = 'B I IMOVEIS LTDA') as usuarios_baggio;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  (SELECT COUNT(*) FROM sales WHERE companyId = 'B I IMOVEIS LTDA') as vendas_baggio,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'B I IMOVEIS LTDA') as comissoes_baggio,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'test_company') as vendas_testes,\n  (SELECT COUNT(*) FROM users WHERE companyId = 'B I IMOVEIS LTDA') as usuarios_baggio;",
+  "rows": [
+    {
+      "vendas_baggio": "0",
+      "comissoes_baggio": "0",
+      "vendas_testes": "0",
+      "usuarios_baggio": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "vendas_baggio\tcomissoes_baggio\tvendas_testes\tusuarios_baggio\n0\t0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}
