@@ -1,0 +1,19 @@
+{
+  "query": "SELECT COUNT(*) as total FROM properfyProperties; SELECT * FROM properfyProperties WHERE chrReference = 'BG97142005' LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total FROM properfyProperties; SELECT * FROM properfyProperties WHERE chrReference = 'BG97142005' LIMIT 1;",
+  "rows": [
+    {
+      "total": "4985"
+    },
+    {
+      "total": "id\tchrReference\tchrInnerReference\tchrType\tchrStatus\tchrTransactionType\tdcmAreaTotal\tdcmAreaPrivate\tdcmAreaUsable\tdcmAreaBuilt\tintRooms\tintBedrooms\tintSuites\tintBathrooms\tintGarage\tdcmSale\tdcmRentNetValue\tdcmCondoValue\tdcmPropertyTax\tchrAddressPostalCode\tchrAddressStreet\tchrAddressNumber\tchrAddressComplement\tchrAddressNeighborhood\tchrAddressCity\tchrAddressCityCode\tchrAddressState\tchrCondoName\tfkCondo\tintBuiltYear\tintFloors\tlastSyncedAt\tcreatedAt\tupdatedAt"
+    },
+    {
+      "total": "4388\tBG97142005\tBG97142004-COPY-30-01-2025\tRESIDENTIAL_HOUSE\tLISTED\tSALE\t163.96\t127.04\t127.04\t163.96\t7\t2\t1\t1\t2\t950000.00\t0.00\t0.00\t0.00\t80.820-560\tRua Manoel Amálio de Souza\t218\tsob 5\tNULL\tCuritiba\t4106902\tPR\tResidencial Alto do Tingui\tNULL\t2025\tNULL\t2026-02-09 22:27:29\t2026-02-09 21:13:55\t2026-02-09 22:27:28"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n4985\nid\tchrReference\tchrInnerReference\tchrType\tchrStatus\tchrTransactionType\tdcmAreaTotal\tdcmAreaPrivate\tdcmAreaUsable\tdcmAreaBuilt\tintRooms\tintBedrooms\tintSuites\tintBathrooms\tintGarage\tdcmSale\tdcmRentNetValue\tdcmCondoValue\tdcmPropertyTax\tchrAddressPostalCode\tchrAddressStreet\tchrAddressNumber\tchrAddressComplement\tchrAddressNeighborhood\tchrAddressCity\tchrAddressCityCode\tchrAddressState\tchrCondoName\tfkCondo\tintBuiltYear\tintFloors\tlastSyncedAt\tcreatedAt\tupdatedAt\n4388\tBG97142005\tBG97142004-COPY-30-01-2025\tRESIDENTIAL_HOUSE\tLISTED\tSALE\t163.96\t127.04\t127.04\t163.96\t7\t2\t1\t1\t2\t950000.00\t0.00\t0.00\t0.00\t80.820-560\tRua Manoel Amálio de Souza\t218\tsob 5\tNULL\tCuritiba\t4106902\tPR\tResidencial Alto do Tingui\tNULL\t2025\tNULL\t2026-02-09 22:27:29\t2026-02-09 21:13:55\t2026-02-09 22:27:28\n",
+  "stderr": "",
+  "execution_time_ms": 157
+}

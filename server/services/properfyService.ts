@@ -86,7 +86,7 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
     number: property.chrAddressNumber || 'S/N',
     city: property.chrAddressCity || '',
     state: property.chrAddressState || '',
-    district: property.chrAddressDistrict || '',
+    district: property.chrAddressNeighborhood || property.chrAddressDistrict || '',
     // Corrigido: CEP real (chrAddressPostalCode) tem prioridade sobre código de cidade
     postalCode: property.chrAddressPostalCode?.replace(/\D/g, '') || property.chrAddressCityCode?.replace(/\D/g, '') || '',
     // Corrigido: usar chrType (intPropertyType não existe na API)
@@ -94,8 +94,8 @@ function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
     value: property.dcmSale || property.dcmRent || 0,
     area: property.dcmAreaPrivate || property.dcmAreaTotal || 0,
     totalArea: property.dcmAreaTotal || 0,
-    // Corrigido: usar intTotalBedrooms ao invés de intBedrooms
-    bedrooms: property.intTotalBedrooms || property.intBedrooms || 0,
+    // Corrigido: usar intBedrooms (quartos) - intRooms é total de cômodos
+    bedrooms: property.intBedrooms || 0,
     bathrooms: property.intBathrooms || 0,
     parkingSpaces: property.intGarage || 0,
     description: property.txtDescription || '',

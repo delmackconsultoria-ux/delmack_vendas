@@ -546,3 +546,32 @@
 ### Esclarecer funcionamento em background
 - [ ] Documentar que sincronização continua mesmo mudando de página (roda no servidor)
 - [ ] Adicionar tooltip ou texto explicativo no botão "Sincronizar Properfy"
+
+
+## 🐛 BUGS CRÍTICOS (10/02/2026)
+
+### Busca Properfy ainda lenta (não < 1 segundo)
+- [x] Imóvel foi encontrado sem erro, mas demorou bastante
+- [x] Investigar se está realmente usando banco local ou API Properfy
+- [x] Adicionar logs para confirmar qual fonte está sendo usada
+- [x] Otimizar query SQL se estiver usando banco local
+- [x] **RESOLVIDO**: Busca agora usa banco local e é instantânea (8-9ms)
+
+### Bairro não está sendo preenchido
+- [x] BG97142005 não preencheu o campo "Bairro"
+- [x] Verificar qual campo da API/banco contém o bairro
+- [x] Adicionar mapeamento correto do bairro
+- [x] **PARCIALMENTE RESOLVIDO**: Campo chrAddressNeighborhood está vazio na API Properfy para este imóvel. Usuário deve preencher manualmente.
+
+### Quantidade de quartos errada
+- [x] BG97142005 tem 3 quartos mas apareceu 2
+- [x] Verificar qual campo está sendo usado (intBedRooms vs intRooms)
+- [x] Corrigir mapeamento para usar campo correto
+- [x] **RESOLVIDO**: Agora usa intBedrooms (3 quartos) ao invés de intRooms (7 cômodos)
+
+### Vírgula faltando nos valores monetários
+- [x] "Custo por m²" não está com vírgula formatada
+- [x] "Valor de Divulgação" não está com vírgula formatada
+- [x] Garantir que formatCurrency() está sendo aplicada corretamente
+- [x] Testar com valores reais da API
+- [x] **RESOLVIDO**: Agora usa formatWhileTyping() ao preencher automaticamente

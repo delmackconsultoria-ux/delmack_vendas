@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, chrReference, chrType, intTotalBedrooms, intBedrooms, chrAddressDistrict, chrAddressStreet, chrAddressNumber, chrAddressPostalCode, dcmSale, dcmAreaPrivate, chrCondoName FROM properfyProperties WHERE chrReference = 'BG97142005'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, chrReference, chrType, intTotalBedrooms, intBedrooms, chrAddressDistrict, chrAddressStreet, chrAddressNumber, chrAddressPostalCode, dcmSale, dcmAreaPrivate, chrCondoName FROM properfyProperties WHERE chrReference = 'BG97142005'",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'inttotalbedrooms' in 'field list'"
+  ]
+}

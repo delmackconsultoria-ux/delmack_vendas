@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, chrReference, chrType, intRooms, intBedrooms, chrAddressNeighborhood, chrAddressStreet, chrAddressNumber, chrAddressPostalCode, dcmSale, dcmAreaPrivate, chrCondoName FROM properfyProperties WHERE chrReference = 'BG97142005'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, chrReference, chrType, intRooms, intBedrooms, chrAddressNeighborhood, chrAddressStreet, chrAddressNumber, chrAddressPostalCode, dcmSale, dcmAreaPrivate, chrCondoName FROM properfyProperties WHERE chrReference = 'BG97142005'",
+  "rows": [
+    {
+      "id": "4388",
+      "chrReference": "BG97142005",
+      "chrType": "RESIDENTIAL_HOUSE",
+      "intRooms": "7",
+      "intBedrooms": "2",
+      "chrAddressNeighborhood": "NULL",
+      "chrAddressStreet": "Rua Manoel Amálio de Souza",
+      "chrAddressNumber": "218",
+      "chrAddressPostalCode": "80.820-560",
+      "dcmSale": "950000.00",
+      "dcmAreaPrivate": "127.04",
+      "chrCondoName": "Residencial Alto do Tingui"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tchrReference\tchrType\tintRooms\tintBedrooms\tchrAddressNeighborhood\tchrAddressStreet\tchrAddressNumber\tchrAddressPostalCode\tdcmSale\tdcmAreaPrivate\tchrCondoName\n4388\tBG97142005\tRESIDENTIAL_HOUSE\t7\t2\tNULL\tRua Manoel Amálio de Souza\t218\t80.820-560\t950000.00\t127.04\tResidencial Alto do Tingui\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

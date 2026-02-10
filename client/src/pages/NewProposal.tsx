@@ -325,12 +325,12 @@ export default function NewProposal() {
           propertyNeighborhood: prop.district || prev.propertyNeighborhood,
           propertyZipCode: prop.postalCode || prev.propertyZipCode,
           typeOfProperty: prop.propertyType?.toLowerCase() || prev.typeOfProperty,
-          advertisementValue: prop.value ? prop.value.toString().replace('.', ',') : prev.advertisementValue,
+          advertisementValue: prop.value ? formatWhileTyping(prop.value.toString()) : prev.advertisementValue,
           privateArea: prop.area?.toString() || prev.privateArea,
           totalArea: prop.totalArea?.toString() || prev.totalArea,
           bedrooms: prop.bedrooms?.toString() || prev.bedrooms,
           condominiumName: prop.condominiumName || prev.condominiumName,
-          costPerM2: prop.pricePerSqm ? prop.pricePerSqm.toString().replace('.', ',') : prev.costPerM2,
+          costPerM2: prop.pricePerSqm ? formatWhileTyping(prop.pricePerSqm.toString()) : prev.costPerM2,
           propertyAge: prop.propertyAge?.toString() || prev.propertyAge,
         }));
         setProperfySearch({ loading: false, error: "", found: true, searchType });

@@ -1,0 +1,19 @@
+{
+  "query": "SELECT chrReference, intRooms, intBedrooms, intSuites, chrAddressNeighborhood, dcmSale, dcmAreaPrivate FROM properfyProperties WHERE chrReference = 'BG97142005'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT chrReference, intRooms, intBedrooms, intSuites, chrAddressNeighborhood, dcmSale, dcmAreaPrivate FROM properfyProperties WHERE chrReference = 'BG97142005'",
+  "rows": [
+    {
+      "chrReference": "BG97142005",
+      "intRooms": "7",
+      "intBedrooms": "2",
+      "intSuites": "1",
+      "chrAddressNeighborhood": "NULL",
+      "dcmSale": "950000.00",
+      "dcmAreaPrivate": "127.04"
+    }
+  ],
+  "messages": [],
+  "stdout": "chrReference\tintRooms\tintBedrooms\tintSuites\tchrAddressNeighborhood\tdcmSale\tdcmAreaPrivate\nBG97142005\t7\t2\t1\tNULL\t950000.00\t127.04\n",
+  "stderr": "",
+  "execution_time_ms": 74
+}
