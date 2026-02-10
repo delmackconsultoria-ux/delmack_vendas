@@ -613,3 +613,17 @@
 - [x] Confirmar que sincronização continua em background ao mudar de página
 - [x] Mostrar total de imóveis sincronizados e tempo total
 - [x] Implementado Dialog em Indicators.tsx
+
+
+## ✅ CORREÇÕES FINAIS (10/02/2026 - 23:50)
+
+### Erro 429 (Too Many Requests) na API brokers.listBrokers
+- [x] Identificado que React Query estava fazendo refetch excessivo ao voltar para aba
+- [x] Adicionada configuração de cache (5 minutos)
+- [x] Desabilitado refetchOnWindowFocus e refetchOnMount
+- [x] Reduzido retry para 1 tentativa
+
+### Indicador de versão no rodapé
+- [x] Adicionado rodapé em AppLayout.tsx
+- [x] Mostra versão do sistema e data de build
+- [x] Sempre visível em todas as páginas

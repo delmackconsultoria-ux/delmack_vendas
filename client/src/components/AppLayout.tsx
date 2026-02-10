@@ -44,6 +44,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 p-4 md:p-6">
         {children}
       </main>
+      <footer className="border-t bg-muted/30 py-3 px-4 text-center text-xs text-muted-foreground">
+        <span>Delmack v{import.meta.env.VITE_APP_VERSION || '2.0.0'}</span>
+        <span className="mx-2">•</span>
+        <span>Build: {new Date().toISOString().slice(0, 10)}</span>
+      </footer>
     </div>
   );
 }

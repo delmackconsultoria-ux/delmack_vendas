@@ -382,7 +382,12 @@ export default function NewProposal() {
   };
 
   // Load brokers from TRPC
-  const { data: brokersList } = trpc.brokers.listBrokers.useQuery(undefined);
+  const { data: brokersList } = trpc.brokers.listBrokers.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000, // Cache por 5 minutos
+    refetchOnWindowFocus: false, // Não refazer ao voltar para a aba
+    refetchOnMount: false, // Não refazer ao montar componente se já tem cache
+    retry: 1, // Apenas 1 tentativa em caso de erro
+  });
   useEffect(() => {
     if (brokersList) {
       setBrokers(brokersList);
