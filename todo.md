@@ -868,3 +868,113 @@
 - [ ] Testar acesso de financeiro (ver todos os dados)
 - [ ] Testar acesso de visualizador (ver todos os dados)
 - [ ] Verificar se ex-corretores aparecem no histórico
+
+
+## 🐛 BUGS REPORTADOS - Visualização de Dados Históricos (10/02/2026 - 14:30)
+
+### Histórico não mostra vendas históricas
+- [ ] Investigar por que página Histórico não exibe as 1.588 vendas importadas
+- [ ] Verificar se endpoint historicalSales.list está sendo chamado
+- [ ] Verificar se filtros de mês/ano estão aplicando corretamente
+- [ ] Verificar se há erros no console do navegador
+
+### Indicadores não mostra dados reais
+- [ ] Página Indicadores usa dados mockados (hardcoded)
+- [ ] Conectar Indicadores aos endpoints tRPC reais
+- [ ] Implementar cálculos baseados em sales + historicalSales
+- [ ] Usar fórmulas do Excel como referência
+
+### Relatórios não mostra dados históricos
+- [ ] Verificar se Relatórios está consultando historicalSales
+- [ ] Integrar vendas históricas nos gráficos
+- [ ] Atualizar queries para incluir ambas as tabelas
+
+### Filtro de ano não aparece para corretor em Indicadores
+- [ ] Verificar se há restrição de perfil no filtro de ano
+- [ ] Corrigir visibilidade do filtro para todos os perfis
+- [ ] Testar com perfil de corretor (Odair)
+
+### Dúvida do usuário
+- [ ] Esclarecer: Ao selecionar mês/ano, sistema busca automaticamente ou precisa clicar em algum botão?
+
+
+## 🎯 REFATORAÇÃO COMPLETA DE INDICADORES (10/02/2026)
+
+### Backend - Helpers de Cálculo
+- [x] Criar arquivo `server/indicatorsHelpers.ts` com funções de cálculo
+- [x] Implementar 10 indicadores principais:
+  1. [x] Negócios no mês (valor total)
+  2. [x] Negócios no mês (unidades)
+  3. [x] Vendas Canceladas
+  4. [x] Comissão Recebida
+  5. [x] Comissão Vendida
+  6. [x] Comissão Pendente
+  7. [x] Tempo médio de venda (dias)
+  8. [x] Valor médio do imóvel
+  9. [x] Percentual de comissão média
+  10. [x] Negócios por tipo (Prontos vs Lançamentos)
+- [x] Criar função `calculateAllIndicators()` para calcular todos de uma vez
+- [x] Usar queries Drizzle ORM otimizadas com filtros de mês/ano/corretor
+
+### Backend - Endpoint tRPC
+- [x] Criar `server/routers/indicatorsRouter.ts` com endpoint `getAll`
+- [x] Aceitar filtros: month, year, brokerId
+- [x] Forçar brokerId para corretores (ver apenas seus próprios dados)
+- [x] Retornar todos os indicadores calculados
+
+### Frontend - Página Indicators.tsx
+- [x] Remover dados mockados (hardcoded)
+- [x] Conectar ao endpoint `trpc.indicators.getAll.useQuery()`
+- [x] Passar filtros de mês/ano para o backend
+- [x] Refetch automático quando filtros mudarem
+- [x] Exibir loading state enquanto carrega
+- [x] Formatar valores monetários (R$ 1.234.567,89)
+- [x] Calcular percentuais de atingimento de meta
+- [x] Mostrar trends (up/down) baseados em dados reais
+- [x] Atualizar resumo de performance (positivos/negativos/indefinidos)
+
+### Indicadores Implementados
+- [x] Negócios no mês (valor) - R$ formatado
+- [x] Negócios no mês (unidades) - número inteiro
+- [x] Vendas Canceladas - R$ formatado
+- [x] Comissão Recebida - R$ formatado
+- [x] Comissão Vendida - R$ formatado
+- [x] Comissão Pendente - R$ formatado
+- [x] Tempo médio de venda - dias
+- [x] Valor médio do imóvel - R$ formatado
+- [x] % comissão vendida - percentual
+- [x] Número de atendimentos Prontos - unidades
+- [x] Número de atendimentos Lançamentos - unidades
+- [x] Negócios Lançamentos - unidades
+- [x] Negócios Prontos - unidades
+
+### Indicadores Pendentes (17 restantes)
+- [ ] VSO - venda/oferta (requer dados de carteira)
+- [ ] Carteira de Divulgação (requer integração Properfy)
+- [ ] Angariações mês (requer dados de angariação)
+- [ ] Baixas no mês (requer campo wasRemoved)
+- [ ] Negócios de 1 a 1 milhão (filtro específico)
+- [ ] Prazo médio recebimento de venda (requer commissionPaymentDate)
+- [ ] % Com cancelada/ com pendente (cálculo específico)
+- [ ] Negócios na Rede (filtro por loja)
+- [ ] Negócios Internos (filtro por loja)
+- [ ] Negócios Parceria Externa (filtro por loja)
+- [ ] Despesa Geral (requer tabela de despesas)
+- [ ] Despesa com impostos (requer tabela de despesas)
+- [ ] Fundo Inovação (requer tabela de fundos)
+- [ ] Resultado Sócios (requer cálculo complexo)
+- [ ] Fundo emergencial (requer tabela de fundos)
+
+### Testes
+- [ ] Testar com perfil Gerente (ver todos os dados)
+- [ ] Testar com perfil Corretor (ver apenas seus dados)
+- [ ] Testar filtro de mês (Janeiro/2024)
+- [ ] Testar filtro de ano (2024)
+- [ ] Testar filtro combinado (Janeiro/2024)
+- [ ] Verificar se 1.588 vendas históricas aparecem nos cálculos
+
+### Próximos Passos
+1. Implementar os 17 indicadores restantes
+2. Adicionar gráficos de evolução mensal
+3. Adicionar comparação com metas
+4. Adicionar exportação para Excel

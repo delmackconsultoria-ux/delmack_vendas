@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import React from "react";
 import IndicatorDetailModal from "@/components/IndicatorDetailModal";
 import { AppLayout } from "@/components/AppLayout";
@@ -55,29 +55,24 @@ export default function Indicators() {
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("all");
 
-  // Verificar se é empresa de Testes para mostrar dados mock
-  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+  // Buscar indicadores reais do backend
+  const { data: indicatorsData, isLoading: isLoadingIndicators, refetch } = trpc.indicators.getAll.useQuery(
+    {
+      month: selectedMonth !== "all" ? parseInt(selectedMonth) : undefined,
+      year: selectedYear !== "all" ? parseInt(selectedYear) : undefined,
+    },
+    {
+      enabled: !!user,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  // Mock data for monthly evolution (replace with real data from API)
-  const mockMonthlyData = [
-    { month: "Jan", value: 5200000, prontos: 3000000, lancamentos: 2200000, todos: 5200000 },
-    { month: "Fev", value: 5800000, prontos: 3200000, lancamentos: 2600000, todos: 5800000 },
-    { month: "Mar", value: 6100000, prontos: 3500000, lancamentos: 2600000, todos: 6100000 },
-    { month: "Abr", value: 5900000, prontos: 3300000, lancamentos: 2600000, todos: 5900000 },
-    { month: "Mai", value: 6500000, prontos: 3800000, lancamentos: 2700000, todos: 6500000 },
-    { month: "Jun", value: 7200000, prontos: 4200000, lancamentos: 3000000, todos: 7200000 },
-    { month: "Jul", value: 6800000, prontos: 3900000, lancamentos: 2900000, todos: 6800000 },
-    { month: "Ago", value: 7500000, prontos: 4400000, lancamentos: 3100000, todos: 7500000 },
-    { month: "Set", value: 7100000, prontos: 4100000, lancamentos: 3000000, todos: 7100000 },
-    { month: "Out", value: 8000000, prontos: 4600000, lancamentos: 3400000, todos: 8000000 },
-  ];
-
-  const mockBrokers = [
-    { id: "1", name: "João Silva" },
-    { id: "2", name: "Maria Santos" },
-    { id: "3", name: "Pedro Costa" },
-    { id: "4", name: "Ana Oliveira" },
-  ];
+  // Refetch quando filtros mudarem
+  useEffect(() => {
+    if (user) {
+      refetch();
+    }
+  }, [selectedMonth, selectedYear, user, refetch]);
 
   const handleIndicatorClick = (indicatorName: string) => {
     setSelectedIndicator(indicatorName);
@@ -106,38 +101,228 @@ export default function Indicators() {
 
   const canViewTeamData = ["manager", "finance", "viewer"].includes(user.role);
 
-  const indicators: Indicator[] = [
-    { name: "Negócios no mês", meta: "R$ 15.000.000,00", media: "R$ 6.071.208,23", percentual: "40%", trend: "up" },
-    { name: "Negócios no mês (unidades)", meta: "24", media: "R$ 12,13", percentual: "51%", trend: "up" },
-    { name: "Vendas Canceladas", meta: "", media: "R$ 104.375,00", percentual: "#DIV/0!" },
-    // VSO (Venda/Oferta) = Número de Negócios do Mês ÷ Carteira do Mês Anterior
-    // Exemplo: 12 negócios no mês / 240 imóveis na carteira do mês anterior = 5%
-    { name: "VSO - venda/oferta", meta: "5,00%", media: "#DIV/0!", percentual: "#DIV/0!" },
-    { name: "Comissão Recebida", meta: "R$ 525.000,00", media: "R$ 238.250,81", percentual: "45%", trend: "up" },
-    { name: "Comissão Vendida", meta: "R$ 600.000,00", media: "R$ 191.652,06", percentual: "32%", trend: "down" },
-    { name: "Comissão Pendentes Final do mês", meta: "R$ 1.000.000,00", media: "R$ 613.863,85", percentual: "61%", trend: "up" },
-    { name: "Carteira de Divulgação (em número)", meta: "410", media: "258", percentual: "63%", trend: "up" },
-    { name: "Angariações mês", meta: "50", media: "32", percentual: "64%", trend: "up" },
-    { name: "Baixas no mês (em quantidade)", meta: "17", media: "20", percentual: "120%", trend: "down" },
-    { name: "% comissão vendida", meta: "4,00%", media: "3%", percentual: "65%", trend: "down" },
-    { name: "Negócios de 1 a 1 milhão", meta: "5", media: "1", percentual: "23%", trend: "down" },
-    { name: "Número de atendimentos Prontos", meta: "450", media: "271", percentual: "60%", trend: "up" },
-    { name: "Número de atendimentos Lançamentos", meta: "400", media: "252", percentual: "63%", trend: "up" },
-    { name: "Prazo médio recebimento de venda", meta: "60", media: "44", percentual: "73%", trend: "up" },
-    { name: "% Com cancelada/ com pendente", meta: "5,00%", media: "#DIV/0!", percentual: "#DIV/0!" },
-    { name: "Tempo médio de venda ang X venda", meta: "150", media: "99", percentual: "66%", trend: "up" },
-    { name: "Valor médio do imóvel de venda", meta: "R$ 625.000,00", media: "R$ 307.518,50", percentual: "49%", trend: "down" },
-    { name: "Negócios na Rede", meta: "5", media: "3", percentual: "53%", trend: "up" },
-    { name: "Negócios Internos", meta: "12", media: "7", percentual: "55%", trend: "up" },
-    { name: "Negócios Parceria Externa", meta: "12", media: "3", percentual: "24%", trend: "down" },
-    { name: "Negócios Lançamentos", meta: "7", media: "-", percentual: "0%", trend: "down" },
-    { name: "Negócios Prontos", meta: "12", media: "7", percentual: "58%", trend: "up" },
-    { name: "Despesa Geral", meta: "R$ 50.000,00", media: "R$ 46.796,51", percentual: "94%", trend: "up" },
-    { name: "Despesa com impostos", meta: "R$ 20.000,00", media: "R$ 32.161,61", percentual: "161%", trend: "down" },
-    { name: "Fundo Inovação", meta: "R$ 100.000,00", media: "R$ 42.112,94", percentual: "42%", trend: "down" },
-    { name: "Resultado Sócios", meta: "R$ 60.000,00", media: "R$ 26.860,90", percentual: "45%", trend: "down" },
-    { name: "Fundo emergencial", meta: "R$ 105.228,04", media: "#DIV/0!", percentual: "#DIV/0!" },
-  ];
+  // Formatar valores monetários
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
+  // Formatar percentual
+  const formatPercent = (value: number) => {
+    return `${value.toFixed(2)}%`;
+  };
+
+  // Construir indicadores com dados reais
+  const indicators: Indicator[] = isLoadingIndicators
+    ? []
+    : [
+        {
+          name: "Negócios no mês (valor)",
+          meta: "R$ 15.000.000,00",
+          media: formatCurrency(indicatorsData?.indicators?.monthlyRevenue || 0),
+          percentual: indicatorsData?.indicators?.monthlyRevenue
+            ? `${((indicatorsData.indicators.monthlyRevenue / 15000000) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.monthlyRevenue || 0) > 6000000 ? "up" : "down",
+        },
+        {
+          name: "Negócios no mês (unidades)",
+          meta: "24",
+          media: String(indicatorsData?.indicators?.monthlyUnits || 0),
+          percentual: indicatorsData?.indicators?.monthlyUnits
+            ? `${((indicatorsData.indicators.monthlyUnits / 24) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.monthlyUnits || 0) > 12 ? "up" : "down",
+        },
+        {
+          name: "Vendas Canceladas",
+          meta: "-",
+          media: formatCurrency(indicatorsData?.indicators?.cancelledSales || 0),
+          percentual: "-",
+        },
+        {
+          name: "VSO - venda/oferta",
+          meta: "5,00%",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Comissão Recebida",
+          meta: "R$ 525.000,00",
+          media: formatCurrency(indicatorsData?.indicators?.commissionReceived || 0),
+          percentual: indicatorsData?.indicators?.commissionReceived
+            ? `${((indicatorsData.indicators.commissionReceived / 525000) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.commissionReceived || 0) > 250000 ? "up" : "down",
+        },
+        {
+          name: "Comissão Vendida",
+          meta: "R$ 600.000,00",
+          media: formatCurrency(indicatorsData?.indicators?.commissionSold || 0),
+          percentual: indicatorsData?.indicators?.commissionSold
+            ? `${((indicatorsData.indicators.commissionSold / 600000) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.commissionSold || 0) > 300000 ? "up" : "down",
+        },
+        {
+          name: "Comissão Pendente",
+          meta: "R$ 1.000.000,00",
+          media: formatCurrency(indicatorsData?.indicators?.commissionPending || 0),
+          percentual: indicatorsData?.indicators?.commissionPending
+            ? `${((indicatorsData.indicators.commissionPending / 1000000) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.commissionPending || 0) > 500000 ? "up" : "down",
+        },
+        {
+          name: "Carteira de Divulgação (em número)",
+          meta: "410",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Angariações mês",
+          meta: "50",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Baixas no mês (em quantidade)",
+          meta: "17",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "% comissão vendida",
+          meta: "4,00%",
+          media: formatPercent(indicatorsData?.indicators?.avgCommissionPercent || 0),
+          percentual: indicatorsData?.indicators?.avgCommissionPercent
+            ? `${((indicatorsData.indicators.avgCommissionPercent / 4) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.avgCommissionPercent || 0) > 3 ? "up" : "down",
+        },
+        {
+          name: "Negócios de 1 a 1 milhão",
+          meta: "5",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Número de atendimentos Prontos",
+          meta: "450",
+          media: String(indicatorsData?.indicators?.salesByType?.prontos || 0),
+          percentual: indicatorsData?.indicators?.salesByType?.prontos
+            ? `${((indicatorsData.indicators.salesByType.prontos / 450) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.salesByType?.prontos || 0) > 200 ? "up" : "down",
+        },
+        {
+          name: "Número de atendimentos Lançamentos",
+          meta: "400",
+          media: String(indicatorsData?.indicators?.salesByType?.lancamentos || 0),
+          percentual: indicatorsData?.indicators?.salesByType?.lancamentos
+            ? `${((indicatorsData.indicators.salesByType.lancamentos / 400) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.salesByType?.lancamentos || 0) > 200 ? "up" : "down",
+        },
+        {
+          name: "Prazo médio recebimento de venda",
+          meta: "60",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "% Com cancelada/ com pendente",
+          meta: "5,00%",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Tempo médio de venda ang X venda",
+          meta: "150 dias",
+          media: `${indicatorsData?.indicators?.avgSaleTime || 0} dias`,
+          percentual: indicatorsData?.indicators?.avgSaleTime
+            ? `${((indicatorsData.indicators.avgSaleTime / 150) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.avgSaleTime || 0) < 150 ? "up" : "down",
+        },
+        {
+          name: "Valor médio do imóvel de venda",
+          meta: "R$ 625.000,00",
+          media: formatCurrency(indicatorsData?.indicators?.avgPropertyValue || 0),
+          percentual: indicatorsData?.indicators?.avgPropertyValue
+            ? `${((indicatorsData.indicators.avgPropertyValue / 625000) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.avgPropertyValue || 0) > 400000 ? "up" : "down",
+        },
+        {
+          name: "Negócios na Rede",
+          meta: "5",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Negócios Internos",
+          meta: "12",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Negócios Parceria Externa",
+          meta: "12",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Negócios Lançamentos",
+          meta: "7",
+          media: String(indicatorsData?.indicators?.salesByType?.lancamentos || 0),
+          percentual: indicatorsData?.indicators?.salesByType?.lancamentos
+            ? `${((indicatorsData.indicators.salesByType.lancamentos / 7) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.salesByType?.lancamentos || 0) > 4 ? "up" : "down",
+        },
+        {
+          name: "Negócios Prontos",
+          meta: "12",
+          media: String(indicatorsData?.indicators?.salesByType?.prontos || 0),
+          percentual: indicatorsData?.indicators?.salesByType?.prontos
+            ? `${((indicatorsData.indicators.salesByType.prontos / 12) * 100).toFixed(0)}%`
+            : "0%",
+          trend: (indicatorsData?.indicators?.salesByType?.prontos || 0) > 6 ? "up" : "down",
+        },
+        {
+          name: "Despesa Geral",
+          meta: "R$ 50.000,00",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Despesa com impostos",
+          meta: "R$ 20.000,00",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Fundo Inovação",
+          meta: "R$ 100.000,00",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Resultado Sócios",
+          meta: "R$ 60.000,00",
+          media: "-",
+          percentual: "-",
+        },
+        {
+          name: "Fundo emergencial",
+          meta: "R$ 105.228,04",
+          media: "-",
+          percentual: "-",
+        },
+      ];
 
   const getTrendIcon = (trend?: string) => {
     if (!trend) return null;
@@ -151,16 +336,10 @@ export default function Indicators() {
     return "text-red-600";
   };
 
-  // Dados vazios para empresas que não são de teste
-  const emptyIndicators: Indicator[] = indicators.map(ind => ({
-    ...ind,
-    meta: "-",
-    media: "-",
-    percentual: "0%",
-    trend: undefined
-  }));
-
-  const displayIndicators = isTestCompany ? indicators : emptyIndicators;
+  // Calcular resumo de performance
+  const positiveCount = indicators.filter(ind => ind.trend === "up").length;
+  const negativeCount = indicators.filter(ind => ind.trend === "down").length;
+  const undefinedCount = indicators.filter(ind => !ind.trend).length;
 
   return (
     <AppLayout>
@@ -185,13 +364,15 @@ export default function Indicators() {
           )}
         </div>
         
-        {!isTestCompany && (
-          <Card className="bg-amber-50 border-amber-200">
-            <CardContent className="pt-6">
-              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. Os indicadores serão exibidos quando houver vendas registradas.</p>
+        {isLoadingIndicators && (
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="pt-6 flex items-center gap-3">
+              <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+              <p className="text-blue-800">Carregando indicadores...</p>
             </CardContent>
           </Card>
         )}
+
         {/* Summary Card - MOVED TO TOP */}
         <Card className="mb-8">
           <CardHeader>
@@ -201,15 +382,15 @@ export default function Indicators() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
                 <p className="text-sm text-green-700 font-medium mb-1">Positivos</p>
-                <p className="text-2xl font-bold text-green-600">{isTestCompany ? "14" : "0"}</p>
+                <p className="text-2xl font-bold text-green-600">{positiveCount}</p>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
                 <p className="text-sm text-red-700 font-medium mb-1">Negativos</p>
-                <p className="text-2xl font-bold text-red-600">{isTestCompany ? "8" : "0"}</p>
+                <p className="text-2xl font-bold text-red-600">{negativeCount}</p>
               </div>
               <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <p className="text-sm text-slate-700 font-medium mb-1">Indefinidos</p>
-                <p className="text-2xl font-bold text-slate-600">{isTestCompany ? "5" : "0"}</p>
+                <p className="text-2xl font-bold text-slate-600">{undefinedCount}</p>
               </div>
             </div>
           </CardContent>
@@ -256,7 +437,7 @@ export default function Indicators() {
 
         {/* Indicators Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayIndicators.map((indicator, idx) => (
+          {indicators.map((indicator, idx) => (
             <Card
               key={idx}
               className="hover:shadow-lg transition-all cursor-pointer"
@@ -274,7 +455,7 @@ export default function Indicators() {
                     <p className="text-sm font-semibold text-slate-900">{indicator.meta || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 mb-1">Média Anual</p>
+                    <p className="text-xs text-slate-600 mb-1">Valor Atual</p>
                     <p className="text-sm font-semibold text-slate-900">{indicator.media}</p>
                   </div>
                 </div>
@@ -300,57 +481,39 @@ export default function Indicators() {
       {selectedIndicator && (
         <IndicatorDetailModal
           isOpen={modalOpen}
-          onClose={() => {
-            setModalOpen(false);
-            setSelectedIndicator(null);
-          }}
+          onClose={() => setModalOpen(false)}
           indicatorName={selectedIndicator}
           indicatorType="value"
-          monthlyData={isTestCompany ? mockMonthlyData : []}
-          brokers={isTestCompany ? mockBrokers : []}
-          userRole={user?.role as "broker" | "manager" | "finance" | "admin" | "viewer"}
+          monthlyData={[]}
+          brokers={[]}
+          userRole={user.role as "broker" | "manager" | "finance" | "admin" | "viewer"}
         />
       )}
-      
-      {/* Dialog de confirmação de sincronização */}
+
+      {/* Sync Result Dialog */}
       <Dialog open={syncDialogOpen} onOpenChange={setSyncDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {syncResult?.success ? '✅ Sincronização Concluída!' : '❌ Erro na Sincronização'}
+              {syncResult?.success ? '✅ Sincronização Concluída' : '❌ Erro na Sincronização'}
             </DialogTitle>
             <DialogDescription>
-              {syncResult?.success && syncResult.stats ? (
-                <div className="space-y-2 mt-4">
-                  <p className="text-green-700 font-medium">
-                    A base Properfy foi sincronizada com sucesso!
-                  </p>
-                  <div className="bg-green-50 p-4 rounded-lg space-y-1">
-                    <p><strong>Total de imóveis:</strong> {syncResult.stats.total || 0}</p>
-                    <p><strong>Novos imóveis:</strong> {syncResult.stats.inserted || 0}</p>
-                    <p><strong>Atualizados:</strong> {syncResult.stats.updated || 0}</p>
-                    {syncResult.stats.duration && (
-                      <p><strong>Tempo total:</strong> {Math.round(syncResult.stats.duration / 1000)}s</p>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 mt-3">
-                    💡 <strong>Dica:</strong> A sincronização roda em background no servidor. 
-                    Mesmo se você mudar de página, ela continua até o fim.
-                  </p>
-                </div>
-              ) : (
-                <p className="text-red-700 mt-4">{syncResult?.message || 'Erro desconhecido'}</p>
-              )}
+              {syncResult?.message}
             </DialogDescription>
           </DialogHeader>
+          {syncResult?.success && syncResult?.stats && (
+            <div className="space-y-2 text-sm">
+              <p><strong>Total de imóveis:</strong> {syncResult.stats.total}</p>
+              <p><strong>Novos imóveis:</strong> {syncResult.stats.inserted}</p>
+              <p><strong>Imóveis atualizados:</strong> {syncResult.stats.updated}</p>
+              <p><strong>Tempo decorrido:</strong> {syncResult.stats.duration}</p>
+            </div>
+          )}
           <DialogFooter>
-            <Button onClick={() => setSyncDialogOpen(false)}>
-              Fechar
-            </Button>
+            <Button onClick={() => setSyncDialogOpen(false)}>Fechar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </AppLayout>
   );
 }
-

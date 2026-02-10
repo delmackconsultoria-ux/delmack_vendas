@@ -40,7 +40,10 @@ export default function ProposalManagement() {
   const [statusComment, setStatusComment] = useState("");
 
   const { data: salesData, isLoading, refetch } = trpc.sales.listMySales.useQuery();
-  const { data: historicalSalesData, isLoading: isLoadingHistorical } = trpc.historicalSales.list.useQuery({});
+  const { data: historicalSalesData, isLoading: isLoadingHistorical } = trpc.historicalSales.list.useQuery({
+    month: selectedMonth !== "all" ? parseInt(selectedMonth) : undefined,
+    year: selectedYear !== "all" ? parseInt(selectedYear) : undefined,
+  });
 
   const { data: brokersData } = trpc.brokers.listBrokers.useQuery(undefined, {
     enabled: user?.role === "manager",
