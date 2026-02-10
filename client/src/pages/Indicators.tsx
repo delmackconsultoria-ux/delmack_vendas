@@ -379,8 +379,24 @@ export default function Indicators() {
     }
   );
 
+  // Função para determinar o tipo do indicador
+  const getIndicatorType = (indicatorName: string): "value" | "units" | "cancelled" => {
+    const unitsIndicators = [
+      "Negócios no mês (unidades)",
+      "Carteira de Divulgação (em número)",
+      "Angariações mês",
+      "Baixas no mês (quantidade)",
+    ];
+    
+    if (unitsIndicators.includes(indicatorName)) {
+      return "units";
+    }
+    
+    return "value";
+  };
+
   // Função para obter dados mensais de um indicador específico
-  const getMonthlyDataForIndicator = (indicatorName: string) => {
+  const getMonthlyDataForIndicator = (indicatorName: string): any[] => {
     if (monthlyEvolutionData?.success && monthlyEvolutionData.monthlyData) {
       return monthlyEvolutionData.monthlyData;
     }
@@ -565,7 +581,7 @@ export default function Indicators() {
               setSelectedIndicator(null);
             }}
             indicatorName={selectedIndicator}
-            indicatorType="value"
+            indicatorType={getIndicatorType(selectedIndicator)}
             monthlyData={getMonthlyDataForIndicator(selectedIndicator)}
             brokers={[]}
             userRole={user?.role as any || "viewer"}

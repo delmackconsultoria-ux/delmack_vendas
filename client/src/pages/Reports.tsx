@@ -33,8 +33,24 @@ export default function ReportsPage() {
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("all");
 
-  // Buscar dados reais de vendas da empresa
-  const { data: salesData } = trpc.sales.listMySales.useQuery();
+  // Buscar anos com dados históricos disponíveis
+  const { data: availableYearsData } = trpc.indicators.listAvailableYears.useQuery();
+  const availableHistoricalYears = availableYearsData?.years || [];
+
+  // Verificar se ano selecionado tem dados históricos
+  const selectedYearNum = selectedYear !== "all" ? parseInt(selectedYear) : null;
+  const hasHistoricalData = selectedYearNum && availableHistoricalYears.includes(selectedYearNum);
+
+  // Buscar dados históricos se disponíveis
+  const { data: historicalData } = trpc.indicators.getYearData.useQuery(
+    { year: selectedYearNum! },
+    { enabled: !!hasHistoricalData }
+  );
+
+  // Buscar dados reais de vendas da empresa (apenas se não usar histórico)
+  const { data: salesData } = trpc.sales.listMySales.useQuery(undefined, {
+    enabled: !hasHistoricalData,
+  });
   const sales = salesData?.sales || [];
   const { data: brokers = [] } = trpc.brokers.listBrokers.useQuery();
 
@@ -309,6 +325,29 @@ export default function ReportsPage() {
           </div>
           
 
+
+          {/* Alerta para anos com dados históricos */}
+          {hasHistoricalData && (
+            <Card className="border-l-4 border-l-blue-500 bg-blue-50 mb-6">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-blue-900 mb-1">
+                      Dados Históricos de {selectedYear}
+                    </h3>
+                    <p className="text-sm text-blue-800">
+                      Os dados consolidados de {selectedYear} estão disponíveis na página{" "}
+                      <a href="/indicadores" className="underline font-medium">
+                        Indicadores
+                      </a>
+                      . Esta página mostra apenas vendas registradas diretamente no sistema.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {!hasData ? (
             <Card className="border-0 shadow-md">
@@ -667,194 +706,10 @@ export default function ReportsPage() {
             </>
           )}
 
-          {/* Seção de Relatórios Históricos 2024 */}
-          <div className="mt-8 border-t pt-8">
-            <h2 className="text-2xl font-bold mb-4">Relatórios Históricos 2024</h2>
-            <p className="text-slate-600 mb-6">
-              Dados consolidados extraídos dos relatórios mensais de 2024
-            </p>
-            
-            <HistoricalReports2024 />
-          </div>
+          {/* Nota: Dados históricos de 2024 são acessados via filtro de ano acima */}
         </div>
       </div>
     </>
   );
 }
 
-// Componente de Relatórios Históricos 2024
-function HistoricalReports2024() {
-  const [selectedIndicator, setSelectedIndicator] = useState("Negócios no mês");
-  const [selectedBroker, setSelectedBroker] = useState("all");
-
-  // Buscar lista de corretores
-  const { data: brokers = [] } = trpc.brokers.listBrokers.useQuery();
-
-  // Buscar dados mensais do indicador selecionado
-  const { data: monthlyData, isLoading } = trpc.indicators.getMonthlyEvolution.useQuery(
-    {
-      indicatorName: selectedIndicator,
-      year: 2024,
-    },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const INDICATOR_OPTIONS = [
-    "Negócios no mês",
-    "Negócios no mês (unidades)",
-    "Comissão Recebida",
-    "Comissão Vendida",
-    "Comissão Pendentes Final do mês",
-    "Carteira de Divulgação ( em número)",
-    "Angariações mês",
-    "Baixas no mês (em quantidade)",
-    "Valor médio do imóvel de venda",
-  ];
-
-  const chartData = monthlyData?.monthlyData || [];
-
-  return (
-    <div className="space-y-6">
-      {/* Seletor de Indicador */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Selecione o Indicador</CardTitle>
-          <CardDescription>
-            Escolha um indicador para visualizar a evolução mensal de 2024
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Seletor de Indicador */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Indicador
-              </label>
-              <select
-                value={selectedIndicator}
-                onChange={(e) => setSelectedIndicator(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {INDICATOR_OPTIONS.map((indicator) => (
-                  <option key={indicator} value={indicator}>
-                    {indicator}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Seletor de Corretor */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Corretor
-              </label>
-              <select
-                value={selectedBroker}
-                onChange={(e) => setSelectedBroker(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">Todos os Corretores (Consolidado)</option>
-                {brokers.map((broker: any) => (
-                  <option key={broker.id} value={broker.id}>
-                    {broker.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Aviso sobre dados consolidados */}
-          {selectedBroker !== "all" && (
-            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800">
-                ⚠️ <strong>Atenção:</strong> Os dados históricos de 2024 estão disponíveis apenas de forma consolidada (todos os corretores). O filtro por corretor individual funciona apenas para dados de 2025 em diante.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Gráfico de Evolução Mensal */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Evolução Mensal - {selectedIndicator}</CardTitle>
-          <CardDescription>
-            Dados consolidados de Janeiro a Dezembro de 2024
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="h-80 flex items-center justify-center">
-              <div className="text-slate-500">Carregando...</div>
-            </div>
-          ) : chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value: any) => {
-                    if (selectedIndicator.includes("Comissão") || selectedIndicator.includes("Negócios no mês") && !selectedIndicator.includes("unidades")) {
-                      return `R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-                    }
-                    return Math.round(Number(value));
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  dot={{ fill: "#3b82f6", r: 4 }}
-                  activeDot={{ r: 6 }}
-                  name={selectedIndicator}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-80 flex items-center justify-center text-slate-500">
-              Nenhum dado disponível para este indicador
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Tabela de Dados */}
-      {chartData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Dados Mensais - {selectedIndicator}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-2 px-4 font-semibold text-slate-700">Mês</th>
-                    <th className="text-right py-2 px-4 font-semibold text-slate-700">Valor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {chartData.map((row: any, idx: number) => (
-                    <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="py-2 px-4 text-slate-900">{row.month}</td>
-                      <td className="text-right py-2 px-4 text-slate-900 font-semibold">
-                        {selectedIndicator.includes("Comissão") || (selectedIndicator.includes("Negócios no mês") && !selectedIndicator.includes("unidades"))
-                          ? `R$ ${Number(row.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-                          : Math.round(Number(row.value))}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}

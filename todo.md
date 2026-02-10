@@ -1041,3 +1041,19 @@
 - [x] CORRIGIDO: Filtro adicionado, mas dados históricos são consolidados (sem separação por corretor)
 - [x] Aviso exibido quando usuário seleciona corretor específico
 - [x] Limitação: Excel files não contêm dados por corretor individual
+
+
+## 🐛 NOVOS BUGS/TAREFAS (10/02/2026 - 18:40)
+
+### 1. Formatação incorreta em "Negócios no mês (unidades)"
+- [x] Modal mostra valores com "R$" mas deveria mostrar número inteiro (ex: "23" ao invés de "R$ 23")
+- [x] CORRIGIDO: Adicionada função getIndicatorType() que identifica indicadores de unidades
+- [x] Indicadores de unidades: Negócios no mês (unidades), Carteira de Divulgação, Angariações, Baixas
+
+### 2. Refatorar página Relatórios
+- [x] Remover seção "Relatórios Históricos 2024" separada (componente removido)
+- [x] Criar endpoints para listar anos disponíveis e buscar dados consolidados
+- [x] Adicionar alerta informativo quando ano histórico é selecionado
+- [x] Alerta redireciona para página Indicadores onde dados históricos estão disponíveis
+- [x] Criar script reutilizável import-historical-data.cjs para importar dados de qualquer ano
+- [x] Script aceita ano e pasta com Excel files como parâmetros

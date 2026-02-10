@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure, publicProcedure } from "../_core/trpc";
 import fs from "fs";
 import path from "path";
 
@@ -162,6 +162,69 @@ export const indicatorsRouter = router({
         indicatorName,
         monthlyData,
       };
+    }),
+
+  /**
+   * Listar anos com dados históricos disponíveis
+   */
+  listAvailableYears: publicProcedure.query(() => {
+    const fs = require('fs');
+    const path = require('path');
+    const years: number[] = [];
+
+    // Verificar quais arquivos indicators-YYYY.json existem
+    const files = fs.readdirSync(path.join(__dirname, '../..'));
+    files.forEach((file: string) => {
+      const match = file.match(/^indicators-(\d{4})\.json$/);
+      if (match) {
+        years.push(parseInt(match[1]));
+      }
+    });
+
+    return {
+      success: true,
+      years: years.sort((a, b) => b - a), // Ordenar decrescente (mais recente primeiro)
+    };
+  }),
+
+  /**
+   * Obter dados consolidados de um ano específico
+   */
+  getYearData: publicProcedure
+    .input(
+      z.object({
+        year: z.number().min(2020).max(2030),
+      })
+    )
+    .query(({ input }) => {
+      const { year } = input;
+      const fs = require('fs');
+      const path = require('path');
+
+      try {
+        const filePath = path.join(__dirname, '../..', `indicators-${year}.json`);
+        if (!fs.existsSync(filePath)) {
+          return {
+            success: false,
+            message: `Dados históricos não disponíveis para ${year}`,
+            hasData: false,
+          };
+        }
+
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        return {
+          success: true,
+          hasData: true,
+          year,
+          data,
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: `Erro ao carregar dados de ${year}`,
+          hasData: false,
+        };
+      }
     }),
 
   /**
