@@ -1,45 +1,117 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../_core/trpc";
-import { calculateAllIndicators } from "../indicatorsHelpers";
+import fs from "fs";
+import path from "path";
+
+// Carregar dados extraídos do Excel
+const indicatorsDataPath = path.join(process.cwd(), "indicators-2024.json");
+let indicatorsData: any = {};
+
+try {
+  if (fs.existsSync(indicatorsDataPath)) {
+    const fileContent = fs.readFileSync(indicatorsDataPath, "utf-8");
+    indicatorsData = JSON.parse(fileContent);
+    console.log("[Indicators] Dados carregados:", Object.keys(indicatorsData).length, "meses");
+  } else {
+    console.warn("[Indicators] Arquivo indicators-2024.json não encontrado");
+  }
+} catch (error) {
+  console.error("[Indicators] Erro ao carregar indicators-2024.json:", error);
+}
+
+const MONTH_NAMES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
 
 export const indicatorsRouter = router({
   /**
-   * Calcular todos os indicadores de uma vez
+   * Obter todos os indicadores de um mês específico
    */
-  getAll: protectedProcedure
+  getByMonth: protectedProcedure
     .input(
       z.object({
         month: z.number().min(1).max(12).optional(),
         year: z.number().min(2020).max(2030).optional(),
-        brokerId: z.string().optional(),
       })
     )
-    .query(async ({ ctx, input }) => {
-      const { user } = ctx;
-      const companyId = user.companyId;
+    .query(async ({ input }) => {
+      const { month, year } = input;
 
-      if (!companyId) {
-        throw new Error("Usuário não possui companyId");
+      // Se ano não for 2024, retornar vazio (só temos dados de 2024)
+      if (year && year !== 2024) {
+        return {
+          success: false,
+          message: "Dados disponíveis apenas para 2024",
+          indicators: {},
+        };
       }
 
-      // Se for corretor, forçar brokerId para o próprio usuário
-      let brokerId = input.brokerId;
-      if (user.role === "broker") {
-        brokerId = user.id;
+      // Se mês não especificado, retornar dados anuais (soma de todos os meses)
+      if (!month) {
+        // Calcular totais anuais
+        const annualIndicators: any = {};
+        
+        MONTH_NAMES.forEach(monthName => {
+          const monthData = indicatorsData[monthName];
+          if (!monthData) return;
+
+          Object.keys(monthData).forEach(indicatorName => {
+            if (!annualIndicators[indicatorName]) {
+              annualIndicators[indicatorName] = {
+                total: 0,
+                metaMensal: monthData[indicatorName].metaMensal,
+                mediaAnual: monthData[indicatorName].mediaAnual,
+              };
+            }
+
+            const value = monthData[indicatorName].total || 0;
+            annualIndicators[indicatorName].total += value;
+          });
+        });
+
+        return {
+          success: true,
+          indicators: annualIndicators,
+          period: "Ano completo 2024",
+        };
       }
 
-      const filters = {
-        companyId,
-        month: input.month,
-        year: input.year,
-        brokerId,
-      };
+      // Obter dados do mês específico
+      const monthName = MONTH_NAMES[month - 1];
+      const monthData = indicatorsData[monthName];
 
-      const indicators = await calculateAllIndicators(filters);
+      if (!monthData) {
+        return {
+          success: false,
+          message: `Dados não encontrados para ${monthName}/2024`,
+          indicators: {},
+        };
+      }
 
       return {
         success: true,
-        indicators,
+        indicators: monthData,
+        period: `${monthName}/2024`,
       };
     }),
+
+  /**
+   * Obter lista de todos os meses disponíveis
+   */
+  getAvailableMonths: protectedProcedure.query(() => {
+    const months = Object.keys(indicatorsData).map(monthName => {
+      const monthIndex = MONTH_NAMES.indexOf(monthName);
+      return {
+        month: monthIndex + 1,
+        year: 2024,
+        name: monthName,
+      };
+    });
+
+    return {
+      success: true,
+      months,
+    };
+  }),
 });

@@ -978,3 +978,31 @@
 2. Adicionar gráficos de evolução mensal
 3. Adicionar comparação com metas
 4. Adicionar exportação para Excel
+
+
+## 🐛 BUGS CRÍTICOS REPORTADOS (10/02/2026 - 15:00)
+
+### 1. Logout redireciona para 404
+- [x] Ao fazer logout, sistema mostra página 404 por alguns segundos antes de ir para login
+- [x] Deve redirecionar direto para página de login
+- [x] CORRIGIDO: useAuth.ts agora redireciona para getLoginUrl() ao invés de '/'
+
+### 2. Filtros não funcionam para corretor em Indicadores
+- [x] Perfil de corretor não consegue usar filtros de mês/ano na página Indicadores
+- [x] Filtros devem funcionar para todos os perfis
+- [x] CORRIGIDO: Novo endpoint indicators.getByMonth aceita filtros de mês/ano
+
+### 3. Apenas 29 vendas aparecem ao invés de 1.588
+- [x] DECISÃO: Excel files são relatórios consolidados, não vendas individuais
+- [x] Indicadores agora exibem dados reais extraídos dos 12 Excel files de 2024
+- [x] 25 indicadores implementados com valores reais do Excel
+- [ ] Histórico ainda mostra apenas 29 vendas (vendas atuais do sistema)
+- [ ] Relatórios ainda não incluem dados históricos (próxima fase)
+
+### 4. Dados históricos não aparecem
+- [x] DECISÃO: Excel files são relatórios consolidados (não vendas individuais)
+- [x] Extrair dados consolidados de todas as abas dos 12 Excel files de 2024
+- [x] Popular página Indicadores com mesmos cálculos do Excel (25 indicadores)
+- [ ] Popular página Relatórios com todos os gráficos/dados do Excel (próxima fase)
+- [x] NÃO criar vendas históricas individuais (dados não existem)
+- [x] Limpar tabela historicalSales (1.588 registros vazios removidos)

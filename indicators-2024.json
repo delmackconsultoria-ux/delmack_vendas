@@ -1,0 +1,6019 @@
+{
+  "Janeiro": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 8884900,
+      "percentual": 634.6357142857142,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 8884900,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 17,
+      "percentual": 0.7391304347826086,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 17,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.024,
+      "percentual": 0.48,
+      "total": 0.024,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 333172.65,
+      "percentual": 0.6663453,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 333172.65,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 349559,
+      "percentual": 0.6242125,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 349559,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 834049.82,
+      "percentual": 0.8340498199999999,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 834049.82,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 425,
+      "percentual": 1.0365853658536586,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 425,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 21,
+      "percentual": 0.525,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 21,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 31,
+      "percentual": 1.8235294117647058,
+      "total": 31,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.0424,
+      "percentual": 1.06,
+      "total": 0.0424,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 4,
+      "percentual": 0.6666666666666666,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 4,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 1262,
+      "percentual": 1.9415384615384614,
+      "total": 1262,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 223,
+      "percentual": 3.716666666666667,
+      "total": 223,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.00037,
+      "percentual": 0.0073999999999999995,
+      "total": 0.00037,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 179,
+      "percentual": 1.1933333333333334,
+      "total": 179,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 522641.18,
+      "percentual": 0.8710686333333333,
+      "total": 522641.18,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 3,
+      "percentual": 0.6,
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 64054.39,
+      "percentual": 1.2810877999999999,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 46146.77,
+      "percentual": 2.3073384999999997,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 6131.81,
+      "percentual": 0.06131810000000001,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 15787.76,
+      "percentual": 0.2631293333333333,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 7,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 6,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 1,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Fevereiro": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 7972860,
+      "percentual": 569.49,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 7060820,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 18.5,
+      "percentual": 0.8043478260869565,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 20,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.0203,
+      "percentual": 0.40599999999999997,
+      "total": 0.0166,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 311817.435,
+      "percentual": 0.62363487,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 290462.22,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 313853.4,
+      "percentual": 0.5604525,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 278147.8,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 827892.61,
+      "percentual": 0.82789261,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 821735.4,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 423.5,
+      "percentual": 1.0329268292682927,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 422,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 28,
+      "percentual": 0.7,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 35,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 26.5,
+      "percentual": 1.5588235294117647,
+      "total": 22,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.0412,
+      "percentual": 1.03,
+      "total": 0.04,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 2.5,
+      "percentual": 0.4166666666666667,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 1198,
+      "percentual": 1.843076923076923,
+      "total": 1134,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 144.5,
+      "percentual": 2.408333333333333,
+      "total": 66,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.000185,
+      "percentual": 0.0036999999999999997,
+      "total": 0,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 435,
+      "percentual": 2.9,
+      "total": 256,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 437841.08999999997,
+      "percentual": 0.72973515,
+      "total": 353041,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 4,
+      "percentual": 0.8,
+      "total": 5,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 58268.815,
+      "percentual": 1.1653763000000001,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 48848.67999999999,
+      "percentual": 2.4424339999999995,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 5476.665000000001,
+      "percentual": 0.05476665000000001,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 7238.735000000001,
+      "percentual": 0.12064558333333335,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 8,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 4,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Março": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 8907240,
+      "percentual": 636.2314285714285,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 10776000,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 19.333333333333332,
+      "percentual": 0.8405797101449275,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 21,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.022033333333333332,
+      "percentual": 0.4406666666666666,
+      "total": 0.0255,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 270459.7766666667,
+      "percentual": 0.5409195533333333,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 187744.46,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 347848.93333333335,
+      "percentual": 0.6211588095238095,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 415840,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 976868.7200000001,
+      "percentual": 0.9768687200000001,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1274820.94,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 415,
+      "percentual": 1.0121951219512195,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 398,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 31.666666666666668,
+      "percentual": 0.7916666666666667,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 39,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 30,
+      "percentual": 1.7647058823529411,
+      "total": 37,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.04043333333333333,
+      "percentual": 1.0108333333333333,
+      "total": 0.0389,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 3,
+      "percentual": 0.5,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 4,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 1180,
+      "percentual": 1.8153846153846154,
+      "total": 1144,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 137,
+      "percentual": 2.283333333333333,
+      "total": 122,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.004823333333333333,
+      "percentual": 0.09646666666666666,
+      "total": 0.0141,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 574,
+      "percentual": 3.8266666666666667,
+      "total": 139,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 462941.68,
+      "percentual": 0.7715694666666667,
+      "total": 513142.86,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 4,
+      "percentual": 0.8,
+      "total": 4,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 58187.65666666667,
+      "percentual": 1.1637531333333333,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 49658.60333333333,
+      "percentual": 2.4829301666666668,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 3651.1100000000006,
+      "percentual": 0.036511100000000005,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": -8406.203333333333,
+      "percentual": -0.14010338888888887,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 10,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 7,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 0,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Abril": {
+    "Negócios no mês": {
+      "metaMensal": 14000000,
+      "mediaAnual": 11312581.875,
+      "percentual": 0.8080415625,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 18528607.5,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 20.75,
+      "percentual": 0.9021739130434783,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 25,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.028149999999999998,
+      "percentual": 0.563,
+      "total": 0.0465,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 332313.9975,
+      "percentual": 0.664627995,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 517876.66,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 440409.025,
+      "percentual": 0.7864446875000001,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 718089.3,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1090789.935,
+      "percentual": 1.090789935,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1432553.58,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 409.5,
+      "percentual": 0.998780487804878,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 393,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 33,
+      "percentual": 0.825,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 37,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 28,
+      "percentual": 1.6470588235294117,
+      "total": 22,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.040575,
+      "percentual": 1.014375,
+      "total": 0.041,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5,
+      "percentual": 0.8333333333333334,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 11,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 1151.25,
+      "percentual": 1.771153846153846,
+      "total": 1065,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 120.75,
+      "percentual": 2.0125,
+      "total": 72,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.0036175,
+      "percentual": 0.07235,
+      "total": 0,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 746,
+      "percentual": 4.973333333333334,
+      "total": 172,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 532492.335,
+      "percentual": 0.887487225,
+      "total": 741144.3,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 3.25,
+      "percentual": 0.65,
+      "total": 1,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 59419.43,
+      "percentual": 1.1883886,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 44092.89,
+      "percentual": 2.2046445,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 4681.8150000000005,
+      "percentual": 0.04681815,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 19617.4075,
+      "percentual": 0.3269567916666667,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 9,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Maio": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 11894665.5,
+      "percentual": 849.6189642857142,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 14223000,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 21,
+      "percentual": 0.9130434782608695,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 22,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.02974,
+      "percentual": 0.5948,
+      "total": 0.0361,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0.0361,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 352893.13,
+      "percentual": 0.70578626,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 435209.66,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 475848.72000000003,
+      "percentual": 0.8497298571428572,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 617607.5,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1184769.832,
+      "percentual": 1.184769832,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1560689.42,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 406,
+      "percentual": 0.9902439024390244,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 392,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 33,
+      "percentual": 0.825,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 33,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 33,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 27.6,
+      "percentual": 1.6235294117647059,
+      "total": 26,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.04092,
+      "percentual": 1.023,
+      "total": 0.0423,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5.4,
+      "percentual": 0.9,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 7,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 1084.6,
+      "percentual": 1.6686153846153844,
+      "total": 818,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 109.6,
+      "percentual": 1.8266666666666667,
+      "total": 65,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.009834,
+      "percentual": 0.19668,
+      "total": 0.0347,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 874,
+      "percentual": 5.826666666666667,
+      "total": 128,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 555293.868,
+      "percentual": 0.92548978,
+      "total": 646500,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 3.2,
+      "percentual": 0.64,
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 61612.966,
+      "percentual": 1.23225932,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 43348.62,
+      "percentual": 2.167431,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 6557.360000000001,
+      "percentual": 0.06557360000000001,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 20505.912,
+      "percentual": 0.3417652,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 10,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 10,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 7,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Junho": {
+    "Negócios no mês": {
+      "metaMensal": 14000000,
+      "mediaAnual": 12390987.916666666,
+      "percentual": 0.8850705654761905,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 14872600,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 14872600,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 21.166666666666668,
+      "percentual": 0.9202898550724639,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 22,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 22,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.0311,
+      "percentual": 0.622,
+      "total": 0.0379,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0.0361,
+        "Junho": 0.0379,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 389327.18166666664,
+      "percentual": 0.7786543633333333,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 571497.44,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 571497.44,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 509531.43333333335,
+      "percentual": 0.9098775595238096,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 677945,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 677945,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1252568.3466666667,
+      "percentual": 1.2525683466666666,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1591560.92,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 1591560.92,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 401.5,
+      "percentual": 0.9792682926829268,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 379,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 379,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 33.5,
+      "percentual": 0.8375,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 35,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 34,
+        "Junho": 35,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 27,
+      "percentual": 1.588235294117647,
+      "total": 24,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 24,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.04158333333333333,
+      "percentual": 1.0395833333333333,
+      "total": 0.0449,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0.0449,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5.833333333333333,
+      "percentual": 0.9722222222222222,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 8,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 8,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 1057.6666666666667,
+      "percentual": 1.6271794871794873,
+      "total": 923,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 923,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 97.83333333333333,
+      "percentual": 1.6305555555555555,
+      "total": 39,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 39,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.016095,
+      "percentual": 0.3219,
+      "total": 0.0474,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0.0474,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 1056,
+      "percentual": 7.04,
+      "total": 182,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 182,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 575416.1016666667,
+      "percentual": 0.9590268361111112,
+      "total": 676027.27,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 676027.27,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 3,
+      "percentual": 0.6,
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 2,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 60681.53833333334,
+      "percentual": 1.2136307666666668,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 56024.4,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 43915.97833333333,
+      "percentual": 2.1957989166666665,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 46752.77,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 9128.160000000002,
+      "percentual": 0.09128160000000002,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 21982.16,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 41382.41,
+      "percentual": 0.6897068333333334,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 125611.01,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 14,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 10,
+        "Junho": 14,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 6,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 6,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 0,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Julho": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 11907191.12857143,
+      "percentual": 850.5136520408164,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 9004410.4,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 14872600,
+        "Julho": 9004410.4,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 20.714285714285715,
+      "percentual": 0.9006211180124224,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 18,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 22,
+        "Julho": 18,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.030042857142857142,
+      "percentual": 0.6008571428571428,
+      "total": 0.0237,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0.0361,
+        "Junho": 0.0379,
+        "Julho": 0.0237,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 405113.19857142854,
+      "percentual": 0.810226397142857,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 499829.3,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 571497.44,
+        "Julho": 499829.3,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 494317.85714285716,
+      "percentual": 0.8827104591836735,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 403036.4,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 677945,
+        "Julho": 403036.4,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1286121.3942857143,
+      "percentual": 1.2861213942857141,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1487439.68,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 1591560.92,
+        "Julho": 1487439.68,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 397,
+      "percentual": 0.9682926829268292,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 370,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 379,
+        "Julho": 370,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 32.714285714285715,
+      "percentual": 0.8178571428571428,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 28,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 34,
+        "Junho": 35,
+        "Julho": 28,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 26.714285714285715,
+      "percentual": 1.5714285714285714,
+      "total": 25,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 24,
+        "Julho": 25,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.04201428571428572,
+      "percentual": 1.050357142857143,
+      "total": 0.0446,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0.0449,
+        "Julho": 0.0446,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5.428571428571429,
+      "percentual": 0.9047619047619048,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 8,
+        "Julho": 3,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 1017,
+      "percentual": 1.5646153846153845,
+      "total": 773,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 923,
+        "Julho": 773,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 107.85714285714286,
+      "percentual": 1.7976190476190477,
+      "total": 168,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 39,
+        "Julho": 168,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.020795714285714285,
+      "percentual": 0.4159142857142857,
+      "total": 0.049,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0.0474,
+        "Julho": 0.049,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 1132,
+      "percentual": 7.546666666666667,
+      "total": 76,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 182,
+        "Julho": 76,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 564677.3757142856,
+      "percentual": 0.9411289595238094,
+      "total": 500245.02,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 676027.27,
+        "Julho": 500245.02,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 2.857142857142857,
+      "percentual": 0.5714285714285714,
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 2,
+        "Julho": 2,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 59672.40142857144,
+      "percentual": 1.1934480285714286,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 56024.4,
+        "Julho": 53617.58,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 47298.47714285714,
+      "percentual": 2.364923857142857,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 46752.77,
+        "Julho": 67593.47,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 11926.287142857143,
+      "percentual": 0.11926287142857143,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 21982.16,
+        "Julho": 28715.05,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 42086.388571428564,
+      "percentual": 0.7014398095238094,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 125611.01,
+        "Julho": 66464.15,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 7,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 10,
+        "Junho": 14,
+        "Julho": 7,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 4,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 6,
+        "Julho": 4,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 5,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 5,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Agosto": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 12117968.4875,
+      "percentual": 865.5691776785715,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 13593410,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 14872600,
+        "Julho": 9004410.4,
+        "Agosto": 13593410,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 20.75,
+      "percentual": 0.9021739130434783,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 21,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 22,
+        "Julho": 18,
+        "Agosto": 21,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.033375,
+      "percentual": 0.6675,
+      "total": 0.0567,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0.0361,
+        "Junho": 0.0379,
+        "Julho": 0.0237,
+        "Agosto": 0.0567,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 421748.29874999996,
+      "percentual": 0.8434965975,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 538194,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 571497.44,
+        "Julho": 499829.3,
+        "Agosto": 538194,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 487128.78125,
+      "percentual": 0.8698728236607143,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 436805.25,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 677945,
+        "Julho": 403036.4,
+        "Agosto": 436805.25,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1287053.83625,
+      "percentual": 1.28705383625,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1293580.93,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 1591560.92,
+        "Julho": 1487439.68,
+        "Agosto": 1293580.93,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 392.125,
+      "percentual": 0.9564024390243903,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 358,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 379,
+        "Julho": 370,
+        "Agosto": 358,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 32.125,
+      "percentual": 0.803125,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 28,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 34,
+        "Junho": 35,
+        "Julho": 28,
+        "Agosto": 28,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 27.375,
+      "percentual": 1.6102941176470589,
+      "total": 32,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 24,
+        "Julho": 25,
+        "Agosto": 32,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.040912500000000004,
+      "percentual": 1.0228125000000001,
+      "total": 0.0332,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0.0449,
+        "Julho": 0.0446,
+        "Agosto": 0.0332,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5.375,
+      "percentual": 0.8958333333333334,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 5,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 8,
+        "Julho": 3,
+        "Agosto": 5,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 994.25,
+      "percentual": 1.5296153846153846,
+      "total": 835,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 923,
+        "Julho": 773,
+        "Agosto": 835,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 106,
+      "percentual": 1.7666666666666666,
+      "total": 93,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 39,
+        "Julho": 168,
+        "Agosto": 93,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.02712125,
+      "percentual": 0.5424249999999999,
+      "total": 0.0714,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0.0474,
+        "Julho": 0.049,
+        "Agosto": 0.0714,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 1459,
+      "percentual": 9.726666666666667,
+      "total": 327,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 182,
+        "Julho": 76,
+        "Agosto": 327,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 575005.85875,
+      "percentual": 0.9583430979166667,
+      "total": 647305.24,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 676027.27,
+        "Julho": 500245.02,
+        "Agosto": 647305.24,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 3,
+      "percentual": 0.6,
+      "total": 4,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 2,
+        "Julho": 2,
+        "Agosto": 4,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 58398.72750000001,
+      "percentual": 1.16797455,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 56024.4,
+        "Julho": 53617.58,
+        "Agosto": 49483.01,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 47140.47624999999,
+      "percentual": 2.3570238124999996,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 46752.77,
+        "Julho": 67593.47,
+        "Agosto": 46034.47,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 15599.413750000002,
+      "percentual": 0.15599413750000002,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 21982.16,
+        "Julho": 28715.05,
+        "Agosto": 41311.3,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 50358.688749999994,
+      "percentual": 0.8393114791666666,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 125611.01,
+        "Julho": 66464.15,
+        "Agosto": 108264.79,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 10,
+        "Junho": 14,
+        "Julho": 7,
+        "Agosto": 3,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 13,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 6,
+        "Julho": 4,
+        "Agosto": 13,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 1,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 5,
+        "Agosto": 1,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Setembro": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 11397083.100000001,
+      "percentual": 814.0773642857143,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 5630000,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 14872600,
+        "Julho": 9004410.4,
+        "Agosto": 13593410,
+        "Setembro": 5630000,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 19.555555555555557,
+      "percentual": 0.8502415458937199,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 10,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 22,
+        "Julho": 18,
+        "Agosto": 21,
+        "Setembro": 10,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.03277032898820609,
+      "percentual": 0.6554065797641218,
+      "total": 0.027932960893854747,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0.0361,
+        "Junho": 0.0379,
+        "Julho": 0.0237,
+        "Agosto": 0.0567,
+        "Setembro": 0.027932960893854747,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 406401.2844444444,
+      "percentual": 0.8128025688888888,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 283625.17000000004,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 571497.44,
+        "Julho": 499829.3,
+        "Agosto": 538194,
+        "Setembro": 283625.17000000004,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 462293.35555555555,
+      "percentual": 0.8255238492063492,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 263609.95,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 677945,
+        "Julho": 403036.4,
+        "Agosto": 436805.25,
+        "Setembro": 263609.95,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1285086.2666666666,
+      "percentual": 1.2850862666666667,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1269345.71,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 1591560.92,
+        "Julho": 1487439.68,
+        "Agosto": 1293580.93,
+        "Setembro": 1269345.71,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 386.55555555555554,
+      "percentual": 0.9428184281842819,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 342,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 379,
+        "Julho": 370,
+        "Agosto": 358,
+        "Setembro": 342,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 30.77777777777778,
+      "percentual": 0.7694444444444445,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 20,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 34,
+        "Junho": 35,
+        "Julho": 28,
+        "Agosto": 28,
+        "Setembro": 20,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 27.11111111111111,
+      "percentual": 1.5947712418300652,
+      "total": 25,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 24,
+        "Julho": 25,
+        "Agosto": 32,
+        "Setembro": 25,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.04147777777777778,
+      "percentual": 1.0369444444444444,
+      "total": 0.046,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0.0449,
+        "Julho": 0.0446,
+        "Agosto": 0.0332,
+        "Setembro": 0.046,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5,
+      "percentual": 0.8333333333333334,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 8,
+        "Julho": 3,
+        "Agosto": 5,
+        "Setembro": 2,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 996.2222222222222,
+      "percentual": 1.5326495726495726,
+      "total": 1012,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 923,
+        "Julho": 773,
+        "Agosto": 835,
+        "Setembro": 1012,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 102,
+      "percentual": 1.7,
+      "total": 70,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 39,
+        "Julho": 168,
+        "Agosto": 93,
+        "Setembro": 70,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.024107777777777777,
+      "percentual": 0.4821555555555555,
+      "total": 0,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0.0474,
+        "Julho": 0.049,
+        "Agosto": 0.0714,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 1484,
+      "percentual": 9.893333333333333,
+      "total": 25,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 182,
+        "Julho": 76,
+        "Agosto": 327,
+        "Setembro": 25,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 573671.8744444444,
+      "percentual": 0.9561197907407407,
+      "total": 563000,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 676027.27,
+        "Julho": 500245.02,
+        "Agosto": 647305.24,
+        "Setembro": 563000,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 2.7777777777777777,
+      "percentual": 0.5555555555555556,
+      "total": 1,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 2,
+        "Julho": 2,
+        "Agosto": 4,
+        "Setembro": 1,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 59490.474444444444,
+      "percentual": 1.1898094888888888,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 56024.4,
+        "Julho": 53617.58,
+        "Agosto": 49483.01,
+        "Setembro": 68224.45,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 48707.74999999999,
+      "percentual": 2.4353874999999996,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 46752.77,
+        "Julho": 67593.47,
+        "Agosto": 46034.47,
+        "Setembro": 61245.94,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 17718.25555555556,
+      "percentual": 0.1771825555555556,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 21982.16,
+        "Julho": 28715.05,
+        "Agosto": 41311.3,
+        "Setembro": 34668.99,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 44025.24444444444,
+      "percentual": 0.733754074074074,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 125611.01,
+        "Julho": 66464.15,
+        "Agosto": 108264.79,
+        "Setembro": -6642.31,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 6,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 10,
+        "Junho": 14,
+        "Julho": 7,
+        "Agosto": 3,
+        "Setembro": 6,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 6,
+        "Julho": 4,
+        "Agosto": 13,
+        "Setembro": 3,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 0,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 5,
+        "Agosto": 1,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Outubro": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 11825084.286,
+      "percentual": 844.6488775714286,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 15677094.959999999,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 14872600,
+        "Julho": 9004410.4,
+        "Agosto": 13593410,
+        "Setembro": 5630000,
+        "Outubro": 15677094.959999999,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 20.5,
+      "percentual": 0.8913043478260869,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 29,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 22,
+        "Julho": 18,
+        "Agosto": 21,
+        "Setembro": 10,
+        "Outubro": 29,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.03277032898820609,
+      "percentual": 0.6554065797641218,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0.0361,
+        "Junho": 0.0379,
+        "Julho": 0.0237,
+        "Agosto": 0.0567,
+        "Setembro": 0.027932960893854747,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 406731.15599999996,
+      "percentual": 0.813462312,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 409700,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 571497.44,
+        "Julho": 499829.3,
+        "Agosto": 538194,
+        "Setembro": 283625.17000000004,
+        "Outubro": 409700,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 483484.9992000001,
+      "percentual": 0.8633660700000001,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 674209.7920000001,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 677945,
+        "Julho": 403036.4,
+        "Agosto": 436805.25,
+        "Setembro": 263609.95,
+        "Outubro": 674209.7920000001,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1305748.7651999998,
+      "percentual": 1.3057487651999997,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1491711.252,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 1591560.92,
+        "Julho": 1487439.68,
+        "Agosto": 1293580.93,
+        "Setembro": 1269345.71,
+        "Outubro": 1491711.252,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 382.1,
+      "percentual": 0.9319512195121952,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 342,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 379,
+        "Julho": 370,
+        "Agosto": 358,
+        "Setembro": 342,
+        "Outubro": 342,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 31.3,
+      "percentual": 0.7825,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 36,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 34,
+        "Junho": 35,
+        "Julho": 28,
+        "Agosto": 28,
+        "Setembro": 20,
+        "Outubro": 36,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 26.8,
+      "percentual": 1.576470588235294,
+      "total": 24,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 24,
+        "Julho": 25,
+        "Agosto": 32,
+        "Setembro": 25,
+        "Outubro": 24,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.04182,
+      "percentual": 1.0455,
+      "total": 0.0449,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0.0449,
+        "Julho": 0.0446,
+        "Agosto": 0.0332,
+        "Setembro": 0.046,
+        "Outubro": 0.0449,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5,
+      "percentual": 0.8333333333333334,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 5,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 8,
+        "Julho": 3,
+        "Agosto": 5,
+        "Setembro": 2,
+        "Outubro": 5,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 989.2,
+      "percentual": 1.5218461538461538,
+      "total": 926,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 923,
+        "Julho": 773,
+        "Agosto": 835,
+        "Setembro": 1012,
+        "Outubro": 926,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 93.4,
+      "percentual": 1.5566666666666669,
+      "total": 16,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 39,
+        "Julho": 168,
+        "Agosto": 93,
+        "Setembro": 70,
+        "Outubro": 16,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.024107777777777777,
+      "percentual": 0.4821555555555555,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0.0474,
+        "Julho": 0.049,
+        "Agosto": 0.0714,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 1641,
+      "percentual": 10.94,
+      "total": 157,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 182,
+        "Julho": 76,
+        "Agosto": 327,
+        "Setembro": 25,
+        "Outubro": 157,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 570363.635,
+      "percentual": 0.9506060583333333,
+      "total": 540589.48,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 676027.27,
+        "Julho": 500245.02,
+        "Agosto": 647305.24,
+        "Setembro": 563000,
+        "Outubro": 540589.48,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 2.7,
+      "percentual": 0.54,
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 2,
+        "Julho": 2,
+        "Agosto": 4,
+        "Setembro": 1,
+        "Outubro": 2,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 60799.755000000005,
+      "percentual": 1.2159951,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 56024.4,
+        "Julho": 53617.58,
+        "Agosto": 49483.01,
+        "Setembro": 68224.45,
+        "Outubro": 72583.28,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 48124.147999999994,
+      "percentual": 2.4062073999999996,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 46752.77,
+        "Julho": 67593.47,
+        "Agosto": 46034.47,
+        "Setembro": 61245.94,
+        "Outubro": 42871.73,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 20062.489,
+      "percentual": 0.20062489,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 21982.16,
+        "Julho": 28715.05,
+        "Agosto": 41311.3,
+        "Setembro": 34668.99,
+        "Outubro": 41160.59,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 45202.248,
+      "percentual": 0.7533708,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 125611.01,
+        "Julho": 66464.15,
+        "Agosto": 108264.79,
+        "Setembro": -6642.31,
+        "Outubro": 55795.28,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 18,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 10,
+        "Junho": 14,
+        "Julho": 7,
+        "Agosto": 3,
+        "Setembro": 6,
+        "Outubro": 18,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 7,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 6,
+        "Julho": 4,
+        "Agosto": 13,
+        "Setembro": 3,
+        "Outubro": 7,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 5,
+        "Agosto": 1,
+        "Setembro": 0,
+        "Outubro": 2,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Novembro": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 12250900.326363636,
+      "percentual": 875.064309025974,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 16509060.73,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 14872600,
+        "Julho": 9004410.4,
+        "Agosto": 13593410,
+        "Setembro": 5630000,
+        "Outubro": 15677094.959999999,
+        "Novembro": 16509060.73,
+        "Dezembro": 0
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 21.272727272727273,
+      "percentual": 0.924901185770751,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 29,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 22,
+        "Julho": 18,
+        "Agosto": 21,
+        "Setembro": 10,
+        "Outubro": 29,
+        "Novembro": 29,
+        "Dezembro": 0
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.03277032898820609,
+      "percentual": 0.6554065797641218,
+      "monthlyValues": {
+        "Janeiro": 0.024,
+        "Fevereiro": 0.0166,
+        "Março": 0.0255,
+        "Abril": 0.0465,
+        "Maio": 0.0361,
+        "Junho": 0.0379,
+        "Julho": 0.0237,
+        "Agosto": 0.0567,
+        "Setembro": 0.027932960893854747,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 399080.5963636363,
+      "percentual": 0.7981611927272726,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 322575,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 571497.44,
+        "Julho": 499829.3,
+        "Agosto": 538194,
+        "Setembro": 283625.17000000004,
+        "Outubro": 409700,
+        "Novembro": 322575,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 502913.7638181819,
+      "percentual": 0.8980602925324677,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 697201.4099999999,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 677945,
+        "Julho": 403036.4,
+        "Agosto": 436805.25,
+        "Setembro": 263609.95,
+        "Outubro": 674209.7920000001,
+        "Novembro": 697201.4099999999,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1348011.3921818181,
+      "percentual": 1.3480113921818182,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1770637.662,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 1591560.92,
+        "Julho": 1487439.68,
+        "Agosto": 1293580.93,
+        "Setembro": 1269345.71,
+        "Outubro": 1491711.252,
+        "Novembro": 1770637.662,
+        "Dezembro": 0
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 379.6363636363636,
+      "percentual": 0.9259423503325942,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 355,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 379,
+        "Julho": 370,
+        "Agosto": 358,
+        "Setembro": 342,
+        "Outubro": 342,
+        "Novembro": 355,
+        "Dezembro": 0
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 32.45454545454545,
+      "percentual": 0.8113636363636363,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 44,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 34,
+        "Junho": 35,
+        "Julho": 28,
+        "Agosto": 28,
+        "Setembro": 20,
+        "Outubro": 36,
+        "Novembro": 44,
+        "Dezembro": 0
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 26.545454545454547,
+      "percentual": 1.5614973262032086,
+      "total": 24,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 24,
+        "Julho": 25,
+        "Agosto": 32,
+        "Setembro": 25,
+        "Outubro": 24,
+        "Novembro": 24,
+        "Dezembro": 0
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.0421,
+      "percentual": 1.0525,
+      "total": 0.0449,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0.0449,
+        "Julho": 0.0446,
+        "Agosto": 0.0332,
+        "Setembro": 0.046,
+        "Outubro": 0.0449,
+        "Novembro": 0.0449,
+        "Dezembro": 0
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 5,
+      "percentual": 0.8333333333333334,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 5,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 8,
+        "Julho": 3,
+        "Agosto": 5,
+        "Setembro": 2,
+        "Outubro": 5,
+        "Novembro": 5,
+        "Dezembro": 0
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 983.4545454545455,
+      "percentual": 1.5130069930069932,
+      "total": 926,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 923,
+        "Julho": 773,
+        "Agosto": 835,
+        "Setembro": 1012,
+        "Outubro": 926,
+        "Novembro": 926,
+        "Dezembro": 0
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 86.36363636363636,
+      "percentual": 1.4393939393939392,
+      "total": 16,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 39,
+        "Julho": 168,
+        "Agosto": 93,
+        "Setembro": 70,
+        "Outubro": 16,
+        "Novembro": 16,
+        "Dezembro": 0
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.024107777777777777,
+      "percentual": 0.4821555555555555,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0.0474,
+        "Julho": 0.049,
+        "Agosto": 0.0714,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 1798,
+      "percentual": 11.986666666666666,
+      "total": 157,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 182,
+        "Julho": 76,
+        "Agosto": 327,
+        "Setembro": 25,
+        "Outubro": 157,
+        "Novembro": 157,
+        "Dezembro": 0
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 567656.8936363637,
+      "percentual": 0.9460948227272727,
+      "total": 540589.48,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 676027.27,
+        "Julho": 500245.02,
+        "Agosto": 647305.24,
+        "Setembro": 563000,
+        "Outubro": 540589.48,
+        "Novembro": 540589.48,
+        "Dezembro": 0
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 2.6363636363636362,
+      "percentual": 0.5272727272727272,
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 2,
+        "Julho": 2,
+        "Agosto": 4,
+        "Setembro": 1,
+        "Outubro": 2,
+        "Novembro": 2,
+        "Dezembro": 0
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 61292.82818181819,
+      "percentual": 1.2258565636363639,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 56024.4,
+        "Julho": 53617.58,
+        "Agosto": 49483.01,
+        "Setembro": 68224.45,
+        "Outubro": 72583.28,
+        "Novembro": 66223.56,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 47496.170909090906,
+      "percentual": 2.3748085454545453,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 46752.77,
+        "Julho": 67593.47,
+        "Agosto": 46034.47,
+        "Setembro": 61245.94,
+        "Outubro": 42871.73,
+        "Novembro": 41216.4,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 22244.695454545457,
+      "percentual": 0.22244695454545457,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 21982.16,
+        "Julho": 28715.05,
+        "Agosto": 41311.3,
+        "Setembro": 34668.99,
+        "Outubro": 41160.59,
+        "Novembro": 44066.76,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 43363.725454545456,
+      "percentual": 0.7227287575757576,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 125611.01,
+        "Julho": 66464.15,
+        "Agosto": 108264.79,
+        "Setembro": -6642.31,
+        "Outubro": 55795.28,
+        "Novembro": 24978.5,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 18,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 2,
+        "Maio": 10,
+        "Junho": 14,
+        "Julho": 7,
+        "Agosto": 3,
+        "Setembro": 6,
+        "Outubro": 18,
+        "Novembro": 18,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 7,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 6,
+        "Julho": 4,
+        "Agosto": 13,
+        "Setembro": 3,
+        "Outubro": 7,
+        "Novembro": 7,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 2,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 5,
+        "Agosto": 1,
+        "Setembro": 0,
+        "Outubro": 2,
+        "Novembro": 2,
+        "Dezembro": 0
+      }
+    }
+  },
+  "Dezembro": {
+    "Negócios no mês": {
+      "metaMensal": 14000,
+      "mediaAnual": 12809671.419166667,
+      "percentual": 914.9765299404762,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 18956153.44,
+      "monthlyValues": {
+        "Janeiro": 8884900,
+        "Fevereiro": 7060820,
+        "Março": 10776000,
+        "Abril": 18528607.5,
+        "Maio": 14223000,
+        "Junho": 14872600,
+        "Julho": 9004410.4,
+        "Agosto": 13593410,
+        "Setembro": 5630000,
+        "Outubro": 15677094.959999999,
+        "Novembro": 16509060.73,
+        "Dezembro": 18956153.44
+      }
+    },
+    "Negócios no mês (unidades)": {
+      "metaMensal": 23,
+      "mediaAnual": 20.333333333333332,
+      "percentual": 0.8840579710144927,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 10,
+      "monthlyValues": {
+        "Janeiro": 17,
+        "Fevereiro": 20,
+        "Março": 21,
+        "Abril": 25,
+        "Maio": 22,
+        "Junho": 22,
+        "Julho": 18,
+        "Agosto": 21,
+        "Setembro": 10,
+        "Outubro": 29,
+        "Novembro": 29,
+        "Dezembro": 10
+      }
+    },
+    "VSO - venda /oferta": {
+      "metaMensal": 0.05,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Comissão Recebida": {
+      "metaMensal": 500000,
+      "mediaAnual": 416486.8208333333,
+      "percentual": 0.8329736416666667,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 607955.29,
+      "monthlyValues": {
+        "Janeiro": 333172.65,
+        "Fevereiro": 290462.22,
+        "Março": 187744.46,
+        "Abril": 517876.66,
+        "Maio": 435209.66,
+        "Junho": 571497.44,
+        "Julho": 499829.3,
+        "Agosto": 538194,
+        "Setembro": 283625.17000000004,
+        "Outubro": 409700,
+        "Novembro": 322575,
+        "Dezembro": 607955.29
+      }
+    },
+    "Comissão Vendida": {
+      "metaMensal": 560000,
+      "mediaAnual": 496898.4118333334,
+      "percentual": 0.8873185925595238,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 430729.54000000004,
+      "monthlyValues": {
+        "Janeiro": 349559,
+        "Fevereiro": 278147.8,
+        "Março": 415840,
+        "Abril": 718089.3,
+        "Maio": 617607.5,
+        "Junho": 677945,
+        "Julho": 403036.4,
+        "Agosto": 436805.25,
+        "Setembro": 263609.95,
+        "Outubro": 674209.7920000001,
+        "Novembro": 697201.4099999999,
+        "Dezembro": 430729.54000000004
+      }
+    },
+    "Comissão Pendentes Final do mês": {
+      "metaMensal": 1000000,
+      "mediaAnual": 1344389.8969999999,
+      "percentual": 1.344389897,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 1312998.4499999997,
+      "monthlyValues": {
+        "Janeiro": 834049.82,
+        "Fevereiro": 821735.4,
+        "Março": 1274820.94,
+        "Abril": 1432553.58,
+        "Maio": 1560689.42,
+        "Junho": 1591560.92,
+        "Julho": 1487439.68,
+        "Agosto": 1293580.93,
+        "Setembro": 1269345.71,
+        "Outubro": 1491711.252,
+        "Novembro": 1770637.662,
+        "Dezembro": 1304553.4499999997
+      }
+    },
+    "Carteira de Divulgação ( em número)": {
+      "metaMensal": 410,
+      "mediaAnual": 378.6666666666667,
+      "percentual": 0.9235772357723577,
+      "campoComprido": "x",
+      "vilaIzabel": "x",
+      "total": 368,
+      "monthlyValues": {
+        "Janeiro": 425,
+        "Fevereiro": 422,
+        "Março": 398,
+        "Abril": 393,
+        "Maio": 392,
+        "Junho": 379,
+        "Julho": 370,
+        "Agosto": 358,
+        "Setembro": 342,
+        "Outubro": 342,
+        "Novembro": 355,
+        "Dezembro": 368
+      }
+    },
+    "Angariações mês": {
+      "metaMensal": 40,
+      "mediaAnual": 32.833333333333336,
+      "percentual": 0.8208333333333334,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 37,
+      "monthlyValues": {
+        "Janeiro": 21,
+        "Fevereiro": 35,
+        "Março": 39,
+        "Abril": 37,
+        "Maio": 34,
+        "Junho": 35,
+        "Julho": 28,
+        "Agosto": 28,
+        "Setembro": 20,
+        "Outubro": 36,
+        "Novembro": 44,
+        "Dezembro": 37
+      }
+    },
+    "Baixas no mês (em quantidade)": {
+      "metaMensal": 17,
+      "mediaAnual": 25.666666666666668,
+      "percentual": 1.5098039215686274,
+      "total": 16,
+      "monthlyValues": {
+        "Janeiro": 31,
+        "Fevereiro": 22,
+        "Março": 37,
+        "Abril": 22,
+        "Maio": 26,
+        "Junho": 24,
+        "Julho": 25,
+        "Agosto": 32,
+        "Setembro": 25,
+        "Outubro": 24,
+        "Novembro": 24,
+        "Dezembro": 16
+      }
+    },
+    "% comissao vendida": {
+      "metaMensal": 0.04,
+      "mediaAnual": 0.042550000000000004,
+      "percentual": 1.0637500000000002,
+      "total": 0.0475,
+      "monthlyValues": {
+        "Janeiro": 0.0424,
+        "Fevereiro": 0.04,
+        "Março": 0.0389,
+        "Abril": 0.041,
+        "Maio": 0.0423,
+        "Junho": 0.0449,
+        "Julho": 0.0446,
+        "Agosto": 0.0332,
+        "Setembro": 0.046,
+        "Outubro": 0.0449,
+        "Novembro": 0.0449,
+        "Dezembro": 0.0475
+      }
+    },
+    "Negócios acima de 750 mil": {
+      "metaMensal": 6,
+      "mediaAnual": 4.833333333333333,
+      "percentual": 0.8055555555555555,
+      "campoComprido": 0,
+      "vilaIzabel": 0,
+      "total": 3,
+      "monthlyValues": {
+        "Janeiro": 4,
+        "Fevereiro": 1,
+        "Março": 4,
+        "Abril": 11,
+        "Maio": 7,
+        "Junho": 8,
+        "Julho": 3,
+        "Agosto": 5,
+        "Setembro": 2,
+        "Outubro": 5,
+        "Novembro": 5,
+        "Dezembro": 3
+      }
+    },
+    "Número de atendimentos sedes": {
+      "metaMensal": 650,
+      "mediaAnual": 964.5,
+      "percentual": 1.4838461538461538,
+      "total": 756,
+      "monthlyValues": {
+        "Janeiro": 1262,
+        "Fevereiro": 1134,
+        "Março": 1144,
+        "Abril": 1065,
+        "Maio": 818,
+        "Junho": 923,
+        "Julho": 773,
+        "Agosto": 835,
+        "Setembro": 1012,
+        "Outubro": 926,
+        "Novembro": 926,
+        "Dezembro": 756
+      }
+    },
+    "Prazo médio recebimento de venda": {
+      "metaMensal": 60,
+      "mediaAnual": 81.91666666666667,
+      "percentual": 1.3652777777777778,
+      "total": 33,
+      "monthlyValues": {
+        "Janeiro": 223,
+        "Fevereiro": 66,
+        "Março": 122,
+        "Abril": 72,
+        "Maio": 65,
+        "Junho": 39,
+        "Julho": 168,
+        "Agosto": 93,
+        "Setembro": 70,
+        "Outubro": 16,
+        "Novembro": 16,
+        "Dezembro": 33
+      }
+    },
+    "% Com cancelada/ com pendente": {
+      "metaMensal": 0.05,
+      "mediaAnual": 0.043837,
+      "percentual": 0.87674,
+      "total": 0.2214,
+      "monthlyValues": {
+        "Janeiro": 0.00037,
+        "Fevereiro": 0,
+        "Março": 0.0141,
+        "Abril": 0,
+        "Maio": 0.0347,
+        "Junho": 0.0474,
+        "Julho": 0.049,
+        "Agosto": 0.0714,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0.2214
+      }
+    },
+    "Tempo médio de venda ang X venda": {
+      "metaMensal": 150,
+      "mediaAnual": 2018,
+      "percentual": 13.453333333333333,
+      "total": 220,
+      "monthlyValues": {
+        "Janeiro": 179,
+        "Fevereiro": 256,
+        "Março": 139,
+        "Abril": 172,
+        "Maio": 128,
+        "Junho": 182,
+        "Julho": 76,
+        "Agosto": 327,
+        "Setembro": 25,
+        "Outubro": 157,
+        "Novembro": 157,
+        "Dezembro": 220
+      }
+    },
+    "Valor médio do imóvel de venda": {
+      "metaMensal": 600000,
+      "mediaAnual": 678320.0975,
+      "percentual": 1.1305334958333333,
+      "total": 1895615.34,
+      "monthlyValues": {
+        "Janeiro": 522641.18,
+        "Fevereiro": 353041,
+        "Março": 513142.86,
+        "Abril": 741144.3,
+        "Maio": 646500,
+        "Junho": 676027.27,
+        "Julho": 500245.02,
+        "Agosto": 647305.24,
+        "Setembro": 563000,
+        "Outubro": 540589.48,
+        "Novembro": 540589.48,
+        "Dezembro": 1895615.34
+      }
+    },
+    "Negócios na Rede": {
+      "metaMensal": 5,
+      "mediaAnual": 2.5,
+      "percentual": 0.5,
+      "total": 1,
+      "monthlyValues": {
+        "Janeiro": 3,
+        "Fevereiro": 5,
+        "Março": 4,
+        "Abril": 1,
+        "Maio": 3,
+        "Junho": 2,
+        "Julho": 2,
+        "Agosto": 4,
+        "Setembro": 1,
+        "Outubro": 2,
+        "Novembro": 2,
+        "Dezembro": 1
+      }
+    },
+    "Despesa Geral": {
+      "metaMensal": 50000,
+      "mediaAnual": 61292.82818181819,
+      "percentual": 1.2258565636363639,
+      "monthlyValues": {
+        "Janeiro": 64054.39,
+        "Fevereiro": 52483.24,
+        "Março": 58025.34,
+        "Abril": 63114.75,
+        "Maio": 70387.11,
+        "Junho": 56024.4,
+        "Julho": 53617.58,
+        "Agosto": 49483.01,
+        "Setembro": 68224.45,
+        "Outubro": 72583.28,
+        "Novembro": 66223.56,
+        "Dezembro": 0
+      }
+    },
+    "Despesa com impostos": {
+      "metaMensal": 20000,
+      "mediaAnual": 47496.170909090906,
+      "percentual": 2.3748085454545453,
+      "monthlyValues": {
+        "Janeiro": 46146.77,
+        "Fevereiro": 51550.59,
+        "Março": 51278.45,
+        "Abril": 27395.75,
+        "Maio": 40371.54,
+        "Junho": 46752.77,
+        "Julho": 67593.47,
+        "Agosto": 46034.47,
+        "Setembro": 61245.94,
+        "Outubro": 42871.73,
+        "Novembro": 41216.4,
+        "Dezembro": 0
+      }
+    },
+    "Fundo Inovação": {
+      "metaMensal": 100000,
+      "mediaAnual": 22244.695454545457,
+      "percentual": 0.22244695454545457,
+      "monthlyValues": {
+        "Janeiro": 6131.81,
+        "Fevereiro": 4821.52,
+        "Março": 0,
+        "Abril": 7773.93,
+        "Maio": 14059.54,
+        "Junho": 21982.16,
+        "Julho": 28715.05,
+        "Agosto": 41311.3,
+        "Setembro": 34668.99,
+        "Outubro": 41160.59,
+        "Novembro": 44066.76,
+        "Dezembro": 0
+      }
+    },
+    "Resultado Sócios": {
+      "metaMensal": 60000,
+      "mediaAnual": 43363.725454545456,
+      "percentual": 0.7227287575757576,
+      "monthlyValues": {
+        "Janeiro": 15787.76,
+        "Fevereiro": -1310.29,
+        "Março": -39696.08,
+        "Abril": 103688.24,
+        "Maio": 24059.93,
+        "Junho": 125611.01,
+        "Julho": 66464.15,
+        "Agosto": 108264.79,
+        "Setembro": -6642.31,
+        "Outubro": 55795.28,
+        "Novembro": 24978.5,
+        "Dezembro": 0
+      }
+    },
+    "Fundo emergencial": {
+      "metaMensal": 105228.04,
+      "monthlyValues": {
+        "Janeiro": 0,
+        "Fevereiro": 0,
+        "Março": 0,
+        "Abril": 0,
+        "Maio": 0,
+        "Junho": 0,
+        "Julho": 0,
+        "Agosto": 0,
+        "Setembro": 0,
+        "Outubro": 0,
+        "Novembro": 0,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Internos ": {
+      "total": 8,
+      "monthlyValues": {
+        "Janeiro": 7,
+        "Fevereiro": 8,
+        "Março": 10,
+        "Abril": 12,
+        "Maio": 10,
+        "Junho": 14,
+        "Julho": 7,
+        "Agosto": 3,
+        "Setembro": 6,
+        "Outubro": 18,
+        "Novembro": 18,
+        "Dezembro": 8
+      }
+    },
+    "Negócios Parceria Externa": {
+      "total": 0,
+      "monthlyValues": {
+        "Janeiro": 6,
+        "Fevereiro": 4,
+        "Março": 7,
+        "Abril": 9,
+        "Maio": 7,
+        "Junho": 6,
+        "Julho": 4,
+        "Agosto": 13,
+        "Setembro": 3,
+        "Outubro": 7,
+        "Novembro": 7,
+        "Dezembro": 0
+      }
+    },
+    "Negócios Lançamentos": {
+      "total": 1,
+      "monthlyValues": {
+        "Janeiro": 1,
+        "Fevereiro": 3,
+        "Março": 0,
+        "Abril": 3,
+        "Maio": 2,
+        "Junho": 0,
+        "Julho": 5,
+        "Agosto": 1,
+        "Setembro": 0,
+        "Outubro": 2,
+        "Novembro": 2,
+        "Dezembro": 1
+      }
+    }
+  }
+}

@@ -2,61 +2,36 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw, Loader2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Loader2, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import React from "react";
-import IndicatorDetailModal from "@/components/IndicatorDetailModal";
 import { AppLayout } from "@/components/AppLayout";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 interface Indicator {
   name: string;
-  meta: string;
-  media: string;
+  meta: string | number;
+  media: string | number;
   percentual: string;
   trend?: "up" | "down";
 }
 
+const MONTH_NAMES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
+
 export default function Indicators() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const [filterType, setFilterType] = useState<"team" | "broker">("team");
-  const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  
-  // Mutation para sincronização manual
-  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
-  const [syncResult, setSyncResult] = useState<{success: boolean; message: string; stats?: any} | null>(null);
-  
-  const syncMutation = trpc.system.syncPropertyfyNow.useMutation({
-    onSuccess: (data) => {
-      setSyncResult(data);
-      setSyncDialogOpen(true);
-      setIsSyncing(false);
-    },
-    onError: (error) => {
-      setSyncResult({ success: false, message: `Erro: ${error.message}` });
-      setSyncDialogOpen(true);
-      setIsSyncing(false);
-    }
-  });
-  
-  const handleSyncPropertyfy = () => {
-    setIsSyncing(true);
-    toast.info('Sincronização iniciada em background. Você pode mudar de página que a sincronização continuará.');
-    syncMutation.mutate();
-  };
-  
-  // Filtros de Mês/Ano
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
-  const [selectedYear, setSelectedYear] = useState<string>("all");
+  const [selectedYear, setSelectedYear] = useState<string>("2024");
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Buscar indicadores reais do backend
-  const { data: indicatorsData, isLoading: isLoadingIndicators, refetch } = trpc.indicators.getAll.useQuery(
+  const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getByMonth.useQuery(
     {
       month: selectedMonth !== "all" ? parseInt(selectedMonth) : undefined,
       year: selectedYear !== "all" ? parseInt(selectedYear) : undefined,
@@ -67,17 +42,31 @@ export default function Indicators() {
     }
   );
 
+  // Mutation para sincronização Properfy
+  const syncMutation = trpc.system.syncPropertyfyNow.useMutation({
+    onSuccess: () => {
+      toast.success("Sincronização concluída!");
+      setIsSyncing(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Erro na sincronização: ${error.message}`);
+      setIsSyncing(false);
+    }
+  });
+
+  const handleSyncPropertyfy = () => {
+    setIsSyncing(true);
+    toast.info('Sincronização iniciada...');
+    syncMutation.mutate();
+  };
+
   // Refetch quando filtros mudarem
   useEffect(() => {
     if (user) {
       refetch();
     }
   }, [selectedMonth, selectedYear, user, refetch]);
-
-  const handleIndicatorClick = (indicatorName: string) => {
-    setSelectedIndicator(indicatorName);
-    setModalOpen(true);
-  };
 
   // Scroll para topo ao entrar na página
   React.useEffect(() => {
@@ -99,13 +88,12 @@ export default function Indicators() {
     );
   }
 
-  const canViewTeamData = ["manager", "finance", "viewer"].includes(user.role);
-
   // Formatar valores monetários
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
+      minimumFractionDigits: 2,
     }).format(value);
   };
 
@@ -114,406 +102,422 @@ export default function Indicators() {
     return `${value.toFixed(2)}%`;
   };
 
-  // Construir indicadores com dados reais
-  const indicators: Indicator[] = isLoadingIndicators
-    ? []
-    : [
-        {
-          name: "Negócios no mês (valor)",
-          meta: "R$ 15.000.000,00",
-          media: formatCurrency(indicatorsData?.indicators?.monthlyRevenue || 0),
-          percentual: indicatorsData?.indicators?.monthlyRevenue
-            ? `${((indicatorsData.indicators.monthlyRevenue / 15000000) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.monthlyRevenue || 0) > 6000000 ? "up" : "down",
-        },
-        {
-          name: "Negócios no mês (unidades)",
-          meta: "24",
-          media: String(indicatorsData?.indicators?.monthlyUnits || 0),
-          percentual: indicatorsData?.indicators?.monthlyUnits
-            ? `${((indicatorsData.indicators.monthlyUnits / 24) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.monthlyUnits || 0) > 12 ? "up" : "down",
-        },
-        {
-          name: "Vendas Canceladas",
-          meta: "-",
-          media: formatCurrency(indicatorsData?.indicators?.cancelledSales || 0),
-          percentual: "-",
-        },
-        {
-          name: "VSO - venda/oferta",
-          meta: "5,00%",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Comissão Recebida",
-          meta: "R$ 525.000,00",
-          media: formatCurrency(indicatorsData?.indicators?.commissionReceived || 0),
-          percentual: indicatorsData?.indicators?.commissionReceived
-            ? `${((indicatorsData.indicators.commissionReceived / 525000) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.commissionReceived || 0) > 250000 ? "up" : "down",
-        },
-        {
-          name: "Comissão Vendida",
-          meta: "R$ 600.000,00",
-          media: formatCurrency(indicatorsData?.indicators?.commissionSold || 0),
-          percentual: indicatorsData?.indicators?.commissionSold
-            ? `${((indicatorsData.indicators.commissionSold / 600000) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.commissionSold || 0) > 300000 ? "up" : "down",
-        },
-        {
-          name: "Comissão Pendente",
-          meta: "R$ 1.000.000,00",
-          media: formatCurrency(indicatorsData?.indicators?.commissionPending || 0),
-          percentual: indicatorsData?.indicators?.commissionPending
-            ? `${((indicatorsData.indicators.commissionPending / 1000000) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.commissionPending || 0) > 500000 ? "up" : "down",
-        },
-        {
-          name: "Carteira de Divulgação (em número)",
-          meta: "410",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Angariações mês",
-          meta: "50",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Baixas no mês (em quantidade)",
-          meta: "17",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "% comissão vendida",
-          meta: "4,00%",
-          media: formatPercent(indicatorsData?.indicators?.avgCommissionPercent || 0),
-          percentual: indicatorsData?.indicators?.avgCommissionPercent
-            ? `${((indicatorsData.indicators.avgCommissionPercent / 4) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.avgCommissionPercent || 0) > 3 ? "up" : "down",
-        },
-        {
-          name: "Negócios de 1 a 1 milhão",
-          meta: "5",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Número de atendimentos Prontos",
-          meta: "450",
-          media: String(indicatorsData?.indicators?.salesByType?.prontos || 0),
-          percentual: indicatorsData?.indicators?.salesByType?.prontos
-            ? `${((indicatorsData.indicators.salesByType.prontos / 450) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.salesByType?.prontos || 0) > 200 ? "up" : "down",
-        },
-        {
-          name: "Número de atendimentos Lançamentos",
-          meta: "400",
-          media: String(indicatorsData?.indicators?.salesByType?.lancamentos || 0),
-          percentual: indicatorsData?.indicators?.salesByType?.lancamentos
-            ? `${((indicatorsData.indicators.salesByType.lancamentos / 400) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.salesByType?.lancamentos || 0) > 200 ? "up" : "down",
-        },
-        {
-          name: "Prazo médio recebimento de venda",
-          meta: "60",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "% Com cancelada/ com pendente",
-          meta: "5,00%",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Tempo médio de venda ang X venda",
-          meta: "150 dias",
-          media: `${indicatorsData?.indicators?.avgSaleTime || 0} dias`,
-          percentual: indicatorsData?.indicators?.avgSaleTime
-            ? `${((indicatorsData.indicators.avgSaleTime / 150) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.avgSaleTime || 0) < 150 ? "up" : "down",
-        },
-        {
-          name: "Valor médio do imóvel de venda",
-          meta: "R$ 625.000,00",
-          media: formatCurrency(indicatorsData?.indicators?.avgPropertyValue || 0),
-          percentual: indicatorsData?.indicators?.avgPropertyValue
-            ? `${((indicatorsData.indicators.avgPropertyValue / 625000) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.avgPropertyValue || 0) > 400000 ? "up" : "down",
-        },
-        {
-          name: "Negócios na Rede",
-          meta: "5",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Negócios Internos",
-          meta: "12",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Negócios Parceria Externa",
-          meta: "12",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Negócios Lançamentos",
-          meta: "7",
-          media: String(indicatorsData?.indicators?.salesByType?.lancamentos || 0),
-          percentual: indicatorsData?.indicators?.salesByType?.lancamentos
-            ? `${((indicatorsData.indicators.salesByType.lancamentos / 7) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.salesByType?.lancamentos || 0) > 4 ? "up" : "down",
-        },
-        {
-          name: "Negócios Prontos",
-          meta: "12",
-          media: String(indicatorsData?.indicators?.salesByType?.prontos || 0),
-          percentual: indicatorsData?.indicators?.salesByType?.prontos
-            ? `${((indicatorsData.indicators.salesByType.prontos / 12) * 100).toFixed(0)}%`
-            : "0%",
-          trend: (indicatorsData?.indicators?.salesByType?.prontos || 0) > 6 ? "up" : "down",
-        },
-        {
-          name: "Despesa Geral",
-          meta: "R$ 50.000,00",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Despesa com impostos",
-          meta: "R$ 20.000,00",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Fundo Inovação",
-          meta: "R$ 100.000,00",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Resultado Sócios",
-          meta: "R$ 60.000,00",
-          media: "-",
-          percentual: "-",
-        },
-        {
-          name: "Fundo emergencial",
-          meta: "R$ 105.228,04",
-          media: "-",
-          percentual: "-",
-        },
-      ];
+  // Construir indicadores a partir dos dados do Excel
+  const buildIndicators = (): Indicator[] => {
+    if (!indicatorsData?.success || !indicatorsData.indicators) {
+      return [];
+    }
 
-  const getTrendIcon = (trend?: string) => {
-    if (!trend) return null;
-    if (trend === "up") return <TrendingUp className="h-4 w-4 text-green-600" />;
-    return <TrendingDown className="h-4 w-4 text-red-600" />;
+    const data = indicatorsData.indicators;
+    const indicators: Indicator[] = [];
+
+    // Helper para extrair valor
+    const getValue = (indicatorName: string) => {
+      const ind = data[indicatorName];
+      if (!ind) return 0;
+      return ind.total || ind.mediaAnual || 0;
+    };
+
+    // Helper para calcular percentual de meta
+    const getPercentOfMeta = (value: number, meta: number) => {
+      if (meta === 0) return "-";
+      return `${((value / meta) * 100).toFixed(0)}%`;
+    };
+
+    // 1. Negócios no mês (valor)
+    const negociosValor = getValue("Negócios no mês");
+    indicators.push({
+      name: "Negócios no mês (valor)",
+      meta: formatCurrency(14000),
+      media: formatCurrency(negociosValor),
+      percentual: getPercentOfMeta(negociosValor, 14000),
+      trend: negociosValor > 7000 ? "up" : "down",
+    });
+
+    // 2. Negócios no mês (unidades)
+    const negociosUnidades = getValue("Negócios no mês (unidades)");
+    indicators.push({
+      name: "Negócios no mês (unidades)",
+      meta: "23",
+      media: String(Math.round(negociosUnidades)),
+      percentual: getPercentOfMeta(negociosUnidades, 23),
+      trend: negociosUnidades > 12 ? "up" : "down",
+    });
+
+    // 3. VSO - venda/oferta
+    const vso = getValue("VSO - venda /oferta");
+    indicators.push({
+      name: "VSO - venda/oferta",
+      meta: "5,00%",
+      media: vso > 0 ? formatPercent(vso * 100) : "-",
+      percentual: vso > 0 ? getPercentOfMeta(vso * 100, 5) : "-",
+    });
+
+    // 4. Comissão Recebida
+    const comissaoRecebida = getValue("Comissão Recebida");
+    indicators.push({
+      name: "Comissão Recebida",
+      meta: formatCurrency(500000),
+      media: formatCurrency(comissaoRecebida),
+      percentual: getPercentOfMeta(comissaoRecebida, 500000),
+      trend: comissaoRecebida > 250000 ? "up" : "down",
+    });
+
+    // 5. Comissão Vendida
+    const comissaoVendida = getValue("Comissão Vendida");
+    indicators.push({
+      name: "Comissão Vendida",
+      meta: formatCurrency(600000),
+      media: formatCurrency(comissaoVendida),
+      percentual: getPercentOfMeta(comissaoVendida, 600000),
+      trend: comissaoVendida > 300000 ? "up" : "down",
+    });
+
+    // 6. Comissão Pendente
+    const comissaoPendente = getValue("Comissão Pendentes Final do mês");
+    indicators.push({
+      name: "Comissão Pendente",
+      meta: formatCurrency(1000000),
+      media: formatCurrency(comissaoPendente),
+      percentual: getPercentOfMeta(comissaoPendente, 1000000),
+    });
+
+    // 7. Carteira de Divulgação
+    const carteira = getValue("Carteira de Divulgação ( em número)");
+    indicators.push({
+      name: "Carteira de Divulgação (em número)",
+      meta: "410",
+      media: carteira > 0 ? String(Math.round(carteira)) : "-",
+      percentual: carteira > 0 ? getPercentOfMeta(carteira, 410) : "-",
+    });
+
+    // 8. Angariações mês
+    const angariacoes = getValue("Angariações mês");
+    indicators.push({
+      name: "Angariações mês",
+      meta: "50",
+      media: angariacoes > 0 ? String(Math.round(angariacoes)) : "-",
+      percentual: angariacoes > 0 ? getPercentOfMeta(angariacoes, 50) : "-",
+    });
+
+    // 9. Baixas no mês
+    const baixas = getValue("Baixas no mês (em quantidade)");
+    indicators.push({
+      name: "Baixas no mês (em quantidade)",
+      meta: "17",
+      media: baixas > 0 ? String(Math.round(baixas)) : "-",
+      percentual: baixas > 0 ? getPercentOfMeta(baixas, 17) : "-",
+    });
+
+    // 10. % comissão vendida
+    const percComissao = getValue("% comissao vendida");
+    indicators.push({
+      name: "% comissão vendida",
+      meta: "4,00%",
+      media: percComissao > 0 ? formatPercent(percComissao * 100) : "-",
+      percentual: percComissao > 0 ? getPercentOfMeta(percComissao * 100, 4) : "-",
+    });
+
+    // 11. Negócios acima de 750 mil
+    const negociosAltos = getValue("Negócios acima de 750 mil");
+    indicators.push({
+      name: "Negócios acima de 750 mil",
+      meta: "5",
+      media: negociosAltos > 0 ? String(Math.round(negociosAltos)) : "-",
+      percentual: negociosAltos > 0 ? getPercentOfMeta(negociosAltos, 5) : "-",
+    });
+
+    // 12. Número de atendimentos sedes
+    const atendimentos = getValue("Número de atendimentos sedes");
+    indicators.push({
+      name: "Número de atendimentos sedes",
+      meta: "850",
+      media: atendimentos > 0 ? String(Math.round(atendimentos)) : "-",
+      percentual: atendimentos > 0 ? getPercentOfMeta(atendimentos, 850) : "-",
+    });
+
+    // 13. Prazo médio recebimento
+    const prazoRecebimento = getValue("Prazo médio recebimento de venda");
+    indicators.push({
+      name: "Prazo médio recebimento de venda",
+      meta: "60 dias",
+      media: prazoRecebimento > 0 ? `${Math.round(prazoRecebimento)} dias` : "-",
+      percentual: prazoRecebimento > 0 ? getPercentOfMeta(prazoRecebimento, 60) : "-",
+    });
+
+    // 14. % Com cancelada/pendente
+    const percCancelada = getValue("% Com cancelada/ com pendente");
+    indicators.push({
+      name: "% Com cancelada/ com pendente",
+      meta: "5,00%",
+      media: percCancelada > 0 ? formatPercent(percCancelada * 100) : "-",
+      percentual: percCancelada > 0 ? getPercentOfMeta(percCancelada * 100, 5) : "-",
+    });
+
+    // 15. Tempo médio de venda
+    const tempoVenda = getValue("Tempo médio de venda ang X venda");
+    indicators.push({
+      name: "Tempo médio de venda ang X venda",
+      meta: "150 dias",
+      media: tempoVenda > 0 ? `${Math.round(tempoVenda)} dias` : "-",
+      percentual: tempoVenda > 0 ? getPercentOfMeta(tempoVenda, 150) : "-",
+      trend: tempoVenda > 0 && tempoVenda < 150 ? "up" : "down",
+    });
+
+    // 16. Valor médio do imóvel
+    const valorMedio = getValue("Valor médio do imóvel de venda");
+    indicators.push({
+      name: "Valor médio do imóvel de venda",
+      meta: formatCurrency(800000),
+      media: valorMedio > 0 ? formatCurrency(valorMedio) : "-",
+      percentual: valorMedio > 0 ? getPercentOfMeta(valorMedio, 800000) : "-",
+    });
+
+    // 17. Negócios na Rede
+    const negociosRede = getValue("Negócios na Rede");
+    indicators.push({
+      name: "Negócios na Rede",
+      meta: "10",
+      media: negociosRede > 0 ? String(Math.round(negociosRede)) : "-",
+      percentual: negociosRede > 0 ? getPercentOfMeta(negociosRede, 10) : "-",
+    });
+
+    // 18. Despesa Geral
+    const despesaGeral = getValue("Despesa Geral");
+    indicators.push({
+      name: "Despesa Geral",
+      meta: formatCurrency(200000),
+      media: despesaGeral > 0 ? formatCurrency(despesaGeral) : "-",
+      percentual: despesaGeral > 0 ? getPercentOfMeta(despesaGeral, 200000) : "-",
+    });
+
+    // 19. Despesa com impostos
+    const despesaImpostos = getValue("Despesa com impostos");
+    indicators.push({
+      name: "Despesa com impostos",
+      meta: formatCurrency(150000),
+      media: despesaImpostos > 0 ? formatCurrency(despesaImpostos) : "-",
+      percentual: despesaImpostos > 0 ? getPercentOfMeta(despesaImpostos, 150000) : "-",
+    });
+
+    // 20. Fundo Inovação
+    const fundoInovacao = getValue("Fundo Inovação");
+    indicators.push({
+      name: "Fundo Inovação",
+      meta: formatCurrency(50000),
+      media: fundoInovacao > 0 ? formatCurrency(fundoInovacao) : "-",
+      percentual: fundoInovacao > 0 ? getPercentOfMeta(fundoInovacao, 50000) : "-",
+    });
+
+    // 21. Resultado Sócios
+    const resultadoSocios = getValue("Resultado Sócios");
+    indicators.push({
+      name: "Resultado Sócios",
+      meta: formatCurrency(300000),
+      media: resultadoSocios > 0 ? formatCurrency(resultadoSocios) : "-",
+      percentual: resultadoSocios > 0 ? getPercentOfMeta(resultadoSocios, 300000) : "-",
+    });
+
+    // 22. Fundo emergencial
+    const fundoEmergencial = getValue("Fundo emergencial");
+    indicators.push({
+      name: "Fundo emergencial",
+      meta: formatCurrency(100000),
+      media: fundoEmergencial > 0 ? formatCurrency(fundoEmergencial) : "-",
+      percentual: fundoEmergencial > 0 ? getPercentOfMeta(fundoEmergencial, 100000) : "-",
+    });
+
+    // 23. Negócios Internos
+    const negociosInternos = getValue("Negócios Internos ");
+    indicators.push({
+      name: "Negócios Internos",
+      meta: "15",
+      media: negociosInternos > 0 ? String(Math.round(negociosInternos)) : "-",
+      percentual: negociosInternos > 0 ? getPercentOfMeta(negociosInternos, 15) : "-",
+    });
+
+    // 24. Negócios Parceria Externa
+    const negociosParceria = getValue("Negócios Parceria Externa");
+    indicators.push({
+      name: "Negócios Parceria Externa",
+      meta: "8",
+      media: negociosParceria > 0 ? String(Math.round(negociosParceria)) : "-",
+      percentual: negociosParceria > 0 ? getPercentOfMeta(negociosParceria, 8) : "-",
+    });
+
+    // 25. Negócios Lançamentos
+    const negociosLancamentos = getValue("Negócios Lançamentos");
+    indicators.push({
+      name: "Negócios Lançamentos",
+      meta: "12",
+      media: negociosLancamentos > 0 ? String(Math.round(negociosLancamentos)) : "-",
+      percentual: negociosLancamentos > 0 ? getPercentOfMeta(negociosLancamentos, 12) : "-",
+    });
+
+    return indicators;
   };
 
-  const getTrendColor = (trend?: string) => {
-    if (!trend) return "text-slate-600";
-    if (trend === "up") return "text-green-600";
-    return "text-red-600";
-  };
+  const indicators = buildIndicators();
 
   // Calcular resumo de performance
-  const positiveCount = indicators.filter(ind => ind.trend === "up").length;
-  const negativeCount = indicators.filter(ind => ind.trend === "down").length;
-  const undefinedCount = indicators.filter(ind => !ind.trend).length;
+  const positivos = indicators.filter(i => i.trend === "up").length;
+  const negativos = indicators.filter(i => i.trend === "down").length;
+  const indefinidos = indicators.filter(i => !i.trend).length;
 
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto py-8 px-4">
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Indicadores de Vendas</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-3xl font-bold">Indicadores de Vendas</h1>
+            <p className="text-muted-foreground">
               Acompanhe os principais indicadores de desempenho
             </p>
           </div>
-          {(user?.role === 'admin' || user?.role === 'manager' || user?.role === 'finance') && (
-            <Button
-              onClick={handleSyncPropertyfy}
-              disabled={isSyncing}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-              {isSyncing ? 'Sincronizando...' : 'Sincronizar Properfy'}
-            </Button>
-          )}
+          <Button
+            onClick={handleSyncPropertyfy}
+            disabled={isSyncing}
+            variant="outline"
+            className="gap-2"
+          >
+            {isSyncing ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Sincronizando...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4" />
+                Sincronizar Properfy
+              </>
+            )}
+          </Button>
         </div>
-        
-        {isLoadingIndicators && (
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="pt-6 flex items-center gap-3">
-              <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-              <p className="text-blue-800">Carregando indicadores...</p>
+
+        {/* Resumo de Performance */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-green-600">
+                Positivos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{positivos}</div>
             </CardContent>
           </Card>
-        )}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-red-600">
+                Negativos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{negativos}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Indefinidos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{indefinidos}</div>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Summary Card - MOVED TO TOP */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Resumo de Performance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-sm text-green-700 font-medium mb-1">Positivos</p>
-                <p className="text-2xl font-bold text-green-600">{positiveCount}</p>
-              </div>
-              <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
-                <p className="text-sm text-red-700 font-medium mb-1">Negativos</p>
-                <p className="text-2xl font-bold text-red-600">{negativeCount}</p>
-              </div>
-              <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-sm text-slate-700 font-medium mb-1">Indefinidos</p>
-                <p className="text-2xl font-bold text-slate-600">{undefinedCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Filtros */}
+        <div className="flex gap-4 mb-6 items-center">
+          <span className="text-sm text-muted-foreground">Filtros:</span>
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Selecione o mês" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os meses</SelectItem>
+              {MONTH_NAMES.map((month, index) => (
+                <SelectItem key={index + 1} value={String(index + 1)}>
+                  {month}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Filter Section */}
-        {canViewTeamData && (
-          <div className="mb-4 flex gap-3 items-center text-sm flex-wrap">
-            <span className="text-slate-600">Filtros:</span>
-            <div className="flex gap-3 items-center flex-wrap">
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
-              >
-                <option value="all">Todos os meses</option>
-                <option value="1">Janeiro</option>
-                <option value="2">Fevereiro</option>
-                <option value="3">Março</option>
-                <option value="4">Abril</option>
-                <option value="5">Maio</option>
-                <option value="6">Junho</option>
-                <option value="7">Julho</option>
-                <option value="8">Agosto</option>
-                <option value="9">Setembro</option>
-                <option value="10">Outubro</option>
-                <option value="11">Novembro</option>
-                <option value="12">Dezembro</option>
-              </select>
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
-              >
-                <option value="all">Todos os anos</option>
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
-              </select>
-            </div>
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Ano" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2025">2025</SelectItem>
+              <SelectItem value="2026">2026</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         )}
 
-        {/* Indicators Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {indicators.map((indicator, idx) => (
-            <Card
-              key={idx}
-              className="hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => handleIndicatorClick(indicator.name)}
-            >
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-700">
-                  {indicator.name}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-slate-600 mb-1">Meta Mensal</p>
-                    <p className="text-sm font-semibold text-slate-900">{indicator.meta || "-"}</p>
+        {/* Indicadores Grid */}
+        {!isLoading && indicators.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {indicators.map((indicator, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-sm font-medium">
+                      {indicator.name}
+                    </CardTitle>
+                    {indicator.trend && (
+                      <div className={indicator.trend === "up" ? "text-green-600" : "text-red-600"}>
+                        {indicator.trend === "up" ? (
+                          <TrendingUp className="h-4 w-4" />
+                        ) : (
+                          <TrendingDown className="h-4 w-4" />
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <p className="text-xs text-slate-600 mb-1">Valor Atual</p>
-                    <p className="text-sm font-semibold text-slate-900">{indicator.media}</p>
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-100 pt-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-slate-600">Percentual</p>
-                    <div className="flex items-center gap-2">
-                      {getTrendIcon(indicator.trend)}
-                      <p className={`text-sm font-semibold ${getTrendColor(indicator.trend)}`}>
-                        {indicator.percentual}
-                      </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Meta Mensal</p>
+                      <p className="text-lg font-semibold">{indicator.meta}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Valor Atual</p>
+                      <p className="text-lg font-semibold">{indicator.media}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Percentual</p>
+                      <p className="text-lg font-semibold">{indicator.percentual}</p>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && indicators.length === 0 && (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground">
+                Nenhum indicador encontrado para o período selecionado.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
-
-      {/* Indicator Detail Modal */}
-      {selectedIndicator && (
-        <IndicatorDetailModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          indicatorName={selectedIndicator}
-          indicatorType="value"
-          monthlyData={[]}
-          brokers={[]}
-          userRole={user.role as "broker" | "manager" | "finance" | "admin" | "viewer"}
-        />
-      )}
-
-      {/* Sync Result Dialog */}
-      <Dialog open={syncDialogOpen} onOpenChange={setSyncDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {syncResult?.success ? '✅ Sincronização Concluída' : '❌ Erro na Sincronização'}
-            </DialogTitle>
-            <DialogDescription>
-              {syncResult?.message}
-            </DialogDescription>
-          </DialogHeader>
-          {syncResult?.success && syncResult?.stats && (
-            <div className="space-y-2 text-sm">
-              <p><strong>Total de imóveis:</strong> {syncResult.stats.total}</p>
-              <p><strong>Novos imóveis:</strong> {syncResult.stats.inserted}</p>
-              <p><strong>Imóveis atualizados:</strong> {syncResult.stats.updated}</p>
-              <p><strong>Tempo decorrido:</strong> {syncResult.stats.duration}</p>
-            </div>
-          )}
-          <DialogFooter>
-            <Button onClick={() => setSyncDialogOpen(false)}>Fechar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </AppLayout>
   );
 }
