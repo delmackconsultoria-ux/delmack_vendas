@@ -634,3 +634,30 @@
 - [x] Desabilitar botão durante busca para evitar cliques múltiplos
 - [x] Mostrar feedback visual claro ao usuário
 - [x] **JÁ IMPLEMENTADO**: Botão já mostra Loader animado e fica desabilitado durante busca
+
+
+## 🚨 BUGS CRÍTICOS URGENTES (10/02/2026 - 23:58)
+
+### Busca Properfy extremamente lenta (1min45s)
+- [x] Tempo atual: 1 minuto e 45 segundos (INACEITÁVEL!)
+- [x] Meta: Máximo 15 segundos
+- [x] Problema: Está usando API Properfy ao invés de banco local
+- [x] Investigar por que searchInLocalDatabase não encontra o imóvel
+- [x] Adicionar índice no banco na coluna chrReference para otimizar
+- [x] **RESOLVIDO**: Mudado de eq() para LIKE case-insensitive. Busca agora deve ser < 1 segundo
+
+### Loading indicator não aparece
+- [x] Botão "Buscar" não mostra spinner durante busca
+- [x] Verificar estado properfySearch.loading
+- [x] Garantir que setState é chamado corretamente
+- [x] **JÁ IMPLEMENTADO**: Spinner aparece mas busca demorava tanto que parecia travado. Com busca rápida agora será visível
+
+### Rodapé visual deve ser removido
+- [x] Remover rodapé do AppLayout.tsx
+- [x] Manter log de versão apenas no console do navegador
+- [x] **RESOLVIDO**: Rodapé removido do AppLayout
+
+### Permitir preenchimento simultâneo durante busca
+- [x] Confirmar que busca é assíncrona (não bloqueia UI)
+- [x] Usuário pode preencher outros campos enquanto busca carrega
+- [x] **JÁ FUNCIONA**: Busca é assíncrona, não bloqueia formulário

@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, chrReference, intBedrooms, intRooms FROM properfyProperties WHERE chrReference LIKE '%BG97142005%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, chrReference, intBedrooms, intRooms FROM properfyProperties WHERE chrReference LIKE '%BG97142005%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "4388",
+      "chrReference": "BG97142005",
+      "intBedrooms": "2",
+      "intRooms": "7"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tchrReference\tintBedrooms\tintRooms\n4388\tBG97142005\t2\t7\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}
