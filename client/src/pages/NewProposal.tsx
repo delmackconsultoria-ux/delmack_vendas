@@ -171,6 +171,8 @@ interface CompletionStatus {
 }
 
 export default function NewProposal() {
+  // DEBUG: Versão do código - 2026-02-10 02:27 UTC
+  console.log('[NewProposal] Versão: 2026-02-10 02:27 UTC - Correções aplicadas');
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [brokers, setBrokers] = useState<Broker[]>([]);

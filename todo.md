@@ -575,3 +575,13 @@
 - [x] Garantir que formatCurrency() está sendo aplicada corretamente
 - [x] Testar com valores reais da API
 - [x] **RESOLVIDO**: Agora usa formatWhileTyping() ao preencher automaticamente
+
+
+## 🐛 BUG CRÍTICO (10/02/2026 - 23:05)
+
+### Frontend não foi recompilado após correções
+- [ ] Busca ainda demora > 1 minuto (deveria ser instantânea)
+- [ ] Quartos mostram 2 ao invés de 3 (código corrigido mas não aplicado)
+- [ ] Vírgula não aparece nos valores monetários (código corrigido mas não aplicado)
+- [ ] Problema: JavaScript antigo em cache, mesmo em aba anônima
+- [ ] Solução: Limpar cache de build do Vite e forçar rebuild completo
