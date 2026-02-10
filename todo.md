@@ -627,3 +627,10 @@
 - [x] Adicionado rodapé em AppLayout.tsx
 - [x] Mostra versão do sistema e data de build
 - [x] Sempre visível em todas as páginas
+
+
+### Loading indicator durante busca Properfy
+- [x] Adicionar spinner no botão "Buscar" enquanto busca está em andamento
+- [x] Desabilitar botão durante busca para evitar cliques múltiplos
+- [x] Mostrar feedback visual claro ao usuário
+- [x] **JÁ IMPLEMENTADO**: Botão já mostra Loader animado e fica desabilitado durante busca
