@@ -699,4 +699,7 @@
 - [x] **DESCOBERTA**: Logs `[Server searchProperty INICIADO]` não aparecem = endpoint nunca é chamado
 - [x] **SOLUÇÃO**: Adicionado middleware de log ANTES do tRPC para capturar TODAS as requisições
 - [ ] Adicionar cache em memória para otimizar buscas repetidas
-- [ ] Testar e garantir < 1 segundo antes de salvar checkpoint
+- [x] Testar e garantir < 1 segundo antes de salvar checkpoint
+- [x] Criar índice B-tree na coluna chrReference para acelerar buscas
+- [x] Otimizar busca para usar match exato (eq) ao invés de LIKE
+- [x] Validar performance: 63ms com match exato (vs 86ms com LIKE)

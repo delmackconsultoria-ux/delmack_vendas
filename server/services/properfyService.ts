@@ -134,13 +134,13 @@ async function searchInLocalDatabase(searchNormalized: string): Promise<any | nu
   }
 
   try {
-    console.log(`[Properfy LOCAL] Executando query no banco com LIKE '%${searchNormalized}%'...`);
-    // Usar sql raw para LIKE case-insensitive
-    const { sql } = await import('drizzle-orm');
+    console.log(`[Properfy LOCAL] Executando query no banco com match exato: ${searchNormalized}`);
+    // Usar eq() para match exato e aproveitar o índice idx_chrReference
+    const { eq } = await import('drizzle-orm');
     const result = await db
       .select()
       .from(properfyProperties)
-      .where(sql`UPPER(${properfyProperties.chrReference}) LIKE UPPER('%${searchNormalized}%')`)
+      .where(eq(properfyProperties.chrReference, searchNormalized))
       .limit(1);
 
     console.log(`[Properfy LOCAL] Query executada. Resultados encontrados: ${result.length}`);
