@@ -22,6 +22,9 @@ export default function DashboardManager() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
+  // Buscar KPIs do dashboard
+  const { data: kpis, isLoading: isLoadingKPIs } = trpc.dashboard.getKPIs.useQuery();
+
   if (!user) {
     return null;
   }
@@ -73,59 +76,96 @@ export default function DashboardManager() {
 
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            {/* Team Sales */}
+            {/* VGV Mensal */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-purple-600" />
-                  Vendas da Equipe
+                  VGV Mensal
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "55" : "0"}</p>
+                {isLoadingKPIs ? (
+                  <p className="text-3xl font-bold text-slate-400">...</p>
+                ) : (
+                  <p className="text-3xl font-bold text-slate-900">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    }).format(kpis?.vgv || 0)}
+                  </p>
+                )}
                 <p className="text-xs text-slate-600 mt-2">Este mês</p>
               </CardContent>
             </Card>
 
-            {/* Active Brokers */}
+            {/* Quantidade de Vendas */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-blue-600" />
-                  Corretores Ativos
+                  <BarChart3 className="h-4 w-4 text-blue-600" />
+                  Quantidade de Vendas
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "3" : "0"}</p>
-                <p className="text-xs text-slate-600 mt-2">Membros da equipe</p>
-              </CardContent>
-            </Card>
-
-            {/* Total Commission */}
-            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-green-600" />
-                  Comissões Geradas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "R$ 145k" : "R$ 0"}</p>
+                {isLoadingKPIs ? (
+                  <p className="text-3xl font-bold text-slate-400">...</p>
+                ) : (
+                  <p className="text-3xl font-bold text-slate-900">{kpis?.salesCount || 0}</p>
+                )}
                 <p className="text-xs text-slate-600 mt-2">Este mês</p>
               </CardContent>
             </Card>
 
-            {/* Goal Achievement */}
+            {/* Ticket Médio */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
                   <Target className="h-4 w-4 text-amber-600" />
-                  Meta Realizada
+                  Ticket Médio
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "92%" : "0%"}</p>
-                <p className="text-xs text-slate-600 mt-2">Do objetivo mensal</p>
+                {isLoadingKPIs ? (
+                  <p className="text-3xl font-bold text-slate-400">...</p>
+                ) : (
+                  <p className="text-3xl font-bold text-slate-900">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    }).format(kpis?.averageTicket || 0)}
+                  </p>
+                )}
+                <p className="text-xs text-slate-600 mt-2">Este mês</p>
+              </CardContent>
+            </Card>
+
+            {/* Comissões Recebidas */}
+            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-green-600" />
+                  Comissões Recebidas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoadingKPIs ? (
+                  <p className="text-3xl font-bold text-slate-400">...</p>
+                ) : (
+                  <p className="text-3xl font-bold text-slate-900">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    }).format(kpis?.receivedCommissions || 0)}
+                  </p>
+                )}
+                <p className="text-xs text-slate-600 mt-2">Este mês</p>
               </CardContent>
             </Card>
           </div>
