@@ -124,7 +124,7 @@ interface FormData {
   listingStore: string; // Loja Angariadora
   sellingStore: string; // Loja Vendedora
   team: string; // Equipe
-  region: string; // Região
+  // region: string; // Região (REMOVIDO)
   deedStatus: string; // Status de Escrituração
   managementResponsible: string; // Gestão/Responsável
   bankName: string; // Banco
@@ -235,7 +235,7 @@ export default function NewProposal() {
     listingStore: "",
     sellingStore: "",
     team: "",
-    region: "",
+    // region: "", (REMOVIDO)
     deedStatus: "",
     managementResponsible: "",
     bankName: "",
@@ -618,6 +618,19 @@ export default function NewProposal() {
   const handleSubmitProposal = async () => {
     // Marcar que tentou enviar para destacar campos vazios em vermelho
     setAttemptedSave(true);
+    
+    // Verificar se anexo de proposta foi anexado (obrigatório)
+    if (!proposalFile) {
+      toast.error("Anexo de Proposta é obrigatório. Por favor, anexe um documento.");
+      // Scroll para o campo de anexo
+      setTimeout(() => {
+        const attachmentField = document.querySelector('input[type="file"]');
+        if (attachmentField) {
+          attachmentField.closest('div')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return;
+    }
     
     // Verificar se todos os campos obrigatórios estão preenchidos
     if (!isFormComplete) {
@@ -1525,20 +1538,7 @@ export default function NewProposal() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label>Região</Label>
-                    <Select value={formData.region} onValueChange={(value) => handleInputChange("region", value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="campo_comprido">Campo Comprido</SelectItem>
-                        <SelectItem value="vila_izabel">Vila Izabel</SelectItem>
-                        <SelectItem value="ecoville">Ecoville</SelectItem>
-                        <SelectItem value="outros">Outros</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+
                   <div>
                     <Label>Gestão/Responsável</Label>
                     <Select 
@@ -1551,8 +1551,7 @@ export default function NewProposal() {
                       <SelectContent>
                         <SelectItem value="camila">Camila</SelectItem>
                         <SelectItem value="lucas">Lucas</SelectItem>
-                        <SelectItem value="marcio">Marcio</SelectItem>
-                        <SelectItem value="lucas_e_camila">Lucas e Camila</SelectItem>
+
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-slate-500 mt-1">Pode ser alterado manualmente</p>
@@ -1905,7 +1904,7 @@ export default function NewProposal() {
             {/* Upload de Proposta */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Anexo da Venda</CardTitle>
+                <CardTitle className="text-lg">Anexo de Proposta *</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">

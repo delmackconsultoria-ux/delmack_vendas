@@ -39,6 +39,7 @@ import GoalsDashboard from "./pages/GoalsDashboard";
 import GoalNotifications from "./pages/GoalNotifications";
 import Tutorials from "./pages/Tutorials";
 import LandingPage from "./pages/LandingPage";
+import CommissionsCalendar from "./pages/CommissionsCalendar";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -98,6 +99,7 @@ function Router() {
           {user.role === "finance" && (
             <>
               <Route path="/proposals" component={ProposalManagement} />
+              <Route path="/commissions-calendar" component={CommissionsCalendar} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />

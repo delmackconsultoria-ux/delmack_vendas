@@ -1,0 +1,19 @@
+{
+  "query": "\nSELECT @camilaCompanyId := companyId FROM users WHERE name = 'Camila Pires' LIMIT 1;\nUPDATE users SET companyId = @camilaCompanyId WHERE role = 'broker' AND (companyId IS NULL OR companyId != @camilaCompanyId);\nSELECT COUNT(*) as updated_brokers FROM users WHERE role = 'broker' AND companyId = @camilaCompanyId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT @camilaCompanyId := companyId FROM users WHERE name = 'Camila Pires' LIMIT 1;\nUPDATE users SET companyId = @camilaCompanyId WHERE role = 'broker' AND (companyId IS NULL OR companyId != @camilaCompanyId);\nSELECT COUNT(*) as updated_brokers FROM users WHERE role = 'broker' AND companyId = @camilaCompanyId;\n",
+  "rows": [
+    {
+      "@camilaCompanyId := companyId": "company_1766331506068"
+    },
+    {
+      "@camilaCompanyId := companyId": "updated_brokers"
+    },
+    {
+      "@camilaCompanyId := companyId": "31"
+    }
+  ],
+  "messages": [],
+  "stdout": "@camilaCompanyId := companyId\ncompany_1766331506068\nupdated_brokers\n31\n",
+  "stderr": "",
+  "execution_time_ms": 71
+}

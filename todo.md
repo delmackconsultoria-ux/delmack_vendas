@@ -1057,3 +1057,34 @@
 - [x] Alerta redireciona para página Indicadores onde dados históricos estão disponíveis
 - [x] Criar script reutilizável import-historical-data.cjs para importar dados de qualquer ano
 - [x] Script aceita ano e pasta com Excel files como parâmetros
+
+
+## 🔧 AJUSTES SOLICITADOS (11/02/2026)
+
+### 1. Vincular Corretores à Gerente Camila
+- [x] Verificar corretores criados no sistema
+- [x] Vincular todos os corretores à empresa da gerente Camila
+- [x] Testar visualização de corretores no perfil Gerente
+
+### 2. Remover Campos de Nova Venda
+- [x] Remover campo "Região" do formulário
+- [x] Remover "Márcio" da lista de responsáveis
+- [x] Remover "Lucas e Camila" da lista de responsáveis
+- [x] Manter apenas: Camila, Lucas
+
+### 3. Tornar Anexo Obrigatório
+- [x] Renomear "Anexo da Venda" para "Anexo de Proposta"
+- [x] Tornar campo obrigatório (validação frontend + backend)
+- [x] Exibir mensagem de erro se não anexado
+
+### 4. Calendário de Comissões no Financeiro
+- [x] Criar nova página "Calendário de Comissões" no perfil Financeiro
+- [x] Implementar calendário visual com vendas pendentes de pagamento
+- [x] Adicionar modal "Registrar Pagamento" com campo obrigatório de anexo de NF
+- [x] Validar que NF foi anexada antes de salvar pagamento
+- [x] Atualizar status da comissão após registro
+
+### 5. Corrigir Header do Analytics
+- [x] Verificar por que header muda ao clicar em Analytics no perfil Financeiro
+- [x] Garantir que header padrão seja mantido em todas as páginas
+- [x] Testar navegação entre páginas do perfil Financeiro
