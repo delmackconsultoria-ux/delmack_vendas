@@ -8,7 +8,7 @@ console.log('[salesRouter] Módulo carregado! Versão:', new Date().toISOString(
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
-import { sales, commissions, properties, companies, users } from "../drizzle/schema";
+import { sales, commissions, properties, companies, users, type InsertSale } from "../drizzle/schema";
 import { notifyOwner } from "./_core/notification";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
@@ -97,13 +97,31 @@ const createSaleSchema = z.object({
   brokerVendedorEmail: z.string().optional(),
   businessType: z.string().min(1, "Tipo de negócio é obrigatório"),
   
-  // Commissions
+  // Commissions (Sistema Antigo - manter para compatibilidade)
   totalCommission: z.number().optional(),
   totalCommissionPercent: z.number().optional(),
   angariadorCommission: z.number().optional(),
   vendedorCommission: z.number().optional(),
   realEstateCommission: z.number().optional(),
   baggioCommission: z.number().optional(),
+  
+  // Sistema de Comissionamento Automático (12/02/2026)
+  tipoComissao: z.string().optional(),
+  porcentagemComissao: z.string().optional(),
+  comissaoTotal: z.string().optional(),
+  comissaoAngariador: z.string().optional(),
+  comissaoCoordenador: z.string().optional(),
+  comissaoVendedor: z.string().optional(),
+  comissaoImobiliaria: z.string().optional(),
+  comissaoParceira: z.string().optional(),
+  comissaoAutonomo: z.string().optional(),
+  // Bonificações
+  possuiBonificacao: z.boolean().optional(),
+  tipoBonificacao: z.string().optional(),
+  valorBonificacao: z.string().optional(),
+  descricaoBonificacao: z.string().optional(),
+  comissaoBonificacaoCorretor: z.string().optional(),
+  comissaoBonificacaoImobiliaria: z.string().optional(),
   
   // Status
   status: z.enum(["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]).optional(),
@@ -277,7 +295,7 @@ export const salesRouter = router({
         }
 
         // Criar venda com todos os campos
-        await db.insert(sales).values({
+        const saleData: Partial<InsertSale> = {
           id: saleId,
           companyId: ctx.user.companyId || "1",
           propertyId: finalPropertyId,
@@ -347,7 +365,26 @@ export const salesRouter = router({
           contractNumber: input.contractNumber || null,
           contractSignatureDate: input.contractSignatureDate ? new Date(input.contractSignatureDate) : null,
           portfolioStatus: input.portfolioStatus || null,
-        });
+          // Sistema de Comissionamento Automático (12/02/2026)
+          tipoComissao: input.tipoComissao as any,
+          porcentagemComissao: input.porcentagemComissao || null,
+          comissaoTotal: input.comissaoTotal || null,
+          comissaoAngariador: input.comissaoAngariador || null,
+          comissaoCoordenador: input.comissaoCoordenador || null,
+          comissaoVendedor: input.comissaoVendedor || null,
+          comissaoImobiliaria: input.comissaoImobiliaria || null,
+          comissaoParceira: input.comissaoParceira || null,
+          comissaoAutonomo: input.comissaoAutonomo || null,
+          // Bonificações
+          possuiBonificacao: input.possuiBonificacao || false,
+          tipoBonificacao: input.tipoBonificacao as any,
+          valorBonificacao: input.valorBonificacao || null,
+          descricaoBonificacao: input.descricaoBonificacao || null,
+          comissaoBonificacaoCorretor: input.comissaoBonificacaoCorretor || null,
+          comissaoBonificacaoImobiliaria: input.comissaoBonificacaoImobiliaria || null,
+        };
+        
+        await db.insert(sales).values(saleData as any);
 
         // Criar comissões automaticamente para angariador e vendedor
         const commissionIds: string[] = [];

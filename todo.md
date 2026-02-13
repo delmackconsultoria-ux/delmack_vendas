@@ -1349,3 +1349,71 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Validar salvamento dos 14 campos de comissão no banco
 - [ ] Testar todos os 7 tipos de comissão
 - [ ] Validar cálculo de bonificações (Dinheiro vs Material)
+
+
+## 🔄 Integração do Sistema de Comissionamento Automático (13/02/2026)
+
+### Backend - Integração com createSale
+- [ ] Ler endpoint createSale atual em salesRouter.ts
+- [ ] Adicionar validação de campos de comissão obrigatórios
+- [ ] Salvar 14 campos de comissão no banco de dados:
+  - [ ] tipoComissao
+  - [ ] porcentagemComissao
+  - [ ] comissaoTotal
+  - [ ] comissaoAngariador
+  - [ ] comissaoCoordenador
+  - [ ] comissaoVendedor
+  - [ ] comissaoImobiliaria
+  - [ ] comissaoParceira
+  - [ ] comissaoAutonomo
+  - [ ] possuiBonificacao
+  - [ ] tipoBonificacao
+  - [ ] valorBonificacao
+  - [ ] comissaoBonificacaoCorretor
+  - [ ] comissaoBonificacaoImobiliaria
+
+### Validações
+- [ ] Validar tipo de comissão selecionado (não vazio)
+- [ ] Validar porcentagem de comissão (> 0 e <= 100)
+- [ ] Validar valor total de comissão (> 0)
+- [ ] Validar soma de comissões individuais = comissão total
+- [ ] Validar bonificação se checkbox marcado
+
+### Testes
+- [ ] Testar Venda Interna (6%)
+- [ ] Testar Parceria UNA (6%)
+- [ ] Testar Parceria Externa (6%)
+- [ ] Testar Lançamentos sem coordenação (4%)
+- [ ] Testar Lançamentos com coordenação (4%)
+- [ ] Testar Corretor Autônomo (6%)
+- [ ] Testar Imóveis Ebani (5%)
+- [ ] Testar bonificação em dinheiro (50/50)
+- [ ] Testar bonificação material (100% corretor)
+- [ ] Verificar emails enviados corretamente
+- [ ] Verificar dados salvos no banco
+
+
+## ✅ Integração do Sistema de Comissionamento Automático (12/02/2026)
+
+### Backend
+- [x] Atualizar schema Zod do createSale com 14 campos de comissão
+- [x] Adicionar salvamento dos 14 campos no endpoint createSale
+- [x] Resolver erros TypeScript de tipos incompatíveis (enums)
+- [x] Testar compilação do backend
+
+### Frontend
+- [x] Adicionar 14 campos de comissão ao payload do handleConfirmAndSave
+- [x] Implementar validações de comissão no handleSubmitProposal:
+  - [x] Validar tipo de comissão selecionado
+  - [x] Validar porcentagem de comissão > 0
+  - [x] Validar comissão total > 0
+  - [x] Validar comissão do vendedor > 0
+  - [x] Validar comissão da imobiliária > 0
+  - [x] Validar bonificação se checkbox marcado
+
+### Testes
+- [ ] Criar venda de teste para cada um dos 7 tipos de comissão
+- [ ] Verificar se dados são salvos corretamente no banco
+- [ ] Verificar se emails de notificação são enviados
+- [ ] Validar cálculos automáticos de comissão
+

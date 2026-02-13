@@ -657,6 +657,44 @@ export default function NewProposal() {
       return;
     }
     
+    // Validações do Sistema de Comissionamento (12/02/2026)
+    if (!formData.tipoComissao) {
+      toast.error("⚠️ Selecione o tipo de comissão");
+      return;
+    }
+    
+    if (!formData.porcentagemComissao || parseFloat(formData.porcentagemComissao) <= 0) {
+      toast.error("⚠️ Porcentagem de comissão inválida");
+      return;
+    }
+    
+    if (!formData.comissaoTotal || parseFloat(formData.comissaoTotal) <= 0) {
+      toast.error("⚠️ Comissão total inválida");
+      return;
+    }
+    
+    if (!formData.comissaoVendedor || parseFloat(formData.comissaoVendedor) <= 0) {
+      toast.error("⚠️ Comissão do vendedor é obrigatória");
+      return;
+    }
+    
+    if (!formData.comissaoImobiliaria || parseFloat(formData.comissaoImobiliaria) <= 0) {
+      toast.error("⚠️ Comissão da imobiliária é obrigatória");
+      return;
+    }
+    
+    // Validar bonificação se checkbox marcado
+    if (formData.possuiBonificacao) {
+      if (!formData.tipoBonificacao) {
+        toast.error("⚠️ Selecione o tipo de bonificação (Dinheiro ou Material)");
+        return;
+      }
+      if (!formData.valorBonificacao || parseFloat(formData.valorBonificacao) <= 0) {
+        toast.error("⚠️ Valor da bonificação é obrigatório");
+        return;
+      }
+    }
+    
     // Mostrar prévia antes de salvar
     setFormData((prev) => ({ ...prev, showPreview: true }));
   };
@@ -731,6 +769,23 @@ export default function NewProposal() {
         saleType: formData.saleType as "lancamento" | "pronto" | undefined,
         responsible: formData.responsible,
         invoiceNumber: formData.invoiceNumber,
+        // Sistema de Comissionamento Automático (12/02/2026)
+        tipoComissao: formData.tipoComissao,
+        porcentagemComissao: formData.porcentagemComissao,
+        comissaoTotal: formData.comissaoTotal,
+        comissaoAngariador: formData.comissaoAngariador,
+        comissaoCoordenador: formData.comissaoCoordenador,
+        comissaoVendedor: formData.comissaoVendedor,
+        comissaoImobiliaria: formData.comissaoImobiliaria,
+        comissaoParceira: formData.comissaoParceira,
+        comissaoAutonomo: formData.comissaoAutonomo,
+        // Bonificações
+        possuiBonificacao: formData.possuiBonificacao,
+        tipoBonificacao: formData.tipoBonificacao,
+        valorBonificacao: formData.valorBonificacao,
+        descricaoBonificacao: formData.descricaoBonificacao,
+        comissaoBonificacaoCorretor: formData.comissaoBonificacaoCorretor,
+        comissaoBonificacaoImobiliaria: formData.comissaoBonificacaoImobiliaria,
       };
 
       const result = await createSaleMutation.mutateAsync(payload);
