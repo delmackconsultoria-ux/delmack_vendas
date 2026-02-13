@@ -1439,3 +1439,16 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Lista de corretores individuais já estava implementada
 - [x] Filtro aplica em todos os gráficos da página
 
+
+
+## 🔴 Correções Críticas - Nova Venda (13/02/2026)
+
+### Problema: Não consegue salvar venda
+- [x] Máscaras R$ já suportam milhões (formatWhileTyping usa toLocaleString)
+- [x] Corrigir validação de campos obrigatórios (removido invoiceNumber da lista)
+- [ ] Testar fluxo completo de criação de venda com valores reais
+
+### Causa Raiz Identificada
+- Campo "invoiceNumber" (Nota Fiscal) estava na lista de obrigatórios mas foi removido do formulário
+- Isso causava validação sempre falhar sem destacar campo em vermelho (campo não existia)
+

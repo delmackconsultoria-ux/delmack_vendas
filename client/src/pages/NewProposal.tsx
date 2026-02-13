@@ -453,7 +453,7 @@ export default function NewProposal() {
       "buyerCpfCnpj",
       "sellerCpfCnpj",
       "saleType",
-      "invoiceNumber",
+      // invoiceNumber removido (13/02/2026)
     ];
     const newCompletionStatus: CompletionStatus = {};
     requiredFieldsToCheck.forEach((field) => {
@@ -543,7 +543,7 @@ export default function NewProposal() {
     "brokerAngariador",
     "brokerVendedor",
     "saleType",
-    "invoiceNumber",
+    // invoiceNumber removido (13/02/2026) - campo não existe mais no formulário
   ];
 
   const isFormComplete = requiredFields.every((field) => completionStatus[field]);
