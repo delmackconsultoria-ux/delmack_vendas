@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
 import { Calendar as CalendarIcon, DollarSign, FileText, Loader, Upload, List, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -313,17 +314,19 @@ export default function CommissionsCalendar() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Este Mês</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
-                {getCommissionsForDay.length || 0}
-              </div>
-              <p className="text-xs text-slate-500 mt-1">pagamentos previstos</p>
-            </CardContent>
-          </Card>
+          <Link href="/paid-commissions">
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">Este Mês</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-900">
+                  {getCommissionsForDay.length || 0}
+                </div>
+                <p className="text-xs text-slate-500 mt-1">pagamentos previstos</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Visualização Lista */}

@@ -1196,3 +1196,11 @@
 - [x] Adicionar filtro por valor máximo
 - [x] Aplicar filtros em tempo real na visualização
 - [x] Botão "Limpar Filtros"
+
+
+## 🔧 AJUSTES SOLICITADOS
+
+- [x] Remover coluna "NF" do Histórico de Pagamentos em PaidCommissions.tsx
+- [x] Tornar card "Este Mês" clicável no CommissionsCalendar (redirecionar para /paid-commissions)
+- [x] Mudar gráfico de Evolução Mensal de linha (pontos) para barras verticais
+- [x] Remover campo "Equipe do Corretor" do modal de edição em BrokerManagement.tsx

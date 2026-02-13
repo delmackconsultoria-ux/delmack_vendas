@@ -566,46 +566,7 @@ export default function BrokerManagementPage() {
                 </select>
               </div>
 
-              {/* Secao de Equipe */}
-              <div className="border-t pt-4 mt-4">
-                <div className="flex justify-between items-center mb-3">
-                  <label className="text-sm font-medium text-slate-700">Equipe do Corretor</label>
-                  <Button
-                    onClick={() => setShowTeamModal(true)}
-                    size="sm"
-                    variant="outline"
-                    className="text-xs"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Adicionar Membro
-                  </Button>
-                </div>
 
-                {formData.teamMembers && formData.teamMembers.length > 0 ? (
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {formData.teamMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        className="flex items-center justify-between bg-slate-50 p-2 rounded border border-slate-200"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
-                          <p className="text-xs text-slate-600 truncate">{member.email}</p>
-                          <p className="text-xs text-slate-500">{member.role}</p>
-                        </div>
-                        <button
-                          onClick={() => handleRemoveTeamMember(member.id)}
-                          className="p-1 hover:bg-red-100 rounded ml-2 flex-shrink-0"
-                        >
-                          <X className="h-4 w-4 text-red-600" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-slate-500 italic">Nenhum membro adicionado ainda</p>
-                )}
-              </div>
 
               <div className="flex gap-2 pt-4">
                 <Button

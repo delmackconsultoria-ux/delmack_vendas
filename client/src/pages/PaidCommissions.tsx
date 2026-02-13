@@ -9,8 +9,8 @@ import { Download, FileText, Loader, TrendingUp } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -273,8 +273,8 @@ export default function PaidCommissions() {
               <CardTitle>Evolução Mensal</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={chartData}>
+               <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -284,14 +284,8 @@ export default function PaidCommissions() {
                     }
                   />
                   <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="total"
-                    stroke="#2563eb"
-                    strokeWidth={2}
-                    name="Total Pago"
-                  />
-                </LineChart>
+                  <Bar dataKey="total" fill="#3b82f6" name="Comissões Pagas" />
+                </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -320,7 +314,6 @@ export default function PaidCommissions() {
                       <th className="text-right py-3 px-4 text-sm font-semibold text-slate-700">Comissão</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Método</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Banco</th>
-                      <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">NF</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -346,20 +339,6 @@ export default function PaidCommissions() {
                         </td>
                         <td className="py-3 px-4 text-sm text-slate-600 capitalize">{commission.commissionPaymentMethod}</td>
                         <td className="py-3 px-4 text-sm text-slate-600">{commission.commissionPaymentBank}</td>
-                        <td className="py-3 px-4 text-center">
-                          {commission.commissionInvoiceUrl ? (
-                            <a
-                              href={commission.commissionInvoiceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center text-blue-600 hover:text-blue-700"
-                            >
-                              <FileText className="h-4 w-4" />
-                            </a>
-                          ) : (
-                            <span className="text-slate-400 text-xs">N/A</span>
-                          )}
-                        </td>
                       </tr>
                     ))}
                   </tbody>
