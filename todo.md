@@ -1260,3 +1260,92 @@
 - [ ] Testar bonificação material (100% corretor)
 - [ ] Verificar se valores são salvos corretamente no banco
 - [ ] Validar exibição de comissões no histórico de vendas
+
+
+## 📝 REORGANIZAÇÃO DO FORMULÁRIO DE NOVA VENDA
+
+### 1. Máscaras de Valores (R$)
+- [x] Adicionar máscara monetária no campo "Valor da Venda"
+- [x] Adicionar máscara monetária no campo "Valor de Divulgação" (já existia)
+- [x] Adicionar máscara monetária no campo "Valor Financiado"
+- [x] Adicionar máscara monetária no campo "Valor da Bonificação"
+- [x] Testar formatação em tempo real (R$ 1.234,56)
+
+### 2. Reorganizar "Informações da Venda"
+- [ ] Auto-preencher "Data da Venda" com data atual
+- [ ] Remover campo "Número da Nota Fiscal"
+- [ ] Remover campo "Loja Angariadora"
+- [ ] Remover campo "Loja Vendedora"
+- [ ] Remover campo "Equipe"
+- [ ] Remover campo "Gestão/Responsável"
+- [ ] Remover campo "Status de Escrituração"
+- [ ] Remover campo "Percentual da Entrada"
+- [ ] Remover campo "% Retorno Bancário"
+- [ ] Remover campo "Número do contrato"
+- [ ] Remover campo "Data de assinatura de contrato"
+- [ ] Remover campo "Situação de Carteira"
+- [ ] Remover campo "Valor Retorno"
+- [ ] Manter campos: Data Angariação, Valores, Previsão, Forma Pagamento, Investimento/Moradia, Tipo Venda, Banco Financiador
+
+### 3. Remover Seção Completa
+- [ ] Remover seção "Gestão e Detalhes Operacionais"
+
+### 4. Simplificar "Corretores Envolvidos"
+- [ ] Manter apenas "Corretor Angariador" (com % e valor automáticos)
+- [ ] Manter apenas "Corretor Vendedor" (com % e valor automáticos)
+- [ ] Puxar % e valores de "Informações de Comissionamento"
+- [ ] Remover campos de outros corretores (Coordenador, etc.)
+
+### 5. Backend - Integração de Cálculos
+- [ ] Atualizar `createSale` em `salesRouter.ts` para salvar comissões calculadas
+- [ ] Importar funções de `commissionCalculator.ts`
+- [ ] Salvar todos os 14 campos de comissionamento no banco
+- [ ] Testar salvamento com cada tipo de comissão
+
+### 6. Backend - Validações
+- [ ] Validar que soma de % de comissões = 100% (ou conforme regra do tipo)
+- [ ] Validar que valores de comissão > 0
+- [ ] Validar que tipo de comissão foi selecionado
+- [ ] Validar que campos obrigatórios de comissionamento estão preenchidos
+- [ ] Retornar erros descritivos ao frontend
+
+
+## ✅ Reorganização do Formulário "Nova Venda" (13/02/2026)
+
+### Objetivo
+Simplificar o formulário removendo campos desnecessários e integrar o sistema automático de comissionamento.
+
+### Campos Removidos (20 campos)
+- [x] Número da Nota Fiscal
+- [x] Responsável (campo auto-preenchido removido)
+- [x] Seção "Gestão e Detalhes Operacionais" completa (13 campos):
+  - [x] Loja Angariadora
+  - [x] Loja Vendedora
+  - [x] Equipe
+  - [x] Gestão/Responsável
+  - [x] Status de Escrituração
+  - [x] Valor Financiado
+  - [x] Percentual da Entrada
+  - [x] % Retorno Bancário
+  - [x] Número do Contrato
+  - [x] Data de Assinatura do Contrato
+  - [x] Situação Carteira
+  - [x] Valor Retorno (calculado)
+- [x] Tipo de Negócio (duplicado com CommissionSection)
+- [x] Total da comissão fechada (% e R$)
+- [x] Comissão do Angariador (manual)
+- [x] Comissão do Vendedor (manual)
+- [x] Total da comissão da imobiliária
+- [x] Preview das Comissões (antiga)
+
+### Melhorias Implementadas
+- [x] Data da Venda auto-preenchida com data atual
+- [x] Máscaras R$ aplicadas em campos de valor (saleValue, advertisementValue, financedValue)
+- [x] Seção "Corretores Envolvidos" simplificada (apenas seleção de Angariador e Vendedor)
+- [x] Sistema de comissionamento totalmente automático via CommissionSection
+
+### Próximos Passos
+- [ ] Integrar cálculos de comissão no backend (createSale endpoint)
+- [ ] Validar salvamento dos 14 campos de comissão no banco
+- [ ] Testar todos os 7 tipos de comissão
+- [ ] Validar cálculo de bonificações (Dinheiro vs Material)
