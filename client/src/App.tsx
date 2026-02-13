@@ -40,6 +40,7 @@ import GoalNotifications from "./pages/GoalNotifications";
 import Tutorials from "./pages/Tutorials";
 import LandingPage from "./pages/LandingPage";
 import CommissionsCalendar from "./pages/CommissionsCalendar";
+import PaidCommissions from "./pages/PaidCommissions";
 
 function Router() {
   const { user, loading } = useAuth();
@@ -100,6 +101,7 @@ function Router() {
             <>
               <Route path="/proposals" component={ProposalManagement} />
               <Route path="/commissions-calendar" component={CommissionsCalendar} />
+              <Route path="/paid-commissions" component={PaidCommissions} />
               <Route path="/reports" component={Reports} />
               <Route path="/indicators" component={Indicators} />
               <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />

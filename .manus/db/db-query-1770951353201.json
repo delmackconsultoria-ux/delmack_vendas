@@ -1,0 +1,22 @@
+{
+  "query": "SELECT DATE_FORMAT(saleDate, '%Y-%m') as month, COUNT(*) as count \nFROM sales \nWHERE saleDate >= '2024-01-01'\nGROUP BY DATE_FORMAT(saleDate, '%Y-%m')\nORDER BY month DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DATE_FORMAT(saleDate, '%Y-%m') as month, COUNT(*) as count \nFROM sales \nWHERE saleDate >= '2024-01-01'\nGROUP BY DATE_FORMAT(saleDate, '%Y-%m')\nORDER BY month DESC;",
+  "rows": [
+    {
+      "month": "2025-12",
+      "count": "11"
+    },
+    {
+      "month": "2025-11",
+      "count": "1"
+    },
+    {
+      "month": "2025-10",
+      "count": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "month\tcount\n2025-12\t11\n2025-11\t1\n2025-10\t3\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

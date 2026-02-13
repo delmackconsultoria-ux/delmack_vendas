@@ -1159,3 +1159,40 @@
 - [x] Corrigir useAuth.ts para redirecionar à Landing Page (/) após logout
 - [x] Remover redirecionamento para tela de login OAuth
 - [ ] Testar fluxo completo de logout
+
+
+## 🚨 CORREÇÕES URGENTES
+
+### 1. Dados Fake no Sistema
+- [x] Investigar dados fake em "Janeiro de 2025" no Calendário de Comissões
+- [x] Identificar origem dos dados (seed? importação? teste?)
+- [x] Remover todos os dados fake do banco (20 vendas deletadas)
+- [x] Mapear outras áreas com dados fake (apenas 2026-02 tem dados reais)
+
+### 2. Vínculo Gerente-Corretor Não Funciona
+- [x] Investigar modal "Editar Usuário" (não salva gerente responsável)
+- [x] Verificar procedure de atualização no backend (estava correto)
+- [x] Corrigir listBrokers para filtrar por managerId
+- [x] Atualizar BrokerManagement para usar dados reais do tRPC
+- [x] Garantir que corretores apareçam na lista do gerente após vínculo
+
+### 3. Calendário de Comissões - Comissões Não Aparecem
+- [ ] Verificar query que busca comissões pendentes
+- [ ] Corrigir lógica de agrupamento por data
+- [ ] Garantir que comissões apareçam nas datas corretas
+
+## 🎯 NOVAS FUNCIONALIDADES
+
+### 4. Dashboard de Comissões Pagas
+- [x] Criar nova página "Comissões Pagas"
+- [x] Implementar gráfico de evolução mensal (linha/barra)
+- [x] Adicionar tabela de comissões pagas com filtros
+- [x] Implementar exportação para Excel com anexos de NF
+- [x] Adicionar link no menu do perfil Financeiro
+
+### 5. Filtros no Calendário de Comissões
+- [x] Adicionar filtro por corretor (dropdown)
+- [x] Adicionar filtro por valor mínimo
+- [x] Adicionar filtro por valor máximo
+- [x] Aplicar filtros em tempo real na visualização
+- [x] Botão "Limpar Filtros"

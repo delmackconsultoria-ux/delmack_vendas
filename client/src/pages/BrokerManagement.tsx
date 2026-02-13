@@ -1,4 +1,6 @@
 import { AppHeader } from "@/components/AppHeader";
+import { trpc } from "@/lib/trpc";
+import { useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,10 +82,29 @@ interface TeamFormData {
 export default function BrokerManagementPage() {
   const { user } = useAuth();
   
-  // Verificar se é empresa de Testes para mostrar dados mock
-  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
+  // Buscar corretores reais do banco via tRPC
+  const { data: brokersData, isLoading, refetch } = trpc.brokers.listBrokers.useQuery();
   
-  const [brokers, setBrokers] = useState<Broker[]>(isTestCompany ? mockBrokersTest : []);
+  const [brokers, setBrokers] = useState<Broker[]>([]);
+  
+  // Atualizar lista de corretores quando os dados chegarem
+  useEffect(() => {
+    if (brokersData) {
+      // Converter dados do backend para o formato Broker
+      const formattedBrokers: Broker[] = brokersData.map((b: any) => ({
+        id: b.id,
+        name: b.name,
+        email: b.email,
+        phone: "", // Campo phone não existe no schema
+        status: b.isActive ? "active" : "inactive",
+        sales: 0,
+        commissions: 0,
+        performance: 0,
+        teamMembers: [],
+      }));
+      setBrokers(formattedBrokers);
+    }
+  }, [brokersData]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);

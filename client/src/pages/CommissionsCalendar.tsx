@@ -37,12 +37,17 @@ export default function CommissionsCalendar() {
     paymentMethod: "pix",
     observations: "",
   });
+  
+  // Estados dos filtros
+  const [filterBroker, setFilterBroker] = useState<string>("all");
+  const [filterMinValue, setFilterMinValue] = useState<string>("");
+  const [filterMaxValue, setFilterMaxValue] = useState<string>("");
 
   // Buscar vendas com comissões pendentes
   const { data: pendingCommissions, isLoading, refetch } = trpc.sales.listMySales.useQuery();
 
   // Filtrar apenas vendas com comissão pendente (não paga)
-  const pending = (pendingCommissions?.sales || []).filter(
+  const allPending = (pendingCommissions?.sales || []).filter(
     (sale: any) => !sale.commissionPaymentDate
   ).map((sale: any) => ({
     saleId: sale.id,
@@ -55,6 +60,17 @@ export default function CommissionsCalendar() {
     brokerName: sale.brokerVendedorName || "N/A",
     saleDate: sale.saleDate,
   }));
+  
+  // Aplicar filtros
+  const pending = allPending.filter((c: PendingCommission) => {
+    const matchesBroker = filterBroker === "all" || c.brokerName === filterBroker;
+    const matchesMinValue = !filterMinValue || c.commissionAmount >= parseFloat(filterMinValue);
+    const matchesMaxValue = !filterMaxValue || c.commissionAmount <= parseFloat(filterMaxValue);
+    return matchesBroker && matchesMinValue && matchesMaxValue;
+  });
+  
+  // Lista de corretores únicos
+  const brokers = Array.from(new Set(allPending.map((c: PendingCommission) => c.brokerName))).sort();
 
   // Agrupar por mês (para visualização em lista)
   const groupedByMonth = pending.reduce((acc: any, commission: PendingCommission) => {
@@ -208,6 +224,66 @@ export default function CommissionsCalendar() {
             </TabsList>
           </Tabs>
         </div>
+
+        {/* Filtros */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Filtros</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <Label htmlFor="filterBroker">Corretor</Label>
+                <Select value={filterBroker} onValueChange={setFilterBroker}>
+                  <SelectTrigger id="filterBroker">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Corretores</SelectItem>
+                    {brokers.map((broker) => (
+                      <SelectItem key={broker} value={broker}>
+                        {broker}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="filterMinValue">Valor Mínimo</Label>
+                <Input
+                  id="filterMinValue"
+                  type="number"
+                  placeholder="R$ 0,00"
+                  value={filterMinValue}
+                  onChange={(e) => setFilterMinValue(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="filterMaxValue">Valor Máximo</Label>
+                <Input
+                  id="filterMaxValue"
+                  type="number"
+                  placeholder="R$ 999.999,99"
+                  value={filterMaxValue}
+                  onChange={(e) => setFilterMaxValue(e.target.value)}
+                />
+              </div>
+              <div className="flex items-end">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setFilterBroker("all");
+                    setFilterMinValue("");
+                    setFilterMaxValue("");
+                  }}
+                  className="w-full"
+                >
+                  Limpar Filtros
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Resumo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

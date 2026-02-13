@@ -1,0 +1,230 @@
+{
+  "query": "SELECT s.id, s.buyerName, p.address as propertyAddress, p.propertyReference, s.saleDate, s.expectedPaymentDate, s.totalCommission, s.commissionPaymentDate, s.createdAt \nFROM sales s\nLEFT JOIN properties p ON s.propertyId = p.id\nWHERE s.saleDate >= '2025-01-01' AND s.saleDate < '2025-02-01'\nORDER BY s.saleDate DESC\nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT s.id, s.buyerName, p.address as propertyAddress, p.propertyReference, s.saleDate, s.expectedPaymentDate, s.totalCommission, s.commissionPaymentDate, s.createdAt \nFROM sales s\nLEFT JOIN properties p ON s.propertyId = p.id\nWHERE s.saleDate >= '2025-01-01' AND s.saleDate < '2025-02-01'\nORDER BY s.saleDate DESC\nLIMIT 20;",
+  "rows": [
+    {
+      "id": "import_test_company_BG97136001_27",
+      "buyerName": "Comprador BG97136001",
+      "propertyAddress": "REF: 97136001 Rua: Ciro de Castro, 250 Apto 201 Bloco 06",
+      "propertyReference": "BG97136001",
+      "saleDate": "2025-01-31 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "14880.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:36"
+    },
+    {
+      "id": "import_test_company_BG96121001_28",
+      "buyerName": "Comprador BG96121001",
+      "propertyAddress": "REF: 96121001 Rua Felicio Laskoski, 6077",
+      "propertyReference": "BG96121001",
+      "saleDate": "2025-01-31 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "64000.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:36"
+    },
+    {
+      "id": "import_test_company_BG96902001_26",
+      "buyerName": "Comprador BG96902001",
+      "propertyAddress": "REF: 96902001 Rua Lothario Boutin, 220 AP 603 BL 09",
+      "propertyReference": "BG96902001",
+      "saleDate": "2025-01-29 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "9000.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:36"
+    },
+    {
+      "id": "import_test_company_BG97062001_25",
+      "buyerName": "Comprador BG97062001",
+      "propertyAddress": "REF: Rua Cidade de Curitibanos, 282 AP 11 BL 2",
+      "propertyReference": "BG97062001",
+      "saleDate": "2025-01-28 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "6000.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:36"
+    },
+    {
+      "id": "import_test_company_BG96937001_24",
+      "buyerName": "Comprador BG96937001",
+      "propertyAddress": "REF: 96937001 Rua Edgar Moutinho Zandoná, 216",
+      "propertyReference": "BG96937001",
+      "saleDate": "2025-01-25 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "7350.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:36"
+    },
+    {
+      "id": "import_test_company_BG97066001_22",
+      "buyerName": "Comprador BG97066001",
+      "propertyAddress": "REF: 97066001 Rua Doutor Edemar Ernsen, 132 AP 23 BL 02",
+      "propertyReference": "BG97066001",
+      "saleDate": "2025-01-24 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "14100.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:36"
+    },
+    {
+      "id": "import_test_company_BG96939002_20",
+      "buyerName": "Comprador BG96939002",
+      "propertyAddress": "REF: 96939002 Rua Jornalista Alipio Miranda, 377",
+      "propertyReference": "BG96939002",
+      "saleDate": "2025-01-23 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "19200.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_S REF_23",
+      "buyerName": "Comprador S REF",
+      "propertyAddress": "S REF: Rua Joanna Rieke Rutz, 137 Sob 2",
+      "propertyReference": "S REF",
+      "saleDate": "2025-01-22 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "16800.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:36"
+    },
+    {
+      "id": "import_test_company_S REF_19",
+      "buyerName": "Comprador S REF",
+      "propertyAddress": "S REF: Rua Joanna Rieke Rutz, 137 Sob 2",
+      "propertyReference": "S REF",
+      "saleDate": "2025-01-22 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "5535.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_BG97090001_17",
+      "buyerName": "Comprador BG97090001",
+      "propertyAddress": "REF: 97090001 Rua José Izidoro Biazetto, 728",
+      "propertyReference": "BG97090001",
+      "saleDate": "2025-01-21 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "9600.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_S REF_15",
+      "buyerName": "Comprador S REF",
+      "propertyAddress": "S REF: Rua Joanna Rieke Rutz, 137 Sob 2",
+      "propertyReference": "S REF",
+      "saleDate": "2025-01-20 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "14250.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_S REF_16",
+      "buyerName": "Comprador S REF",
+      "propertyAddress": "S REF: Rua Joanna Rieke Rutz, 137 Sob 2",
+      "propertyReference": "S REF",
+      "saleDate": "2025-01-20 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "10200.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_BG96956001_18",
+      "buyerName": "Comprador BG96956001",
+      "propertyAddress": "REF: 96956001 Rua Coronel Airton Plaisant, 1959",
+      "propertyReference": "BG96956001",
+      "saleDate": "2025-01-20 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "15900.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_BG96957002_13",
+      "buyerName": "Comprador BG96957002",
+      "propertyAddress": "REF: 96957002 Rua Maranhão, 1408",
+      "propertyReference": "BG96957002",
+      "saleDate": "2025-01-17 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "63000.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_BG97074001_14",
+      "buyerName": "Comprador BG97074001",
+      "propertyAddress": "REF: 97074001 Rua Moacir Vieira Gomes, 81 Sob 2",
+      "propertyReference": "BG97074001",
+      "saleDate": "2025-01-17 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "47400.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_BG96235001_12",
+      "buyerName": "Comprador BG96235001",
+      "propertyAddress": "REF: 96235001 Rua Antõnio Parize, 106 sob 1",
+      "propertyReference": "BG96235001",
+      "saleDate": "2025-01-16 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "37120.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_BG96979001_11",
+      "buyerName": "Comprador BG96979001",
+      "propertyAddress": "REF: 96979001 Rua Tito Calderari, 162",
+      "propertyReference": "BG96979001",
+      "saleDate": "2025-01-13 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "26000.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:35"
+    },
+    {
+      "id": "import_test_company_BG97071001_10",
+      "buyerName": "Comprador BG97071001",
+      "propertyAddress": "REF: 97071001 Rua Monsenhor Ivo Zanlorenzi, 1668 AP 1204",
+      "propertyReference": "BG97071001",
+      "saleDate": "2025-01-13 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "39960.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:34"
+    },
+    {
+      "id": "import_test_company_BG96373001_9",
+      "buyerName": "Comprador BG96373001",
+      "propertyAddress": "REF: 96373001 VERDE PASSAUNA - Rua das Gaivotas, 531 lote 37",
+      "propertyReference": "BG96373001",
+      "saleDate": "2025-01-10 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "23847.28",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:34"
+    },
+    {
+      "id": "import_test_company_BG96530001_7",
+      "buyerName": "Comprador BG96530001",
+      "propertyAddress": "REF: 96530001 Rua Cascavel, 2261 Casa 21",
+      "propertyReference": "BG96530001",
+      "saleDate": "2025-01-08 00:00:00",
+      "expectedPaymentDate": "NULL",
+      "totalCommission": "16020.00",
+      "commissionPaymentDate": "NULL",
+      "createdAt": "2026-02-05 21:09:34"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbuyerName\tpropertyAddress\tpropertyReference\tsaleDate\texpectedPaymentDate\ttotalCommission\tcommissionPaymentDate\tcreatedAt\nimport_test_company_BG97136001_27\tComprador BG97136001\tREF: 97136001 Rua: Ciro de Castro, 250 Apto 201 Bloco 06\tBG97136001\t2025-01-31 00:00:00\tNULL\t14880.00\tNULL\t2026-02-05 21:09:36\nimport_test_company_BG96121001_28\tComprador BG96121001\tREF: 96121001 Rua Felicio Laskoski, 6077\tBG96121001\t2025-01-31 00:00:00\tNULL\t64000.00\tNULL\t2026-02-05 21:09:36\nimport_test_company_BG96902001_26\tComprador BG96902001\tREF: 96902001 Rua Lothario Boutin, 220 AP 603 BL 09\tBG96902001\t2025-01-29 00:00:00\tNULL\t9000.00\tNULL\t2026-02-05 21:09:36\nimport_test_company_BG97062001_25\tComprador BG97062001\tREF: Rua Cidade de Curitibanos, 282 AP 11 BL 2\tBG97062001\t2025-01-28 00:00:00\tNULL\t6000.00\tNULL\t2026-02-05 21:09:36\nimport_test_company_BG96937001_24\tComprador BG96937001\tREF: 96937001 Rua Edgar Moutinho Zandoná, 216\tBG96937001\t2025-01-25 00:00:00\tNULL\t7350.00\tNULL\t2026-02-05 21:09:36\nimport_test_company_BG97066001_22\tComprador BG97066001\tREF: 97066001 Rua Doutor Edemar Ernsen, 132 AP 23 BL 02\tBG97066001\t2025-01-24 00:00:00\tNULL\t14100.00\tNULL\t2026-02-05 21:09:36\nimport_test_company_BG96939002_20\tComprador BG96939002\tREF: 96939002 Rua Jornalista Alipio Miranda, 377\tBG96939002\t2025-01-23 00:00:00\tNULL\t19200.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_S REF_23\tComprador S REF\tS REF: Rua Joanna Rieke Rutz, 137 Sob 2\tS REF\t2025-01-22 00:00:00\tNULL\t16800.00\tNULL\t2026-02-05 21:09:36\nimport_test_company_S REF_19\tComprador S REF\tS REF: Rua Joanna Rieke Rutz, 137 Sob 2\tS REF\t2025-01-22 00:00:00\tNULL\t5535.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_BG97090001_17\tComprador BG97090001\tREF: 97090001 Rua José Izidoro Biazetto, 728\tBG97090001\t2025-01-21 00:00:00\tNULL\t9600.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_S REF_15\tComprador S REF\tS REF: Rua Joanna Rieke Rutz, 137 Sob 2\tS REF\t2025-01-20 00:00:00\tNULL\t14250.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_S REF_16\tComprador S REF\tS REF: Rua Joanna Rieke Rutz, 137 Sob 2\tS REF\t2025-01-20 00:00:00\tNULL\t10200.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_BG96956001_18\tComprador BG96956001\tREF: 96956001 Rua Coronel Airton Plaisant, 1959\tBG96956001\t2025-01-20 00:00:00\tNULL\t15900.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_BG96957002_13\tComprador BG96957002\tREF: 96957002 Rua Maranhão, 1408\tBG96957002\t2025-01-17 00:00:00\tNULL\t63000.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_BG97074001_14\tComprador BG97074001\tREF: 97074001 Rua Moacir Vieira Gomes, 81 Sob 2\tBG97074001\t2025-01-17 00:00:00\tNULL\t47400.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_BG96235001_12\tComprador BG96235001\tREF: 96235001 Rua Antõnio Parize, 106 sob 1\tBG96235001\t2025-01-16 00:00:00\tNULL\t37120.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_BG96979001_11\tComprador BG96979001\tREF: 96979001 Rua Tito Calderari, 162\tBG96979001\t2025-01-13 00:00:00\tNULL\t26000.00\tNULL\t2026-02-05 21:09:35\nimport_test_company_BG97071001_10\tComprador BG97071001\tREF: 97071001 Rua Monsenhor Ivo Zanlorenzi, 1668 AP 1204\tBG97071001\t2025-01-13 00:00:00\tNULL\t39960.00\tNULL\t2026-02-05 21:09:34\nimport_test_company_BG96373001_9\tComprador BG96373001\tREF: 96373001 VERDE PASSAUNA - Rua das Gaivotas, 531 lote 37\tBG96373001\t2025-01-10 00:00:00\tNULL\t23847.28\tNULL\t2026-02-05 21:09:34\nimport_test_company_BG96530001_7\tComprador BG96530001\tREF: 96530001 Rua Cascavel, 2261 Casa 21\tBG96530001\t2025-01-08 00:00:00\tNULL\t16020.00\tNULL\t2026-02-05 21:09:34\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

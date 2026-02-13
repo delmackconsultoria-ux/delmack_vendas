@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, buyerName, propertyAddress, propertyReference, saleDate, expectedPaymentDate, totalCommission, commissionPaymentDate, createdAt \nFROM sales \nWHERE saleDate >= '2025-01-01' AND saleDate < '2025-02-01'\nORDER BY saleDate DESC\nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, buyerName, propertyAddress, propertyReference, saleDate, expectedPaymentDate, totalCommission, commissionPaymentDate, createdAt \nFROM sales \nWHERE saleDate >= '2025-01-01' AND saleDate < '2025-02-01'\nORDER BY saleDate DESC\nLIMIT 20;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'propertyaddress' in 'field list'"
+  ]
+}

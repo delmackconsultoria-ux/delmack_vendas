@@ -39,6 +39,7 @@ const navItems: NavItem[] = [
   { label: "Nova Venda", path: "/proposals/new", roles: ["broker", "manager", "admin"] },
   { label: "Aprovação", path: "/sales-approval", roles: ["finance", "manager"] },
   { label: "Calendário", path: "/commissions-calendar", roles: ["finance"] },
+  { label: "Comissões Pagas", path: "/paid-commissions", roles: ["finance"] },
   { label: "Histórico", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
   { label: "Metas", path: "/goals", roles: ["manager"] },
   { label: "Corretores", path: "/brokers", roles: ["manager"] },

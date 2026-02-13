@@ -35,18 +35,37 @@ export const brokersRouter = router({
         ];
       }
 
-      // Se for gerente ou financeiro, retorna todos da mesma empresa
+      // Se for gerente, retorna apenas corretores vinculados a ele
+      if (ctx.user.role === "manager") {
+        const brokers = await db
+          .select()
+          .from(users)
+          .where(eq(users.managerId, ctx.user.id));
+
+        return brokers.map((broker) => ({
+          id: broker.id,
+          name: broker.name || "Sem nome",
+          email: broker.email || "",
+          role: broker.role,
+          isActive: broker.isActive,
+        }));
+      }
+
+      // Se for financeiro ou admin, retorna todos os corretores da empresa
       const brokers = await db
         .select()
         .from(users)
         .where(eq(users.companyId, ctx.user.companyId || "1"));
 
-      return brokers.map((broker) => ({
-        id: broker.id,
-        name: broker.name || "Sem nome",
-        email: broker.email || "",
-        role: broker.role,
-      }));
+      return brokers
+        .filter((broker) => broker.role === "broker")
+        .map((broker) => ({
+          id: broker.id,
+          name: broker.name || "Sem nome",
+          email: broker.email || "",
+          role: broker.role,
+          isActive: broker.isActive,
+        }));
     } catch (error) {
       console.error("[Brokers Router] Erro ao listar corretores:", error);
       throw new Error("Erro ao listar corretores");
