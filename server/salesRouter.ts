@@ -17,6 +17,7 @@ import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress
 import { storagePut, storageGet } from "./storage";
 import { logSaleCreation, getSaleHistory, logSaleUpdate } from "./salesHistoryService";
 import { checkAndNotifyGoalProgress, calculateGoalProgress } from "./services/goalNotificationService";
+import { sendNewSaleNotification, sendSaleApprovedNotification, sendSaleRejectedNotification, sendCommissionPaidNotification } from "./_core/emailService";
 
 // Zod schema para validação de entrada
 const createSaleSchema = z.object({
@@ -400,9 +401,40 @@ export const salesRouter = router({
           }
         );
 
-        // Enviar notificação por email
+        // Enviar notificação por email para gerentes e corretor
         try {
-          const [company] = await db.select().from(companies).where(eq(companies.id, ctx.user.companyId || "1")).limit(1);
+          // Buscar emails dos gerentes da empresa
+          const managers = await db
+            .select()
+            .from(users)
+            .where(
+              and(
+                eq(users.companyId, ctx.user.companyId || "1"),
+                eq(users.role, "manager")
+              )
+            );
+          
+          const managerEmails = managers
+            .map(m => m.email)
+            .filter((email): email is string => !!email);
+
+          if (managerEmails.length > 0 || ctx.user.email) {
+            await sendNewSaleNotification({
+              managerEmails,
+              brokerEmail: ctx.user.email || "",
+              brokerName: ctx.user.name || "Corretor",
+              buyerName: input.buyerName || "N/A",
+              sellerName: input.sellerName || "N/A",
+              propertyAddress: `${input.propertyAddress || ""}, ${input.propertyCity || ""}/${input.propertyState || ""}`,
+              propertyReference: input.propertyReference,
+              saleValue: input.saleValue || 0,
+              saleDate: input.saleDate,
+              proposalId: saleId,
+              createdAt: new Date().toISOString(),
+            });
+          }
+
+          // Notificação interna para o owner
           const notificationContent = `
 **Nova Proposta Registrada**
 
@@ -417,11 +449,6 @@ export const salesRouter = router({
           `.trim();
           
           await notifyOwner({ title: `Nova Proposta - ${input.buyerName}`, content: notificationContent });
-          
-          // Se a empresa tiver email de notificação configurado, enviar também
-          if (company?.notificationEmail) {
-            await notifyOwner({ title: `Nova Proposta - ${input.buyerName}`, content: notificationContent });
-          }
         } catch (notifyError) {
           console.error("[Sales Router] Erro ao enviar notificação:", notifyError);
         }
@@ -697,6 +724,80 @@ export const salesRouter = router({
             .where(eq(commissions.saleId, input.saleId));
         }
 
+        // Enviar emails de aprovação/reprovação
+        try {
+          const sale = currentSale[0];
+          const property = await db.select().from(properties).where(eq(properties.id, sale.propertyId)).limit(1);
+          
+          // Buscar corretor, gerente e financeiro envolvidos
+          const broker = sale.brokerVendedor ? await db.select().from(users).where(eq(users.id, sale.brokerVendedor)).limit(1) : [];
+          const managers = await db.select().from(users).where(
+            and(
+              eq(users.companyId, ctx.user.companyId || "1"),
+              eq(users.role, "manager")
+            )
+          );
+          const finance = await db.select().from(users).where(
+            and(
+              eq(users.companyId, ctx.user.companyId || "1"),
+              eq(users.role, "finance")
+            )
+          );
+
+          const brokerEmail = broker[0]?.email;
+          const managerEmails = managers.map(m => m.email).filter((e): e is string => !!e);
+          const financeEmails = finance.map(f => f.email).filter((e): e is string => !!e);
+
+          // Email de aprovação (manager_review ou finance_review)
+          if (input.status === "manager_review" || input.status === "finance_review") {
+            const recipients = [];
+            if (brokerEmail) recipients.push(brokerEmail);
+            if (input.status === "manager_review") recipients.push(...financeEmails);
+            if (input.status === "finance_review") recipients.push(...managerEmails);
+
+            if (recipients.length > 0) {
+              await sendSaleApprovedNotification({
+                recipients,
+                brokerName: broker[0]?.name || "Corretor",
+                buyerName: sale.buyerName || "N/A",
+                propertyAddress: property[0]?.address || "N/A",
+                propertyReference: property[0]?.propertyReference || undefined,
+                saleValue: parseFloat(sale.saleValue || "0"),
+                approvedBy: ctx.user.name || "Usuário",
+                approvedByRole: ctx.user.role === "manager" ? "Gerente" : "Financeiro",
+                approvedAt: new Date().toISOString(),
+                comment: input.observation,
+                proposalId: sale.id,
+              });
+            }
+          }
+
+          // Email de reprovação (cancelled)
+          if (input.status === "cancelled" && input.observation) {
+            const recipients = [];
+            if (brokerEmail) recipients.push(brokerEmail);
+            recipients.push(...managerEmails, ...financeEmails);
+
+            if (recipients.length > 0) {
+              await sendSaleRejectedNotification({
+                recipients,
+                brokerName: broker[0]?.name || "Corretor",
+                buyerName: sale.buyerName || "N/A",
+                propertyAddress: property[0]?.address || "N/A",
+                propertyReference: property[0]?.propertyReference || undefined,
+                saleValue: parseFloat(sale.saleValue || "0"),
+                rejectedBy: ctx.user.name || "Usuário",
+                rejectedByRole: ctx.user.role === "manager" ? "Gerente" : "Financeiro",
+                rejectedAt: new Date().toISOString(),
+                reason: input.observation,
+                proposalId: sale.id,
+              });
+            }
+          }
+        } catch (emailError) {
+          console.error("[Sales Router] Erro ao enviar email:", emailError);
+        }
+
         return {
           success: true,
           message: "Status da venda atualizado com sucesso",
@@ -929,6 +1030,46 @@ export const salesRouter = router({
             paymentDate: new Date(input.commissionPaymentDate),
           })
           .where(eq(commissions.saleId, input.saleId));
+
+        // Enviar email de comissão paga para corretor + gerente + financeiro
+        try {
+          const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
+          if (sale.length > 0) {
+            const property = await db.select().from(properties).where(eq(properties.id, sale[0].propertyId)).limit(1);
+            const broker = sale[0].brokerVendedor ? await db.select().from(users).where(eq(users.id, sale[0].brokerVendedor)).limit(1) : [];
+            const managers = await db.select().from(users).where(
+              and(
+                eq(users.companyId, ctx.user.companyId || "1"),
+                eq(users.role, "manager")
+              )
+            );
+
+            const brokerEmail = broker[0]?.email || "";
+            const managerEmail = managers[0]?.email || "";
+            const financeEmail = ctx.user.email || "";
+
+            if (brokerEmail && managerEmail && financeEmail) {
+              await sendCommissionPaidNotification({
+                brokerEmail,
+                managerEmail,
+                financeEmail,
+                brokerName: broker[0]?.name || "Corretor",
+                buyerName: sale[0].buyerName || "N/A",
+                propertyAddress: property[0]?.address || "N/A",
+                propertyReference: property[0]?.propertyReference || undefined,
+                saleValue: parseFloat(sale[0].saleValue || "0"),
+                commissionValue: input.commissionAmountReceived,
+                paidBy: ctx.user.name || "Financeiro",
+                paidAt: input.commissionPaymentDate,
+                paymentMethod: input.commissionPaymentMethod || "N/A",
+                bankName: input.commissionPaymentBank || "N/A",
+                proposalId: sale[0].id,
+              });
+            }
+          }
+        } catch (emailError) {
+          console.error("[Sales Router] Erro ao enviar email de comissão paga:", emailError);
+        }
 
         return {
           success: true,

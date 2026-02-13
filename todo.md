@@ -1088,3 +1088,54 @@
 - [x] Verificar por que header muda ao clicar em Analytics no perfil Financeiro
 - [x] Garantir que header padrão seja mantido em todas as páginas
 - [x] Testar navegação entre páginas do perfil Financeiro
+
+
+## 📧 SISTEMA DE NOTIFICAÇÕES POR EMAIL
+
+### 1. Configuração SMTP
+- [x] Adicionar credenciais SMTP via webdev_request_secrets
+- [x] Testar conexão com servidor email-ssl.com.br:465
+
+### 2. Templates de Email
+- [x] Template: Nova Venda Criada (para Gerente + Financeiro)
+- [x] Template: Venda Aprovada pelo Gerente (para Corretor + Financeiro)
+- [x] Template: Venda Reprovada pelo Gerente (para Corretor + Financeiro)
+- [x] Template: Venda Aprovada pelo Financeiro (para Corretor + Gerente)
+- [x] Template: Venda Reprovada pelo Financeiro (para Corretor + Gerente)
+- [x] Template: Comissão Paga (para Corretor)
+- [x] Incluir referência Properfy em destaque
+- [x] Incluir nome do corretor em destaque
+- [x] Incluir detalhes completos (quem fez, quando, valores, observações)
+- [x] Incluir botão de acesso direto à venda
+
+### 3. Integração no Fluxo
+- [x] Integrar envio ao criar nova venda
+- [x] Integrar envio ao aprovar venda (gerente)
+- [x] Integrar envio ao reprovar venda (gerente)
+- [x] Integrar envio ao aprovar venda (financeiro)
+- [x] Integrar envio ao reprovar venda (financeiro)
+- [x] Integrar envio ao registrar pagamento de comissão
+
+### 4. Testes
+- [ ] Testar envio de email de nova venda
+- [ ] Testar envio de email de aprovação
+- [ ] Testar envio de email de reprovação
+- [ ] Testar envio de email de comissão paga
+- [ ] Verificar que apenas envolvidos recebem emails
+
+
+## 📧 AJUSTES DE TEMPLATES DE EMAIL
+
+### Design
+- [x] Remover header Delmack de todos os templates
+- [x] Começar email direto com título (ex: "Nova Venda Cadastrada")
+- [x] Remover emojis internos (manter apenas no título principal)
+- [x] Clarificar quem precisa agir em cada email
+
+### Destinatários
+- [x] Nova Venda: Gerente + Corretor que cadastrou (confirmação)
+- [x] Comissão Paga: Corretor + Gerente + Financeiro (apenas envolvidos na venda)
+
+### Links
+- [x] Garantir que links apontem corretamente para as propostas no sistema
+- [ ] Testar redirecionamento de todos os botões
