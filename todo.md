@@ -1139,3 +1139,23 @@
 ### Links
 - [x] Garantir que links apontem corretamente para as propostas no sistema
 - [ ] Testar redirecionamento de todos os botões
+
+
+## 📅 MELHORIAS NO CALENDÁRIO DE COMISSÕES
+
+- [x] Adicionar toggle para alternar entre visualização Lista e Calendário
+- [x] Implementar visualização de calendário mensal (grade com dias do mês)
+- [x] Mostrar comissões pendentes em cada dia do calendário
+- [x] Permitir navegação entre meses (anterior/próximo)
+
+## 🔍 CORREÇÕES PRIORITÁRIAS
+
+### Histórico mostrando vendas do Excel (29 registros)
+- [x] Filtrar Histórico para mostrar APENAS ações do sistema
+- [x] Vendas importadas do Excel devem aparecer SOMENTE em Indicadores
+- [x] Implementar filtro no frontend (ProposalManagement.tsx)
+
+### Logout redirecionando errado
+- [x] Corrigir useAuth.ts para redirecionar à Landing Page (/) após logout
+- [x] Remover redirecionamento para tela de login OAuth
+- [ ] Testar fluxo completo de logout

@@ -6,14 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
-import { Calendar, DollarSign, FileText, Loader, Upload } from "lucide-react";
+import { Calendar as CalendarIcon, DollarSign, FileText, Loader, Upload, List, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface PendingCommission {
   saleId: string;
   propertyAddress: string;
+  propertyReference?: string;
   buyerName: string;
   saleValue: number;
   commissionAmount: number;
@@ -23,6 +25,8 @@ interface PendingCommission {
 }
 
 export default function CommissionsCalendar() {
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [selectedSale, setSelectedSale] = useState<PendingCommission | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
@@ -43,15 +47,16 @@ export default function CommissionsCalendar() {
   ).map((sale: any) => ({
     saleId: sale.id,
     propertyAddress: sale.propertyAddress,
+    propertyReference: sale.propertyReference,
     buyerName: sale.buyerName,
-    saleValue: sale.salePrice,
-    commissionAmount: sale.commissionAmount || 0,
+    saleValue: parseFloat(sale.saleValue || "0"),
+    commissionAmount: parseFloat(sale.totalCommission || "0"),
     expectedPaymentDate: sale.expectedPaymentDate,
     brokerName: sale.brokerVendedorName || "N/A",
     saleDate: sale.saleDate,
   }));
 
-  // Agrupar por mês
+  // Agrupar por mês (para visualização em lista)
   const groupedByMonth = pending.reduce((acc: any, commission: PendingCommission) => {
     const date = commission.expectedPaymentDate || commission.saleDate;
     const monthKey = date ? new Date(date).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long' }) : 'Sem data';
@@ -59,6 +64,51 @@ export default function CommissionsCalendar() {
     acc[monthKey].push(commission);
     return acc;
   }, {});
+
+  // Gerar dias do calendário
+  const generateCalendarDays = () => {
+    const year = selectedMonth.getFullYear();
+    const month = selectedMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
+    const days = [];
+    // Dias vazios antes do início do mês
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+    // Dias do mês
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    return days;
+  };
+
+  // Obter comissões de um dia específico
+  const getCommissionsForDay = (day: number) => {
+    const year = selectedMonth.getFullYear();
+    const month = selectedMonth.getMonth();
+    return pending.filter((c: PendingCommission) => {
+      const date = c.expectedPaymentDate || c.saleDate;
+      if (!date) return false;
+      const commissionDate = new Date(date);
+      return (
+        commissionDate.getDate() === day &&
+        commissionDate.getMonth() === month &&
+        commissionDate.getFullYear() === year
+      );
+    });
+  };
+
+  const changeMonth = (direction: number) => {
+    setSelectedMonth(prev => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() + direction);
+      return newDate;
+    });
+  };
 
   // Mutation para registrar pagamento
   const registerPaymentMutation = trpc.sales.registerCommissionPayment.useMutation({
@@ -101,20 +151,9 @@ export default function CommissionsCalendar() {
       return;
     }
 
-    // Validar campos obrigatórios
-    if (!paymentData.paymentDate || !paymentData.amountReceived || !paymentData.bankName) {
-      toast.error("Preencha todos os campos obrigatórios!");
-      return;
-    }
-
     try {
-      // Converter arquivo para base64
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(invoiceFile);
-      });
+      // TODO: Upload do arquivo de NF para S3
+      // const uploadedUrl = await uploadToS3(invoiceFile);
 
       await registerPaymentMutation.mutateAsync({
         saleId: selectedSale.saleId,
@@ -140,19 +179,34 @@ export default function CommissionsCalendar() {
     );
   }
 
+  const calendarDays = generateCalendarDays();
+  const monthName = selectedMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-            <Calendar className="h-8 w-8 text-blue-600" />
-            Calendário de Comissões
-          </h1>
-          <p className="text-slate-600 mt-2">
-            Gerencie pagamentos de comissões pendentes
-          </p>
+
+      <main className="container mx-auto px-4 py-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <CalendarIcon className="h-6 w-6" />
+              Calendário de Comissões
+            </h1>
+            <p className="text-slate-600 mt-1">Gerencie pagamentos de comissões pendentes</p>
+          </div>
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "list" | "calendar")} className="w-auto">
+            <TabsList>
+              <TabsTrigger value="list" className="flex items-center gap-2">
+                <List className="h-4 w-4" />
+                Lista
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4" />
+                Calendário
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Resumo */}
@@ -189,71 +243,139 @@ export default function CommissionsCalendar() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-slate-900">
-                {pending.filter((c: PendingCommission) => {
-                  const date = c.expectedPaymentDate || c.saleDate;
-                  if (!date) return false;
-                  const commissionDate = new Date(date);
-                  const now = new Date();
-                  return commissionDate.getMonth() === now.getMonth() && 
-                         commissionDate.getFullYear() === now.getFullYear();
-                }).length}
+                {getCommissionsForDay.length || 0}
               </div>
               <p className="text-xs text-slate-500 mt-1">pagamentos previstos</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Lista agrupada por mês */}
-        {Object.keys(groupedByMonth).length === 0 ? (
+        {/* Visualização Lista */}
+        {viewMode === "list" && (
+          <div className="space-y-6">
+            {Object.keys(groupedByMonth).length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center text-slate-500">
+                  Nenhuma comissão pendente
+                </CardContent>
+              </Card>
+            ) : (
+              Object.entries(groupedByMonth).map(([month, commissions]: [string, any]) => (
+                <Card key={month}>
+                  <CardHeader>
+                    <CardTitle className="text-lg capitalize">{month}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {commissions.map((commission: PendingCommission) => (
+                        <div
+                          key={commission.saleId}
+                          className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-slate-900">
+                                Comprador: {commission.buyerName}
+                              </span>
+                              {commission.propertyReference && (
+                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                                  Ref: {commission.propertyReference}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-600">
+                              Corretor: {commission.brokerName}
+                            </div>
+                            <div className="text-sm text-slate-500">
+                              Venda: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.saleValue)} • 
+                              Comissão: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.commissionAmount)}
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => handleOpenModal(commission)}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            <DollarSign className="h-4 w-4 mr-2" />
+                            Registrar Pagamento
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Visualização Calendário */}
+        {viewMode === "calendar" && (
           <Card>
-            <CardContent className="py-12 text-center">
-              <Calendar className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500">Nenhuma comissão pendente</p>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Button variant="outline" size="sm" onClick={() => changeMonth(-1)}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <CardTitle className="text-xl capitalize">{monthName}</CardTitle>
+                <Button variant="outline" size="sm" onClick={() => changeMonth(1)}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-2">
+                {/* Cabeçalho dos dias da semana */}
+                {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
+                  <div key={day} className="text-center font-semibold text-sm text-slate-600 py-2">
+                    {day}
+                  </div>
+                ))}
+                
+                {/* Dias do mês */}
+                {calendarDays.map((day, index) => {
+                  if (day === null) {
+                    return <div key={`empty-${index}`} className="aspect-square" />;
+                  }
+                  
+                  const dayCommissions = getCommissionsForDay(day);
+                  const hasCommissions = dayCommissions.length > 0;
+                  
+                  return (
+                    <div
+                      key={day}
+                      className={`
+                        aspect-square border rounded-lg p-2 
+                        ${hasCommissions ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'}
+                        hover:border-blue-400 transition-colors cursor-pointer
+                      `}
+                    >
+                      <div className="text-sm font-medium text-slate-900 mb-1">{day}</div>
+                      {hasCommissions && (
+                        <div className="space-y-1">
+                          {dayCommissions.slice(0, 2).map((c, i) => (
+                            <div
+                              key={i}
+                              onClick={() => handleOpenModal(c)}
+                              className="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded truncate hover:bg-blue-700"
+                            >
+                              {c.buyerName}
+                            </div>
+                          ))}
+                          {dayCommissions.length > 2 && (
+                            <div className="text-xs text-blue-600 font-medium">
+                              +{dayCommissions.length - 2} mais
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
-        ) : (
-          Object.entries(groupedByMonth).map(([month, commissions]: [string, any]) => (
-            <Card key={month} className="mb-6">
-              <CardHeader>
-                <CardTitle className="text-lg capitalize">{month}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {commissions.map((commission: PendingCommission) => (
-                    <div
-                      key={commission.saleId}
-                      className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-300 transition-colors"
-                    >
-                      <div className="flex-1">
-                        <h3 className="font-medium text-slate-900">{commission.propertyAddress}</h3>
-                        <div className="flex items-center gap-4 mt-1 text-sm text-slate-600">
-                          <span>Comprador: {commission.buyerName}</span>
-                          <span>•</span>
-                          <span>Corretor: {commission.brokerName}</span>
-                        </div>
-                        <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
-                          <span>Venda: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.saleValue)}</span>
-                          <span>•</span>
-                          <span className="font-medium text-green-600">
-                            Comissão: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.commissionAmount)}
-                          </span>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => handleOpenModal(commission)}
-                        className="ml-4"
-                      >
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        Registrar Pagamento
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))
         )}
-      </div>
+      </main>
 
       {/* Modal de Registro de Pagamento */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -261,44 +383,48 @@ export default function CommissionsCalendar() {
           <DialogHeader>
             <DialogTitle>Registrar Pagamento de Comissão</DialogTitle>
           </DialogHeader>
-
+          
           {selectedSale && (
             <div className="space-y-4">
               {/* Informações da Venda */}
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-sm text-slate-600">Imóvel</p>
-                <p className="font-medium">{selectedSale.propertyAddress}</p>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  <div>
-                    <p className="text-sm text-slate-600">Comprador</p>
-                    <p className="font-medium">{selectedSale.buyerName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Corretor</p>
-                    <p className="font-medium">{selectedSale.brokerName}</p>
-                  </div>
+              <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">Comprador:</span>
+                  <span>{selectedSale.buyerName}</span>
+                  {selectedSale.propertyReference && (
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded ml-auto">
+                      Ref: {selectedSale.propertyReference}
+                    </span>
+                  )}
                 </div>
-                <div className="mt-2">
-                  <p className="text-sm text-slate-600">Valor da Comissão</p>
-                  <p className="text-lg font-bold text-green-600">
-                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedSale.commissionAmount)}
-                  </p>
+                <div>
+                  <span className="font-semibold">Corretor:</span> {selectedSale.brokerName}
+                </div>
+                <div>
+                  <span className="font-semibold">Valor da Venda:</span>{" "}
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedSale.saleValue)}
+                </div>
+                <div>
+                  <span className="font-semibold">Comissão:</span>{" "}
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedSale.commissionAmount)}
                 </div>
               </div>
 
               {/* Formulário de Pagamento */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Data de Pagamento *</Label>
+                  <Label htmlFor="paymentDate">Data do Pagamento *</Label>
                   <Input
+                    id="paymentDate"
                     type="date"
                     value={paymentData.paymentDate}
                     onChange={(e) => setPaymentData({ ...paymentData, paymentDate: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label>Valor Recebido *</Label>
+                  <Label htmlFor="amountReceived">Valor Recebido *</Label>
                   <Input
+                    id="amountReceived"
                     type="number"
                     step="0.01"
                     value={paymentData.amountReceived}
@@ -309,89 +435,82 @@ export default function CommissionsCalendar() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Banco Pagador *</Label>
+                  <Label htmlFor="bankName">Banco</Label>
                   <Input
+                    id="bankName"
+                    placeholder="Nome do banco"
                     value={paymentData.bankName}
                     onChange={(e) => setPaymentData({ ...paymentData, bankName: e.target.value })}
-                    placeholder="Ex: Banco do Brasil"
                   />
                 </div>
                 <div>
-                  <Label>Forma de Pagamento *</Label>
-                  <Select
-                    value={paymentData.paymentMethod}
-                    onValueChange={(value) => setPaymentData({ ...paymentData, paymentMethod: value })}
-                  >
+                  <Label htmlFor="paymentMethod">Forma de Pagamento</Label>
+                  <Select value={paymentData.paymentMethod} onValueChange={(v) => setPaymentData({ ...paymentData, paymentMethod: v })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pix">PIX</SelectItem>
                       <SelectItem value="ted">TED</SelectItem>
-                      <SelectItem value="boleto">Boleto</SelectItem>
+                      <SelectItem value="doc">DOC</SelectItem>
                       <SelectItem value="dinheiro">Dinheiro</SelectItem>
+                      <SelectItem value="cheque">Cheque</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div>
-                <Label>Observações</Label>
+                <Label htmlFor="observations">Observações</Label>
                 <Textarea
+                  id="observations"
+                  placeholder="Observações sobre o pagamento"
                   value={paymentData.observations}
                   onChange={(e) => setPaymentData({ ...paymentData, observations: e.target.value })}
-                  placeholder="Informações adicionais sobre o pagamento"
                   rows={3}
                 />
               </div>
 
-              {/* Anexo de Nota Fiscal (OBRIGATÓRIO) */}
+              {/* Upload de Nota Fiscal */}
               <div>
-                <Label className="text-red-600 font-medium">Anexo de Nota Fiscal * (Obrigatório)</Label>
-                <div className={`mt-2 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                  invoiceFile ? 'border-green-500 bg-green-50' : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'
-                }`}>
-                  <input
+                <Label htmlFor="invoice" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Anexo de Nota Fiscal * (Obrigatório)
+                </Label>
+                <div className="mt-2 flex items-center gap-3">
+                  <Input
+                    id="invoice"
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
                     onChange={handleFileChange}
-                    className="hidden"
-                    id="invoice-upload"
+                    className="flex-1"
                   />
-                  <label htmlFor="invoice-upload" className="cursor-pointer">
-                    {invoiceFile ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <FileText className="h-6 w-6 text-green-600" />
-                        <span className="text-green-600 font-medium">{invoiceFile.name}</span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <Upload className="h-8 w-8 text-slate-400" />
-                        <span className="text-slate-600">Clique para anexar Nota Fiscal</span>
-                        <span className="text-xs text-slate-500">PDF, JPG ou PNG (máx. 10MB)</span>
-                      </div>
-                    )}
-                  </label>
+                  {invoiceFile && (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <FileText className="h-4 w-4" />
+                      {invoiceFile.name}
+                    </div>
+                  )}
                 </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  Formatos aceitos: PDF, JPG, PNG
+                </p>
               </div>
 
               {/* Botões */}
               <div className="flex justify-end gap-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                  disabled={registerPaymentMutation.isPending}
-                >
+                <Button variant="outline" onClick={() => setIsModalOpen(false)}>
                   Cancelar
                 </Button>
                 <Button
                   onClick={handleSubmitPayment}
-                  disabled={registerPaymentMutation.isPending}
+                  disabled={registerPaymentMutation.isPending || !invoiceFile}
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   {registerPaymentMutation.isPending ? (
                     <>
                       <Loader className="h-4 w-4 mr-2 animate-spin" />
-                      Salvando...
+                      Registrando...
                     </>
                   ) : (
                     <>

@@ -38,7 +38,8 @@ export function useAuth(options?: UseAuthOptions) {
     } finally {
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
-      window.location.href = getLoginUrl();
+      // Redirecionar para Landing Page (Home pública) após logout
+      window.location.href = "/";
     }
   }, [logoutMutation, utils]);
 
