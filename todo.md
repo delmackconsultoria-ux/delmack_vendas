@@ -1236,21 +1236,23 @@
 - [ ] Adicionar validação de tipo de comissão
 
 ### Frontend
-- [ ] Atualizar formulário `NewProposal.tsx` com seção de comissionamento
-- [ ] Adicionar dropdown "Tipo de Comissão" com 7 opções:
-  - Venda Interna
-  - Parceria UNA
-  - Parceria Externa
-  - Lançamentos (sem coordenação)
-  - Lançamentos (com coordenação de produto)
-  - Corretor Autônomo
-  - Imóveis Ebani
-- [ ] Adicionar tooltips informativos para cada tipo (usando Tooltip do shadcn/ui)
-- [ ] Implementar auto-preenchimento de porcentagem ao selecionar tipo
-- [ ] Implementar cálculo automático em tempo real ao digitar valor da venda
-- [ ] Adicionar campos editáveis de comissão detalhada
-- [ ] Adicionar seção de Bonificação (checkbox + campos condicionais)
-- [ ] Mostrar resumo de comissões calculadas antes de enviar
+- [x] Criar componente CommissionSection.tsx
+- [x] Atualizar formulário `NewProposal.tsx` com seção de comissionamento
+- [x] Adicionar dropdown "Tipo de Comissão" com 7 opções:
+  - Venda Interna (6%)
+  - Parceria UNA (6%)
+  - Parceria Externa (6%)
+  - Lançamentos sem coordenação (4%)
+  - Lançamentos com coordenação de produto (4%)
+  - Corretor Autônomo (6%)
+  - Imóveis Ebani (5%)
+- [x] Adicionar tooltips informativos para cada tipo (usando Tooltip do shadcn/ui)
+- [x] Implementar auto-preenchimento de porcentagem ao selecionar tipo
+- [x] Implementar cálculo automático em tempo real ao digitar valor da venda
+- [x] Adicionar resumo visual de comissões calculadas (breakdown por papel)
+- [x] Adicionar seção de Bonificação (checkbox + campos condicionais)
+- [x] Implementar cálculo de bonificação (50/50 dinheiro, 100% material)
+- [x] Mostrar resumo de comissões calculadas antes de enviar
 
 ### Testes
 - [ ] Testar cálculo para cada um dos 7 tipos de comissão

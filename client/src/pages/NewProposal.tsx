@@ -9,6 +9,7 @@ import { ArrowLeft, Save, Search, CheckCircle, Loader, CheckCircle2, AlertCircle
 import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
+import { CommissionSection } from "@/components/CommissionSection";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import ErrorModal from "@/components/ErrorModal";
@@ -17,16 +18,19 @@ import { calculateCommissions, formatCurrency, BusinessType } from "@/lib/commis
 import { getProperfyFieldClassName } from "@/lib/properfyFieldHelper";
 import { formatWhileTyping, parseCurrencyInput } from "@/lib/currencyFormatter";
 
-// Tipos de Negócio atualizados conforme manual de comissionamento
-const BUSINESS_TYPES = [
-  { value: "venda_interna", label: "Venda Interna" },
-  { value: "parceria_una", label: "Parceria UNA" },
-  { value: "parceria_externa", label: "Parceria Externa" },
-  { value: "lancamento", label: "Lançamentos" },
-  { value: "parceria_autonomo", label: "Parceria Autônomo" },
-  { value: "imoveis_ebani", label: "Imóveis Ebani" },
-  { value: "prontos", label: "Prontos" },
+// Tipos de Comissão conforme manual de comissionamento Baggio Imóveis (12/02/2026)
+const COMMISSION_TYPES = [
+  { value: "Venda Interna", label: "Venda Interna", percentage: 6 },
+  { value: "Parceria UNA", label: "Parceria UNA", percentage: 6 },
+  { value: "Parceria Externa", label: "Parceria Externa", percentage: 6 },
+  { value: "Lançamentos (sem coordenação)", label: "Lançamentos (sem coordenação)", percentage: 4 },
+  { value: "Lançamentos (com coordenação de produto)", label: "Lançamentos (com coordenação de produto)", percentage: 4 },
+  { value: "Corretor Autônomo", label: "Corretor Autônomo", percentage: 6 },
+  { value: "Imóveis Ebani", label: "Imóveis Ebani", percentage: 5 },
 ];
+
+// Manter BUSINESS_TYPES para compatibilidade com código existente
+const BUSINESS_TYPES = COMMISSION_TYPES;
 
 const PAYMENT_METHODS = [
   { value: "a_vista", label: "À Vista" },
@@ -148,7 +152,24 @@ interface FormData {
   brokerVendedorEmail: string;
   businessType: string;
 
-  // Commission Info
+  // Commission Info (Sistema Automático 12/02/2026)
+  tipoComissao: string; // Tipo de comissão (7 opções)
+  porcentagemComissao: string; // % da comissão total
+  comissaoTotal: string; // Valor total da comissão
+  comissaoAngariador: string; // Comissão do angariador
+  comissaoCoordenador: string; // Comissão do coordenador (se aplicável)
+  comissaoVendedor: string; // Comissão do vendedor
+  comissaoImobiliaria: string; // Comissão da imobiliária
+  comissaoParceira: string; // Comissão da imobiliária parceira (se aplicável)
+  comissaoAutonomo: string; // Comissão do corretor autônomo (se aplicável)
+  // Bonificações
+  possuiBonificacao: boolean;
+  tipoBonificacao: string; // "Dinheiro" ou "Material"
+  valorBonificacao: string;
+  descricaoBonificacao: string;
+  comissaoBonificacaoCorretor: string;
+  comissaoBonificacaoImobiliaria: string;
+  // Campos antigos (manter para compatibilidade)
   totalCommissionPercent: string;
   totalCommissionValue: string;
   angariadorCommission: string;
@@ -257,6 +278,23 @@ export default function NewProposal() {
     brokerVendedorCreci: "",
     brokerVendedorEmail: "",
     businessType: "",
+    // Sistema de Comissionamento Automático (12/02/2026)
+    tipoComissao: "",
+    porcentagemComissao: "",
+    comissaoTotal: "",
+    comissaoAngariador: "",
+    comissaoCoordenador: "",
+    comissaoVendedor: "",
+    comissaoImobiliaria: "",
+    comissaoParceira: "",
+    comissaoAutonomo: "",
+    possuiBonificacao: false,
+    tipoBonificacao: "",
+    valorBonificacao: "",
+    descricaoBonificacao: "",
+    comissaoBonificacaoCorretor: "",
+    comissaoBonificacaoImobiliaria: "",
+    // Campos antigos (compatibilidade)
     totalCommissionPercent: "",
     totalCommissionValue: "",
     angariadorCommission: "",
@@ -1650,10 +1688,13 @@ export default function NewProposal() {
               </CardContent>
             </Card>
 
-            {/* Broker Section */}
+            {/* Broker Section - Sistema Automático de Comissionamento (12/02/2026) */}
+            <CommissionSection formData={formData} handleInputChange={handleInputChange} />
+            
+            {/* Seção de Corretores (Angariador e Vendedor) */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Informações de Comissionamento</CardTitle>
+                <CardTitle className="text-lg">Corretores Envolvidos</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
