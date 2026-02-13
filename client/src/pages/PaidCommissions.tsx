@@ -30,6 +30,7 @@ interface PaidCommission {
   commissionPaymentMethod: string;
   commissionPaymentBank: string;
   commissionInvoiceUrl?: string;
+  tipoComissao?: string;
 }
 
 export default function PaidCommissions() {
@@ -57,6 +58,7 @@ export default function PaidCommissions() {
         commissionPaymentMethod: sale.commissionPaymentMethod || "N/A",
         commissionPaymentBank: sale.commissionPaymentBank || "N/A",
         commissionInvoiceUrl: sale.commissionInvoiceUrl,
+        tipoComissao: sale.tipoComissao || "N/A",
       }));
   }, [salesData]);
 
@@ -92,9 +94,28 @@ export default function PaidCommissions() {
     return Object.values(monthlyData).sort((a, b) => a.month.localeCompare(b.month));
   }, [filteredCommissions]);
 
-  // Lista de corretores únicos
+  // Dados para o gráfico por tipo de comissão
+  const commissionTypeData = useMemo(() => {
+    const typeData: Record<string, { type: string; total: number; count: number }> = {};
+    
+    filteredCommissions.forEach((c) => {
+      const type = c.tipoComissao || "N/A";
+      
+      if (!typeData[type]) {
+        typeData[type] = { type, total: 0, count: 0 };
+      }
+      
+      typeData[type].total += c.commissionAmount;
+      typeData[type].count += 1;
+    });
+    
+    return Object.values(typeData).sort((a, b) => b.total - a.total);
+  }, [filteredCommissions]);
+
+  // Lista de corretores únicos (filtrar N/A e vazios)
   const brokers = useMemo(() => {
-    const uniqueBrokers = Array.from(new Set(paidCommissions.map((c) => c.brokerName)));
+    const uniqueBrokers = Array.from(new Set(paidCommissions.map((c) => c.brokerName)))
+      .filter((name) => name && name !== "N/A");
     return uniqueBrokers.sort();
   }, [paidCommissions]);
 
@@ -287,6 +308,55 @@ export default function PaidCommissions() {
                   <Bar dataKey="total" fill="#3b82f6" name="Comissões Pagas" />
                 </BarChart>
               </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Gráfico por Tipo de Comissão */}
+        {commissionTypeData.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Por Tipo de Comissão</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={commissionTypeData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" />
+                  <YAxis dataKey="type" type="category" width={150} />
+                  <Tooltip
+                    formatter={(value: number) =>
+                      new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+                    }
+                  />
+                  <Legend />
+                  <Bar dataKey="total" fill="#10b981" name="Total Pago" />
+                </BarChart>
+              </ResponsiveContainer>
+              
+              {/* Tabela resumo */}
+              <div className="mt-6 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-4">Tipo de Comissão</th>
+                      <th className="text-right py-2 px-4">Quantidade</th>
+                      <th className="text-right py-2 px-4">Total Pago</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {commissionTypeData.map((item) => (
+                      <tr key={item.type} className="border-b hover:bg-slate-50">
+                        <td className="py-2 px-4">{item.type}</td>
+                        <td className="text-right py-2 px-4">{item.count}</td>
+                        <td className="text-right py-2 px-4">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         )}

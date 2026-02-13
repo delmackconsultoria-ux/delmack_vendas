@@ -1417,3 +1417,25 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Verificar se emails de notificação são enviados
 - [ ] Validar cálculos automáticos de comissão
 
+
+
+## 🔄 Reorganização do Perfil Financeiro (13/02/2026)
+
+### Remover Páginas Desnecessárias
+- [x] Remover página "Analytics" do menu do perfil Financeiro
+- [x] Remover página "Análise de Dados" do menu do perfil Financeiro (era apenas título da Analytics)
+- [x] Atualizar AppHeader.tsx para ocultar rota
+
+### Adicionar Relatório por Tipo de Comissão
+- [x] Criar componente de relatório "Por Tipo de Comissão" em Comissões Pagas
+- [x] Posicionar abaixo do gráfico "Evolução Mensal"
+- [x] Implementar agrupamento por tipo de comissão (7 tipos)
+- [x] Exibir quantidade e valor total por tipo
+- [x] Adicionar gráfico de barras horizontal + tabela resumo
+
+### Corrigir Filtro de Corretor
+- [x] Investigar por que filtro mostra "Todos os Corretores" duplicado (código estava correto)
+- [x] Filtrar corretores "N/A" e vazios da lista
+- [x] Lista de corretores individuais já estava implementada
+- [x] Filtro aplica em todos os gráficos da página
+

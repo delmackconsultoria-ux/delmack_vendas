@@ -46,7 +46,7 @@ const navItems: NavItem[] = [
   { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },
-  { label: "Analytics", path: "/analytics", roles: ["finance", "viewer"] },
+  // Analytics removido conforme solicitação (13/02/2026)
 ];
 
 export function AppHeader() {
