@@ -1480,3 +1480,12 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Forçar rebuild do frontend (cache limpo)
 - [ ] Testar salvamento de venda com valores reais
 
+
+
+## ✅ Adicionar Validação CPF/CNPJ Obrigatória (13/02/2026)
+
+- [x] Adicionar buyerCpfCnpj à lista de campos obrigatórios
+- [x] Adicionar sellerCpfCnpj à lista de campos obrigatórios
+- [x] useEffect já monitora esses campos (linhas 470-471)
+- [ ] Testar validação com CPF/CNPJ preenchidos e vazios
+

@@ -178,7 +178,7 @@ interface CompletionStatus {
 
 export default function NewProposal() {
   // DEBUG: Versão do código - 2026-02-10 02:27 UTC
-  console.log("[NewProposal] Versão: 2026-02-13 16:58 UTC - Validação simplificada + Máscara corrigida");
+  console.log("[NewProposal] Versão: 2026-02-13 17:05 UTC - CPF/CNPJ obrigatórios");
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [brokers, setBrokers] = useState<Broker[]>([]);
@@ -441,7 +441,9 @@ export default function NewProposal() {
     const requiredFieldsToCheck = [
       "saleValue",
       "buyerName",
+      "buyerCpfCnpj",
       "sellerName",
+      "sellerCpfCnpj",
       "propertyAddress",
       "saleDate",
     ];
@@ -521,7 +523,9 @@ export default function NewProposal() {
   const requiredFields = [
     "saleValue",
     "buyerName",
+    "buyerCpfCnpj",
     "sellerName",
+    "sellerCpfCnpj",
     "propertyAddress",
     "saleDate",
   ];
