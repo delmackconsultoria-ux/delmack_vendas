@@ -176,6 +176,31 @@ export const sales = mysqlTable("sales", {
   commissionPaymentBank: varchar("commissionPaymentBank", { length: 255 }), // Banco Pagador da Comissão
   commissionPaymentMethod: varchar("commissionPaymentMethod", { length: 100 }), // PIX/TED/Boleto/Dinheiro
   commissionPaymentObservations: text("commissionPaymentObservations"), // Observações do pagamento da comissão
+  // Sistema de Comissionamento Automático (12/02/2026)
+  tipoComissao: mysqlEnum("tipoComissao", [
+    "Venda Interna",
+    "Parceria UNA",
+    "Parceria Externa",
+    "Lançamentos (sem coordenação)",
+    "Lançamentos (com coordenação de produto)",
+    "Corretor Autônomo",
+    "Imóveis Ebani"
+  ]),
+  porcentagemComissao: decimal("porcentagemComissao", { precision: 5, scale: 2 }), // % da comissão total
+  comissaoTotal: decimal("comissaoTotal", { precision: 15, scale: 2 }), // Valor total da comissão
+  comissaoAngariador: decimal("comissaoAngariador", { precision: 15, scale: 2 }), // Comissão do angariador
+  comissaoCoordenador: decimal("comissaoCoordenador", { precision: 15, scale: 2 }), // Comissão do coordenador (se aplicável)
+  comissaoVendedor: decimal("comissaoVendedor", { precision: 15, scale: 2 }), // Comissão do vendedor
+  comissaoImobiliaria: decimal("comissaoImobiliaria", { precision: 15, scale: 2 }), // Comissão da imobiliária
+  comissaoParceira: decimal("comissaoParceira", { precision: 15, scale: 2 }), // Comissão da imobiliária parceira (se aplicável)
+  comissaoAutonomo: decimal("comissaoAutonomo", { precision: 15, scale: 2 }), // Comissão do corretor autônomo (se aplicável)
+  // Bonificações
+  possuiBonificacao: boolean("possuiBonificacao").default(false),
+  tipoBonificacao: mysqlEnum("tipoBonificacao", ["Dinheiro", "Material"]),
+  valorBonificacao: decimal("valorBonificacao", { precision: 15, scale: 2 }),
+  descricaoBonificacao: text("descricaoBonificacao"),
+  comissaoBonificacaoCorretor: decimal("comissaoBonificacaoCorretor", { precision: 15, scale: 2 }),
+  comissaoBonificacaoImobiliaria: decimal("comissaoBonificacaoImobiliaria", { precision: 15, scale: 2 }),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

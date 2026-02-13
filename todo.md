@@ -1204,3 +1204,57 @@
 - [x] Tornar card "Este Mês" clicável no CommissionsCalendar (redirecionar para /paid-commissions)
 - [x] Mudar gráfico de Evolução Mensal de linha (pontos) para barras verticais
 - [x] Remover campo "Equipe do Corretor" do modal de edição em BrokerManagement.tsx
+
+
+## 💰 SISTEMA DE COMISSIONAMENTO AUTOMÁTICO (12/02/2026)
+
+### Estrutura de Dados
+- [x] Adicionar campos de comissionamento no schema (drizzle/schema.ts)
+  - [ ] tipoComissao (enum: 7 tipos)
+  - [ ] porcentagemComissao (decimal)
+  - [ ] comissaoTotal (decimal)
+  - [ ] comissaoAngariador (decimal, nullable)
+  - [ ] comissaoCoordenador (decimal, nullable)
+  - [ ] comissaoVendedor (decimal)
+  - [ ] comissaoImobiliaria (decimal)
+  - [ ] comissaoParceira (decimal, nullable)
+  - [ ] comissaoAutonomo (decimal, nullable)
+  - [ ] possuiBonificacao (boolean)
+  - [ ] tipoBonificacao (enum: Dinheiro/Material, nullable)
+  - [ ] valorBonificacao (decimal, nullable)
+  - [ ] descricaoBonificacao (text, nullable)
+  - [ ] comissaoBonificacaoCorretor (decimal, nullable)
+  - [ ] comissaoBonificacaoImobiliaria (decimal, nullable)
+- [x] Executar `pnpm db:push` para aplicar mudanças
+
+### Backend
+- [x] Criar função `calculateCommission()` em `server/utils/commissionCalculator.ts`
+- [x] Criar função `calculateBonus()` em `server/utils/commissionCalculator.ts`
+- [x] Criar função `getDefaultPercentage()` para auto-preenchimento
+- [x] Criar função `getCommissionTooltip()` para tooltips
+- [ ] Atualizar `createSale` em `salesRouter.ts` para calcular comissões automaticamente
+- [ ] Adicionar validação de tipo de comissão
+
+### Frontend
+- [ ] Atualizar formulário `NewProposal.tsx` com seção de comissionamento
+- [ ] Adicionar dropdown "Tipo de Comissão" com 7 opções:
+  - Venda Interna
+  - Parceria UNA
+  - Parceria Externa
+  - Lançamentos (sem coordenação)
+  - Lançamentos (com coordenação de produto)
+  - Corretor Autônomo
+  - Imóveis Ebani
+- [ ] Adicionar tooltips informativos para cada tipo (usando Tooltip do shadcn/ui)
+- [ ] Implementar auto-preenchimento de porcentagem ao selecionar tipo
+- [ ] Implementar cálculo automático em tempo real ao digitar valor da venda
+- [ ] Adicionar campos editáveis de comissão detalhada
+- [ ] Adicionar seção de Bonificação (checkbox + campos condicionais)
+- [ ] Mostrar resumo de comissões calculadas antes de enviar
+
+### Testes
+- [ ] Testar cálculo para cada um dos 7 tipos de comissão
+- [ ] Testar bonificação em dinheiro (50/50)
+- [ ] Testar bonificação material (100% corretor)
+- [ ] Verificar se valores são salvos corretamente no banco
+- [ ] Validar exibição de comissões no histórico de vendas
