@@ -1452,3 +1452,31 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - Campo "invoiceNumber" (Nota Fiscal) estava na lista de obrigatórios mas foi removido do formulário
 - Isso causava validação sempre falhar sem destacar campo em vermelho (campo não existia)
 
+
+
+## 🔴 Correção Urgente - Máscara de Valores (13/02/2026)
+
+### Problema: Máscara limitando a 3 dígitos
+- [ ] Investigar função formatWhileTyping que está limitando entrada
+- [ ] Permitir digitação de valores maiores (milhões) sem restrição
+- [ ] Testar entrada de R$ 950.000,00 e valores similares
+- [ ] Verificar se problema está no input handler ou na função de formatação
+
+
+
+## 🔴 URGENTE - Validação ainda falhando (13/02/2026)
+
+- [ ] Investigar por que validação ainda falha após remover invoiceNumber
+- [ ] Adicionar console.log para debugar quais campos estão faltando
+- [ ] Verificar se completionStatus está sendo atualizado corretamente
+- [ ] Testar com todos os campos preenchidos manualmente
+
+
+
+## 🔴 CRÍTICO - Simplificar Validação (13/02/2026)
+
+- [x] Reduzir lista de campos obrigatórios para apenas 5 essenciais
+- [x] Máscara de valores já suporta 15 dígitos (sem limite)
+- [x] Forçar rebuild do frontend (cache limpo)
+- [ ] Testar salvamento de venda com valores reais
+

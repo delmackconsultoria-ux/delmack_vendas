@@ -178,7 +178,7 @@ interface CompletionStatus {
 
 export default function NewProposal() {
   // DEBUG: Versão do código - 2026-02-10 02:27 UTC
-  console.log('[NewProposal] Versão: 2026-02-10 02:27 UTC - Correções aplicadas');
+  console.log("[NewProposal] Versão: 2026-02-13 16:58 UTC - Validação simplificada + Máscara corrigida");
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [brokers, setBrokers] = useState<Broker[]>([]);
@@ -437,23 +437,13 @@ export default function NewProposal() {
 
   // Initialize completionStatus on mount and when formData changes
   useEffect(() => {
+    // SIMPLIFICADO (13/02/2026): Apenas campos REALMENTE essenciais
     const requiredFieldsToCheck = [
+      "saleValue",
       "buyerName",
       "sellerName",
-      "saleValue",
-      "typeOfProperty",
-      "bedrooms",
-      "privateArea",
-      "totalArea",
       "propertyAddress",
       "saleDate",
-      "brokerAngariador",
-      "brokerVendedor",
-      "businessType",
-      "buyerCpfCnpj",
-      "sellerCpfCnpj",
-      "saleType",
-      // invoiceNumber removido (13/02/2026)
     ];
     const newCompletionStatus: CompletionStatus = {};
     requiredFieldsToCheck.forEach((field) => {
@@ -527,23 +517,13 @@ export default function NewProposal() {
     handleInputChange(field, maskedValue);
   };
 
+  // SIMPLIFICADO (13/02/2026): Apenas campos REALMENTE essenciais
   const requiredFields = [
-    "propertyAddress",
     "saleValue",
     "buyerName",
-    "buyerCpfCnpj",
-    "businessType",
     "sellerName",
-    "sellerCpfCnpj",
-    "typeOfProperty",
-    "bedrooms",
-    "privateArea",
-    "totalArea",
+    "propertyAddress",
     "saleDate",
-    "brokerAngariador",
-    "brokerVendedor",
-    "saleType",
-    // invoiceNumber removido (13/02/2026) - campo não existe mais no formulário
   ];
 
   const isFormComplete = requiredFields.every((field) => completionStatus[field]);
@@ -643,9 +623,15 @@ export default function NewProposal() {
       return;
     }
     
+    // DEBUG: Verificar quais campos estão faltando
+    const missingFields = requiredFields.filter(field => !completionStatus[field]);
+    console.log('[DEBUG] Campos obrigatórios faltando:', missingFields);
+    console.log('[DEBUG] completionStatus:', completionStatus);
+    console.log('[DEBUG] formData:', formData);
+    
     // Verificar se todos os campos obrigatórios estão preenchidos
     if (!isFormComplete) {
-      toast.error("Preencha todos os campos obrigatórios (destacados em vermelho)");
+      toast.error(`Preencha todos os campos obrigatórios: ${missingFields.join(', ')}`);
       // Scroll para o primeiro campo com erro
       setTimeout(() => {
         const errorField = document.querySelector('.bg-red-50');
@@ -656,6 +642,8 @@ export default function NewProposal() {
       }, 100);
       return;
     }
+    
+    console.log('[DEBUG] Todos os campos obrigatórios preenchidos! Mostrando prévia...');
     
     // Validações do Sistema de Comissionamento (12/02/2026)
     if (!formData.tipoComissao) {

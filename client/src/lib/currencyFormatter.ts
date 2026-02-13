@@ -24,16 +24,42 @@ export function parseCurrencyInput(value: string): number {
 /**
  * Formata valor durante digitação (permite vírgula)
  * Ex: "5000,5" → "5.000,50" (formato brasileiro completo)
+ * Permite digitação livre de valores grandes (milhões)
  */
-export function formatWhileTyping(value: string): string {
-  // Converte para número se for string numérica pura (vindo da API)
-  const numValue = typeof value === 'number' ? value : parseFloat(value.toString().replace(/[^\d.,]/g, '').replace(',', '.'));
+export function formatWhileTyping(value: string | number): string {
+  // Se for número, formata diretamente
+  if (typeof value === 'number') {
+    return value.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
   
-  if (isNaN(numValue)) return value.toString();
+  // Remove tudo exceto números, vírgula e ponto
+  let cleaned = value.toString().replace(/[^\d.,]/g, '');
   
-  // Formata com pontos de milhar e vírgula decimal
-  return numValue.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  // Se estiver vazio, retorna vazio
+  if (!cleaned) return '';
+  
+  // Remove pontos de milhar anteriores (mantém apenas vírgula decimal)
+  cleaned = cleaned.replace(/\./g, '');
+  
+  // Separa parte inteira e decimal
+  const parts = cleaned.split(',');
+  let integerPart = parts[0];
+  const decimalPart = parts[1] || '';
+  
+  // Se não tem parte inteira, retorna vazio
+  if (!integerPart) return '';
+  
+  // Formata parte inteira com pontos de milhar
+  integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  
+  // Retorna formatado
+  if (decimalPart) {
+    // Limita decimal a 2 dígitos
+    return `${integerPart},${decimalPart.substring(0, 2)}`;
+  }
+  
+  return integerPart;
 }
