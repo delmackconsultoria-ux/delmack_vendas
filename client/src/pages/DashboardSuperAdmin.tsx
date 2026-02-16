@@ -135,7 +135,7 @@ export default function DashboardSuperAdmin() {
       <AppHeader />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
         {/* Welcome */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-white">Bem-vindo, Super Admin!</h2>
@@ -292,7 +292,7 @@ export default function DashboardSuperAdmin() {
                 </div>
               ))}
               {(!companiesQuery.data || companiesQuery.data.length === 0) && (
-                <p className="text-center text-slate-400 py-8">Nenhuma empresa cadastrada</p>
+                <p className="text-center text-slate-400 pt-24">Nenhuma empresa cadastrada</p>
               )}
             </div>
           </CardContent>
@@ -579,7 +579,7 @@ export default function DashboardSuperAdmin() {
 
       {/* Company Details Modal */}
       {showDetailsModal && selectedCompany && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto py-8">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto pt-24">
           <Card className="w-full max-w-2xl bg-slate-800 border-slate-700 my-auto">
             <CardHeader>
               <CardTitle className="text-white flex items-center justify-between">
@@ -868,7 +868,7 @@ function UsersListModal({ company, onClose, onRefresh }: { company: any; onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto py-8">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto pt-24">
       <Card className="w-full max-w-4xl bg-slate-800 border-slate-700 my-auto max-h-[90vh] overflow-auto">
         <CardHeader>
           <CardTitle className="text-white flex items-center justify-between">
@@ -879,9 +879,9 @@ function UsersListModal({ company, onClose, onRefresh }: { company: any; onClose
         </CardHeader>
         <CardContent>
           {usersQuery.isLoading ? (
-            <p className="text-center text-slate-400 py-8">Carregando...</p>
+            <p className="text-center text-slate-400 pt-24">Carregando...</p>
           ) : usersQuery.data?.length === 0 ? (
-            <p className="text-center text-slate-400 py-8">Nenhum usuário cadastrado nesta empresa</p>
+            <p className="text-center text-slate-400 pt-24">Nenhum usuário cadastrado nesta empresa</p>
           ) : (
             <div className="space-y-3">
               {usersQuery.data?.map((user: any) => (
@@ -1068,7 +1068,7 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
   });
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto py-8">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-auto pt-24">
       <Card className="w-full max-w-5xl bg-slate-800 border-slate-700 my-auto max-h-[90vh] overflow-auto">
         <CardHeader>
           <CardTitle className="text-white flex items-center justify-between">
@@ -1119,9 +1119,9 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <p className="text-center text-slate-400 py-8">Carregando...</p>
+            <p className="text-center text-slate-400 pt-24">Carregando...</p>
           ) : filteredUsers.length === 0 ? (
-            <p className="text-center text-slate-400 py-8">Nenhum usuário encontrado</p>
+            <p className="text-center text-slate-400 pt-24">Nenhum usuário encontrado</p>
           ) : (
             <div className="space-y-3">
               {filteredUsers.map((user: any) => (

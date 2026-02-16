@@ -315,7 +315,7 @@ export default function ReportsPage() {
     <>
       <AppHeader />
       <div className="min-h-screen bg-slate-50 pt-16">
-        <div className="px-6 py-8 max-w-7xl mx-auto">
+        <div className="px-6 pt-24 max-w-7xl mx-auto">
           {/* Title Section */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Relatórios e Gráficos</h1>

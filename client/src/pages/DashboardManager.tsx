@@ -52,7 +52,7 @@ export default function DashboardManager() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-slate-50 pt-16">
+      <div className="min-h-screen bg-slate-50 pt-24">
         {/* Main Content */}
         <div className="px-6 py-8 max-w-7xl mx-auto">
           {/* Welcome Section */}

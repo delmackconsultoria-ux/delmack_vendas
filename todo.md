@@ -1502,3 +1502,21 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Testar com CPFs válidos e inválidos
 - [ ] Testar com CNPJs válidos e inválidos
 
+
+
+## 🎨 Padronização de Espaçamento Header-Título (16/02/2026)
+
+### Problema Identificado
+- Espaçamento inconsistente entre header e título nas páginas:
+  * Painel de Gestão: ~100px (pt-16)
+  * Indicadores de Vendas: ~80px (py-8)
+  * Gerenciamento de Corretores: ~90px (py-8)
+  * Outras páginas: variado (py-6, py-8, pt-16)
+
+### Tarefas
+- [x] Identificar todas as páginas do sistema (37 páginas)
+- [x] Aplicar espaçamento padrão pt-24 (96px) em todas as páginas principais
+- [x] Atualizar DashboardManager (pt-16 → pt-24)
+- [x] Atualizar BrokerManagement, Indicators, Reports, SalesApproval, ProposalManagement
+- [x] Atualizar DashboardBroker, DashboardFinance, DashboardSuperAdmin, PaidCommissions, Ranking
+- [ ] Testar consistência visual em todas as páginas

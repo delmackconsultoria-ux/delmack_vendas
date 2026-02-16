@@ -126,7 +126,7 @@ ${sale.observation || "Nenhuma observação"}
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-50">
       <AppHeader />
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-4 pt-24">
         <div className="flex items-center justify-between mb-4">
           <Button variant="ghost" onClick={() => setLocation("/proposals")}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Voltar

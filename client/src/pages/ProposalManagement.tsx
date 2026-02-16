@@ -179,7 +179,7 @@ export default function ProposalManagement() {
         </div>
       </div>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 pt-24">
         <Tabs defaultValue="history" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
             <TabsTrigger value="history">Histórico de Vendas</TabsTrigger>
@@ -331,9 +331,9 @@ export default function ProposalManagement() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8 text-slate-500">Carregando...</div>
+              <div className="text-center pt-24 text-slate-500">Carregando...</div>
             ) : filteredSales.length === 0 ? (
-              <div className="text-center py-8 text-slate-500">Nenhuma proposta encontrada</div>
+              <div className="text-center pt-24 text-slate-500">Nenhuma proposta encontrada</div>
             ) : (
               <div className="space-y-3">
                 {filteredSales.map((sale: any) => {

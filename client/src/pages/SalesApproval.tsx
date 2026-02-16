@@ -108,7 +108,7 @@ export default function SalesApproval() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 pt-24">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Aprovação de Vendas</h1>
         <p className="text-slate-500 mb-6">
           {user?.role === "manager" ? "Aprovar vendas para enviar ao financeiro" : "Aprovar pagamento de comissões"}
@@ -166,7 +166,7 @@ export default function SalesApproval() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-8">Carregando...</div>
+          <div className="text-center pt-24">Carregando...</div>
         ) : pendingSales.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center text-slate-500">
