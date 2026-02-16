@@ -1489,3 +1489,16 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] useEffect já monitora esses campos (linhas 470-471)
 - [ ] Testar validação com CPF/CNPJ preenchidos e vazios
 
+
+
+## ✅ Validação de Dígitos Verificadores CPF/CNPJ (16/02/2026)
+
+- [x] Funções validateCPF e validateCNPJ já existiam em lib/validators.ts
+- [x] Validação já integrada no handleCpfCnpjChange (linha 360-380)
+- [x] Estado cpfValidation já implementado (buyer/seller: idle/valid/invalid)
+- [x] Feedback visual já implementado (verde/vermelho + ícones)
+- [x] Mensagem de erro discreta já exibida ("CPF/CNPJ inválido")
+- [x] Bloqueio de salvamento adicionado (linhas 650-676)
+- [ ] Testar com CPFs válidos e inválidos
+- [ ] Testar com CNPJs válidos e inválidos
+

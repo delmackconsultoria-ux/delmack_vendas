@@ -178,7 +178,7 @@ interface CompletionStatus {
 
 export default function NewProposal() {
   // DEBUG: Versão do código - 2026-02-10 02:27 UTC
-  console.log("[NewProposal] Versão: 2026-02-13 17:05 UTC - CPF/CNPJ obrigatórios");
+  console.log("[NewProposal] Versão: 2026-02-16 01:45 UTC - Validação CPF/CNPJ ativa");
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [brokers, setBrokers] = useState<Broker[]>([]);
@@ -642,6 +642,34 @@ export default function NewProposal() {
         if (errorField) {
           errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
           (errorField as HTMLElement).focus?.();
+        }
+      }, 100);
+      return;
+    }
+    
+    // Validar CPF/CNPJ do comprador
+    if (cpfValidation.buyer === "invalid") {
+      toast.error("⚠️ CPF/CNPJ do comprador inválido. Verifique os dígitos.");
+      // Scroll para o campo de CPF do comprador
+      setTimeout(() => {
+        const buyerCpfField = document.querySelector('input[placeholder="000.000.000-00"]');
+        if (buyerCpfField) {
+          buyerCpfField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (buyerCpfField as HTMLElement).focus?.();
+        }
+      }, 100);
+      return;
+    }
+    
+    // Validar CPF/CNPJ do vendedor
+    if (cpfValidation.seller === "invalid") {
+      toast.error("⚠️ CPF/CNPJ do vendedor inválido. Verifique os dígitos.");
+      // Scroll para o campo de CPF do vendedor
+      setTimeout(() => {
+        const sellerCpfFields = document.querySelectorAll('input[placeholder="000.000.000-00"]');
+        if (sellerCpfFields.length > 1) {
+          sellerCpfFields[1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (sellerCpfFields[1] as HTMLElement).focus?.();
         }
       }, 100);
       return;
