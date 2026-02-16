@@ -123,6 +123,13 @@ const createSaleSchema = z.object({
   comissaoBonificacaoCorretor: z.string().optional(),
   comissaoBonificacaoImobiliaria: z.string().optional(),
   
+  // Sinal de Negócio (16/02/2026)
+  sinalNegocio: z.enum(["Baggio", "Outra"]).optional(),
+  sinalNegocioEmpresa: z.string().optional(),
+  sinalNegocioValor: z.number().optional(),
+  sinalNegocioDataPagamento: z.string().datetime().optional(),
+  sinalNegocioComprovanteUrl: z.string().optional(),
+  
   // Status
   status: z.enum(["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]).optional(),
 
@@ -382,6 +389,12 @@ export const salesRouter = router({
           descricaoBonificacao: input.descricaoBonificacao || null,
           comissaoBonificacaoCorretor: input.comissaoBonificacaoCorretor || null,
           comissaoBonificacaoImobiliaria: input.comissaoBonificacaoImobiliaria || null,
+          // Sinal de Negócio (16/02/2026)
+          sinalNegocio: input.sinalNegocio as any,
+          sinalNegocioEmpresa: input.sinalNegocioEmpresa || null,
+          sinalNegocioValor: input.sinalNegocioValor?.toString() || null,
+          sinalNegocioDataPagamento: input.sinalNegocioDataPagamento ? new Date(input.sinalNegocioDataPagamento) : null,
+          sinalNegocioComprovanteUrl: input.sinalNegocioComprovanteUrl || null,
         };
         
         await db.insert(sales).values(saleData as any);

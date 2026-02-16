@@ -1520,3 +1520,18 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Atualizar BrokerManagement, Indicators, Reports, SalesApproval, ProposalManagement
 - [x] Atualizar DashboardBroker, DashboardFinance, DashboardSuperAdmin, PaidCommissions, Ranking
 - [ ] Testar consistência visual em todas as páginas
+
+
+## ✅ Adicionar Seção "Sinal de Negócio" - Nova Venda (16/02/2026)
+
+### Requisitos
+- [ ] Adicionar campo "Sinal de Negócio" (dropdown: "Baggio" ou "Outra")
+- [ ] Se "Baggio": Campo de anexo obrigatório "Comprovante de Sinal de Negócio"
+- [ ] Se "Outra": Campo de texto para nome da empresa
+- [ ] Ambas opções: "Valor de Sinal de Negócio" (máscara R$)
+- [ ] Ambas opções: "Data do Pagamento do Sinal de Negócio"
+- [ ] Tornar todos os campos básicos do formulário obrigatórios
+- [ ] Atualizar schema do banco de dados
+- [ ] Atualizar validação de campos obrigatórios
+- [ ] Implementar upload de arquivo para comprovante
+- [ ] Testar fluxo completo com ambas opções

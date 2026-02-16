@@ -161,6 +161,14 @@ interface FormData {
   vendedorCommission: string;
   realEstateCommission: string;
 
+  // Sinal de Negócio (16/02/2026)
+  sinalNegocio: string; // "Baggio" ou "Outra"
+  sinalNegocioEmpresa: string; // Nome da empresa se "Outra"
+  sinalNegocioValor: string; // Valor do sinal
+  sinalNegocioDataPagamento: string; // Data do pagamento
+  sinalNegocioComprovanteFile: File | null; // Arquivo do comprovante (se Baggio)
+  sinalNegocioComprovanteUrl: string; // URL do comprovante após upload
+
   observations: string;
   showPreview: boolean;
 }
@@ -273,6 +281,14 @@ export default function NewProposal() {
     angariadorCommission: "",
     vendedorCommission: "",
     realEstateCommission: "",
+
+    // Sinal de Negócio (16/02/2026)
+    sinalNegocio: "",
+    sinalNegocioEmpresa: "",
+    sinalNegocioValor: "",
+    sinalNegocioDataPagamento: "",
+    sinalNegocioComprovanteFile: null,
+    sinalNegocioComprovanteUrl: "",
 
     observations: "",
     showPreview: false,
@@ -528,6 +544,10 @@ export default function NewProposal() {
     "sellerCpfCnpj",
     "propertyAddress",
     "saleDate",
+    // Sinal de Negócio (16/02/2026)
+    "sinalNegocio",
+    "sinalNegocioValor",
+    "sinalNegocioDataPagamento",
   ];
 
   const isFormComplete = requiredFields.every((field) => completionStatus[field]);
@@ -642,6 +662,30 @@ export default function NewProposal() {
         if (errorField) {
           errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
           (errorField as HTMLElement).focus?.();
+        }
+      }, 100);
+      return;
+    }
+    
+    // Validar Sinal de Negócio condicional (16/02/2026)
+    if (formData.sinalNegocio === "Baggio" && !formData.sinalNegocioComprovanteFile && !formData.sinalNegocioComprovanteUrl) {
+      toast.error("⚠️ Comprovante de Sinal de Negócio é obrigatório para Baggio.");
+      setTimeout(() => {
+        const comprovanteField = document.querySelector('input[type="file"]');
+        if (comprovanteField) {
+          comprovanteField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return;
+    }
+    
+    if (formData.sinalNegocio === "Outra" && !formData.sinalNegocioEmpresa) {
+      toast.error("⚠️ Nome da empresa é obrigatório quando Sinal de Negócio é 'Outra'.");
+      setTimeout(() => {
+        const empresaField = document.querySelector('input[placeholder="Digite o nome da empresa"]');
+        if (empresaField) {
+          empresaField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (empresaField as HTMLElement).focus?.();
         }
       }, 100);
       return;
@@ -806,6 +850,12 @@ export default function NewProposal() {
         descricaoBonificacao: formData.descricaoBonificacao,
         comissaoBonificacaoCorretor: formData.comissaoBonificacaoCorretor,
         comissaoBonificacaoImobiliaria: formData.comissaoBonificacaoImobiliaria,
+        // Sinal de Negócio (16/02/2026)
+        sinalNegocio: formData.sinalNegocio as "Baggio" | "Outra" | undefined,
+        sinalNegocioEmpresa: formData.sinalNegocio === "Outra" ? formData.sinalNegocioEmpresa : undefined,
+        sinalNegocioValor: formData.sinalNegocioValor ? parseCurrencyInput(formData.sinalNegocioValor) : undefined,
+        sinalNegocioDataPagamento: formData.sinalNegocioDataPagamento ? new Date(formData.sinalNegocioDataPagamento).toISOString() : undefined,
+        sinalNegocioComprovanteUrl: formData.sinalNegocioComprovanteUrl || undefined,
       };
 
       const result = await createSaleMutation.mutateAsync(payload);
@@ -831,6 +881,32 @@ export default function NewProposal() {
           });
         } catch (uploadError) {
           console.error('Erro ao fazer upload do documento:', uploadError);
+        }
+      }
+      
+      // Upload do comprovante de Sinal de Negócio (se Baggio)
+      if (formData.sinalNegocioComprovanteFile && result.saleId) {
+        try {
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result as string;
+              resolve(result.split(',')[1]);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(formData.sinalNegocioComprovanteFile!);
+          });
+          
+          // TODO: Implementar upload do comprovante via API
+          // await uploadComprovanteS inalMutation.mutateAsync({
+          //   saleId: result.saleId,
+          //   fileName: formData.sinalNegocioComprovanteFile.name,
+          //   fileData: base64,
+          //   contentType: formData.sinalNegocioComprovanteFile.type
+          // });
+          console.log('[DEBUG] Upload de comprovante de sinal pendente de implementação');
+        } catch (uploadError) {
+          console.error('Erro ao fazer upload do comprovante de sinal:', uploadError);
         }
       }
       
@@ -1534,8 +1610,83 @@ export default function NewProposal() {
                     </Select>
                     <p className="text-xs text-slate-500 mt-1">Lançamento: Lucas | Pronto: Camila</p>
                   </div>
+                </div>
 
+                {/* Sinal de Negócio */}
+                <div className="border-t pt-4 mt-4">
+                  <h3 className="text-md font-semibold mb-4">Sinal de Negócio</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Sinal de Negócio *</Label>
+                      <Select 
+                        value={formData.sinalNegocio} 
+                        onValueChange={(value) => handleInputChange("sinalNegocio", value)}
+                      >
+                        <SelectTrigger className={completionStatus.sinalNegocio ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sinalNegocio ? "bg-red-50 border-red-400" : ""}>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Baggio">Baggio</SelectItem>
+                          <SelectItem value="Outra">Outra</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
+                    {formData.sinalNegocio === "Outra" && (
+                      <div>
+                        <Label>Nome da Empresa *</Label>
+                        <Input
+                          type="text"
+                          placeholder="Digite o nome da empresa"
+                          value={formData.sinalNegocioEmpresa}
+                          onChange={(e) => handleInputChange("sinalNegocioEmpresa", e.target.value)}
+                          className={completionStatus.sinalNegocioEmpresa ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sinalNegocioEmpresa ? "bg-red-50 border-red-400" : ""}
+                        />
+                      </div>
+                    )}
+
+                    {formData.sinalNegocio === "Baggio" && (
+                      <div>
+                        <Label>Comprovante de Sinal de Negócio *</Label>
+                        <Input
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleInputChange("sinalNegocioComprovanteFile", file);
+                            }
+                          }}
+                          className={completionStatus.sinalNegocioComprovanteUrl ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sinalNegocioComprovanteUrl ? "bg-red-50 border-red-400" : ""}
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Formatos aceitos: PDF, JPG, PNG</p>
+                      </div>
+                    )}
+
+                    <div>
+                      <Label>Valor de Sinal de Negócio *</Label>
+                      <Input
+                        type="text"
+                        placeholder="R$ 0,00"
+                        value={formData.sinalNegocioValor}
+                        onChange={(e) => {
+                          const formatted = formatWhileTyping(e.target.value);
+                          handleInputChange("sinalNegocioValor", formatted);
+                        }}
+                        className={completionStatus.sinalNegocioValor ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sinalNegocioValor ? "bg-red-50 border-red-400" : ""}
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Data do Pagamento do Sinal de Negócio *</Label>
+                      <Input
+                        type="date"
+                        value={formData.sinalNegocioDataPagamento}
+                        onChange={(e) => handleInputChange("sinalNegocioDataPagamento", e.target.value)}
+                        className={completionStatus.sinalNegocioDataPagamento ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sinalNegocioDataPagamento ? "bg-red-50 border-red-400" : ""}
+                      />
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -198,6 +198,12 @@ export const sales = mysqlTable("sales", {
   possuiBonificacao: boolean("possuiBonificacao").default(false),
   tipoBonificacao: mysqlEnum("tipoBonificacao", ["Dinheiro", "Material"]),
   valorBonificacao: decimal("valorBonificacao", { precision: 15, scale: 2 }),
+  // Sinal de Negócio (16/02/2026)
+  sinalNegocio: mysqlEnum("sinalNegocio", ["Baggio", "Outra"]),
+  sinalNegocioEmpresa: varchar("sinalNegocioEmpresa", { length: 255 }), // Nome da empresa se "Outra"
+  sinalNegocioValor: decimal("sinalNegocioValor", { precision: 15, scale: 2 }), // Valor do sinal
+  sinalNegocioDataPagamento: timestamp("sinalNegocioDataPagamento"), // Data do pagamento
+  sinalNegocioComprovanteUrl: text("sinalNegocioComprovanteUrl"), // URL do comprovante (se Baggio)
   descricaoBonificacao: text("descricaoBonificacao"),
   comissaoBonificacaoCorretor: decimal("comissaoBonificacaoCorretor", { precision: 15, scale: 2 }),
   comissaoBonificacaoImobiliaria: decimal("comissaoBonificacaoImobiliaria", { precision: 15, scale: 2 }),

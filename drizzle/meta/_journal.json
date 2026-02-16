@@ -176,6 +176,13 @@
       "when": 1770996915994,
       "tag": "0024_pink_martin_li",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1771283976938,
+      "tag": "0025_handy_prowler",
+      "breakpoints": true
     }
   ]
 }
