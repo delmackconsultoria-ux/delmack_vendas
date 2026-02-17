@@ -183,6 +183,13 @@
       "when": 1771283976938,
       "tag": "0025_handy_prowler",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1771288918387,
+      "tag": "0026_woozy_killraven",
+      "breakpoints": true
     }
   ]
 }

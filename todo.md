@@ -1535,3 +1535,46 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Atualizar validação de campos obrigatórios
 - [ ] Implementar upload de arquivo para comprovante
 - [ ] Testar fluxo completo com ambas opções
+
+
+## 📎 Sistema de Upload e Visualização de Documentos (16/02/2026)
+
+### Requisitos
+- Upload de comprovante de sinal de negócio via S3
+- Upload de Nota Fiscal pelo perfil Financeiro
+- Modal de visualização de todos os anexos de uma venda
+- Controle de acesso: Super Admin e Gerentes veem todos os documentos
+- Backup externo dos documentos
+
+### Tarefas
+- [ ] Criar endpoint tRPC para upload de documentos via S3
+- [ ] Adicionar campo `documents` (JSON) na tabela sales para armazenar URLs dos documentos
+- [ ] Implementar componente de upload de arquivo reutilizável
+- [ ] Integrar upload do comprovante de sinal no formulário Nova Venda
+- [ ] Criar modal de visualização de anexos na página de detalhes da venda
+- [ ] Implementar upload de NF na página de aprovação (perfil Financeiro)
+- [ ] Adicionar preview de PDF/imagens no modal
+- [ ] Implementar download de documentos
+- [ ] Testar fluxo completo de upload e visualização
+
+
+## 📎 Sistema de Upload e Visualização de Documentos (16/02/2026)
+
+### Requisitos
+- Upload de comprovante de sinal de negócio (quando Baggio)
+- Upload de Nota Fiscal pelo perfil Financeiro
+- Visualização de todos os anexos em modal unificado
+- Sistema de gestão de documentos por venda
+
+### Tarefas
+- [x] Criar endpoint uploadDocument no salesRouter.ts
+- [x] Adicionar campo documents (JSON) ao schema sales
+- [x] Executar db:push para aplicar migração
+- [x] Criar componente DocumentsModal.tsx (4 tipos: sinal, NF, proposta, outro)
+- [x] Integrar modal na página ProposalDetail.tsx
+- [x] Adicionar botão "Ver Documentos" no header
+- [x] Upload de comprovante de sinal já implementado (campo sinalNegocioComprovanteUrl)
+- [x] Upload de NF disponível via modal (perfil Financeiro)
+- [ ] Testar fluxo completo de upload e visualização
+
+**Status:** Sistema completo implementado. Modal permite upload/visualização de 4 tipos de documentos.

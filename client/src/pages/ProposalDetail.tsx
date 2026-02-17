@@ -1,6 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Edit, Download, Paperclip, History, ExternalLink, Check, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
@@ -9,6 +10,7 @@ import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { DocumentsModal } from "@/components/DocumentsModal";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
   draft: { label: "Rascunho", color: "text-slate-600", bgColor: "bg-slate-100" },
@@ -30,6 +32,37 @@ export default function ProposalDetail() {
   
   const [editingPaymentDate, setEditingPaymentDate] = useState(false);
   const [newPaymentDate, setNewPaymentDate] = useState("");
+  const [documentsModalOpen, setDocumentsModalOpen] = useState(false);
+  
+  const uploadDocumentMutation = trpc.sales.uploadDocument.useMutation({
+    onSuccess: () => {
+      toast.success("Documento enviado com sucesso");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao enviar documento");
+    },
+  });
+  
+  const handleUploadDocument = async (documentType: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target?.result?.toString().split(",")[1];
+      if (!base64) {
+        toast.error("Erro ao ler arquivo");
+        return;
+      }
+      
+      await uploadDocumentMutation.mutateAsync({
+        saleId: params.id || "",
+        documentType: documentType as "sinal_comprovante" | "nota_fiscal" | "proposta" | "outro",
+        fileName: file.name,
+        fileData: base64,
+        mimeType: file.type,
+      });
+    };
+    reader.readAsDataURL(file);
+  };
   
   const updatePaymentDateMutation = trpc.sales.updateExpectedPaymentDate.useMutation({
     onSuccess: () => {
@@ -139,6 +172,9 @@ ${sale.observation || "Nenhuma observação"}
             )}
             <Button variant="outline" onClick={handleExportPDF}>
               <Download className="h-4 w-4 mr-2" /> Exportar
+            </Button>
+            <Button variant="outline" onClick={() => setDocumentsModalOpen(true)}>
+              <Paperclip className="h-4 w-4 mr-2" /> Documentos
             </Button>
           </div>
         </div>
@@ -315,6 +351,16 @@ ${sale.observation || "Nenhuma observação"}
           </Card>
         </div>
       </main>
+      
+      {/* Modal de Documentos */}
+      <DocumentsModal
+        open={documentsModalOpen}
+        onClose={() => setDocumentsModalOpen(false)}
+        documents={sale.documents ? JSON.parse(sale.documents) : null}
+        saleId={sale.id}
+        canUpload={['manager', 'finance'].includes(user?.role || '')}
+        onUpload={handleUploadDocument}
+      />
     </div>
   );
 }

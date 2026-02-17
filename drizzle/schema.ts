@@ -207,6 +207,10 @@ export const sales = mysqlTable("sales", {
   descricaoBonificacao: text("descricaoBonificacao"),
   comissaoBonificacaoCorretor: decimal("comissaoBonificacaoCorretor", { precision: 15, scale: 2 }),
   comissaoBonificacaoImobiliaria: decimal("comissaoBonificacaoImobiliaria", { precision: 15, scale: 2 }),
+  
+  // Documentos anexados (JSON: {tipo: {url, fileName, uploadedBy, uploadedAt, mimeType}})
+  documents: text("documents"),
+  
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

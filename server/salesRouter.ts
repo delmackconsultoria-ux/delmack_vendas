@@ -1132,6 +1132,69 @@ export const salesRouter = router({
     }),
 
   /**
+   * Upload de documento (comprovante de sinal, NF, etc.) para S3
+   * Retorna URL do documento armazenado
+   */
+  uploadDocument: protectedProcedure
+    .input(z.object({
+      saleId: z.string(),
+      documentType: z.enum(["sinal_comprovante", "nota_fiscal", "proposta", "outro"]),
+      fileName: z.string(),
+      fileData: z.string(), // Base64 encoded file
+      mimeType: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Verificar se venda existe e usuário tem permissão
+        const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
+        if (sale.length === 0) {
+          throw new Error("Venda não encontrada");
+        }
+
+        // Verificar permissão (corretor só pode fazer upload em suas próprias vendas)
+        if (ctx.user.role === "broker" && 
+            sale[0].brokerVendedor !== ctx.user.id && 
+            sale[0].brokerAngariador !== ctx.user.id) {
+          throw new Error("Sem permissão para fazer upload nesta venda");
+        }
+
+        // Converter base64 para Buffer
+        const fileBuffer = Buffer.from(input.fileData, "base64");
+
+        // Fazer upload para S3
+        const s3Key = `sales/${input.saleId}/${input.documentType}/${Date.now()}-${input.fileName}`;
+        const { url } = await storagePut(s3Key, fileBuffer, input.mimeType);
+
+        // Atualizar campo documents no banco (JSON)
+        const currentDocuments = sale[0].documents ? JSON.parse(sale[0].documents as string) : {};
+        currentDocuments[input.documentType] = {
+          url,
+          fileName: input.fileName,
+          uploadedBy: ctx.user.id,
+          uploadedAt: new Date().toISOString(),
+          mimeType: input.mimeType,
+        };
+
+        await db
+          .update(sales)
+          .set({ documents: JSON.stringify(currentDocuments) })
+          .where(eq(sales.id, input.saleId));
+
+        return {
+          success: true,
+          url,
+          message: "Documento enviado com sucesso",
+        };
+      } catch (error) {
+        console.error("[Sales Router] Erro ao fazer upload de documento:", error);
+        throw new Error("Erro ao fazer upload de documento");
+      }
+    }),
+
+  /**
    * Verificar e enviar notificações de progresso de meta
    * Chamado após cada venda registrada
    */
