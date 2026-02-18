@@ -173,7 +173,7 @@ export default function PaidCommissions() {
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
 
-      <main className="container mx-auto px-4 pt-24">
+      <main className="container mx-auto px-4 py-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">

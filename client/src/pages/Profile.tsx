@@ -51,10 +51,10 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
-      <main className="container pt-24 max-w-2xl">
-        <div className="flex items-center gap-4 mb-6">
+      <main className="container py-6 max-w-2xl">
+        <div className="flex items-center gap-3 mb-6">
           <a href="/" className="text-slate-600 hover:text-slate-900"><ArrowLeft className="h-5 w-5" /></a>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><User className="h-6 w-6" /> Meu Perfil</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><User className="h-5 w-5" /> Meu Perfil</h1>
         </div>
 
         <Card className="mb-6">

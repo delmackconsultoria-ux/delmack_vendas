@@ -108,9 +108,9 @@ export default function SalesApproval() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
-      <main className="max-w-6xl mx-auto px-4 pt-24">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Aprovação de Vendas</h1>
-        <p className="text-slate-500 mb-6">
+      <main className="max-w-6xl mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">Aprovação de Vendas</h1>
+        <p className="text-slate-500 text-sm mb-6">
           {user?.role === "manager" ? "Aprovar vendas para enviar ao financeiro" : "Aprovar pagamento de comissões"}
         </p>
 
