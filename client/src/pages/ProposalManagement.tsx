@@ -163,7 +163,7 @@ export default function ProposalManagement() {
       <AppHeader />
       
       {/* Título da Página */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-white">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
@@ -172,7 +172,7 @@ export default function ProposalManagement() {
                 {user?.role === "broker" ? "Seu histórico completo" : "Histórico completo de vendas aprovadas e reprovadas"}
               </p>
             </div>
-            <Button onClick={() => setLocation("/proposals/new")} className="bg-slate-900 hover:bg-slate-800">
+            <Button onClick={() => setLocation("/proposals/new")} className="bg-primary hover:bg-primary/90">
               <Plus className="h-4 w-4 mr-2" />
               Nova Venda
             </Button>

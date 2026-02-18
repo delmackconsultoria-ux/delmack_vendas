@@ -162,7 +162,7 @@ export default function ListingRejections() {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleApplyFilters} className="bg-orange-600 hover:bg-orange-700">
+              <Button onClick={handleApplyFilters} className="bg-primary hover:bg-primary/90">
                 Aplicar Filtros
               </Button>
               <Button onClick={handleClearFilters} variant="outline">

@@ -99,7 +99,7 @@ export default function Ranking() {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-50">
+    <div className="min-h-screen bg-white">
       {/* Header Padrão */}
       <AppHeader />
 

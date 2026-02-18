@@ -1670,3 +1670,17 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] SalesApproval (Aprovação de Vendas)
 - [x] Profile (Meu Perfil)
 - [x] Todas as outras páginas (Analytics, Dashboard, DashboardBroker, DashboardFinance, DashboardSuperAdmin, Ranking, CommissionsCalendar, PaidCommissions, DocumentUpload, ProposalDetail, UserManagement, SuperAdminUsers)
+
+
+## 🎨 Nova Identidade Visual (18/02/2026)
+- [x] Remover ícones da página Metas (Target, TrendingUp nos títulos dos cards)
+- [x] Remover linha/divisor após "Histórico completo de vendas aprovadas e reprovadas"
+- [x] Mudar todos os fundos coloridos (gradientes) para branco
+- [x] Padronizar cor primária para #0b0bb5 em:
+  - [x] Botões primários (via CSS global --primary)
+  - [x] Ícones decorativos (herdam cor primária)
+  - [x] Elementos de destaque
+- [x] Manter cores semânticas:
+  - [x] Verde para positivo/aprovado (mantido)
+  - [x] Vermelho para negativo/pendente (mantido)
+  - [x] Amarelo para avisos (mantido)

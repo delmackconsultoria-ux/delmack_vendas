@@ -234,7 +234,7 @@ export default function GoalNotifications() {
         <div className="mt-6 flex gap-4">
           <Button 
             onClick={() => setLocation("/goals-dashboard")}
-            className="bg-orange-600 hover:bg-orange-700"
+            className="bg-primary hover:bg-primary/90"
           >
             Ver Dashboard de Metas
           </Button>

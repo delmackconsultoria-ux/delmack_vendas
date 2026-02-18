@@ -113,12 +113,9 @@ export default function GoalsManagement() {
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <Target className="h-6 w-6 text-orange-600" />
-            <h1 className="text-2xl font-bold text-slate-900">
-              Configuração de Metas
-            </h1>
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900 mb-1">
+            Configuração de Metas
+          </h1>
           <p className="text-slate-600 text-sm">
             Configure a meta mensal do time (padrão: R$ 15 milhões/mês)
           </p>
@@ -127,8 +124,7 @@ export default function GoalsManagement() {
         {/* Seleção de Mês/Ano */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-orange-600" />
+            <CardTitle>
               Selecionar Período
             </CardTitle>
             <CardDescription>
@@ -174,8 +170,7 @@ export default function GoalsManagement() {
         {/* Formulário de Meta */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-orange-600" />
+            <CardTitle>
               Meta do Time - {months[month - 1]} {year}
             </CardTitle>
             <CardDescription>

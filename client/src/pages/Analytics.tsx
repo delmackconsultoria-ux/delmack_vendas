@@ -75,7 +75,7 @@ export default function Analytics() {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
+    <div className="min-h-screen bg-white">
       {/* Header Padrão */}
       <AppHeader />
 

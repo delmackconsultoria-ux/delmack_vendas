@@ -107,7 +107,7 @@ export default function GoalsDashboard() {
             </div>
             <Button 
               onClick={() => setLocation("/goals-config")}
-              className="bg-orange-600 hover:bg-orange-700"
+              className="bg-primary hover:bg-primary/90"
             >
               Configurar Metas
             </Button>

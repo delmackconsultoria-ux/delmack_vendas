@@ -136,7 +136,7 @@ export default function UserManagement() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-white">
       <AppHeader />
       <main className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex justify-between items-center mb-6">
