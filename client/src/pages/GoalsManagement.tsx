@@ -110,16 +110,16 @@ export default function GoalsManagement() {
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Target className="h-8 w-8 text-orange-600" />
-            <h1 className="text-3xl font-bold text-slate-900">
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-1">
+            <Target className="h-6 w-6 text-orange-600" />
+            <h1 className="text-2xl font-bold text-slate-900">
               Configuração de Metas
             </h1>
           </div>
-          <p className="text-slate-600">
+          <p className="text-slate-600 text-sm">
             Configure a meta mensal do time (padrão: R$ 15 milhões/mês)
           </p>
         </div>

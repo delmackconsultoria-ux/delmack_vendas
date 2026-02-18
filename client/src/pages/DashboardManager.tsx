@@ -52,13 +52,13 @@ export default function DashboardManager() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-slate-50 pt-24">
+      <div className="min-h-screen bg-slate-50">
         {/* Main Content */}
-        <div className="px-6 py-8 max-w-7xl mx-auto">
+        <div className="px-6 py-6 max-w-7xl mx-auto">
           {/* Welcome Section */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-slate-900">Painel de Gestão</h2>
-            <p className="text-slate-600 mt-2">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-slate-900">Painel de Gestão</h2>
+            <p className="text-slate-600 mt-1 text-sm">
               Acompanhe a performance da sua equipe e evolução das vendas
             </p>
           </div>

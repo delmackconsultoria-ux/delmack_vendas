@@ -314,12 +314,12 @@ export default function ReportsPage() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-slate-50 pt-16">
-        <div className="px-6 pt-24 max-w-7xl mx-auto">
+      <div className="min-h-screen bg-slate-50">
+        <div className="px-6 py-6 max-w-7xl mx-auto">
           {/* Title Section */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Relatórios e Gráficos</h1>
-            <p className="text-slate-600 mt-2">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Relatórios e Gráficos</h1>
+            <p className="text-slate-600 mt-1 text-sm">
               Acompanhe o desempenho de vendas, angariações e indicadores com gráficos interativos
             </p>
           </div>

@@ -239,14 +239,14 @@ export default function BrokerManagementPage() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-slate-50 pt-16">
-        <div className="px-6 pt-24 max-w-7xl mx-auto">
-          <div className="mb-8 flex justify-between items-start">
+      <div className="min-h-screen bg-slate-50">
+        <div className="px-6 py-6 max-w-7xl mx-auto">
+          <div className="mb-6 flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">
                 Gerenciamento de Corretores
               </h1>
-              <p className="text-slate-600 mt-2">
+              <p className="text-slate-600 mt-1 text-sm">
                 Gerencie os corretores da sua equipe e acompanhe seu desempenho
               </p>
             </div>

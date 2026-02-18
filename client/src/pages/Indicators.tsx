@@ -413,11 +413,11 @@ export default function Indicators() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto pt-24 px-4">
+      <div className="container mx-auto py-6 px-4">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Indicadores de Vendas</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-bold">Indicadores de Vendas</h1>
+            <p className="text-muted-foreground text-sm mt-1">
               Acompanhe os principais indicadores de desempenho
             </p>
           </div>

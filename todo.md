@@ -1651,3 +1651,16 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Adicionar campo de texto "Motivo da Alteração" no modal de edição de vendas
 - [x] Passar motivo para logSaleUpdate quando fornecido
 - [x] Testar fluxo completo de edição com motivo
+
+
+## 🔧 Padronização de Títulos (18/02/2026)
+- [x] Remover espaçamento excessivo nos títulos de todas as páginas
+- [x] Aplicar layout compacto consistente:
+  - [x] DashboardManager (Painel de Gestão)
+  - [x] ProposalManagement (Histórico de Vendas)
+  - [x] NewProposal (Nova Venda)
+  - [x] Reports (Relatórios e Gráficos)
+  - [x] Brokers (Corretores)
+  - [x] Goals (Metas)
+  - [x] Indicators (Indicadores)
+- [x] Garantir fontes, tamanhos e espaços padronizados em todos os perfis

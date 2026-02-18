@@ -164,11 +164,11 @@ export default function ProposalManagement() {
       
       {/* Título da Página */}
       <div className="bg-white border-b border-slate-200">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Histórico de Vendas</h1>
-              <p className="text-sm text-slate-500">
+              <h1 className="text-2xl font-bold text-slate-900">Histórico de Vendas</h1>
+              <p className="text-sm text-slate-500 mt-1">
                 {user?.role === "broker" ? "Seu histórico completo" : "Histórico completo de vendas aprovadas e reprovadas"}
               </p>
             </div>
@@ -180,7 +180,7 @@ export default function ProposalManagement() {
         </div>
       </div>
 
-      <main className="container mx-auto px-4 pt-24">
+      <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="history" className="w-full">
           <TabsList className="grid w-full max-w-3xl grid-cols-3 mb-6">
             <TabsTrigger value="history">Histórico de Vendas</TabsTrigger>

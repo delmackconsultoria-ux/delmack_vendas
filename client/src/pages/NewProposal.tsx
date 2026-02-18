@@ -1167,12 +1167,12 @@ export default function NewProposal() {
       {/* Header Padrão */}
       <AppHeader />
       
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-6 px-4">
         <div className="max-w-4xl mx-auto">
 {/* Título da Página */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-slate-900">{isEditMode ? "Editar Venda" : "Nova Venda"}</h1>
-              <p className="text-slate-600 mt-2">{isEditMode ? "Atualize os dados da venda" : "Preencha os campos para registrar uma nova venda"}</p>
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-slate-900">{isEditMode ? "Editar Venda" : "Nova Venda"}</h1>
+              <p className="text-slate-600 mt-1 text-sm">{isEditMode ? "Atualize os dados da venda" : "Preencha os campos para registrar uma nova venda"}</p>
             </div>
 
           {/* Form */}
