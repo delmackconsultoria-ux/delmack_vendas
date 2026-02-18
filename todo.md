@@ -1598,3 +1598,6 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Testar upload com arquivos válidos e inválidos
 
 **Status:** Validação completa implementada (frontend + backend). Toast discreto sem cores agressivas.
+
+- [x] Corrigir formatação de campos monetários (Valor da Venda, Valor de Divulgação, Valor Financiado) para exibir com vírgula decimal
+- [x] Reverter CommissionSection para versão completa com 7 tipos de comissão e cálculos corretos

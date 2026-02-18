@@ -1,12 +1,12 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calculator, Info, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { formatWhileTyping } from "@/lib/currencyFormatter";
+import { HelpCircle, Calculator } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { parseCurrencyInput } from "@/lib/currencyFormatter";
 
 // Tipos de Comissão conforme manual Baggio Imóveis
 const COMMISSION_TYPES = [
@@ -163,7 +163,10 @@ export function CommissionSection({ formData, handleInputChange }: CommissionSec
       
       // Recalcular se já tem valor de venda
       if (formData.saleValue) {
-        recalculateCommissions(tipo, parseFloat(formData.saleValue), tipoObj.percentage);
+        const valorNumerico = parseCurrencyInput(formData.saleValue);
+        if (valorNumerico > 0) {
+          recalculateCommissions(tipo, valorNumerico, tipoObj.percentage);
+        }
       }
     }
   };
@@ -172,7 +175,10 @@ export function CommissionSection({ formData, handleInputChange }: CommissionSec
     handleInputChange("porcentagemComissao", percentage);
     
     if (formData.tipoComissao && formData.saleValue && percentage) {
-      recalculateCommissions(formData.tipoComissao, parseFloat(formData.saleValue), parseFloat(percentage));
+      const valorNumerico = parseCurrencyInput(formData.saleValue);
+      if (valorNumerico > 0) {
+        recalculateCommissions(formData.tipoComissao, valorNumerico, parseFloat(percentage));
+      }
     }
   };
   
@@ -372,13 +378,11 @@ export function CommissionSection({ formData, handleInputChange }: CommissionSec
                 <div>
                   <Label>Valor da Bonificação (R$)</Label>
                   <Input
-                    type="text"
-                    placeholder="R$ 0,00"
+                    type="number"
+                    step="0.01"
+                    placeholder="Ex: 1000.00"
                     value={formData.valorBonificacao}
-                    onChange={(e) => {
-                      const formatted = formatWhileTyping(e.target.value);
-                      handleBonusChange(formatted);
-                    }}
+                    onChange={(e) => handleBonusChange(e.target.value)}
                     disabled={!formData.tipoBonificacao}
                   />
                 </div>

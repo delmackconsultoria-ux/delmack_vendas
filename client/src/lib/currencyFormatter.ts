@@ -61,5 +61,6 @@ export function formatWhileTyping(value: string | number): string {
     return `${integerPart},${decimalPart.substring(0, 2)}`;
   }
   
+  // Se não tem vírgula digitada, não adiciona (permite digitação livre)
   return integerPart;
 }
