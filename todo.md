@@ -1684,3 +1684,13 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
   - [x] Verde para positivo/aprovado (mantido)
   - [x] Vermelho para negativo/pendente (mantido)
   - [x] Amarelo para avisos (mantido)
+
+
+## 🔧 Correção de Cores Remanescentes (18/02/2026)
+- [x] Corrigir botão "Adicionar Corretor" (roxo/magenta → #0b0bb5)
+- [x] Corrigir tab "Corretores" ativa (azul médio → #0b0bb5)
+- [x] Corrigir botão "Adicionar" no modal de corretor (roxo → #0b0bb5)
+- [x] Verificar todos os botões primários em todas as páginas
+- [x] Corrigir botões em DashboardSuperAdmin (Nova Empresa, Upload, etc.)
+- [x] Remover gradientes roxos/índigo (Ranking, DashboardSuperAdmin)
+- [x] Corrigir badge e ícone em GoalNotifications

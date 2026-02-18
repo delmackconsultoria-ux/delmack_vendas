@@ -129,7 +129,7 @@ export default function Ranking() {
 
         {/* Filters */}
         {!isBroker && isTestCompany && (
-          <Card className="border-0 shadow-md mb-8 bg-gradient-to-br from-indigo-50 to-purple-50">
+          <Card className="border-0 shadow-md mb-8 bg-white">
             <CardHeader>
               <CardTitle>Filtros</CardTitle>
             </CardHeader>

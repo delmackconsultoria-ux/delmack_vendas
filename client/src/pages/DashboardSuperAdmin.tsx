@@ -199,7 +199,7 @@ export default function DashboardSuperAdmin() {
 
         {/* Actions */}
         <div className="flex gap-4 mb-8">
-          <Button onClick={() => setShowCompanyModal(true)} className="bg-purple-600 hover:bg-purple-700 gap-2">
+          <Button onClick={() => setShowCompanyModal(true)} style={{ backgroundColor: '#0b0bb5' }} className="hover:opacity-90 text-white gap-2">
             <Plus className="h-4 w-4" />
             Nova Empresa
           </Button>
@@ -207,7 +207,7 @@ export default function DashboardSuperAdmin() {
             <UserPlus className="h-4 w-4" />
             Novo Usuário
           </Button>
-          <Button onClick={() => setShowUploadModal(true)} variant="outline" className="border-purple-600 text-purple-400 hover:bg-purple-600/20 gap-2">
+          <Button onClick={() => setShowUploadModal(true)} variant="outline" style={{ borderColor: '#0b0bb5', color: '#0b0bb5' }} className="hover:bg-blue-50 gap-2">
             <Upload className="h-4 w-4" />
             Upload de Usuários
           </Button>
@@ -370,7 +370,7 @@ export default function DashboardSuperAdmin() {
                 <Button variant="outline" onClick={() => { setShowUploadModal(false); setUploadedUsers([]); }} className="border-slate-600 text-slate-300">
                   Cancelar
                 </Button>
-                <Button onClick={handleUploadUsers} disabled={!selectedCompanyId || uploadedUsers.length === 0} className="bg-purple-600 hover:bg-purple-700">
+                <Button onClick={handleUploadUsers} disabled={!selectedCompanyId || uploadedUsers.length === 0} style={{ backgroundColor: '#0b0bb5' }} className="hover:opacity-90 text-white">
                   Criar Usuários e Enviar E-mails
                 </Button>
               </div>
@@ -462,7 +462,7 @@ export default function DashboardSuperAdmin() {
                 <Button variant="outline" onClick={() => setShowCompanyModal(false)} className="border-slate-600 text-slate-300">
                   Cancelar
                 </Button>
-                <Button onClick={handleCreateCompany} className="bg-purple-600 hover:bg-purple-700">
+                <Button onClick={handleCreateCompany} style={{ backgroundColor: '#0b0bb5' }} className="hover:opacity-90 text-white">
                   Criar Empresa
                 </Button>
               </div>
@@ -606,8 +606,8 @@ export default function DashboardSuperAdmin() {
               </div>
 
               {/* Métricas de Vendas */}
-              <div className="bg-purple-900/30 p-4 rounded-lg">
-                <h3 className="text-purple-300 font-medium mb-3">Métricas de Vendas</h3>
+              <div className="bg-white border border-slate-200 p-4 rounded-lg">
+                <h3 className="text-slate-700 font-medium mb-3">Métricas de Vendas</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
                     <div className="text-xl font-bold text-white">{companyStatsQuery.data?.totalSales || 0}</div>
@@ -1275,7 +1275,7 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
                 <Button variant="outline" onClick={() => setEditingUser(null)} className="border-slate-600 text-slate-300">
                   Cancelar
                 </Button>
-                <Button onClick={handleSaveEdit} disabled={updateUserMutation.isPending} className="bg-purple-600 hover:bg-purple-700">
+                <Button onClick={handleSaveEdit} disabled={updateUserMutation.isPending} style={{ backgroundColor: '#0b0bb5' }} className="hover:opacity-90 text-white">
                   {updateUserMutation.isPending ? "Salvando..." : "Salvar"}
                 </Button>
               </div>

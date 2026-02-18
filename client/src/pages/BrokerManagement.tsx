@@ -252,7 +252,7 @@ export default function BrokerManagementPage() {
             </div>
             <Button
               onClick={handleOpenAddModal}
-              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
+              style={{ backgroundColor: '#0b0bb5' }} className="hover:opacity-90 text-white flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
               Adicionar Corretor
@@ -399,8 +399,8 @@ export default function BrokerManagementPage() {
                             <div className="flex items-center gap-2">
                               <div className="w-24 bg-slate-200 rounded-full h-2">
                                 <div
-                                  className="bg-purple-600 h-2 rounded-full"
-                                  style={{ width: `${broker.performance}%` }}
+                                  style={{ backgroundColor: '#0b0bb5', width: `${broker.performance}%` }}
+                                  className="h-2 rounded-full"
                                 ></div>
                               </div>
                               <span className="text-sm font-medium text-slate-900 w-8">
@@ -488,7 +488,7 @@ export default function BrokerManagementPage() {
               <div className="flex gap-2 pt-4">
                 <Button
                   onClick={handleAddTeamMember}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                  style={{ backgroundColor: '#0b0bb5' }} className="flex-1 hover:opacity-90 text-white"
                 >
                   Adicionar
                 </Button>
@@ -571,7 +571,7 @@ export default function BrokerManagementPage() {
               <div className="flex gap-2 pt-4">
                 <Button
                   onClick={handleSaveBroker}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                  style={{ backgroundColor: '#0b0bb5' }} className="flex-1 hover:opacity-90 text-white"
                 >
                   {editingBroker ? "Atualizar" : "Adicionar"}
                 </Button>

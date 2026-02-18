@@ -118,10 +118,10 @@ export default function GoalNotifications() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-purple-600" />
+                  <CheckCircle2 className="h-5 w-5" style={{ color: '#0b0bb5' }} />
                   Marco: 100% da Meta
                 </CardTitle>
-                <Badge className="bg-purple-600">Ativo</Badge>
+                <Badge style={{ backgroundColor: '#0b0bb5' }} className="text-white">Ativo</Badge>
               </div>
               <CardDescription>Notificação de conquista</CardDescription>
             </CardHeader>
