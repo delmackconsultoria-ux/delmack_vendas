@@ -6,9 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CommissionsReceived from "@/components/CommissionsReceived";
+import AuditLogTable from "@/components/AuditLogTable";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Search, Eye, Edit, FileText, Filter, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare } from "lucide-react";
+import { ArrowLeft, Plus, Search, Eye, Edit, FileText, Filter, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare, History } from "lucide-react";
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
@@ -181,9 +182,10 @@ export default function ProposalManagement() {
 
       <main className="container mx-auto px-4 pt-24">
         <Tabs defaultValue="history" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+          <TabsList className="grid w-full max-w-3xl grid-cols-3 mb-6">
             <TabsTrigger value="history">Histórico de Vendas</TabsTrigger>
             <TabsTrigger value="commissions">Comissões Recebidas</TabsTrigger>
+            <TabsTrigger value="audit">Histórico de Alterações</TabsTrigger>
           </TabsList>
 
           <TabsContent value="history" className="space-y-6">
@@ -399,6 +401,10 @@ export default function ProposalManagement() {
 
           <TabsContent value="commissions">
             <CommissionsReceived />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <AuditLogTable />
           </TabsContent>
         </Tabs>
       </main>

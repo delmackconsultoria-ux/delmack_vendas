@@ -575,7 +575,56 @@ export const salesRouter = router({
       }
       
       const { saleId, ...updateData } = input;
+      const oldSale = sale[0];
+      
+      // Detectar campos alterados para auditoria
+      const changes: Array<{ field: string; oldValue: any; newValue: any }> = [];
+      
+      if (updateData.buyerName !== undefined && updateData.buyerName !== oldSale.buyerName) {
+        changes.push({ field: 'buyerName', oldValue: oldSale.buyerName, newValue: updateData.buyerName });
+      }
+      if (updateData.buyerCpfCnpj !== undefined && updateData.buyerCpfCnpj !== oldSale.buyerCpfCnpj) {
+        changes.push({ field: 'buyerCpfCnpj', oldValue: oldSale.buyerCpfCnpj, newValue: updateData.buyerCpfCnpj });
+      }
+      if (updateData.buyerPhone !== undefined && updateData.buyerPhone !== oldSale.buyerPhone) {
+        changes.push({ field: 'buyerPhone', oldValue: oldSale.buyerPhone, newValue: updateData.buyerPhone });
+      }
+      if (updateData.sellerName !== undefined && updateData.sellerName !== oldSale.sellerName) {
+        changes.push({ field: 'sellerName', oldValue: oldSale.sellerName, newValue: updateData.sellerName });
+      }
+      if (updateData.sellerCpfCnpj !== undefined && updateData.sellerCpfCnpj !== oldSale.sellerCpfCnpj) {
+        changes.push({ field: 'sellerCpfCnpj', oldValue: oldSale.sellerCpfCnpj, newValue: updateData.sellerCpfCnpj });
+      }
+      if (updateData.sellerPhone !== undefined && updateData.sellerPhone !== oldSale.sellerPhone) {
+        changes.push({ field: 'sellerPhone', oldValue: oldSale.sellerPhone, newValue: updateData.sellerPhone });
+      }
+      if (updateData.saleValue !== undefined && updateData.saleValue !== oldSale.saleValue) {
+        changes.push({ field: 'saleValue', oldValue: oldSale.saleValue, newValue: updateData.saleValue });
+      }
+      if (updateData.saleDate !== undefined && updateData.saleDate?.getTime() !== oldSale.saleDate?.getTime()) {
+        changes.push({ field: 'saleDate', oldValue: oldSale.saleDate, newValue: updateData.saleDate });
+      }
+      if (updateData.businessType !== undefined && updateData.businessType !== oldSale.businessType) {
+        changes.push({ field: 'businessType', oldValue: oldSale.businessType, newValue: updateData.businessType });
+      }
+      if (updateData.observation !== undefined && updateData.observation !== oldSale.observation) {
+        changes.push({ field: 'observation', oldValue: oldSale.observation, newValue: updateData.observation });
+      }
+      
+      // Atualizar venda
       await db.update(sales).set({ ...updateData, updatedAt: new Date() }).where(eq(sales.id, saleId));
+      
+      // Registrar alterações no histórico
+      if (changes.length > 0) {
+        await logSaleUpdate(
+          saleId,
+          oldSale.companyId || '',
+          ctx.user.id,
+          ctx.user.name || 'Usuário',
+          changes,
+          'Edição manual da venda'
+        );
+      }
       
       return { success: true, message: "Proposta atualizada" };
     }),

@@ -1601,3 +1601,46 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 
 - [x] Corrigir formatação de campos monetários (Valor da Venda, Valor de Divulgação, Valor Financiado) para exibir com vírgula decimal
 - [x] Reverter CommissionSection para versão completa com 7 tipos de comissão e cálculos corretos
+
+## 🆕 NOVA FUNCIONALIDADE: Histórico de Alterações (18/02/2026)
+
+### Fase 1: Schema de Banco e Backend
+- [x] Criar tabela `sale_audit_log` no schema (já existe como salesHistory):
+  - [ ] id (primary key)
+  - [ ] saleId (foreign key para sales)
+  - [ ] userId (quem fez a alteração)
+  - [ ] userName (nome do usuário)
+  - [ ] action (tipo: 'update', 'status_change', 'commission_change')
+  - [ ] fieldChanged (campo alterado)
+  - [ ] oldValue (valor anterior)
+  - [ ] newValue (valor novo)
+  - [ ] reason (motivo da alteração - opcional)
+  - [ ] timestamp (data/hora)
+- [ ] Executar `pnpm db:push` para aplicar migration
+- [x] Criar router `auditRouter` com procedures:
+  - [x] listAuditLogs (listar histórico com filtros)
+  - [x] getAuditLogsBySale (histórico de uma venda específica)
+
+### Fase 2: UI - Nova Aba no Histórico
+- [x] Adicionar aba "Histórico de Alterações" em ProposalManagement.tsx
+- [x] Criar componente AuditLogTable com colunas:
+  - [x] Data/Hora
+  - [x] Venda (referência)
+  - [x] Usuário
+  - [x] Ação
+  - [x] Campo Alterado
+  - [x] Valor Anterior → Valor Novo
+  - [x] Motivo
+- [x] Adicionar filtros: Data, Usuário, Tipo de Ação
+- [x] Implementar paginação
+
+### Fase 3: Integração Automática
+- [x] Modificar salesRouter.updateSale para registrar alterações
+- [x] Detectar campos modificados comparando valores antigos vs novos
+- [ ] Salvar log automático em sale_audit_log
+- [ ] Adicionar campo "Motivo da Alteração" no modal de edição (opcional)
+
+### Fase 4: Testes
+- [ ] Testar edição de venda e verificar log gerado
+- [ ] Testar filtros na aba Histórico de Alterações
+- [ ] Validar permissões (apenas gerentes/admin veem histórico completo)
