@@ -1148,6 +1148,21 @@ export const salesRouter = router({
         const db = await getDb();
         if (!db) throw new Error("Database not available");
 
+        // Validação de formato (backend)
+        const allowedMimeTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
+        if (!allowedMimeTypes.includes(input.mimeType)) {
+          throw new Error("Formato de arquivo inválido. Apenas PDF, JPG, JPEG e PNG são permitidos.");
+        }
+
+        // Converter base64 para Buffer
+        const fileBuffer = Buffer.from(input.fileData, "base64");
+
+        // Validação de tamanho (5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB em bytes
+        if (fileBuffer.length > maxSize) {
+          throw new Error("Arquivo muito grande. O tamanho máximo é 5MB.");
+        }
+
         // Verificar se venda existe e usuário tem permissão
         const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
         if (sale.length === 0) {
@@ -1160,9 +1175,6 @@ export const salesRouter = router({
             sale[0].brokerAngariador !== ctx.user.id) {
           throw new Error("Sem permissão para fazer upload nesta venda");
         }
-
-        // Converter base64 para Buffer
-        const fileBuffer = Buffer.from(input.fileData, "base64");
 
         // Fazer upload para S3
         const s3Key = `sales/${input.saleId}/${input.documentType}/${Date.now()}-${input.fileName}`;

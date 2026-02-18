@@ -1578,3 +1578,23 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Testar fluxo completo de upload e visualização
 
 **Status:** Sistema completo implementado. Modal permite upload/visualização de 4 tipos de documentos.
+
+
+## ✅ Validação de Upload de Documentos (17/02/2026)
+
+### Requisitos
+- Restringir formatos aceitos: PDF, JPG, JPEG, PNG
+- Limite de tamanho: 5MB por arquivo
+- Validação no frontend (antes de enviar)
+- Validação no backend (segurança adicional)
+- Feedback amigável ao usuário
+
+### Tarefas
+- [x] Adicionar validação de formato no DocumentsModal.tsx
+- [x] Adicionar validação de tamanho (5MB) no DocumentsModal.tsx
+- [x] Exibir mensagem de erro amigável (toast discreto)
+- [x] Adicionar validação de formato no endpoint uploadDocument (backend)
+- [x] Adicionar validação de tamanho no endpoint uploadDocument (backend)
+- [ ] Testar upload com arquivos válidos e inválidos
+
+**Status:** Validação completa implementada (frontend + backend). Toast discreto sem cores agressivas.

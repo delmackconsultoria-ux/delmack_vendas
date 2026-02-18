@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Eye, Upload, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface Document {
   url: string;
@@ -35,11 +36,37 @@ export function DocumentsModal({ open, onClose, documents, saleId, canUpload = f
     const file = event.target.files?.[0];
     if (!file || !onUpload) return;
 
+    // Validação de formato
+    const allowedFormats = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
+    if (!allowedFormats.includes(file.type)) {
+      toast.error("Formato de arquivo inválido", {
+        description: "Apenas arquivos PDF, JPG, JPEG e PNG são permitidos.",
+      });
+      event.target.value = ""; // Limpa o input
+      return;
+    }
+
+    // Validação de tamanho (5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB em bytes
+    if (file.size > maxSize) {
+      toast.error("Arquivo muito grande", {
+        description: "O arquivo deve ter no máximo 5MB.",
+      });
+      event.target.value = ""; // Limpa o input
+      return;
+    }
+
     setUploading(documentType);
     try {
       await onUpload(documentType, file);
+      toast.success("Documento anexado com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao anexar documento", {
+        description: "Tente novamente mais tarde.",
+      });
     } finally {
       setUploading(null);
+      event.target.value = ""; // Limpa o input
     }
   };
 
