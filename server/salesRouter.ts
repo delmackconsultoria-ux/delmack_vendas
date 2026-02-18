@@ -561,6 +561,7 @@ export const salesRouter = router({
       saleDate: z.date().optional(),
       businessType: z.string().optional(),
       observation: z.string().optional(),
+      changeReason: z.string().optional(), // Motivo da alteração
     }))
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
@@ -574,7 +575,7 @@ export const salesRouter = router({
         throw new Error("Apenas rascunhos podem ser editados");
       }
       
-      const { saleId, ...updateData } = input;
+      const { saleId, changeReason, ...updateData } = input;
       const oldSale = sale[0];
       
       // Detectar campos alterados para auditoria
@@ -622,7 +623,7 @@ export const salesRouter = router({
           ctx.user.id,
           ctx.user.name || 'Usuário',
           changes,
-          'Edição manual da venda'
+          changeReason || 'Edição manual da venda'
         );
       }
       

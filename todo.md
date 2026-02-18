@@ -1644,3 +1644,10 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Testar edição de venda e verificar log gerado
 - [ ] Testar filtros na aba Histórico de Alterações
 - [ ] Validar permissões (apenas gerentes/admin veem histórico completo)
+
+
+## 🆕 Campo "Motivo da Alteração" no Modal de Edição (18/02/2026)
+- [x] Atualizar salesRouter.updateSale para aceitar parâmetro `changeReason` opcional
+- [x] Adicionar campo de texto "Motivo da Alteração" no modal de edição de vendas
+- [x] Passar motivo para logSaleUpdate quando fornecido
+- [x] Testar fluxo completo de edição com motivo

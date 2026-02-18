@@ -33,6 +33,31 @@ export default function ProposalDetail() {
   const [editingPaymentDate, setEditingPaymentDate] = useState(false);
   const [newPaymentDate, setNewPaymentDate] = useState("");
   const [documentsModalOpen, setDocumentsModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    buyerName: "",
+    buyerCpfCnpj: "",
+    buyerPhone: "",
+    sellerName: "",
+    sellerCpfCnpj: "",
+    sellerPhone: "",
+    saleValue: "",
+    businessType: "",
+    observation: "",
+    changeReason: "",
+  });
+  
+  const updateSaleMutation = trpc.sales.updateSale.useMutation({
+    onSuccess: () => {
+      toast.success("Venda atualizada com sucesso");
+      setEditModalOpen(false);
+      refetch();
+      refetchHistory();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar venda");
+    },
+  });
   
   const uploadDocumentMutation = trpc.sales.uploadDocument.useMutation({
     onSuccess: () => {
@@ -166,7 +191,21 @@ ${sale.observation || "Nenhuma observação"}
           </Button>
           <div className="flex gap-2">
             {canEdit && (
-              <Button variant="outline" onClick={() => setLocation(`/proposals/edit/${params.id}`)}>
+              <Button variant="outline" onClick={() => {
+                setEditForm({
+                  buyerName: sale.buyerName || "",
+                  buyerCpfCnpj: sale.buyerCpfCnpj || "",
+                  buyerPhone: sale.buyerPhone || "",
+                  sellerName: sale.sellerName || "",
+                  sellerCpfCnpj: sale.sellerCpfCnpj || "",
+                  sellerPhone: sale.sellerPhone || "",
+                  saleValue: sale.saleValue || "",
+                  businessType: sale.businessType || "",
+                  observation: sale.observation || "",
+                  changeReason: "",
+                });
+                setEditModalOpen(true);
+              }}>
                 <Edit className="h-4 w-4 mr-2" /> Editar
               </Button>
             )}
@@ -361,6 +400,158 @@ ${sale.observation || "Nenhuma observação"}
         canUpload={['manager', 'finance'].includes(user?.role || '')}
         onUpload={handleUploadDocument}
       />
+      
+      {/* Modal de Edição */}
+      {editModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-900">Editar Venda</h2>
+              <button
+                onClick={() => setEditModalOpen(false)}
+                className="p-2 hover:bg-slate-100 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              {/* Comprador */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-slate-900">Informações do Comprador</h3>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Nome do Comprador</label>
+                  <Input
+                    value={editForm.buyerName}
+                    onChange={(e) => setEditForm({ ...editForm, buyerName: e.target.value })}
+                    placeholder="Nome completo"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">CPF/CNPJ do Comprador</label>
+                  <Input
+                    value={editForm.buyerCpfCnpj}
+                    onChange={(e) => setEditForm({ ...editForm, buyerCpfCnpj: e.target.value })}
+                    placeholder="000.000.000-00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Telefone do Comprador</label>
+                  <Input
+                    value={editForm.buyerPhone}
+                    onChange={(e) => setEditForm({ ...editForm, buyerPhone: e.target.value })}
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+              </div>
+              
+              {/* Vendedor */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-slate-900">Informações do Vendedor</h3>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Nome do Vendedor</label>
+                  <Input
+                    value={editForm.sellerName}
+                    onChange={(e) => setEditForm({ ...editForm, sellerName: e.target.value })}
+                    placeholder="Nome completo"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">CPF/CNPJ do Vendedor</label>
+                  <Input
+                    value={editForm.sellerCpfCnpj}
+                    onChange={(e) => setEditForm({ ...editForm, sellerCpfCnpj: e.target.value })}
+                    placeholder="000.000.000-00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Telefone do Vendedor</label>
+                  <Input
+                    value={editForm.sellerPhone}
+                    onChange={(e) => setEditForm({ ...editForm, sellerPhone: e.target.value })}
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+              </div>
+              
+              {/* Valor e Tipo */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-slate-900">Informações da Venda</h3>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Valor da Venda</label>
+                  <Input
+                    value={editForm.saleValue}
+                    onChange={(e) => setEditForm({ ...editForm, saleValue: e.target.value })}
+                    placeholder="R$ 0,00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Tipo de Negócio</label>
+                  <Input
+                    value={editForm.businessType}
+                    onChange={(e) => setEditForm({ ...editForm, businessType: e.target.value })}
+                    placeholder="Tipo de negócio"
+                  />
+                </div>
+              </div>
+              
+              {/* Observações */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Observações</label>
+                <textarea
+                  value={editForm.observation}
+                  onChange={(e) => setEditForm({ ...editForm, observation: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  rows={3}
+                  placeholder="Observações adicionais"
+                />
+              </div>
+              
+              {/* Motivo da Alteração */}
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Motivo da Alteração <span className="text-orange-500">*</span>
+                </label>
+                <textarea
+                  value={editForm.changeReason}
+                  onChange={(e) => setEditForm({ ...editForm, changeReason: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  rows={2}
+                  placeholder="Descreva o motivo desta alteração para auditoria"
+                  required
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  Este campo é obrigatório e será registrado no histórico de alterações.
+                </p>
+              </div>
+            </div>
+            
+            <div className="sticky bottom-0 bg-slate-50 border-t px-6 py-4 flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setEditModalOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!editForm.changeReason.trim()) {
+                    toast.error("Por favor, informe o motivo da alteração");
+                    return;
+                  }
+                  updateSaleMutation.mutate({
+                    saleId: sale.id,
+                    ...editForm,
+                  });
+                }}
+                disabled={updateSaleMutation.isPending}
+              >
+                {updateSaleMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
