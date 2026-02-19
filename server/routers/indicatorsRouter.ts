@@ -234,6 +234,37 @@ export const indicatorsRouter = router({
     }),
 
   /**
+   * Listar anos com dados históricos disponíveis
+   */
+  listAvailableYears: publicProcedure.query(() => {
+    return {
+      success: true,
+      years: [2024, 2025, 2026],
+    };
+  }),
+
+  /**
+   * Obter dados consolidados de um ano específico
+   */
+  getYearData: publicProcedure
+    .input(z.object({ year: z.number() }))
+    .query(({ input }) => {
+      if (input.year === 2024 && historicalData) {
+        return {
+          success: true,
+          hasData: true,
+          year: input.year,
+          data: historicalData,
+        };
+      }
+      return {
+        success: false,
+        hasData: false,
+        message: `Dados não disponíveis para ${input.year}`,
+      };
+    }),
+
+  /**
    * Obter evolução mensal de um indicador específico (compatibilidade com frontend antigo)
    */
   getMonthlyEvolution: publicProcedure

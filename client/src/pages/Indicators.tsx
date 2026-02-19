@@ -34,10 +34,11 @@ export default function Indicators() {
   const [modalOpen, setModalOpen] = useState(false);
 
   // Buscar indicadores reais do backend
-  const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getByMonth.useQuery(
+  const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getRealtimeIndicators.useQuery(
     {
-      month: selectedMonth !== "all" ? parseInt(selectedMonth) : undefined,
-      year: selectedYear !== "all" ? parseInt(selectedYear) : undefined,
+      companyId: user?.id || "",
+      month: selectedMonth !== "all" ? parseInt(selectedMonth) : new Date().getMonth() + 1,
+      year: parseInt(selectedYear),
     },
     {
       enabled: !!user,
