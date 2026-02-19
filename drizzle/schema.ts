@@ -785,6 +785,12 @@ export const properfyProperties = mysqlTable("properfyProperties", {
   intBuiltYear: int("intBuiltYear"),
   intFloors: int("intFloors"),
   
+  // Indicadores
+  chrPurpose: varchar("chrPurpose", { length: 50 }), // SALE, RENT, etc
+  isActive: int("isActive").default(1), // 1 = ativo, 0 = inativo
+  dteNewListing: timestamp("dteNewListing"), // Data de Angariação
+  dteTermination: timestamp("dteTermination"), // Data de Baixa
+  
   // Sync metadata
   lastSyncedAt: timestamp("lastSyncedAt").defaultNow(),
   createdAt: timestamp("createdAt").defaultNow(),
@@ -837,3 +843,89 @@ export const historicalSales = mysqlTable("historicalSales", {
 
 export type HistoricalSale = typeof historicalSales.$inferSelect;
 export type InsertHistoricalSale = typeof historicalSales.$inferInsert;
+
+
+/**
+ * Indicadores - Snapshot mensal imutável
+ * Congela os valores de indicadores no último dia de cada mês
+ */
+export const monthlyIndicatorsSnapshot = mysqlTable("monthlyIndicatorsSnapshot", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  year: int("year").notNull(),
+  month: int("month").notNull(), // 1-12
+  
+  // Indicadores do Sistema de Vendas (16)
+  negociosValor: decimal("negociosValor", { precision: 15, scale: 2 }), // Soma valor vendas
+  negociosUnidades: int("negociosUnidades"), // Contagem vendas
+  vendidosCancelados: int("vendidosCancelados"), // Vendas canceladas
+  comissaoRecebida: decimal("comissaoRecebida", { precision: 15, scale: 2 }), // Comissões pagas
+  comissaoVendida: decimal("comissaoVendida", { precision: 15, scale: 2 }), // Comissões geradas
+  comissaoPendente: decimal("comissaoPendente", { precision: 15, scale: 2 }), // Comissões pendentes
+  percentualComissaoVendida: decimal("percentualComissaoVendida", { precision: 5, scale: 2 }), // % Comissão
+  negociosAcima1M: int("negociosAcima1M"), // Vendas >= 1M
+  prazoMedioRecebimento: int("prazoMedioRecebimento"), // Dias médios
+  percentualCanceladaPendente: decimal("percentualCanceladaPendente", { precision: 5, scale: 2 }), // %
+  valorMedioImovel: decimal("valorMedioImovel", { precision: 15, scale: 2 }), // Valor médio
+  negociosRede: int("negociosRede"), // Vendas UNA
+  negociosInternos: int("negociosInternos"), // Vendas internas
+  negociosParceriaExterna: int("negociosParceriaExterna"), // Parcerias externas
+  negociosLancamentos: int("negociosLancamentos"), // Lançamentos
+  
+  // Indicadores do Properfy (5)
+  carteiraAtiva: int("carteiraAtiva"), // Imóveis ativos
+  angariacesMes: int("angariacesMes"), // Angariações
+  baixasMes: int("baixasMes"), // Baixas
+  vsoVendaOferta: decimal("vsoVendaOferta", { precision: 5, scale: 2 }), // VSO
+  atendimentosProntos: int("atendimentosProntos"), // Atendimentos prontos
+  atendimentosLancamentos: int("atendimentosLancamentos"), // Atendimentos lançamentos
+  
+  // Indicadores Manuais (5)
+  despesaGeral: decimal("despesaGeral", { precision: 15, scale: 2 }), // Manual
+  despesaImpostos: decimal("despesaImpostos", { precision: 15, scale: 2 }), // Manual
+  fundoInovacao: decimal("fundoInovacao", { precision: 15, scale: 2 }), // Manual
+  resultadoSocios: decimal("resultadoSocios", { precision: 15, scale: 2 }), // Manual
+  fundoEmergencial: decimal("fundoEmergencial", { precision: 15, scale: 2 }), // Manual
+  
+  // Metadados
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type MonthlyIndicatorsSnapshot = typeof monthlyIndicatorsSnapshot.$inferSelect;
+export type InsertMonthlyIndicatorsSnapshot = typeof monthlyIndicatorsSnapshot.$inferInsert;
+
+/**
+ * Metas de Indicadores
+ * Armazena meta mensal e média anual para cada indicador
+ */
+export const indicatorGoals = mysqlTable("indicatorGoals", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  indicatorName: varchar("indicatorName", { length: 255 }).notNull(),
+  monthlyGoal: decimal("monthlyGoal", { precision: 15, scale: 2 }),
+  annualAverage: decimal("annualAverage", { precision: 15, scale: 2 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type IndicatorGoal = typeof indicatorGoals.$inferSelect;
+export type InsertIndicatorGoal = typeof indicatorGoals.$inferInsert;
+
+/**
+ * Detalhes de Indicadores
+ * Armazena IDs que compuseram cada cálculo para auditoria
+ */
+export const indicatorDetails = mysqlTable("indicatorDetails", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  snapshotId: varchar("snapshotId", { length: 64 }), // Referência ao snapshot
+  indicatorName: varchar("indicatorName", { length: 255 }).notNull(),
+  year: int("year").notNull(),
+  month: int("month").notNull(),
+  relatedIds: text("relatedIds"), // JSON array de IDs que compuseram o cálculo
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type IndicatorDetail = typeof indicatorDetails.$inferSelect;
+export type InsertIndicatorDetail = typeof indicatorDetails.$inferInsert;

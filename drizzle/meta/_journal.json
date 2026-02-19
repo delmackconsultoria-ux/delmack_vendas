@@ -190,6 +190,20 @@
       "when": 1771288918387,
       "tag": "0026_woozy_killraven",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1771525891374,
+      "tag": "0027_robust_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "5",
+      "when": 1771526074944,
+      "tag": "0028_moaning_frog_thor",
+      "breakpoints": true
     }
   ]
 }
