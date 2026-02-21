@@ -1694,3 +1694,13 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Corrigir botões em DashboardSuperAdmin (Nova Empresa, Upload, etc.)
 - [x] Remover gradientes roxos/índigo (Ranking, DashboardSuperAdmin)
 - [x] Corrigir badge e ícone em GoalNotifications
+
+
+## 👤 DASHBOARD PESSOAL DO CORRETOR (21/02/2026)
+- [ ] Criar router tRPC para dados pessoais do corretor
+- [ ] Implementar dashboard pessoal com KPIs individuais
+- [ ] Adicionar visualização de histórico de vendas (filtrado por corretor)
+- [ ] Adicionar visualização de comissões (pagas, pendentes, canceladas)
+- [ ] Implementar filtros por período (mês, ano, intervalo)
+- [ ] Testar acesso isolado por corretor
+- [ ] Validar que cada corretor vê apenas seus dados
