@@ -1,0 +1,45 @@
+{
+  "query": "\nSELECT id, buyerName, brokerVendedor, brokerAngariador, companyId FROM sales LIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT id, buyerName, brokerVendedor, brokerAngariador, companyId FROM sales LIMIT 5;\n",
+  "rows": [
+    {
+      "id": "088cb15c-2999-4133-8d7f-1916c862673f",
+      "buyerName": "ANGELLICA PASSOS DELLE",
+      "brokerVendedor": "user-corretor-testes",
+      "brokerAngariador": "user-corretor-testes",
+      "companyId": "company_1766344499112"
+    },
+    {
+      "id": "1e6cdbcc-c790-4421-8ebc-6af716d590ec",
+      "buyerName": "ANGELLICA PASSOS DELLE",
+      "brokerVendedor": "user-corretor-testes",
+      "brokerAngariador": "user-corretor-testes",
+      "companyId": "company_1766344499112"
+    },
+    {
+      "id": "2297dcc2-e540-469a-9fd8-72652a3af33b",
+      "buyerName": "feafag",
+      "brokerVendedor": "7faf90de-680c-4255-acb9-8bb182cbc381",
+      "brokerAngariador": "7faf90de-680c-4255-acb9-8bb182cbc381",
+      "companyId": "97d02a33-9242-425e-9328-952f7f0af253"
+    },
+    {
+      "id": "291ee8d0-697d-428d-b039-b8036365105c",
+      "buyerName": "",
+      "brokerVendedor": "",
+      "brokerAngariador": "",
+      "companyId": "company_1766344499112"
+    },
+    {
+      "id": "35b09135-669c-4ecd-a2bb-d33e12fe9177",
+      "buyerName": "",
+      "brokerVendedor": "",
+      "brokerAngariador": "",
+      "companyId": "company_1766344499112"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbuyerName\tbrokerVendedor\tbrokerAngariador\tcompanyId\n088cb15c-2999-4133-8d7f-1916c862673f\tANGELLICA PASSOS DELLE\tuser-corretor-testes\tuser-corretor-testes\tcompany_1766344499112\n1e6cdbcc-c790-4421-8ebc-6af716d590ec\tANGELLICA PASSOS DELLE\tuser-corretor-testes\tuser-corretor-testes\tcompany_1766344499112\n2297dcc2-e540-469a-9fd8-72652a3af33b\tfeafag\t7faf90de-680c-4255-acb9-8bb182cbc381\t7faf90de-680c-4255-acb9-8bb182cbc381\t97d02a33-9242-425e-9328-952f7f0af253\n291ee8d0-697d-428d-b039-b8036365105c\t\t\t\tcompany_1766344499112\n35b09135-669c-4ecd-a2bb-d33e12fe9177\t\t\t\tcompany_1766344499112\n",
+  "stderr": "",
+  "execution_time_ms": 185
+}

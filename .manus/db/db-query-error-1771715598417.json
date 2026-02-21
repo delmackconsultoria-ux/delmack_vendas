@@ -1,0 +1,8 @@
+{
+  "query": "\n-- Indicadores de Fevereiro/2026\nSELECT \n  'Negócios no mês (unidades)' as indicador,\n  COUNT(*) as valor\nFROM sales \nWHERE companyId = 'company_1766331506068'\n  AND MONTH(createdAt) = 2 \n  AND YEAR(createdAt) = 2026\nUNION ALL\nSELECT \n  'Comissão Vendida',\n  COALESCE(SUM(totalCommission), 0)\nFROM commissions \nWHERE companyId = 'company_1766331506068'\n  AND MONTH(createdAt) = 2 \n  AND YEAR(createdAt) = 2026\nUNION ALL\nSELECT \n  'Comissão Recebida (Paga)',\n  COALESCE(SUM(totalCommission), 0)\nFROM commissions \nWHERE companyId = 'company_1766331506068'\n  AND status = 'paid'\n  AND MONTH(createdAt) = 2 \n  AND YEAR(createdAt) = 2026;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Indicadores de Fevereiro/2026\nSELECT \n  'Negócios no mês (unidades)' as indicador,\n  COUNT(*) as valor\nFROM sales \nWHERE companyId = 'company_1766331506068'\n  AND MONTH(createdAt) = 2 \n  AND YEAR(createdAt) = 2026\nUNION ALL\nSELECT \n  'Comissão Vendida',\n  COALESCE(SUM(totalCommission), 0)\nFROM commissions \nWHERE companyId = 'company_1766331506068'\n  AND MONTH(createdAt) = 2 \n  AND YEAR(createdAt) = 2026\nUNION ALL\nSELECT \n  'Comissão Recebida (Paga)',\n  COALESCE(SUM(totalCommission), 0)\nFROM commissions \nWHERE companyId = 'company_1766331506068'\n  AND status = 'paid'\n  AND MONTH(createdAt) = 2 \n  AND YEAR(createdAt) = 2026;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 3: Unknown column 'totalcommission' in 'where clause'"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "query": "\n-- Atualizar companyId de todas as vendas para Baggio\nUPDATE sales \nSET companyId = 'company_1766331506068'\nWHERE companyId != 'company_1766331506068';\n\n-- Atualizar comissões para a empresa Baggio também\nUPDATE commissions \nSET companyId = 'company_1766331506068'\nWHERE companyId != 'company_1766331506068';\n\n-- Verificar resultado\nSELECT COUNT(*) as vendas_baggio FROM sales WHERE companyId = 'company_1766331506068';\nSELECT COUNT(*) as comissoes_baggio FROM commissions WHERE companyId = 'company_1766331506068';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Atualizar companyId de todas as vendas para Baggio\nUPDATE sales \nSET companyId = 'company_1766331506068'\nWHERE companyId != 'company_1766331506068';\n\n-- Atualizar comissões para a empresa Baggio também\nUPDATE commissions \nSET companyId = 'company_1766331506068'\nWHERE companyId != 'company_1766331506068';\n\n-- Verificar resultado\nSELECT COUNT(*) as vendas_baggio FROM sales WHERE companyId = 'company_1766331506068';\nSELECT COUNT(*) as comissoes_baggio FROM commissions WHERE companyId = 'company_1766331506068';\n",
+  "rows": [
+    {
+      "vendas_baggio": "15"
+    },
+    {
+      "vendas_baggio": "comissoes_baggio"
+    },
+    {
+      "vendas_baggio": "12"
+    }
+  ],
+  "messages": [],
+  "stdout": "vendas_baggio\n15\ncomissoes_baggio\n12\n",
+  "stderr": "",
+  "execution_time_ms": 109
+}
