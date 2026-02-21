@@ -1,4 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Trophy, TrendingUp, LogOut } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { useAuth } from "@/_core/hooks/useAuth";
 import {
   BarChart,
   Bar,
@@ -27,6 +27,25 @@ export default function Ranking() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
+  // Buscar dados reais do backend
+  const { data: rankingVendas = [] } = trpc.ranking.getVendasRanking.useQuery({
+    month: selectedMonth,
+    year: selectedYear,
+  });
+
+  const { data: rankingAngariacao = [] } = trpc.ranking.getAngaricoesRanking.useQuery({
+    month: selectedMonth,
+    year: selectedYear,
+  });
+
+  const { data: myPerformance } = trpc.ranking.getMyPerformance.useQuery(
+    {
+      month: selectedMonth,
+      year: selectedYear,
+    },
+    { enabled: user?.role === "broker" }
+  );
+
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
       setLocation("/login");
@@ -41,62 +60,31 @@ export default function Ranking() {
     return null;
   }
 
-  // Verificar se é empresa de Testes para mostrar dados mock
-  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
-
-  // Dados mock para ranking de vendas (apenas para empresa de testes)
-  const mockRankingVendas = [
-    { posicao: 1, nome: "Pedro Costa", vendas: 25, valor: 1562500, meta: 50000, percentualMeta: 156 },
-    { posicao: 2, nome: "João Silva", vendas: 12, valor: 750000, meta: 50000, percentualMeta: 92 },
-    { posicao: 3, nome: "Maria Santos", vendas: 8, valor: 500000, meta: 50000, percentualMeta: 62 },
-    { posicao: 4, nome: "Ana Oliveira", vendas: 6, valor: 375000, meta: 50000, percentualMeta: 45 },
-  ];
-
-  // Dados mock para ranking de angariações (apenas para empresa de testes)
-  const mockRankingAngariacao = [
-    { posicao: 1, nome: "Maria Santos", angariacao: 32, valor: 1280000, meta: 30000, percentualMeta: 107 },
-    { posicao: 2, nome: "Pedro Costa", angariacao: 28, valor: 1120000, meta: 30000, percentualMeta: 93 },
-    { posicao: 3, nome: "João Silva", angariacao: 18, valor: 720000, meta: 30000, percentualMeta: 60 },
-    { posicao: 4, nome: "Ana Oliveira", angariacao: 15, valor: 600000, meta: 30000, percentualMeta: 50 },
-  ];
-
-  // Usar dados mock apenas para empresa de testes
-  const allRankingVendas = isTestCompany ? mockRankingVendas : [];
-  const allRankingAngariacao = isTestCompany ? mockRankingAngariacao : [];
-
   const isBroker = user.role === "broker";
   const isManager = user.role === "manager";
-  const isFinance = user.role === "finance";
 
-  // Se for corretor, mostrar apenas top 3 + seus dados
-  let rankingVendas = allRankingVendas;
-  let rankingAngariacao = allRankingAngariacao;
-  let brokerVendas = null;
-  let brokerAngariacao = null;
+  // Dados para gráfico de barras comparativo
+  const comparisonData = rankingVendas.slice(0, 3).map((item) => ({
+    nome: item.brokerName,
+    vendas: item.quantidadeVendas,
+    angariacao: rankingAngariacao.find((a) => a.brokerId === item.brokerId)?.quantidadeAngariacao || 0,
+  }));
+
+  // Dados para gráfico de pizza - distribuição de vendas
+  const vendaDistribution = rankingVendas.map((item, index) => ({
+    name: item.brokerName,
+    value: item.valorTotal,
+    fill: ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b"][index % 4],
+  }));
+
+  // Mostrar top 3 + dados do próprio corretor se for broker
+  let displayRankingVendas = rankingVendas;
+  let displayRankingAngariacao = rankingAngariacao;
 
   if (isBroker) {
-    // Mock: João Silva é o corretor logado
-    rankingVendas = allRankingVendas.slice(0, 3); // Top 3
-    rankingAngariacao = allRankingAngariacao.slice(0, 3); // Top 3
-    
-    // Dados do próprio corretor
-    brokerVendas = allRankingVendas.find(r => r.nome === "João Silva");
-    brokerAngariacao = allRankingAngariacao.find(r => r.nome === "João Silva");
+    displayRankingVendas = rankingVendas.slice(0, 3);
+    displayRankingAngariacao = rankingAngariacao.slice(0, 3);
   }
-
-  // Dados para gráfico de barras comparativo (apenas para empresa de testes)
-  const comparisonData = isTestCompany ? [
-    { nome: "Pedro Costa", vendas: 25, angariacao: 28 },
-    { nome: "João Silva", vendas: 12, angariacao: 18 },
-    { nome: "Maria Santos", vendas: 8, angariacao: 32 },
-  ] : [];
-
-  // Dados para gráfico de pizza - distribuição de vendas (apenas para empresa de testes)
-  const vendaDistribution = isTestCompany ? [
-    { name: "Pedro Costa", value: 1562500, fill: "#8b5cf6" },
-    { name: "João Silva", value: 750000, fill: "#3b82f6" },
-    { name: "Maria Santos", value: 500000, fill: "#10b981" },
-  ] : [];
 
   return (
     <div className="min-h-screen bg-white">
@@ -119,16 +107,16 @@ export default function Ranking() {
         </div>
 
         {/* Mensagem de dados vazios */}
-        {!isTestCompany && (
+        {rankingVendas.length === 0 && (
           <Card className="bg-amber-50 border-amber-200 mb-8">
             <CardContent className="pt-6">
-              <p className="text-amber-800">Nenhum dado cadastrado para esta empresa. O ranking será exibido quando houver vendas registradas.</p>
+              <p className="text-amber-800">Nenhum dado cadastrado para este período. O ranking será exibido quando houver vendas registradas.</p>
             </CardContent>
           </Card>
         )}
 
         {/* Filters */}
-        {!isBroker && isTestCompany && (
+        {!isBroker && rankingVendas.length > 0 && (
           <Card className="border-0 shadow-md mb-8 bg-white">
             <CardHeader>
               <CardTitle>Filtros</CardTitle>
@@ -165,14 +153,11 @@ export default function Ranking() {
                     onChange={(e) => setSelectedYear(Number(e.target.value))}
                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   >
-                    {Array.from({ length: 5 }, (_, i) => {
-                      const year = new Date().getFullYear() - 2 + i;
-                      return (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      );
-                    })}
+                    {[2024, 2025, 2026].map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -180,268 +165,160 @@ export default function Ranking() {
           </Card>
         )}
 
-        {/* Broker's Own Data */}
-        {isTestCompany && isBroker && brokerVendas && brokerAngariacao && (
-          <Card className="border-0 shadow-md mb-8 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
-                Seus Dados
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Posição em Vendas</p>
-                  <p className="text-3xl font-bold text-blue-600">#{brokerVendas.posicao}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Vendas Realizadas</p>
-                  <p className="text-3xl font-bold text-slate-900">{brokerVendas.vendas}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Valor Vendas</p>
-                  <p className="text-2xl font-bold text-slate-900">
-                    R$ {(brokerVendas.valor / 1000000).toFixed(2)}M
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">% da Meta</p>
-                  <Badge
-                    className={
-                      brokerVendas.percentualMeta >= 100
-                        ? "bg-green-100 text-green-800 text-lg py-2"
-                        : "bg-amber-100 text-amber-800 text-lg py-2"
-                    }
-                  >
-                    {brokerVendas.percentualMeta}%
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Comparison Chart */}
-        {isTestCompany && (
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle>Vendas vs Angariações</CardTitle>
-            <CardDescription>
-              Comparação entre vendas e angariações
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={comparisonData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="nome" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="vendas" fill="#3b82f6" name="Vendas" />
-                <Bar dataKey="angariacao" fill="#10b981" name="Angariações" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        )}
-
-        {/* Ranking Vendas */}
-        {isTestCompany && (
-        <Card className="border-0 shadow-md mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              Ranking de Vendas {isBroker ? "(Top 3)" : ""}
-            </CardTitle>
-            <CardDescription>
-              Posição dos corretores em vendas
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Posição
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Corretor
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Vendas
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Valor
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Meta
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      % Meta
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rankingVendas.map((rank) => (
-                    <tr
-                      key={rank.posicao}
-                      className={`border-b border-slate-100 hover:bg-slate-50 ${
-                        isBroker && rank.nome === user.name
-                          ? "bg-blue-50 border-l-4 border-l-blue-600"
-                          : ""
-                      }`}
-                    >
-                      <td className="py-3 px-4">
-                        <Badge
-                          className={
-                            rank.posicao === 1
-                              ? "bg-yellow-100 text-yellow-800"
-                              : rank.posicao === 2
-                              ? "bg-gray-100 text-gray-800"
-                              : "bg-orange-100 text-orange-800"
-                          }
-                        >
-                          #{rank.posicao}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-slate-900 font-medium">
-                        {rank.nome}
-                        {isBroker && rank.nome === user.name && (
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            Você
+        {rankingVendas.length > 0 && (
+          <>
+            {/* Ranking de Vendas */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle>Ranking de Vendas</CardTitle>
+                  <CardDescription>Top corretores por valor vendido</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {displayRankingVendas.map((item) => (
+                      <div key={item.brokerId} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="text-lg font-bold">
+                            {item.posicao}º
                           </Badge>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-slate-900 font-semibold">
-                        {rank.vendas}
-                      </td>
-                      <td className="py-3 px-4 text-slate-900">
-                        R$ {(rank.valor / 1000000).toFixed(2)}M
-                      </td>
-                      <td className="py-3 px-4 text-slate-600">
-                        R$ {(rank.meta / 1000).toFixed(0)}k
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          className={
-                            rank.percentualMeta >= 100
-                              ? "bg-green-100 text-green-800"
-                              : "bg-amber-100 text-amber-800"
-                          }
-                        >
-                          {rank.percentualMeta}%
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-        )}
+                          <div>
+                            <p className="font-medium text-slate-900">{item.brokerName}</p>
+                            <p className="text-sm text-slate-600">{item.quantidadeVendas} vendas</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-slate-900">
+                            R$ {(item.valorTotal / 1000).toFixed(1)}k
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-        {/* Ranking Angariações */}
-        {isTestCompany && (
-        <Card className="border-0 shadow-md">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              Ranking de Angariações {isBroker ? "(Top 3)" : ""}
-            </CardTitle>
-            <CardDescription>
-              Posição dos corretores em angariações
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Posição
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Corretor
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Angariações
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Valor
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      Meta
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">
-                      % Meta
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rankingAngariacao.map((rank) => (
-                    <tr
-                      key={rank.posicao}
-                      className={`border-b border-slate-100 hover:bg-slate-50 ${
-                        isBroker && rank.nome === user.name
-                          ? "bg-blue-50 border-l-4 border-l-blue-600"
-                          : ""
-                      }`}
-                    >
-                      <td className="py-3 px-4">
-                        <Badge
-                          className={
-                            rank.posicao === 1
-                              ? "bg-yellow-100 text-yellow-800"
-                              : rank.posicao === 2
-                              ? "bg-gray-100 text-gray-800"
-                              : "bg-orange-100 text-orange-800"
-                          }
-                        >
-                          #{rank.posicao}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-slate-900 font-medium">
-                        {rank.nome}
-                        {isBroker && rank.nome === user.name && (
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            Você
+              {/* Ranking de Angariações */}
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle>Ranking de Angariações</CardTitle>
+                  <CardDescription>Top corretores por imóveis angariados</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {displayRankingAngariacao.map((item) => (
+                      <div key={item.brokerId} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="text-lg font-bold">
+                            {item.posicao}º
                           </Badge>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-slate-900 font-semibold">
-                        {rank.angariacao}
-                      </td>
-                      <td className="py-3 px-4 text-slate-900">
-                        R$ {(rank.valor / 1000000).toFixed(2)}M
-                      </td>
-                      <td className="py-3 px-4 text-slate-600">
-                        R$ {(rank.meta / 1000).toFixed(0)}k
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          className={
-                            rank.percentualMeta >= 100
-                              ? "bg-green-100 text-green-800"
-                              : "bg-amber-100 text-amber-800"
-                          }
-                        >
-                          {rank.percentualMeta}%
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          <div>
+                            <p className="font-medium text-slate-900">{item.brokerName}</p>
+                            <p className="text-sm text-slate-600">{item.quantidadeAngariacao} angariações</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-slate-900">
+                            R$ {(item.valorTotal / 1000).toFixed(1)}k
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Gráfico Comparativo */}
+            {comparisonData.length > 0 && (
+              <Card className="border-0 shadow-md mb-8">
+                <CardHeader>
+                  <CardTitle>Comparativo Top 3</CardTitle>
+                  <CardDescription>Vendas vs Angariações</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={comparisonData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="nome" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="vendas" fill="#3b82f6" />
+                      <Bar dataKey="angariacao" fill="#10b981" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Gráfico de Pizza */}
+            {vendaDistribution.length > 0 && (
+              <Card className="border-0 shadow-md mb-8">
+                <CardHeader>
+                  <CardTitle>Distribuição de Vendas</CardTitle>
+                  <CardDescription>Percentual por corretor</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={vendaDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {vendaDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Meus Dados (apenas para corretores) */}
+            {isBroker && myPerformance && (
+              <Card className="border-0 shadow-md border-l-4 border-l-blue-500">
+                <CardHeader>
+                  <CardTitle>Meu Desempenho</CardTitle>
+                  <CardDescription>Seu desempenho neste período</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="p-4 bg-blue-50 rounded-lg">
+                      <p className="text-sm text-slate-600">Vendas</p>
+                      <p className="text-2xl font-bold text-blue-600">{myPerformance.vendas.quantidade}</p>
+                    </div>
+                    <div className="p-4 bg-green-50 rounded-lg">
+                      <p className="text-sm text-slate-600">Valor Vendido</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        R$ {(myPerformance.vendas.valor / 1000).toFixed(1)}k
+                      </p>
+                    </div>
+                    <div className="p-4 bg-purple-50 rounded-lg">
+                      <p className="text-sm text-slate-600">Angariações</p>
+                      <p className="text-2xl font-bold text-purple-600">{myPerformance.angariacao.quantidade}</p>
+                    </div>
+                    <div className="p-4 bg-orange-50 rounded-lg">
+                      <p className="text-sm text-slate-600">Valor Angariado</p>
+                      <p className="text-2xl font-bold text-orange-600">
+                        R$ {(myPerformance.angariacao.valor / 1000).toFixed(1)}k
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
       </main>
     </div>
   );
 }
-

@@ -1,0 +1,37 @@
+{
+  "query": "\n-- TESTE 1: Isolamento de Dados - Corretor Sandra Maria\n-- 1. Obter ID do corretor Sandra Maria\nSELECT @sandra_id := id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker';\n\n-- 2. Listar vendas onde Sandra é vendedor\nSELECT 'Vendas como Vendedor' as tipo, COUNT(*) as quantidade, SUM(saleValue) as valor_total \nFROM sales \nWHERE brokerVendedor = (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker');\n\n-- 3. Listar vendas onde Sandra é angariador\nSELECT 'Vendas como Angariador' as tipo, COUNT(*) as quantidade, SUM(saleValue) as valor_total \nFROM sales \nWHERE brokerAngariador = (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker');\n\n-- 4. Listar comissões de Sandra\nSELECT 'Comissões' as tipo, COUNT(*) as quantidade, SUM(commissionValue) as valor_total, \n       GROUP_CONCAT(DISTINCT status) as status_list\nFROM commissions \nWHERE brokerId = (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker');\n\n-- 5. Verificar que Sandra NÃO vê vendas de outros corretores\nSELECT 'Vendas de OUTROS corretores' as tipo, COUNT(*) as quantidade\nFROM sales \nWHERE (brokerVendedor != (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker')\n   AND brokerAngariador != (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker'))\nAND companyId = 'company_1766331506068';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- TESTE 1: Isolamento de Dados - Corretor Sandra Maria\n-- 1. Obter ID do corretor Sandra Maria\nSELECT @sandra_id := id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker';\n\n-- 2. Listar vendas onde Sandra é vendedor\nSELECT 'Vendas como Vendedor' as tipo, COUNT(*) as quantidade, SUM(saleValue) as valor_total \nFROM sales \nWHERE brokerVendedor = (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker');\n\n-- 3. Listar vendas onde Sandra é angariador\nSELECT 'Vendas como Angariador' as tipo, COUNT(*) as quantidade, SUM(saleValue) as valor_total \nFROM sales \nWHERE brokerAngariador = (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker');\n\n-- 4. Listar comissões de Sandra\nSELECT 'Comissões' as tipo, COUNT(*) as quantidade, SUM(commissionValue) as valor_total, \n       GROUP_CONCAT(DISTINCT status) as status_list\nFROM commissions \nWHERE brokerId = (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker');\n\n-- 5. Verificar que Sandra NÃO vê vendas de outros corretores\nSELECT 'Vendas de OUTROS corretores' as tipo, COUNT(*) as quantidade\nFROM sales \nWHERE (brokerVendedor != (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker')\n   AND brokerAngariador != (SELECT id FROM users WHERE email = 'sandra.lima@baggioimoveis.com.br' AND role = 'broker'))\nAND companyId = 'company_1766331506068';\n",
+  "rows": [
+    {
+      "@sandra_id := id": "_NMODURqWYOCipgt"
+    },
+    {
+      "@sandra_id := id": "tipo\tquantidade\tvalor_total"
+    },
+    {
+      "@sandra_id := id": "Vendas como Vendedor\t0\tNULL"
+    },
+    {
+      "@sandra_id := id": "tipo\tquantidade\tvalor_total"
+    },
+    {
+      "@sandra_id := id": "Vendas como Angariador\t0\tNULL"
+    },
+    {
+      "@sandra_id := id": "tipo\tquantidade\tvalor_total\tstatus_list"
+    },
+    {
+      "@sandra_id := id": "Comissões\t0\tNULL\tNULL"
+    },
+    {
+      "@sandra_id := id": "tipo\tquantidade"
+    },
+    {
+      "@sandra_id := id": "Vendas de OUTROS corretores\t0"
+    }
+  ],
+  "messages": [],
+  "stdout": "@sandra_id := id\n_NMODURqWYOCipgt\ntipo\tquantidade\tvalor_total\nVendas como Vendedor\t0\tNULL\ntipo\tquantidade\tvalor_total\nVendas como Angariador\t0\tNULL\ntipo\tquantidade\tvalor_total\tstatus_list\nComissões\t0\tNULL\tNULL\ntipo\tquantidade\nVendas de OUTROS corretores\t0\n",
+  "stderr": "",
+  "execution_time_ms": 133
+}

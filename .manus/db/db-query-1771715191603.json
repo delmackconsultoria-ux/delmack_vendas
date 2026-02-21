@@ -1,0 +1,100 @@
+{
+  "query": "\n-- Verificar vendas e seus corretores\nSELECT s.id, s.buyerName, s.saleValue, s.brokerVendedor, s.brokerAngariador, \n       u1.name as nome_vendedor, u2.name as nome_angariador\nFROM sales s\nLEFT JOIN users u1 ON s.brokerVendedor = u1.id\nLEFT JOIN users u2 ON s.brokerAngariador = u2.id\nLIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Verificar vendas e seus corretores\nSELECT s.id, s.buyerName, s.saleValue, s.brokerVendedor, s.brokerAngariador, \n       u1.name as nome_vendedor, u2.name as nome_angariador\nFROM sales s\nLEFT JOIN users u1 ON s.brokerVendedor = u1.id\nLEFT JOIN users u2 ON s.brokerAngariador = u2.id\nLIMIT 10;\n",
+  "rows": [
+    {
+      "id": "088cb15c-2999-4133-8d7f-1916c862673f",
+      "buyerName": "ANGELLICA PASSOS DELLE",
+      "saleValue": "5800.00",
+      "brokerVendedor": "user-corretor-testes",
+      "brokerAngariador": "user-corretor-testes",
+      "nome_vendedor": "Corretor Testes",
+      "nome_angariador": "Corretor Testes"
+    },
+    {
+      "id": "1e6cdbcc-c790-4421-8ebc-6af716d590ec",
+      "buyerName": "ANGELLICA PASSOS DELLE",
+      "saleValue": "56589.00",
+      "brokerVendedor": "user-corretor-testes",
+      "brokerAngariador": "user-corretor-testes",
+      "nome_vendedor": "Corretor Testes",
+      "nome_angariador": "Corretor Testes"
+    },
+    {
+      "id": "c67918ac-521c-4920-82f4-d4c6314f4a6d",
+      "buyerName": "Marcia",
+      "saleValue": "88.00",
+      "brokerVendedor": "user-corretor-testes",
+      "brokerAngariador": "user-corretor-testes",
+      "nome_vendedor": "Corretor Testes",
+      "nome_angariador": "Corretor Testes"
+    },
+    {
+      "id": "2297dcc2-e540-469a-9fd8-72652a3af33b",
+      "buyerName": "feafag",
+      "saleValue": "443.00",
+      "brokerVendedor": "7faf90de-680c-4255-acb9-8bb182cbc381",
+      "brokerAngariador": "7faf90de-680c-4255-acb9-8bb182cbc381",
+      "nome_vendedor": "NULL",
+      "nome_angariador": "NULL"
+    },
+    {
+      "id": "291ee8d0-697d-428d-b039-b8036365105c",
+      "buyerName": "",
+      "saleValue": "0.00",
+      "brokerVendedor": "",
+      "brokerAngariador": "",
+      "nome_vendedor": "NULL",
+      "nome_angariador": "NULL"
+    },
+    {
+      "id": "35b09135-669c-4ecd-a2bb-d33e12fe9177",
+      "buyerName": "",
+      "saleValue": "0.00",
+      "brokerVendedor": "",
+      "brokerAngariador": "",
+      "nome_vendedor": "NULL",
+      "nome_angariador": "NULL"
+    },
+    {
+      "id": "4fd00488-75f4-4708-93d2-d941454ab5dd",
+      "buyerName": "aaaaaaaaaaaaa",
+      "saleValue": "43444.00",
+      "brokerVendedor": "Corretor Baggio",
+      "brokerAngariador": "Corretor Baggio",
+      "nome_vendedor": "NULL",
+      "nome_angariador": "NULL"
+    },
+    {
+      "id": "92369353-6718-4c7c-9e04-6a13a5b73284",
+      "buyerName": "",
+      "saleValue": "0.00",
+      "brokerVendedor": "",
+      "brokerAngariador": "",
+      "nome_vendedor": "NULL",
+      "nome_angariador": "NULL"
+    },
+    {
+      "id": "a04e887d-77e5-41cf-90b1-e45c90725f6c",
+      "buyerName": "Rascunho ",
+      "saleValue": "0.00",
+      "brokerVendedor": "user-corretor-testes",
+      "brokerAngariador": "",
+      "nome_vendedor": "Corretor Testes",
+      "nome_angariador": "NULL"
+    },
+    {
+      "id": "accf9a46-db24-4c09-a0a0-d5ddbe25f0e1",
+      "buyerName": "sjndkjsfnjkds",
+      "saleValue": "0.00",
+      "brokerVendedor": "user-gerente-testes",
+      "brokerAngariador": "",
+      "nome_vendedor": "Gerente Testes",
+      "nome_angariador": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tbuyerName\tsaleValue\tbrokerVendedor\tbrokerAngariador\tnome_vendedor\tnome_angariador\n088cb15c-2999-4133-8d7f-1916c862673f\tANGELLICA PASSOS DELLE\t5800.00\tuser-corretor-testes\tuser-corretor-testes\tCorretor Testes\tCorretor Testes\n1e6cdbcc-c790-4421-8ebc-6af716d590ec\tANGELLICA PASSOS DELLE\t56589.00\tuser-corretor-testes\tuser-corretor-testes\tCorretor Testes\tCorretor Testes\nc67918ac-521c-4920-82f4-d4c6314f4a6d\tMarcia\t88.00\tuser-corretor-testes\tuser-corretor-testes\tCorretor Testes\tCorretor Testes\n2297dcc2-e540-469a-9fd8-72652a3af33b\tfeafag\t443.00\t7faf90de-680c-4255-acb9-8bb182cbc381\t7faf90de-680c-4255-acb9-8bb182cbc381\tNULL\tNULL\n291ee8d0-697d-428d-b039-b8036365105c\t\t0.00\t\t\tNULL\tNULL\n35b09135-669c-4ecd-a2bb-d33e12fe9177\t\t0.00\t\t\tNULL\tNULL\n4fd00488-75f4-4708-93d2-d941454ab5dd\taaaaaaaaaaaaa\t43444.00\tCorretor Baggio\tCorretor Baggio\tNULL\tNULL\n92369353-6718-4c7c-9e04-6a13a5b73284\t\t0.00\t\t\tNULL\tNULL\na04e887d-77e5-41cf-90b1-e45c90725f6c\tRascunho \t0.00\tuser-corretor-testes\t\tCorretor Testes\tNULL\naccf9a46-db24-4c09-a0a0-d5ddbe25f0e1\tsjndkjsfnjkds\t0.00\tuser-gerente-testes\t\tGerente Testes\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 541
+}

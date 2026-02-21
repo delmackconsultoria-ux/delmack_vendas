@@ -15,6 +15,7 @@ import { indicatorsRouter } from "./routers/indicatorsRouter";
 import { dashboardRouter } from "./routers/dashboardRouter";
 import { auditRouter } from "./routers/auditRouter";
 import { brokerDashboardRouter } from "./routers/brokerDashboardRouter";
+import { rankingRouter } from "./routers/rankingRouter";
 import { router } from "./_core/trpc";
 
 export const appRouter = router({
@@ -35,6 +36,7 @@ export const appRouter = router({
   dashboard: dashboardRouter,
   audit: auditRouter,
   brokerDashboard: brokerDashboardRouter,
+  ranking: rankingRouter,
   // TODO: add feature routers here
 });
 

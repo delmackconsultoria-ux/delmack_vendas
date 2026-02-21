@@ -1,0 +1,50 @@
+{
+  "query": "\n-- Atualizar todos os corretores para vincular à Baggio e à Camila\nUPDATE users \nSET \n  companyId = 'company_1766331506068',\n  managerId = 'user_1766355292097_jsj9336kf'\nWHERE role = 'broker' AND companyId IS NULL;\n\n-- Verificar se a atualização funcionou\nSELECT id, name, email, role, companyId, managerId FROM users WHERE role = 'broker' LIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Atualizar todos os corretores para vincular à Baggio e à Camila\nUPDATE users \nSET \n  companyId = 'company_1766331506068',\n  managerId = 'user_1766355292097_jsj9336kf'\nWHERE role = 'broker' AND companyId IS NULL;\n\n-- Verificar se a atualização funcionou\nSELECT id, name, email, role, companyId, managerId FROM users WHERE role = 'broker' LIMIT 5;\n",
+  "rows": [
+    {
+      "id": "_NMODURqWYOCipgt",
+      "name": "Sandra Maria Alves de Lima Przybysz",
+      "email": "sandra.lima@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068",
+      "managerId": "user_1766355292097_jsj9336kf"
+    },
+    {
+      "id": "2VInLmDh7hPrvuvj",
+      "name": "Maria Carolina Munhoz de Miranda Nicolodi",
+      "email": "carolina.munhoz@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068",
+      "managerId": "user_1766355292097_jsj9336kf"
+    },
+    {
+      "id": "alPFDbR10pSjNbp0",
+      "name": "Edmar Antunes",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068",
+      "managerId": "user_1766355292097_jsj9336kf"
+    },
+    {
+      "id": "bGIqIZHMpe-yBhds",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068",
+      "managerId": "user_1766355292097_jsj9336kf"
+    },
+    {
+      "id": "DaAbrQn5dHcHd89k",
+      "name": "Diego Ferreira dos Santos",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068",
+      "managerId": "user_1766355292097_jsj9336kf"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tcompanyId\tmanagerId\n_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tbroker\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\n2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tbroker\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nalPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tbroker\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nbGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tbroker\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nDaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tbroker\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\n",
+  "stderr": "",
+  "execution_time_ms": 65
+}

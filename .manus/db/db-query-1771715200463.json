@@ -1,0 +1,15 @@
+{
+  "query": "\nSELECT COUNT(*) as total_vendas, \n       COUNT(CASE WHEN brokerVendedor IS NOT NULL THEN 1 END) as com_vendedor,\n       COUNT(CASE WHEN brokerAngariador IS NOT NULL THEN 1 END) as com_angariador\nFROM sales;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT COUNT(*) as total_vendas, \n       COUNT(CASE WHEN brokerVendedor IS NOT NULL THEN 1 END) as com_vendedor,\n       COUNT(CASE WHEN brokerAngariador IS NOT NULL THEN 1 END) as com_angariador\nFROM sales;\n",
+  "rows": [
+    {
+      "total_vendas": "15",
+      "com_vendedor": "14",
+      "com_angariador": "14"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_vendas\tcom_vendedor\tcom_angariador\n15\t14\t14\n",
+  "stderr": "",
+  "execution_time_ms": 203
+}

@@ -1,0 +1,30 @@
+{
+  "query": "\n-- TESTE 4: Dados Históricos e Futuros\n-- 1. Contar vendas por ano\nSELECT YEAR(createdAt) as ano, COUNT(*) as quantidade, SUM(saleValue) as valor_total\nFROM sales\nGROUP BY YEAR(createdAt)\nORDER BY ano DESC;\n\n-- 2. Contar comissões por ano\nSELECT YEAR(createdAt) as ano, COUNT(*) as quantidade, SUM(commissionValue) as valor_total\nFROM commissions\nGROUP BY YEAR(createdAt)\nORDER BY ano DESC;\n\n-- 3. Vendas por mês em 2024\nSELECT MONTH(createdAt) as mes, COUNT(*) as quantidade, SUM(saleValue) as valor_total\nFROM sales\nWHERE YEAR(createdAt) = 2024\nGROUP BY MONTH(createdAt)\nORDER BY mes;\n\n-- 4. Comissões por mês em 2024\nSELECT MONTH(createdAt) as mes, COUNT(*) as quantidade, SUM(commissionValue) as valor_total\nFROM commissions\nWHERE YEAR(createdAt) = 2024\nGROUP BY MONTH(createdAt)\nORDER BY mes;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- TESTE 4: Dados Históricos e Futuros\n-- 1. Contar vendas por ano\nSELECT YEAR(createdAt) as ano, COUNT(*) as quantidade, SUM(saleValue) as valor_total\nFROM sales\nGROUP BY YEAR(createdAt)\nORDER BY ano DESC;\n\n-- 2. Contar comissões por ano\nSELECT YEAR(createdAt) as ano, COUNT(*) as quantidade, SUM(commissionValue) as valor_total\nFROM commissions\nGROUP BY YEAR(createdAt)\nORDER BY ano DESC;\n\n-- 3. Vendas por mês em 2024\nSELECT MONTH(createdAt) as mes, COUNT(*) as quantidade, SUM(saleValue) as valor_total\nFROM sales\nWHERE YEAR(createdAt) = 2024\nGROUP BY MONTH(createdAt)\nORDER BY mes;\n\n-- 4. Comissões por mês em 2024\nSELECT MONTH(createdAt) as mes, COUNT(*) as quantidade, SUM(commissionValue) as valor_total\nFROM commissions\nWHERE YEAR(createdAt) = 2024\nGROUP BY MONTH(createdAt)\nORDER BY mes;\n",
+  "rows": [
+    {
+      "ano": "2026",
+      "quantidade": "1",
+      "valor_total": "750000.00"
+    },
+    {
+      "ano": "2025",
+      "quantidade": "14",
+      "valor_total": "606364.00"
+    },
+    {
+      "ano": "ano",
+      "quantidade": "quantidade",
+      "valor_total": "valor_total"
+    },
+    {
+      "ano": "2025",
+      "quantidade": "12",
+      "valor_total": "14552.76"
+    }
+  ],
+  "messages": [],
+  "stdout": "ano\tquantidade\tvalor_total\n2026\t1\t750000.00\n2025\t14\t606364.00\nano\tquantidade\tvalor_total\n2025\t12\t14552.76\n",
+  "stderr": "",
+  "execution_time_ms": 75
+}

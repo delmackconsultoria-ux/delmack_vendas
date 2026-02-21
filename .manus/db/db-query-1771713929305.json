@@ -1,0 +1,9 @@
+{
+  "query": "\n-- 1. Listar um corretor específico da Baggio\nSELECT id, name, email, role, companyId, managerId FROM users WHERE role = 'broker' AND companyId = (SELECT id FROM companies WHERE name LIKE '%Baggio%' LIMIT 1) LIMIT 1;\n\n-- 2. Listar vendas desse corretor\nSELECT id, buyerName, saleValue, brokerVendedor, brokerAngariador, companyId, status FROM sales WHERE brokerVendedor = (SELECT id FROM users WHERE role = 'broker' AND companyId = (SELECT id FROM companies WHERE name LIKE '%Baggio%' LIMIT 1) LIMIT 1) LIMIT 5;\n\n-- 3. Listar comissões desse corretor\nSELECT id, brokerId, commissionValue, status, type FROM commissions WHERE brokerId = (SELECT id FROM users WHERE role = 'broker' AND companyId = (SELECT id FROM companies WHERE name LIKE '%Baggio%' LIMIT 1) LIMIT 1) LIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- 1. Listar um corretor específico da Baggio\nSELECT id, name, email, role, companyId, managerId FROM users WHERE role = 'broker' AND companyId = (SELECT id FROM companies WHERE name LIKE '%Baggio%' LIMIT 1) LIMIT 1;\n\n-- 2. Listar vendas desse corretor\nSELECT id, buyerName, saleValue, brokerVendedor, brokerAngariador, companyId, status FROM sales WHERE brokerVendedor = (SELECT id FROM users WHERE role = 'broker' AND companyId = (SELECT id FROM companies WHERE name LIKE '%Baggio%' LIMIT 1) LIMIT 1) LIMIT 5;\n\n-- 3. Listar comissões desse corretor\nSELECT id, brokerId, commissionValue, status, type FROM commissions WHERE brokerId = (SELECT id FROM users WHERE role = 'broker' AND companyId = (SELECT id FROM companies WHERE name LIKE '%Baggio%' LIMIT 1) LIMIT 1) LIMIT 5;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 201
+}

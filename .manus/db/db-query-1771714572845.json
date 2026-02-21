@@ -1,0 +1,52 @@
+{
+  "query": "\n-- TESTE 3: Indicadores com Dados Reais\n-- 1. Negócios no mês (valor)\nSELECT 'Negócios no mês (valor)' as indicador, \n       SUM(saleValue) as valor,\n       COUNT(*) as quantidade\nFROM sales \nWHERE MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 2. Negócios no mês (unidades)\nSELECT 'Negócios no mês (unidades)' as indicador,\n       COUNT(*) as quantidade\nFROM sales \nWHERE MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 3. Vendas Canceladas\nSELECT 'Vendas Canceladas' as indicador,\n       COUNT(*) as quantidade\nFROM sales \nWHERE status = 'cancelled' AND MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 4. Comissão Recebida (status = paid)\nSELECT 'Comissão Recebida' as indicador,\n       SUM(commissionValue) as valor,\n       COUNT(*) as quantidade\nFROM commissions \nWHERE status = 'paid' AND MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 5. Comissão Vendida (todas as comissões do mês)\nSELECT 'Comissão Vendida' as indicador,\n       SUM(commissionValue) as valor,\n       COUNT(*) as quantidade\nFROM commissions \nWHERE MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 6. % comissão vendida\nSELECT 'Percentual Comissão Vendida' as indicador,\n       ROUND((SUM(c.commissionValue) / SUM(s.saleValue)) * 100, 2) as percentual\nFROM commissions c\nJOIN sales s ON c.saleId = s.id\nWHERE MONTH(c.createdAt) = MONTH(NOW()) AND YEAR(c.createdAt) = YEAR(NOW());\n\n-- 7. Negócios acima de 1 milhão\nSELECT 'Negócios acima de 1M' as indicador,\n       COUNT(*) as quantidade,\n       SUM(saleValue) as valor_total\nFROM sales \nWHERE saleValue >= 1000000 AND MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- TESTE 3: Indicadores com Dados Reais\n-- 1. Negócios no mês (valor)\nSELECT 'Negócios no mês (valor)' as indicador, \n       SUM(saleValue) as valor,\n       COUNT(*) as quantidade\nFROM sales \nWHERE MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 2. Negócios no mês (unidades)\nSELECT 'Negócios no mês (unidades)' as indicador,\n       COUNT(*) as quantidade\nFROM sales \nWHERE MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 3. Vendas Canceladas\nSELECT 'Vendas Canceladas' as indicador,\n       COUNT(*) as quantidade\nFROM sales \nWHERE status = 'cancelled' AND MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 4. Comissão Recebida (status = paid)\nSELECT 'Comissão Recebida' as indicador,\n       SUM(commissionValue) as valor,\n       COUNT(*) as quantidade\nFROM commissions \nWHERE status = 'paid' AND MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 5. Comissão Vendida (todas as comissões do mês)\nSELECT 'Comissão Vendida' as indicador,\n       SUM(commissionValue) as valor,\n       COUNT(*) as quantidade\nFROM commissions \nWHERE MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n\n-- 6. % comissão vendida\nSELECT 'Percentual Comissão Vendida' as indicador,\n       ROUND((SUM(c.commissionValue) / SUM(s.saleValue)) * 100, 2) as percentual\nFROM commissions c\nJOIN sales s ON c.saleId = s.id\nWHERE MONTH(c.createdAt) = MONTH(NOW()) AND YEAR(c.createdAt) = YEAR(NOW());\n\n-- 7. Negócios acima de 1 milhão\nSELECT 'Negócios acima de 1M' as indicador,\n       COUNT(*) as quantidade,\n       SUM(saleValue) as valor_total\nFROM sales \nWHERE saleValue >= 1000000 AND MONTH(createdAt) = MONTH(NOW()) AND YEAR(createdAt) = YEAR(NOW());\n",
+  "rows": [
+    {
+      "indicador": "Negócios no mês (valor)",
+      "valor": "750000.00",
+      "quantidade": "1"
+    },
+    {
+      "indicador": "indicador",
+      "valor": "valor",
+      "quantidade": "quantidade"
+    },
+    {
+      "indicador": "Comissão Recebida",
+      "valor": "NULL",
+      "quantidade": "0"
+    },
+    {
+      "indicador": "indicador",
+      "valor": "valor",
+      "quantidade": "quantidade"
+    },
+    {
+      "indicador": "Comissão Vendida",
+      "valor": "NULL",
+      "quantidade": "0"
+    },
+    {
+      "indicador": "indicador",
+      "valor": "quantidade",
+      "quantidade": "valor_total"
+    },
+    {
+      "indicador": "Negócios acima de 1M",
+      "valor": "0",
+      "quantidade": "NULL"
+    }
+  ],
+  "messages": [
+    "indicador\tquantidade",
+    "Negócios no mês (unidades)\t1",
+    "indicador\tquantidade",
+    "Vendas Canceladas\t0",
+    "indicador\tpercentual",
+    "Percentual Comissão Vendida\tNULL"
+  ],
+  "stdout": "indicador\tvalor\tquantidade\nNegócios no mês (valor)\t750000.00\t1\nindicador\tquantidade\nNegócios no mês (unidades)\t1\nindicador\tquantidade\nVendas Canceladas\t0\nindicador\tvalor\tquantidade\nComissão Recebida\tNULL\t0\nindicador\tvalor\tquantidade\nComissão Vendida\tNULL\t0\nindicador\tpercentual\nPercentual Comissão Vendida\tNULL\nindicador\tquantidade\tvalor_total\nNegócios acima de 1M\t0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 101
+}

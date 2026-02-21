@@ -1,0 +1,33 @@
+{
+  "query": "\n-- Verificar empresas\nSELECT id, name FROM companies;\n\n-- Verificar gerentes\nSELECT id, name, email, role, companyId FROM users WHERE role = 'manager';\n\n-- Verificar corretores\nSELECT id, name, email, role, companyId, managerId FROM users WHERE role = 'broker' LIMIT 5;\n\n-- Verificar vendas\nSELECT COUNT(*) as total_vendas FROM sales;\n\n-- Verificar comissões\nSELECT COUNT(*) as total_comissoes FROM commissions;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Verificar empresas\nSELECT id, name FROM companies;\n\n-- Verificar gerentes\nSELECT id, name, email, role, companyId FROM users WHERE role = 'manager';\n\n-- Verificar corretores\nSELECT id, name, email, role, companyId, managerId FROM users WHERE role = 'broker' LIMIT 5;\n\n-- Verificar vendas\nSELECT COUNT(*) as total_vendas FROM sales;\n\n-- Verificar comissões\nSELECT COUNT(*) as total_comissoes FROM commissions;\n",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes"
+    }
+  ],
+  "messages": [
+    "id\tname\temail\trole\tcompanyId",
+    "user_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\tcompany_1766331506068",
+    "user_1770950171305_j1ap3gfaz\tAngéllica Gerente Teste UP\tangellicapassosup@gmail.com\tmanager\tcompany_1766331506068",
+    "user-gerente-testes\tGerente Testes\tgerente@testes.com.br\tmanager\tcompany_1766344499112",
+    "id\tname\temail\trole\tcompanyId\tmanagerId",
+    "_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass",
+    "2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass",
+    "alPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass",
+    "bGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass",
+    "DaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass",
+    "total_vendas",
+    "15",
+    "total_comissoes",
+    "12"
+  ],
+  "stdout": "id\tname\ncompany_1766331506068\tB I IMOVEIS LTDA\ncompany_1766344499112\tTestes\nid\tname\temail\trole\tcompanyId\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\tcompany_1766331506068\nuser_1770950171305_j1ap3gfaz\tAngéllica Gerente Teste UP\tangellicapassosup@gmail.com\tmanager\tcompany_1766331506068\nuser-gerente-testes\tGerente Testes\tgerente@testes.com.br\tmanager\tcompany_1766344499112\nid\tname\temail\trole\tcompanyId\tmanagerId\n_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass\n2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass\nalPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass\nbGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass\nDaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tbroker\tNULL\tpasswordpasswordpasswordpass\ntotal_vendas\n15\ntotal_comissoes\n12\n",
+  "stderr": "",
+  "execution_time_ms": 184
+}

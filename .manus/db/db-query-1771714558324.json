@@ -1,0 +1,53 @@
+{
+  "query": "\n-- TESTE 2: Gerenciamento de Corretores - Camila\n-- 1. Verificar que Camila é gerente da Baggio\nSELECT id, name, email, role, companyId, managerId FROM users \nWHERE email = 'camila.pires@baggioimoveis.com.br';\n\n-- 2. Listar todos os corretores vinculados à Camila\nSELECT id, name, email, companyId, managerId FROM users \nWHERE role = 'broker' AND managerId = 'user_1766355292097_jsj9336kf' AND companyId = 'company_1766331506068';\n\n-- 3. Para cada corretor, contar vendas e comissões (dados que Camila deve ver)\nSELECT \n  u.name as corretor,\n  COUNT(DISTINCT CASE WHEN s.brokerVendedor = u.id THEN s.id END) as vendas_como_vendedor,\n  COUNT(DISTINCT CASE WHEN s.brokerAngariador = u.id THEN s.id END) as vendas_como_angariador,\n  COUNT(DISTINCT c.id) as comissoes\nFROM users u\nLEFT JOIN sales s ON (s.brokerVendedor = u.id OR s.brokerAngariador = u.id) AND s.companyId = 'company_1766331506068'\nLEFT JOIN commissions c ON c.brokerId = u.id AND c.companyId = 'company_1766331506068'\nWHERE u.role = 'broker' AND u.managerId = 'user_1766355292097_jsj9336kf'\nGROUP BY u.id, u.name;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- TESTE 2: Gerenciamento de Corretores - Camila\n-- 1. Verificar que Camila é gerente da Baggio\nSELECT id, name, email, role, companyId, managerId FROM users \nWHERE email = 'camila.pires@baggioimoveis.com.br';\n\n-- 2. Listar todos os corretores vinculados à Camila\nSELECT id, name, email, companyId, managerId FROM users \nWHERE role = 'broker' AND managerId = 'user_1766355292097_jsj9336kf' AND companyId = 'company_1766331506068';\n\n-- 3. Para cada corretor, contar vendas e comissões (dados que Camila deve ver)\nSELECT \n  u.name as corretor,\n  COUNT(DISTINCT CASE WHEN s.brokerVendedor = u.id THEN s.id END) as vendas_como_vendedor,\n  COUNT(DISTINCT CASE WHEN s.brokerAngariador = u.id THEN s.id END) as vendas_como_angariador,\n  COUNT(DISTINCT c.id) as comissoes\nFROM users u\nLEFT JOIN sales s ON (s.brokerVendedor = u.id OR s.brokerAngariador = u.id) AND s.companyId = 'company_1766331506068'\nLEFT JOIN commissions c ON c.brokerId = u.id AND c.companyId = 'company_1766331506068'\nWHERE u.role = 'broker' AND u.managerId = 'user_1766355292097_jsj9336kf'\nGROUP BY u.id, u.name;\n",
+  "rows": [
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "name": "Camila Pires",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "role": "manager",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    }
+  ],
+  "messages": [
+    "id\tname\temail\tcompanyId\tmanagerId",
+    "_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "alPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "bGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "DaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "E5RSZQeG0eEArpsM\tCharles Luciano Lucca\tcharles.lucca@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "hWVzj6o7YC9qEsnO\tMarco Antonio do Nascimento João\tmarcojoao@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "IRZ5ILHEQ0ONOHb9\tAdriana Simões Barbosa Karter\tadriana.simoes@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "lUSSogknDH3lUI89\tPriscilla Pires Andrelle\tpriscilla.andrelle@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "MFsyjWoC1GgwCqtS\tRosani Felix dos Santos\trosani@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "SkkGSjiMlWfIDGlP\tFabio Simões\tfabio@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "tkrpv3bQxeb4XuDa\tFabiano Buziak\tfabiano@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "TPKivMeGPN_04Wvp\tJoseli do Rocio Bueno\tjoseli@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "UjIM7HpiYDb6c8X7\tRegiana Mirian Baggio Favarini\tregiana@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "XZriWUdGCaxjJZrZ\tPriscilla Gomes Ziolkowski\tpriscillagomes@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "zsxRmUgDBj4lMgQI\tAllan Sobiech\tallan.sobiech@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf",
+    "corretor\tvendas_como_vendedor\tvendas_como_angariador\tcomissoes",
+    "Sandra Maria Alves de Lima Przybysz\t0\t0\t0",
+    "Maria Carolina Munhoz de Miranda Nicolodi\t0\t0\t0",
+    "Edmar Antunes\t0\t0\t0",
+    "Odair Amancio\t0\t0\t0",
+    "Diego Ferreira dos Santos\t0\t0\t0",
+    "Charles Luciano Lucca\t0\t0\t0",
+    "Marco Antonio do Nascimento João\t0\t0\t0",
+    "Adriana Simões Barbosa Karter\t0\t0\t0",
+    "Priscilla Pires Andrelle\t0\t0\t0",
+    "Rosani Felix dos Santos\t0\t0\t0",
+    "Fabio Simões\t0\t0\t0",
+    "Fabiano Buziak\t0\t0\t0",
+    "Joseli do Rocio Bueno\t0\t0\t0",
+    "Regiana Mirian Baggio Favarini\t0\t0\t0",
+    "Priscilla Gomes Ziolkowski\t0\t0\t0",
+    "Allan Sobiech\t0\t0\t0"
+  ],
+  "stdout": "id\tname\temail\trole\tcompanyId\tmanagerId\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\tcompany_1766331506068\tNULL\nid\tname\temail\tcompanyId\tmanagerId\n_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\n2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nalPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nbGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nDaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nE5RSZQeG0eEArpsM\tCharles Luciano Lucca\tcharles.lucca@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nhWVzj6o7YC9qEsnO\tMarco Antonio do Nascimento João\tmarcojoao@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nIRZ5ILHEQ0ONOHb9\tAdriana Simões Barbosa Karter\tadriana.simoes@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nlUSSogknDH3lUI89\tPriscilla Pires Andrelle\tpriscilla.andrelle@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nMFsyjWoC1GgwCqtS\tRosani Felix dos Santos\trosani@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nSkkGSjiMlWfIDGlP\tFabio Simões\tfabio@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\ntkrpv3bQxeb4XuDa\tFabiano Buziak\tfabiano@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nTPKivMeGPN_04Wvp\tJoseli do Rocio Bueno\tjoseli@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nUjIM7HpiYDb6c8X7\tRegiana Mirian Baggio Favarini\tregiana@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nXZriWUdGCaxjJZrZ\tPriscilla Gomes Ziolkowski\tpriscillagomes@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\nzsxRmUgDBj4lMgQI\tAllan Sobiech\tallan.sobiech@baggioimoveis.com.br\tcompany_1766331506068\tuser_1766355292097_jsj9336kf\ncorretor\tvendas_como_vendedor\tvendas_como_angariador\tcomissoes\nSandra Maria Alves de Lima Przybysz\t0\t0\t0\nMaria Carolina Munhoz de Miranda Nicolodi\t0\t0\t0\nEdmar Antunes\t0\t0\t0\nOdair Amancio\t0\t0\t0\nDiego Ferreira dos Santos\t0\t0\t0\nCharles Luciano Lucca\t0\t0\t0\nMarco Antonio do Nascimento João\t0\t0\t0\nAdriana Simões Barbosa Karter\t0\t0\t0\nPriscilla Pires Andrelle\t0\t0\t0\nRosani Felix dos Santos\t0\t0\t0\nFabio Simões\t0\t0\t0\nFabiano Buziak\t0\t0\t0\nJoseli do Rocio Bueno\t0\t0\t0\nRegiana Mirian Baggio Favarini\t0\t0\t0\nPriscilla Gomes Ziolkowski\t0\t0\t0\nAllan Sobiech\t0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 175
+}
