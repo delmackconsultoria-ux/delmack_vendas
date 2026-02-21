@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, name FROM companies LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name FROM companies LIMIT 10;",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ncompany_1766331506068\tB I IMOVEIS LTDA\ncompany_1766344499112\tTestes\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

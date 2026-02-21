@@ -1,0 +1,9 @@
+{
+  "query": "SELECT u.id, u.name, u.email, u.role, u.managerId, u.companyId, u.isActive FROM users u WHERE u.companyId IN (SELECT id FROM companies WHERE name LIKE '%Baggio%') AND u.role = 'broker';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT u.id, u.name, u.email, u.role, u.managerId, u.companyId, u.isActive FROM users u WHERE u.companyId IN (SELECT id FROM companies WHERE name LIKE '%Baggio%') AND u.role = 'broker';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 55
+}

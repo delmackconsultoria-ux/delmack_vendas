@@ -52,7 +52,7 @@ export default function ReportsPage() {
     enabled: !hasHistoricalData,
   });
   const sales = salesData?.sales || [];
-  const { data: brokers = [] } = trpc.brokers.listBrokers.useQuery();
+  const { data: brokers = [] } = trpc.brokers.list.useQuery();
 
   // Calcular dados agregados por corretor
   const salesByBroker = brokers.map((broker: any) => {

@@ -1,0 +1,85 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "actionLogs"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "bonuses"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "commissionApprovals"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "commissionHistory"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "commissionRules"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "commissions"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "companies"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "goals"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "historicalSales"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "indicatorDetails"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "indicatorGoals"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "models"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "monthlyIndicators"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "monthlyIndicatorsSnapshot"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "properfyProperties"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "properties"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "propertiesCache"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "propertyHistory"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "proposalComments"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "proposals"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "salePaymentHistory"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "sales"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "salesHistory"
+    },
+    {
+      "Tables_in_FWQUTMFHrecTsndnoBiUKo": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_FWQUTMFHrecTsndnoBiUKo\n__drizzle_migrations\nactionLogs\nbonuses\ncommissionApprovals\ncommissionHistory\ncommissionRules\ncommissions\ncompanies\ngoals\nhistoricalSales\nindicatorDetails\nindicatorGoals\nmodels\nmonthlyIndicators\nmonthlyIndicatorsSnapshot\nproperfyProperties\nproperties\npropertiesCache\npropertyHistory\nproposalComments\nproposals\nsalePaymentHistory\nsales\nsalesHistory\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

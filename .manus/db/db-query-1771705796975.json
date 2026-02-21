@@ -1,0 +1,15 @@
+{
+  "query": "SELECT 'EMPRESA' as tipo, id, name FROM companies WHERE name LIKE '%Baggio%' OR name LIKE '%BI%'\nUNION ALL\nSELECT 'GERENTE' as tipo, id, name FROM users WHERE email = 'camila.pires@baggioimoveis.com.br';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT 'EMPRESA' as tipo, id, name FROM companies WHERE name LIKE '%Baggio%' OR name LIKE '%BI%'\nUNION ALL\nSELECT 'GERENTE' as tipo, id, name FROM users WHERE email = 'camila.pires@baggioimoveis.com.br';",
+  "rows": [
+    {
+      "tipo": "GERENTE",
+      "id": "user_1766355292097_jsj9336kf",
+      "name": "Camila Pires"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipo\tid\tname\nGERENTE\tuser_1766355292097_jsj9336kf\tCamila Pires\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

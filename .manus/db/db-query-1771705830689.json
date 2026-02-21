@@ -1,0 +1,150 @@
+{
+  "query": "SELECT id, name, email, companyId, managerId FROM users WHERE role = 'broker' AND email LIKE '%baggioimoveis%' LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, companyId, managerId FROM users WHERE role = 'broker' AND email LIKE '%baggioimoveis%' LIMIT 20;",
+  "rows": [
+    {
+      "id": "_NMODURqWYOCipgt",
+      "name": "Sandra Maria Alves de Lima Przybysz",
+      "email": "sandra.lima@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    },
+    {
+      "id": "2VInLmDh7hPrvuvj",
+      "name": "Maria Carolina Munhoz de Miranda Nicolodi",
+      "email": "carolina.munhoz@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    },
+    {
+      "id": "alPFDbR10pSjNbp0",
+      "name": "Edmar Antunes",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    },
+    {
+      "id": "bGIqIZHMpe-yBhds",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    },
+    {
+      "id": "DaAbrQn5dHcHd89k",
+      "name": "Diego Ferreira dos Santos",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    },
+    {
+      "id": "E5RSZQeG0eEArpsM",
+      "name": "Charles Luciano Lucca",
+      "email": "charles.lucca@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    },
+    {
+      "id": "ex_corretor_1_90c447d8435c8cc3",
+      "name": "Anna Cristina",
+      "email": "anna.cristina@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_10_a8b9c0d1e2f3a4b5",
+      "name": "Paula",
+      "email": "paula@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_11_c0d1e2f3a4b5c6d7",
+      "name": "Pietro",
+      "email": "pietro@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_12_e2f3a4b5c6d7e8f9",
+      "name": "Rafaele",
+      "email": "rafaele@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_13_a4b5c6d7e8f9a0b1",
+      "name": "Tatiane",
+      "email": "tatiane@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_2_17314ee76c02a594",
+      "name": "Arlindo",
+      "email": "arlindo@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_3_b3e1d3e5c1f9c0a9",
+      "name": "Cleverson",
+      "email": "cleverson@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_4_8f4a2b7d9e6c3f1a",
+      "name": "Dinamar",
+      "email": "dinamar@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_5_c5d6e7f8a9b0c1d2",
+      "name": "Elis",
+      "email": "elis@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_6_e9f0a1b2c3d4e5f6",
+      "name": "Eric",
+      "email": "eric@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_7_a2b3c4d5e6f7a8b9",
+      "name": "Fernando",
+      "email": "fernando@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "ex_corretor_8_c4d5e6f7a8b9c0d1",
+      "name": "Ione",
+      "email": "ione@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "managerId": "NULL"
+    },
+    {
+      "id": "hWVzj6o7YC9qEsnO",
+      "name": "Marco Antonio do Nascimento João",
+      "email": "marcojoao@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    },
+    {
+      "id": "IRZ5ILHEQ0ONOHb9",
+      "name": "Adriana Simões Barbosa Karter",
+      "email": "adriana.simoes@baggioimoveis.com.br",
+      "companyId": "NULL",
+      "managerId": "passwordpasswordpasswordpass"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\tmanagerId\n_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\n2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\nalPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\nbGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\nDaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\nE5RSZQeG0eEArpsM\tCharles Luciano Lucca\tcharles.lucca@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\nex_corretor_1_90c447d8435c8cc3\tAnna Cristina\tanna.cristina@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_10_a8b9c0d1e2f3a4b5\tPaula\tpaula@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_11_c0d1e2f3a4b5c6d7\tPietro\tpietro@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_12_e2f3a4b5c6d7e8f9\tRafaele\trafaele@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_13_a4b5c6d7e8f9a0b1\tTatiane\ttatiane@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_2_17314ee76c02a594\tArlindo\tarlindo@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_3_b3e1d3e5c1f9c0a9\tCleverson\tcleverson@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_4_8f4a2b7d9e6c3f1a\tDinamar\tdinamar@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_5_c5d6e7f8a9b0c1d2\tElis\telis@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_6_e9f0a1b2c3d4e5f6\tEric\teric@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_7_a2b3c4d5e6f7a8b9\tFernando\tfernando@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nex_corretor_8_c4d5e6f7a8b9c0d1\tIone\tione@ex.baggioimoveis.com.br\tcompany_1766331506068\tNULL\nhWVzj6o7YC9qEsnO\tMarco Antonio do Nascimento João\tmarcojoao@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\nIRZ5ILHEQ0ONOHb9\tAdriana Simões Barbosa Karter\tadriana.simoes@baggioimoveis.com.br\tNULL\tpasswordpasswordpasswordpass\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

@@ -1,0 +1,310 @@
+{
+  "query": "SELECT id, name, email, companyId, role, managerId, isActive, createdAt FROM users WHERE role = 'broker' LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, companyId, role, managerId, isActive, createdAt FROM users WHERE role = 'broker' LIMIT 30;",
+  "rows": [
+    {
+      "id": "_NMODURqWYOCipgt",
+      "name": "Sandra Maria Alves de Lima Przybysz",
+      "email": "sandra.lima@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "2VInLmDh7hPrvuvj",
+      "name": "Maria Carolina Munhoz de Miranda Nicolodi",
+      "email": "carolina.munhoz@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "alPFDbR10pSjNbp0",
+      "name": "Edmar Antunes",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "bGIqIZHMpe-yBhds",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "DaAbrQn5dHcHd89k",
+      "name": "Diego Ferreira dos Santos",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "E5RSZQeG0eEArpsM",
+      "name": "Charles Luciano Lucca",
+      "email": "charles.lucca@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "ex_corretor_1_90c447d8435c8cc3",
+      "name": "Anna Cristina",
+      "email": "anna.cristina@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_10_a8b9c0d1e2f3a4b5",
+      "name": "Paula",
+      "email": "paula@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_11_c0d1e2f3a4b5c6d7",
+      "name": "Pietro",
+      "email": "pietro@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_12_e2f3a4b5c6d7e8f9",
+      "name": "Rafaele",
+      "email": "rafaele@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_13_a4b5c6d7e8f9a0b1",
+      "name": "Tatiane",
+      "email": "tatiane@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_2_17314ee76c02a594",
+      "name": "Arlindo",
+      "email": "arlindo@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_3_b3e1d3e5c1f9c0a9",
+      "name": "Cleverson",
+      "email": "cleverson@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_4_8f4a2b7d9e6c3f1a",
+      "name": "Dinamar",
+      "email": "dinamar@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_5_c5d6e7f8a9b0c1d2",
+      "name": "Elis",
+      "email": "elis@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_6_e9f0a1b2c3d4e5f6",
+      "name": "Eric",
+      "email": "eric@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_7_a2b3c4d5e6f7a8b9",
+      "name": "Fernando",
+      "email": "fernando@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "ex_corretor_8_c4d5e6f7a8b9c0d1",
+      "name": "Ione",
+      "email": "ione@ex.baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "0",
+      "createdAt": "2026-02-10 16:26:19"
+    },
+    {
+      "id": "hWVzj6o7YC9qEsnO",
+      "name": "Marco Antonio do Nascimento João",
+      "email": "marcojoao@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "IRZ5ILHEQ0ONOHb9",
+      "name": "Adriana Simões Barbosa Karter",
+      "email": "adriana.simoes@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "lUSSogknDH3lUI89",
+      "name": "Priscilla Pires Andrelle",
+      "email": "priscilla.andrelle@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "MFsyjWoC1GgwCqtS",
+      "name": "Rosani Felix dos Santos",
+      "email": "rosani@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "SkkGSjiMlWfIDGlP",
+      "name": "Fabio Simões",
+      "email": "fabio@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "tkrpv3bQxeb4XuDa",
+      "name": "Fabiano Buziak",
+      "email": "fabiano@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "TPKivMeGPN_04Wvp",
+      "name": "Joseli do Rocio Bueno",
+      "email": "joseli@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "UjIM7HpiYDb6c8X7",
+      "name": "Regiana Mirian Baggio Favarini",
+      "email": "regiana@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1766355292097_jsj9336kf",
+      "isActive": "1",
+      "createdAt": "2026-02-10 15:16:49"
+    },
+    {
+      "id": "user_1766331590165_6tym1l7ck",
+      "name": "Angellica testes ",
+      "email": "angellicadelle@gmail.com",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2025-12-21 15:39:50"
+    },
+    {
+      "id": "user_1766355139159_spekva56z",
+      "name": "Carolina Cardoso ",
+      "email": "carolina.cardoso@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2025-12-21 22:12:19"
+    },
+    {
+      "id": "user_1770950317635_oi4lpsyh9",
+      "name": "Alu Corretora",
+      "email": "aluguese2025@gmail.com",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "user_1770950171305_j1ap3gfaz",
+      "isActive": "1",
+      "createdAt": "2026-02-13 02:38:37"
+    },
+    {
+      "id": "user-corretor-testes",
+      "name": "Corretor Testes",
+      "email": "corretor@testes.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker",
+      "managerId": "NULL",
+      "isActive": "1",
+      "createdAt": "2025-11-12 21:04:44"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\trole\tmanagerId\tisActive\tcreatedAt\n_NMODURqWYOCipgt\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\n2VInLmDh7hPrvuvj\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t1\t2026-02-10 15:16:49\nalPFDbR10pSjNbp0\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t1\t2026-02-10 15:16:49\nbGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t1\t2026-02-10 15:16:49\nDaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t1\t2026-02-10 15:16:49\nE5RSZQeG0eEArpsM\tCharles Luciano Lucca\tcharles.lucca@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\nex_corretor_1_90c447d8435c8cc3\tAnna Cristina\tanna.cristina@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_10_a8b9c0d1e2f3a4b5\tPaula\tpaula@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_11_c0d1e2f3a4b5c6d7\tPietro\tpietro@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_12_e2f3a4b5c6d7e8f9\tRafaele\trafaele@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_13_a4b5c6d7e8f9a0b1\tTatiane\ttatiane@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_2_17314ee76c02a594\tArlindo\tarlindo@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_3_b3e1d3e5c1f9c0a9\tCleverson\tcleverson@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_4_8f4a2b7d9e6c3f1a\tDinamar\tdinamar@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_5_c5d6e7f8a9b0c1d2\tElis\telis@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_6_e9f0a1b2c3d4e5f6\tEric\teric@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_7_a2b3c4d5e6f7a8b9\tFernando\tfernando@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nex_corretor_8_c4d5e6f7a8b9c0d1\tIone\tione@ex.baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t0\t2026-02-10 16:26:19\nhWVzj6o7YC9qEsnO\tMarco Antonio do Nascimento João\tmarcojoao@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\nIRZ5ILHEQ0ONOHb9\tAdriana Simões Barbosa Karter\tadriana.simoes@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\nlUSSogknDH3lUI89\tPriscilla Pires Andrelle\tpriscilla.andrelle@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\nMFsyjWoC1GgwCqtS\tRosani Felix dos Santos\trosani@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\nSkkGSjiMlWfIDGlP\tFabio Simões\tfabio@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\ntkrpv3bQxeb4XuDa\tFabiano Buziak\tfabiano@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\nTPKivMeGPN_04Wvp\tJoseli do Rocio Bueno\tjoseli@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t1\t2026-02-10 15:16:49\nUjIM7HpiYDb6c8X7\tRegiana Mirian Baggio Favarini\tregiana@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tuser_1766355292097_jsj9336kf\t1\t2026-02-10 15:16:49\nuser_1766331590165_6tym1l7ck\tAngellica testes \tangellicadelle@gmail.com\tcompany_1766331506068\tbroker\tNULL\t1\t2025-12-21 15:39:50\nuser_1766355139159_spekva56z\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br\tcompany_1766331506068\tbroker\tNULL\t1\t2025-12-21 22:12:19\nuser_1770950317635_oi4lpsyh9\tAlu Corretora\taluguese2025@gmail.com\tcompany_1766331506068\tbroker\tuser_1770950171305_j1ap3gfaz\t1\t2026-02-13 02:38:37\nuser-corretor-testes\tCorretor Testes\tcorretor@testes.com.br\tcompany_1766331506068\tbroker\tNULL\t1\t2025-11-12 21:04:44\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

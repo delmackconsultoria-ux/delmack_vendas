@@ -5,7 +5,7 @@ import { salesRouter } from "./salesRouter";
 import { utilRouter } from "./utilRouter";
 import { notificationRouter } from "./notificationRouter";
 import { companyRouter } from "./companyRouter";
-import { brokersRouter } from "./brokersRouter";
+import { brokersRouter } from "./routers/brokersRouter";
 import { superadminRouter } from "./routers/superadminRouter";
 import { goalsRouter } from "./routers/goalsRouter";
 import { monthlyIndicatorsRouter } from "./routers/monthlyIndicatorsRouter";

@@ -83,7 +83,7 @@ export default function BrokerManagementPage() {
   const { user } = useAuth();
   
   // Buscar corretores reais do banco via tRPC
-  const { data: brokersData, isLoading, refetch } = trpc.brokers.listBrokers.useQuery();
+  const { data: brokersData, isLoading, refetch } = trpc.brokers.list.useQuery();
   
   const [brokers, setBrokers] = useState<Broker[]>([]);
   

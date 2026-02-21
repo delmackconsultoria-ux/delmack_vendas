@@ -1,0 +1,9 @@
+{
+  "query": "SELECT s.id, s.buyerName, s.saleValue, s.brokerVendedor, s.brokerAngariador, c.commissionValue, c.status \nFROM sales s \nLEFT JOIN commissions c ON s.id = c.saleId \nWHERE s.companyId IN (SELECT id FROM companies WHERE name LIKE '%Baggio%') \nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT s.id, s.buyerName, s.saleValue, s.brokerVendedor, s.brokerAngariador, c.commissionValue, c.status \nFROM sales s \nLEFT JOIN commissions c ON s.id = c.saleId \nWHERE s.companyId IN (SELECT id FROM companies WHERE name LIKE '%Baggio%') \nLIMIT 10;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 53
+}

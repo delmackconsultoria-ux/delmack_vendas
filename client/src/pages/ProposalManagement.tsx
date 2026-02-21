@@ -44,7 +44,7 @@ export default function ProposalManagement() {
   // Histórico não deve incluir vendas do Excel - apenas vendas do sistema
   // Vendas históricas do Excel devem aparecer SOMENTE em Indicadores
 
-  const { data: brokersData } = trpc.brokers.listBrokers.useQuery(undefined, {
+  const { data: brokersData } = trpc.brokers.list.useQuery(undefined, {
     enabled: user?.role === "manager",
   });
 

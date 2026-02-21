@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, name, tradeName FROM companies;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, tradeName FROM companies;",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "tradeName": "Baggio Imóveis"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes",
+      "tradeName": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttradeName\ncompany_1766331506068\tB I IMOVEIS LTDA\tBaggio Imóveis\ncompany_1766344499112\tTestes\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
