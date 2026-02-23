@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { AlertCircle, CheckCircle, XCircle, Eye, ExternalLink, TrendingUp, DollarSign, Clock } from "lucide-react";
+import { AlertCircle, CheckCircle, XCircle, Eye, ExternalLink, TrendingUp, DollarSign, Clock, FileUp } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
@@ -26,6 +26,7 @@ export default function SalesApproval() {
   const [observation, setObservation] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<"approve" | "reject">("approve");
+  const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
 
   const { data: salesData, isLoading, refetch } = trpc.sales.listMySales.useQuery();
   const updateStatusMutation = trpc.sales.updateSaleStatus.useMutation({
@@ -35,6 +36,7 @@ export default function SalesApproval() {
       setDialogOpen(false);
       setSelectedSale(null);
       setObservation("");
+      setInvoiceFile(null);
     },
     onError: (err) => toast.error(err.message),
   });
@@ -86,7 +88,11 @@ export default function SalesApproval() {
     } else {
       newStatus = "commission_paid";
     }
+    
+    // TODO: Implementar upload de NF quando status for commission_paid
+    // Por enquanto, apenas atualizar status
     updateStatusMutation.mutate({ saleId: selectedSale.id, status: newStatus as any, observation });
+    setInvoiceFile(null);
   };
 
   if (user?.role !== "finance" && user?.role !== "manager") {
@@ -218,8 +224,8 @@ export default function SalesApproval() {
           <DialogHeader>
             <DialogTitle>{actionType === "approve" ? "Aprovar Venda" : "Cancelar Venda"}</DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <p className="mb-4">
+          <div className="py-4 space-y-4">
+            <p className="mb-2">
               {actionType === "approve" 
                 ? (user?.role === "manager" 
                     ? (selectedSale?.status === "sale" ? "Enviar para análise do gerente?" : "Enviar para o financeiro?")
@@ -232,9 +238,25 @@ export default function SalesApproval() {
               onChange={(e) => setObservation(e.target.value)}
               rows={3}
             />
+            {actionType === "approve" && user?.role === "finance" && (
+              <div className="border-2 border-dashed border-slate-300 rounded-lg p-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <FileUp className="h-4 w-4 text-slate-600" />
+                  <span className="text-sm text-slate-600">
+                    {invoiceFile ? invoiceFile.name : "Anexar NF (opcional)"}
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setInvoiceFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => { setDialogOpen(false); setInvoiceFile(null); }}>Cancelar</Button>
             <Button 
               variant={actionType === "approve" ? "default" : "destructive"} 
               onClick={confirmAction}

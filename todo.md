@@ -1704,3 +1704,19 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Implementar filtros por período (mês, ano, intervalo)
 - [ ] Testar acesso isolado por corretor
 - [ ] Validar que cada corretor vê apenas seus dados
+
+
+## 🔴 NOVOS PROBLEMAS REPORTADOS (22/02/2026)
+
+### Perfil do Corretor - Problemas
+- [x] Remover página "Calendário" do menu de navegação do corretor
+- [x] Corrigir erro 404 ao tentar editar uma comissão (rota não existe)
+- [x] Implementar fluxo completo de venda até pagamento com NF
+
+### Fluxo Completo de Venda até Pagamento
+- [x] ETAPA 1: Nova Venda (Proposta) - Implementado
+- [x] ETAPA 2: Aprovação do Gerente (status: "Em análise do gerente") - Implementado
+- [x] ETAPA 3: Aprovação do Financeiro (status: "Em análise do financeiro") - Implementado
+- [x] ETAPA 4: Comissão Paga (status: "Comissão paga") - Implementado
+- [x] ETAPA 5: Anexar NF para comprovar pagamento - Interface adicionada
+- [x] Testar fluxo completo end-to-end - Testado

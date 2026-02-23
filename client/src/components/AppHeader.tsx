@@ -38,7 +38,6 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Nova Venda", path: "/proposals/new", roles: ["broker", "manager", "admin"] },
   { label: "Aprovação", path: "/sales-approval", roles: ["finance", "manager"] },
-  { label: "Calendário", path: "/commissions-calendar", roles: ["finance"] },
   { label: "Comissões Pagas", path: "/paid-commissions", roles: ["finance"] },
   { label: "Histórico", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
   { label: "Metas", path: "/goals", roles: ["manager"] },
@@ -46,6 +45,7 @@ const navItems: NavItem[] = [
   { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },
+  // Calendário removido conforme solicitação (22/02/2026)
   // Analytics removido conforme solicitação (13/02/2026)
 ];
 
