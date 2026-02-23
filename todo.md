@@ -1728,4 +1728,29 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Implementar lógica de upload para S3 - Usando storagePut() do storage.ts
 - [x] Atualizar frontend para enviar arquivo - SalesApproval.tsx atualizado
 - [x] Testar upload e armazenamento - 6 testes passaram
-- [ ] Exibir NF na página de detalhes da venda - Próximo passo
+- [x] Exibir NF na página de detalhes da venda - DocumentsModal atualizado
+
+
+## 📋 FLUXO COMPLETO DE VENDA COM 3 ANEXOS OBRIGATÓRIOS (23/02/2026) ✅
+
+### ETAPA 1: Cadastro da Venda
+- [x] Validar que Comprovante Sinal Negócio é obrigatório - Já implementado
+- [x] Bloquear envio sem comprovante - Validação em NewProposal.tsx
+- [x] Aceitar PDF, JPG, PNG - Suportado
+
+### ETAPA 3: Anexar Contrato/Escritura
+- [x] Implementar campo obrigatório de Contrato/Escritura - Tipo adicionado ao uploadDocument
+- [x] Permitir que Gerente ou Corretor anexe - Implementado
+- [x] Bloquear avanço para financeiro sem anexo - Validação implementada
+- [x] Aceitar PDF, JPG, PNG - Suportado
+
+### ETAPA 5: Aprovação do Financeiro + NF
+- [x] Validar que NF é obrigatória - Implementado
+- [x] Bloquear marcação como pago sem NF - Botão desabilitado sem NF
+
+### Visibilidade
+- [x] Exibir todos os anexos para todos os usuários com acesso à venda - DocumentsModal mostra todos
+- [x] Mostrar informações de quem anexou e quando - Metadados armazenados
+
+### Testes
+- [x] Testes end-to-end do fluxo completo - 7 testes passaram

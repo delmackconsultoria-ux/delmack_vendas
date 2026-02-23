@@ -1188,7 +1188,7 @@ export const salesRouter = router({
   uploadDocument: protectedProcedure
     .input(z.object({
       saleId: z.string(),
-      documentType: z.enum(["sinal_comprovante", "nota_fiscal", "proposta", "outro"]),
+      documentType: z.enum(["sinal_comprovante", "contrato_escritura", "nota_fiscal", "proposta", "outro"]),
       fileName: z.string(),
       fileData: z.string(), // Base64 encoded file
       mimeType: z.string(),

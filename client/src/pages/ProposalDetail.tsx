@@ -80,7 +80,7 @@ export default function ProposalDetail() {
       
       await uploadDocumentMutation.mutateAsync({
         saleId: params.id || "",
-        documentType: documentType as "sinal_comprovante" | "nota_fiscal" | "proposta" | "outro",
+        documentType: documentType as "sinal_comprovante" | "contrato_escritura" | "nota_fiscal" | "proposta" | "outro",
         fileName: file.name,
         fileData: base64,
         mimeType: file.type,

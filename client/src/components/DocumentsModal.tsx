@@ -23,6 +23,7 @@ interface DocumentsModalProps {
 
 const DOCUMENT_TYPES: Record<string, string> = {
   sinal_comprovante: "Comprovante de Sinal de Negócio",
+  contrato_escritura: "Contrato/Escritura",
   nota_fiscal: "Nota Fiscal",
   proposta: "Proposta de Compra",
   outro: "Outro Documento",

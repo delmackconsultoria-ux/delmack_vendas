@@ -264,7 +264,7 @@ export default function SalesApproval() {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <FileUp className="h-4 w-4 text-slate-600" />
                   <span className="text-sm text-slate-600">
-                    {invoiceFile ? invoiceFile.name : "Anexar NF (opcional)"}
+                    {invoiceFile ? invoiceFile.name : "Anexar NF (obrigatório)"}
                   </span>
                   <input
                     type="file"
@@ -273,6 +273,7 @@ export default function SalesApproval() {
                     className="hidden"
                   />
                 </label>
+                {!invoiceFile && <p className="text-xs text-amber-600 mt-2">⚠️ NF é obrigatória para marcar como pago</p>}
               </div>
             )}
           </div>
@@ -281,7 +282,7 @@ export default function SalesApproval() {
             <Button 
               variant={actionType === "approve" ? "default" : "destructive"} 
               onClick={confirmAction}
-              disabled={updateStatusMutation.isPending || uploadInvoiceMutation.isPending}
+              disabled={updateStatusMutation.isPending || uploadInvoiceMutation.isPending || (actionType === "approve" && user?.role === "finance" && !invoiceFile)}
             >
               {updateStatusMutation.isPending || uploadInvoiceMutation.isPending ? "Processando..." : "Confirmar"}
             </Button>
