@@ -40,6 +40,12 @@ export default function SalesApproval() {
     },
     onError: (err) => toast.error(err.message),
   });
+  const uploadInvoiceMutation = trpc.uploadInvoice.uploadInvoice.useMutation({
+    onSuccess: () => {
+      toast.success("NF enviada com sucesso!");
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
   // Filtrar vendas por role
   const pendingSales = salesData?.sales?.filter((s: any) => {
@@ -78,7 +84,7 @@ export default function SalesApproval() {
     setDialogOpen(true);
   };
 
-  const confirmAction = () => {
+  const confirmAction = async () => {
     if (!selectedSale) return;
     let newStatus: string;
     if (actionType === "reject") {
@@ -89,9 +95,24 @@ export default function SalesApproval() {
       newStatus = "commission_paid";
     }
     
-    // TODO: Implementar upload de NF quando status for commission_paid
-    // Por enquanto, apenas atualizar status
+    // Atualizar status da venda
     updateStatusMutation.mutate({ saleId: selectedSale.id, status: newStatus as any, observation });
+    
+    // Se for financeiro aprovando e tiver arquivo de NF, fazer upload
+    if (actionType === "approve" && user?.role === "finance" && newStatus === "commission_paid" && invoiceFile) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const fileData = (e.target?.result as string).split(",")[1]; // Remove data:image/png;base64, prefix
+        uploadInvoiceMutation.mutate({
+          saleId: selectedSale.id,
+          fileName: invoiceFile.name,
+          fileData: fileData || "",
+          mimeType: invoiceFile.type,
+        });
+      };
+      reader.readAsDataURL(invoiceFile);
+    }
+    
     setInvoiceFile(null);
   };
 
@@ -260,9 +281,9 @@ export default function SalesApproval() {
             <Button 
               variant={actionType === "approve" ? "default" : "destructive"} 
               onClick={confirmAction}
-              disabled={updateStatusMutation.isPending}
+              disabled={updateStatusMutation.isPending || uploadInvoiceMutation.isPending}
             >
-              {updateStatusMutation.isPending ? "Processando..." : "Confirmar"}
+              {updateStatusMutation.isPending || uploadInvoiceMutation.isPending ? "Processando..." : "Confirmar"}
             </Button>
           </DialogFooter>
         </DialogContent>

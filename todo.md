@@ -1720,3 +1720,12 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] ETAPA 4: Comissão Paga (status: "Comissão paga") - Implementado
 - [x] ETAPA 5: Anexar NF para comprovar pagamento - Interface adicionada
 - [x] Testar fluxo completo end-to-end - Testado
+
+
+## 📋 IMPLEMENTAÇÃO DE UPLOAD DE NF (23/02/2026)
+
+- [x] Criar router tRPC para upload de NF - Implementado em uploadInvoiceRouter.ts
+- [x] Implementar lógica de upload para S3 - Usando storagePut() do storage.ts
+- [x] Atualizar frontend para enviar arquivo - SalesApproval.tsx atualizado
+- [x] Testar upload e armazenamento - 6 testes passaram
+- [ ] Exibir NF na página de detalhes da venda - Próximo passo
