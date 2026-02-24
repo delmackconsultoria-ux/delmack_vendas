@@ -1938,3 +1938,24 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Tabela consolidada mostrando metas e % de atingimento
 - [x] Pronto para produção
 
+
+
+## 🔧 MODAL DE HISTÓRICO DE INDICADORES (24/02/2026) ✅
+
+### Implementação do Modal
+- [x] Criar componente IndicatorHistoryModal
+- [x] Adicionar estado para controlar modal aberto/fechado
+- [x] Implementar onClick nos cards de indicadores
+- [x] Modal exibe:
+  - [x] Título do indicador + "Histórico e evolução do ano por mês"
+  - [x] Filtro "Tipo de Negócio" (dropdown)
+  - [x] Cards de resumo (Total, Média, Máximo, Mínimo, Tendência)
+  - [x] Gráfico de linha "Evolução Mensal" com dados de 12 meses
+- [ ] Conectar com dados reais do banco (próxima fase)
+- [ ] Testar com todos os indicadores (próxima fase)
+
+### Status
+- [x] Implementação completa com dados mock
+- [x] Testes unitários criados (10 casos)
+- [x] TypeScript compilando sem erros
+

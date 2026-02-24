@@ -9,6 +9,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { IndicatorsConsolidatedTable } from "@/components/IndicatorsConsolidatedTable";
+import { IndicatorHistoryModal } from "@/components/IndicatorHistoryModal";
 import { useLocation } from "wouter";
 
 
@@ -26,6 +27,18 @@ export default function Indicators() {
   const [selectedMonth, setSelectedMonth] = useState<string>(String(CURRENT_MONTH));
   const [selectedYear, setSelectedYear] = useState<string>(String(CURRENT_YEAR));
   const [isSyncing, setIsSyncing] = useState(false);
+  const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openIndicatorModal = (indicatorName: string) => {
+    setSelectedIndicator(indicatorName);
+    setIsModalOpen(true);
+  };
+
+  const closeIndicatorModal = () => {
+    setIsModalOpen(false);
+    setSelectedIndicator(null);
+  };
 
   // Buscar indicadores reais do backend
   const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getRealtimeIndicators.useQuery(
@@ -410,7 +423,7 @@ export default function Indicators() {
 
         {/* Cards de Indicadores - Primeira linha */}
         <div className="grid grid-cols-3 gap-4">
-          <Card>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Negócios no mês")}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Negócios no mês</CardTitle>
             </CardHeader>
@@ -432,7 +445,7 @@ export default function Indicators() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Negócios no mês (unidades)")}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Negócios no mês (unidades)</CardTitle>
             </CardHeader>
@@ -454,7 +467,7 @@ export default function Indicators() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Vendas Canceladas")}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Vendas Canceladas</CardTitle>
             </CardHeader>
@@ -479,7 +492,7 @@ export default function Indicators() {
 
         {/* Cards de Indicadores - Segunda linha */}
         <div className="grid grid-cols-3 gap-4">
-          <Card>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("VSO - venda/oferta")}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">VSO - venda/oferta</CardTitle>
             </CardHeader>
@@ -501,7 +514,7 @@ export default function Indicators() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Comissão Recebida")}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Comissão Recebida</CardTitle>
             </CardHeader>
@@ -523,7 +536,7 @@ export default function Indicators() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Comissão Vendida")}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Comissão Vendida</CardTitle>
             </CardHeader>
@@ -561,7 +574,14 @@ export default function Indicators() {
           />
         )}
 
-
+        {/* Modal de Histórico de Indicador */}
+        {selectedIndicator && (
+          <IndicatorHistoryModal
+            isOpen={isModalOpen}
+            onClose={closeIndicatorModal}
+            indicatorName={selectedIndicator}
+          />
+        )}
       </div>
     </AppLayout>
   );
