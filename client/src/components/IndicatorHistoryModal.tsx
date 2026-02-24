@@ -110,15 +110,21 @@ export function IndicatorHistoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-y-auto w-[95vw]">
-        <DialogHeader>
-          <DialogTitle className="text-xl">
-            {indicatorName}
-          </DialogTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            Histórico e evolução do ano por mês
-          </p>
-        </DialogHeader>
+      <DialogContent className="fixed inset-4 max-w-none max-h-none overflow-y-auto p-6 rounded-lg">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">{indicatorName}</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Histórico e evolução do ano por mês
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 text-2xl"
+          >
+            ×
+          </button>
+        </div>
 
         <div className="space-y-6 mt-4">
           {/* Filtros - Ano e Tipo de Negócio */}

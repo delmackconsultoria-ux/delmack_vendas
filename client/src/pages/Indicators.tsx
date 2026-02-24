@@ -389,38 +389,6 @@ export default function Indicators() {
           </div>
         </div>
 
-        {/* Cards de Status */}
-        <div className="grid grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Período</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{MONTH_NAMES[parseInt(selectedMonth) - 1]}/{selectedYear}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-green-600">
-                {indicatorsData?.isHistorical ? "Histórico" : "Tempo Real"}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Indicadores</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">28</p>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Cards de Indicadores - Primeira linha */}
         <div className="grid grid-cols-3 gap-4">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Negócios no mês")}>
