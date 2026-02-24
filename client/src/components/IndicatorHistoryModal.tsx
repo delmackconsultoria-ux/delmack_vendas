@@ -110,7 +110,7 @@ export function IndicatorHistoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="fixed inset-4 max-w-none max-h-none overflow-y-auto p-6 rounded-lg">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-2xl font-bold">{indicatorName}</h2>
