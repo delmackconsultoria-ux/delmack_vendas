@@ -520,3 +520,246 @@ export async function sendCommissionPaidNotification(data: {
     text: `Comissão paga: R$ ${data.commissionValue.toFixed(2)}. Venda: ${data.buyerName}. Forma: ${paymentMethodLabels[data.paymentMethod]}. Banco: ${data.bankName}.`,
   });
 }
+
+
+/**
+ * 5. CONTRATO/ESCRITURA ANEXADO (ETAPA 3)
+ * Enviado para: Todos os financeiros
+ * Quando: Gerente ou Corretor anexa Contrato/Escritura
+ */
+export async function sendContractAttachedNotification(data: {
+  financeEmails: string[]; // Emails de todos os financeiros
+  brokerName: string;
+  buyerName: string;
+  propertyAddress: string;
+  propertyReference?: string;
+  saleValue: number;
+  attachedBy: string; // Nome de quem anexou (Gerente ou Corretor)
+  attachedByRole: string; // Perfil de quem anexou
+  attachmentDate: string;
+  proposalId: string;
+}): Promise<boolean> {
+  const referenceDisplay = data.propertyReference 
+    ? `<div class="reference-badge">Ref. Properfy: ${data.propertyReference}</div>` 
+    : '';
+
+  const actionBoxCorretor = `
+    <div class="action-box">
+      <div class="action-title">👤 Se você é CORRETOR:</div>
+      <div class="action-item">Acompanhe o andamento da venda. Nenhuma ação necessária no momento.</div>
+    </div>
+  `;
+
+  const actionBoxGerente = `
+    <div class="action-box">
+      <div class="action-title">👔 Se você é GERENTE:</div>
+      <div class="action-item">Revise todos os detalhes da venda e a documentação anexada. Aprove ou solicite correções.</div>
+    </div>
+  `;
+
+  const actionBoxFinanceiro = `
+    <div class="action-box">
+      <div class="action-title">💰 Se você é FINANCEIRO:</div>
+      <div class="action-item">A venda está pronta para sua análise. Revise a documentação e prepare-se para receber a Nota Fiscal.</div>
+    </div>
+  `;
+
+  const content = `
+    <h2 style="color: #111827; margin-top: 0;">📋 Contrato/Escritura Anexado</h2>
+    
+    <div class="alert-box success">
+      <strong>Ação Necessária:</strong> O Contrato/Escritura foi anexado à venda. Veja abaixo qual é a próxima ação esperada para seu perfil.
+    </div>
+
+    ${referenceDisplay}
+
+    <div class="info-card">
+      <h3 style="color: #374151; margin-top: 0; font-size: 16px;">Detalhes da Venda</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Corretor Responsável</span>
+        <span class="info-value highlight">${data.brokerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Comprador</span>
+        <span class="info-value">${data.buyerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Imóvel</span>
+        <span class="info-value">${data.propertyAddress}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Valor da Venda</span>
+        <span class="info-value highlight">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.saleValue)}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Anexado por</span>
+        <span class="info-value">${data.attachedBy} (${data.attachedByRole})</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Data de Anexação</span>
+        <span class="info-value">${new Date(data.attachmentDate).toLocaleString('pt-BR')}</span>
+      </div>
+    </div>
+
+    <div class="info-card" style="background-color: #f0fdf4; border-color: #86efac;">
+      <h3 style="color: #166534; margin-top: 0; font-size: 16px;">Documentos Anexados</h3>
+      
+      <div style="padding: 12px 0;">
+        <p style="margin: 8px 0; color: #166534;">✅ Comprovante de Sinal de Negócio</p>
+        <p style="margin: 8px 0; color: #166534;">✅ Contrato/Escritura</p>
+        <p style="margin: 8px 0; color: #9ca3af;">⏳ Nota Fiscal (pendente)</p>
+      </div>
+    </div>
+
+    ${actionBoxCorretor}
+    ${actionBoxGerente}
+    ${actionBoxFinanceiro}
+
+    <center>
+      <a href="${ENV.frontendUrl || 'https://delmack.manus.space'}/proposals/${data.proposalId}" class="button">
+        Visualizar Venda Completa
+      </a>
+    </center>
+  `;
+
+  return sendEmail({
+    to: data.financeEmails,
+    subject: `📋 Contrato/Escritura Anexado: ${data.buyerName}${data.propertyReference ? ` | Ref. ${data.propertyReference}` : ''} - Ação Necessária`,
+    html: getEmailTemplate(content),
+    text: `Contrato/Escritura anexado por ${data.attachedBy}. Comprador: ${data.buyerName}. Valor: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.saleValue)}. Acesse o sistema para revisar.`,
+  });
+}
+
+/**
+ * 6. NOTA FISCAL ANEXADA (ETAPA 5)
+ * Enviado para: Corretor + Gerentes (Camila + Lucas se for Lançamento)
+ * Quando: Financeiro anexa Nota Fiscal
+ */
+export async function sendInvoiceAttachedNotification(data: {
+  brokerEmail: string; // Email do corretor
+  managerEmails: string[]; // Emails dos gerentes (Camila + Lucas se Lançamento)
+  brokerName: string;
+  buyerName: string;
+  propertyAddress: string;
+  propertyReference?: string;
+  saleValue: number;
+  commissionValue: number;
+  attachedBy: string; // Nome do financeiro que anexou
+  attachmentDate: string;
+  paymentDate: string;
+  proposalId: string;
+}): Promise<boolean> {
+  const referenceDisplay = data.propertyReference 
+    ? `<div class="reference-badge">Ref. Properfy: ${data.propertyReference}</div>` 
+    : '';
+
+  const actionBoxCorretor = `
+    <div class="action-box">
+      <div class="action-title">👤 Se você é CORRETOR:</div>
+      <div class="action-item">Sua comissão foi paga! Verifique os detalhes do pagamento no sistema.</div>
+    </div>
+  `;
+
+  const actionBoxGerente = `
+    <div class="action-box">
+      <div class="action-title">👔 Se você é GERENTE:</div>
+      <div class="action-item">A venda foi finalizada com sucesso. Acompanhe o histórico de comissões pagas.</div>
+    </div>
+  `;
+
+  const actionBoxFinanceiro = `
+    <div class="action-box">
+      <div class="action-title">💰 Se você é FINANCEIRO:</div>
+      <div class="action-item">Nenhuma ação necessária. A venda foi processada e a comissão foi paga.</div>
+    </div>
+  `;
+
+  const content = `
+    <h2 style="color: #111827; margin-top: 0;">✅ Nota Fiscal Anexada - Comissão Processada</h2>
+    
+    <div class="alert-box success">
+      <strong>Boa notícia!</strong> A Nota Fiscal foi anexada e sua comissão foi processada com sucesso! Veja abaixo qual é a próxima ação esperada para seu perfil.
+    </div>
+
+    ${referenceDisplay}
+
+    <div class="info-card">
+      <h3 style="color: #374151; margin-top: 0; font-size: 16px;">Detalhes da Venda</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Corretor Responsável</span>
+        <span class="info-value highlight">${data.brokerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Comprador</span>
+        <span class="info-value">${data.buyerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Imóvel</span>
+        <span class="info-value">${data.propertyAddress}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Valor da Venda</span>
+        <span class="info-value highlight">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.saleValue)}</span>
+      </div>
+    </div>
+
+    <div class="info-card" style="background-color: #f0fdf4; border-color: #86efac;">
+      <h3 style="color: #166534; margin-top: 0; font-size: 16px;">Informações da Comissão</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Valor da Comissão</span>
+        <span class="info-value highlight">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.commissionValue)}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value"><span class="status-badge status-approved">Comissão Paga</span></span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Data de Pagamento</span>
+        <span class="info-value">${new Date(data.paymentDate).toLocaleDateString('pt-BR')}</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3 style="color: #374151; margin-top: 0; font-size: 16px;">Documentos Completos</h3>
+      
+      <div style="padding: 12px 0;">
+        <p style="margin: 8px 0; color: #10b981;">✅ Comprovante de Sinal de Negócio</p>
+        <p style="margin: 8px 0; color: #10b981;">✅ Contrato/Escritura</p>
+        <p style="margin: 8px 0; color: #10b981;">✅ Nota Fiscal</p>
+      </div>
+    </div>
+
+    ${actionBoxCorretor}
+    ${actionBoxGerente}
+    ${actionBoxFinanceiro}
+
+    <center>
+      <a href="${ENV.frontendUrl || 'https://delmack.manus.space'}/proposals/${data.proposalId}" class="button">
+        Ver Detalhes Completos
+      </a>
+    </center>
+  `;
+
+  // Enviar para corretor + gerentes
+  const recipients = [data.brokerEmail, ...data.managerEmails];
+
+  return sendEmail({
+    to: recipients,
+    subject: `✅ Nota Fiscal Anexada: ${data.buyerName}${data.propertyReference ? ` | Ref. ${data.propertyReference}` : ''} - Comissão Paga`,
+    html: getEmailTemplate(content),
+    text: `Nota Fiscal anexada. Comissão paga: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.commissionValue)}. Comprador: ${data.buyerName}. Acesse o sistema para mais detalhes.`,
+  });
+}

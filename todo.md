@@ -1754,3 +1754,67 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 
 ### Testes
 - [x] Testes end-to-end do fluxo completo - 7 testes passaram
+
+
+## 📧 IMPLEMENTAÇÃO DE EMAILS COM CONDICIONAIS (23/02/2026)
+
+### Email 1: Nova Venda Cadastrada
+- [ ] Sempre enviar para Camila
+- [ ] Enviar para Lucas se Tipo da Venda = Lançamento
+- [ ] Sempre enviar para Corretor que cadastrou
+
+### Email 2: Venda Aprovada
+- [ ] Se gerente aprova: Corretor + Todos os financeiros
+- [ ] Se financeiro aprova: Corretor + Camila + Lucas (se Lançamento)
+
+### Email 3: Venda Rejeitada
+- [ ] Corretor + Camila + Lucas (se Lançamento)
+- [ ] Todos os financeiros (apenas se já envolvidos)
+
+### Email 4: Comissão Paga
+- [ ] Corretor + Camila + Lucas (se Lançamento) + Todos os financeiros
+
+### EMAIL 5 (NOVO): Contrato/Escritura Anexado
+- [ ] Criar modelo HTML
+- [ ] Implementar função sendContractAttachedNotification
+- [ ] Enviar para Todos os financeiros
+- [ ] Testar
+
+### EMAIL 6 (NOVO): Nota Fiscal Anexada
+- [ ] Criar modelo HTML
+- [ ] Implementar função sendInvoiceAttachedNotification
+- [ ] Enviar para Corretor + Camila + Lucas (se Lançamento)
+- [ ] Testar
+
+
+## 📧 IMPLEMENTAÇÃO DE EMAILS NOVOS (24/02/2026) ✅
+
+### Email 5: Contrato/Escritura Anexado (ETAPA 3)
+- [x] Criar modelo HTML com ações por perfil (Corretor, Gerente, Financeiro)
+- [x] Implementar função sendContractAttachedNotification no emailService
+- [x] Enviar para todos os financeiros
+- [x] Incluir link funcional para visualizar venda
+- [x] Testar envio de email - SUCESSO
+
+### Email 6: Nota Fiscal Anexada (ETAPA 5)
+- [x] Criar modelo HTML com ações por perfil (Corretor, Gerente, Financeiro)
+- [x] Implementar função sendInvoiceAttachedNotification no emailService
+- [x] Enviar para corretor + gerentes (Camila + Lucas se Lançamento)
+- [x] Incluir informações de comissão
+- [x] Incluir link funcional para visualizar venda
+- [x] Testar envio de email - SUCESSO
+
+### Integração com Sistema
+- [x] Adicionar envio de email ao uploadInvoiceRouter
+- [x] Buscar dados dinâmicos do banco de dados
+- [x] Garantir links funcionais para visualizar vendas
+- [x] Testes end-to-end passando (8 testes)
+
+### Lógica de Destinatários Implementada
+- [x] Email 1 (Nova Venda): Camila + Lucas (se Lançamento) + Corretor
+- [x] Email 2 (Aprovação Gerente): Corretor + Todos os financeiros
+- [x] Email 2 (Aprovação Financeiro): Corretor + Camila + Lucas (se Lançamento)
+- [x] Email 3 (Rejeição): Corretor + Camila + Lucas (se Lançamento) + Financeiros (se chegou na fase)
+- [x] Email 4 (Comissão Paga): Corretor + Camila + Lucas (se Lançamento) + Financeiros
+- [x] Email 5 (Contrato Anexado): Todos os financeiros
+- [x] Email 6 (NF Anexada): Corretor + Camila + Lucas (se Lançamento)
