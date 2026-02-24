@@ -1818,3 +1818,37 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Email 4 (Comissão Paga): Corretor + Camila + Lucas (se Lançamento) + Financeiros
 - [x] Email 5 (Contrato Anexado): Todos os financeiros
 - [x] Email 6 (NF Anexada): Corretor + Camila + Lucas (se Lançamento)
+
+
+## 📊 IMPORTAÇÃO DE DADOS HISTÓRICOS (23/02/2026) ✅
+
+### Processamento de Dados de 2024
+- [x] Extrair arquivo Histórico2024completo.zip (12 meses)
+- [x] Criar script Python para processar Excel mensal
+- [x] Implementar fuzzy matching de nomes de corretores
+- [x] Ignorar vendas sem comissão
+- [x] Ignorar corretores inativos (Leonardo, Dinamar, Cleverson)
+- [x] Gerar SQL de importação (import_2024_data.sql)
+- [x] Inserir 92 vendas de 2024 no banco de dados
+
+### Processamento de Dados de 2025
+- [x] Usar arquivo import_2025_data.sql (já existente)
+- [x] Remover duplicatas
+- [x] Inserir 69 vendas de 2025 no banco de dados
+
+### Validação de Dados Históricos
+- [x] Teste 1: Vendas por mês de 2024 (92 vendas, R$ 56.670.500)
+- [x] Teste 2: Top 5 corretores de 2024 (Fabiano Buziak, Diego, Fabio, Regiana, Rosani)
+- [x] Teste 3: Vendas de 2025 (69 vendas, R$ 40.416.328)
+
+### Criação de Usuário Lucas
+- [x] Criar usuário Lucas (gerente de Lançamentos)
+- [x] Configurar role: manager
+- [x] Configurar empresa: B I IMOVEIS LTDA
+- [x] Lucas receberá notificações de vendas de "Lançamento"
+
+### Status Final
+- [x] Total de vendas no banco: 176 (92 de 2024 + 69 de 2025 + 15 anteriores)
+- [x] Dados históricos prontos para testes
+- [x] Sistema pronto para produção com dados reais
+

@@ -1,0 +1,13 @@
+{
+  "query": "SET FOREIGN_KEY_CHECKS=0;\nINSERT INTO sales (id, companyId, propertyId, buyerName, saleDate, angariationDate, saleValue, brokerAngariador, brokerAngariadorName, businessType, status, registeredAt, registeredBy, registeredByName, realEstateCommission, observation, propertyType) VALUES ('hist-2025-01-00001', 'B I IMOVEIS LTDA', 'prop-BG97043001', 'REF: 97043001 Alameda Júlia da Costa, 2868 AP 204', '2025-01-02', '2024-12-04', 475000, 'broker-07', 'Fabio Simoes', 'Prontos', 'commission_paid', '2026-02-23 21:17:35', 'system', 'Sistema de Importacao', 14250, 'Bairro: Campina do Siqueira | Loja Angariadora: Baggio | Loja Vendedora: Outros', 'REF: 97043001 Alameda Júlia da Costa, 2868 AP 204');\nSET FOREIGN_KEY_CHECKS=1;\nSELECT COUNT(*) as total_vendas_2025 FROM sales WHERE id LIKE 'hist-2025%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SET FOREIGN_KEY_CHECKS=0;\nINSERT INTO sales (id, companyId, propertyId, buyerName, saleDate, angariationDate, saleValue, brokerAngariador, brokerAngariadorName, businessType, status, registeredAt, registeredBy, registeredByName, realEstateCommission, observation, propertyType) VALUES ('hist-2025-01-00001', 'B I IMOVEIS LTDA', 'prop-BG97043001', 'REF: 97043001 Alameda Júlia da Costa, 2868 AP 204', '2025-01-02', '2024-12-04', 475000, 'broker-07', 'Fabio Simoes', 'Prontos', 'commission_paid', '2026-02-23 21:17:35', 'system', 'Sistema de Importacao', 14250, 'Bairro: Campina do Siqueira | Loja Angariadora: Baggio | Loja Vendedora: Outros', 'REF: 97043001 Alameda Júlia da Costa, 2868 AP 204');\nSET FOREIGN_KEY_CHECKS=1;\nSELECT COUNT(*) as total_vendas_2025 FROM sales WHERE id LIKE 'hist-2025%';",
+  "rows": [
+    {
+      "total_vendas_2025": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_vendas_2025\n1\n",
+  "stderr": "",
+  "execution_time_ms": 76
+}

@@ -1,0 +1,25 @@
+{
+  "query": "SELECT COUNT(*) as total_2024 FROM sales WHERE id LIKE 'hist-2024%';\nSELECT COUNT(*) as total_2025 FROM sales WHERE id LIKE 'hist-2025%';\nSELECT COUNT(*) as total_geral FROM sales;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_2024 FROM sales WHERE id LIKE 'hist-2024%';\nSELECT COUNT(*) as total_2025 FROM sales WHERE id LIKE 'hist-2025%';\nSELECT COUNT(*) as total_geral FROM sales;",
+  "rows": [
+    {
+      "total_2024": "0"
+    },
+    {
+      "total_2024": "total_2025"
+    },
+    {
+      "total_2024": "1"
+    },
+    {
+      "total_2024": "total_geral"
+    },
+    {
+      "total_2024": "16"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_2024\n0\ntotal_2025\n1\ntotal_geral\n16\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

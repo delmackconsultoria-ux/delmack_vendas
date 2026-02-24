@@ -1,0 +1,13 @@
+{
+  "query": "DELETE FROM sales WHERE id LIKE 'hist-2025%';\nSELECT COUNT(*) as vendas_restantes FROM sales;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute DELETE FROM sales WHERE id LIKE 'hist-2025%';\nSELECT COUNT(*) as vendas_restantes FROM sales;",
+  "rows": [
+    {
+      "vendas_restantes": "15"
+    }
+  ],
+  "messages": [],
+  "stdout": "vendas_restantes\n15\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}
