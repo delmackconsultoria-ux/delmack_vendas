@@ -1918,3 +1918,23 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Testes passando (5/5)
 - [x] Sistema pronto para produção
 
+
+
+## 🔧 CORREÇÃO DA PÁGINA DE INDICADORES (24/02/2026) ✅
+
+### Reorganização do Layout
+- [x] Remover seção "Evolução por Mês"
+- [x] Remover imports desnecessários (TrendingUp, Recharts)
+- [x] Manter layout original com:
+  - [x] Título "Indicadores de Vendas"
+  - [x] Cards de status (Positivos, Negativos, Indefinidos)
+  - [x] Filtros (Visualizar por, Mês, Ano)
+  - [x] Cards de indicadores (Negócios, VSO, Comissão, etc)
+  - [x] Tabela Consolidada de Indicadores
+- [x] TypeScript compilando sem erros
+
+### Status Final
+- [x] Página de indicadores restaurada ao layout original
+- [x] Tabela consolidada mostrando metas e % de atingimento
+- [x] Pronto para produção
+
