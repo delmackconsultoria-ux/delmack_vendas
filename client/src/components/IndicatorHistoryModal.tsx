@@ -110,7 +110,7 @@ export function IndicatorHistoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto w-[90vw]">
+      <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-y-auto w-[95vw]">
         <DialogHeader>
           <DialogTitle className="text-xl">
             {indicatorName}
