@@ -408,6 +408,144 @@ export default function Indicators() {
           </Card>
         </div>
 
+        {/* Cards de Indicadores - Primeira linha */}
+        <div className="grid grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Negócios no mês</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Média Anual</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Percentual</p>
+                  <p className="text-lg font-semibold text-red-600">0%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Negócios no mês (unidades)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Média Anual</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Percentual</p>
+                  <p className="text-lg font-semibold text-red-600">0%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Vendas Canceladas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Média Anual</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Percentual</p>
+                  <p className="text-lg font-semibold text-red-600">0%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Cards de Indicadores - Segunda linha */}
+        <div className="grid grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">VSO - venda/oferta</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Média Anual</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Percentual</p>
+                  <p className="text-lg font-semibold text-red-600">0%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Comissão Recebida</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Média Anual</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Percentual</p>
+                  <p className="text-lg font-semibold text-red-600">0%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Comissão Vendida</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Média Anual</p>
+                  <p className="text-lg font-semibold">-</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Percentual</p>
+                  <p className="text-lg font-semibold text-red-600">0%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Tabela Consolidada */}
         {isLoading ? (
           <Card>
