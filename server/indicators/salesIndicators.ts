@@ -401,3 +401,43 @@ export async function calculateSalesLaunch(
 
   return result[0]?.count || 0;
 }
+
+
+/**
+ * Obter todas as vendas de um ano específico
+ * Retorna array de vendas com filtro opcional por tipo de negócio
+ */
+export async function getSalesForYear(
+  companyId: string,
+  year: number,
+  businessType: string = 'todos'
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const startDate = new Date(year, 0, 1);
+  const endDate = new Date(year, 11, 31);
+
+  // Construir condições de filtro
+  const conditions = [
+    eq(sales.companyId, companyId),
+    gte(sales.saleDate, startDate),
+    lte(sales.saleDate, endDate)
+  ];
+
+  // Adicionar filtro de tipo de negócio se especificado
+  if (businessType !== 'todos') {
+    conditions.push(eq(sales.businessType, businessType));
+  }
+
+  const result = await db
+    .select()
+    .from(sales)
+    .where(and(...conditions));
+
+  return {
+    success: true,
+    sales: result || [],
+    count: result?.length || 0,
+  };
+}

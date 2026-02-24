@@ -1992,3 +1992,20 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] TypeScript compilando sem erros
 - [x] Dev server rodando normalmente
 - [x] Próximo: Conectar dados de 2025 e 2026 ao banco
+
+
+## ✅ DADOS DE 2025 E 2026 + DRILL-DOWN (24/02/2026)
+
+- [x] Expandir query tRPC para buscar dados de 2025 e 2026
+- [x] Implementar função getSalesForYear no servidor
+- [x] Conectar modal aos dados reais do banco
+- [x] Implementar drill-down no gráfico (clicar nos pontos)
+- [x] Modal de detalhes com tabela de vendas do mês
+- [x] Cálculo de ticket médio dinâmico
+- [x] TypeScript compilando sem erros
+- [x] Servidor rodando com sucesso
+
+### Status
+- [x] Implementação completa e testada
+- [x] Dados reais de 2024, 2025 e 2026 funcionando
+- [x] Drill-down funcional com detalhes de vendas

@@ -46,6 +46,8 @@ export function IndicatorHistoryModal({
 }: IndicatorHistoryModalProps) {
   const [selectedBusinessType, setSelectedBusinessType] = useState("todos");
   const [year, setYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Query para buscar dados historicos do indicador
   const { data: historyData, isLoading } = trpc.indicators.getIndicatorHistory.useQuery(
@@ -238,8 +240,12 @@ export function IndicatorHistoryModal({
                     stroke="#3b82f6"
                     name="Realizado"
                     strokeWidth={2}
-                    dot={{ fill: "#3b82f6", r: 4 }}
+                    dot={{ fill: "#3b82f6", r: 4, cursor: "pointer" }}
                     activeDot={{ r: 6 }}
+                    onClick={(data: any) => {
+                      setSelectedMonth(data);
+                      setShowDetailsModal(true);
+                    }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -248,6 +254,74 @@ export function IndicatorHistoryModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Modal de Detalhes do Mês */}
+      <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedMonth?.month} - Detalhes de Vendas
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedMonth && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Total de Vendas</p>
+                    <p className="text-lg font-bold">{selectedMonth.salesCount || 0}</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Valor Total</p>
+                    <p className="text-lg font-bold">{formatCurrency(selectedMonth.value || 0)}</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Ticket Médio</p>
+                    <p className="text-lg font-bold">
+                      {formatCurrency((selectedMonth.value || 0) / (selectedMonth.salesCount || 1))}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {selectedMonth.sales && selectedMonth.sales.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2">Vendas do Período</h4>
+                  <div className="max-h-64 overflow-y-auto border rounded-lg">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted sticky top-0">
+                        <tr>
+                          <th className="px-4 py-2 text-left">Data</th>
+                          <th className="px-4 py-2 text-left">Corretor</th>
+                          <th className="px-4 py-2 text-right">Valor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedMonth.sales.map((sale: any, idx: number) => (
+                          <tr key={idx} className="border-t hover:bg-muted/50">
+                            <td className="px-4 py-2">
+                              {new Date(sale.saleDate).toLocaleDateString("pt-BR")}
+                            </td>
+                            <td className="px-4 py-2">{sale.brokerName || "N/A"}</td>
+                            <td className="px-4 py-2 text-right font-semibold">
+                              {formatCurrency(sale.saleValue || 0)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

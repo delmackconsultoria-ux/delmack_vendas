@@ -325,10 +325,11 @@ export const indicatorsRouter = router({
         indicatorName: z.string(),
         year: z.number(),
         businessType: z.string().optional(),
+        companyId: z.string().optional(),
       })
     )
-    .query(({ input }) => {
-      const { indicatorName, year, businessType = 'todos' } = input;
+    .query(async ({ input }) => {
+      const { indicatorName, year, businessType = 'todos', companyId } = input;
 
       if (year === 2024 && historicalData) {
         const monthlyData: any[] = [];
@@ -381,6 +382,38 @@ export const indicatorsRouter = router({
         };
       }
 
+      if ((year === 2025 || year === 2026) && companyId) {
+        try {
+          const db = await getDb();
+          if (!db) return { success: false, monthlyData: [], statistics: { total: 0, average: 0, maximum: 0, minimum: 0, trend: 0 } };
+          const { sales: yearSales } = await salesIndicators.getSalesForYear(companyId, year, businessType);
+          const monthMap = new Map<number, any[]>();
+          yearSales.forEach((sale: any) => {
+            const month = new Date(sale.saleDate).getMonth() + 1;
+            if (!monthMap.has(month)) monthMap.set(month, []);
+            monthMap.get(month)!.push(sale);
+          });
+          const monthlyData: any[] = [];
+          let total = 0, count = 0;
+          for (let month = 1; month <= 12; month++) {
+            const monthSales = monthMap.get(month) || [];
+            const value = monthSales.reduce((sum: number, s: any) => sum + (s.saleValue || 0), 0);
+            monthlyData.push({ month: MONTH_NAMES[month - 1], monthNumber: month, value, salesCount: monthSales.length, sales: monthSales });
+            if (value > 0) { total += value; count++; }
+          }
+          const values = monthlyData.map(m => m.value).filter(v => v > 0);
+          const average = count > 0 ? total / count : 0;
+          const maximum = values.length > 0 ? Math.max(...values) : 0;
+          const minimum = values.length > 0 ? Math.min(...values) : 0;
+          const last3 = monthlyData.slice(-3).reduce((sum, m) => sum + m.value, 0);
+          const prev3 = monthlyData.slice(-6, -3).reduce((sum, m) => sum + m.value, 0);
+          const trend = prev3 > 0 ? ((last3 - prev3) / prev3) * 100 : 0;
+          return { success: true, indicatorName, businessType, year, monthlyData, statistics: { total, average, maximum, minimum, trend: parseFloat(trend.toFixed(1)) } };
+        } catch (error) {
+          console.error('[Indicators] Erro ao buscar dados de', year, ':', error);
+          return { success: false, monthlyData: [], statistics: { total: 0, average: 0, maximum: 0, minimum: 0, trend: 0 } };
+        }
+      }
       return {
         success: false,
         monthlyData: [],
