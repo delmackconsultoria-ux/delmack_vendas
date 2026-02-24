@@ -1,4 +1,4 @@
-import { mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, int, boolean, index } from "drizzle-orm/mysql-core";
+import { mysqlEnum, mysqlTable, text, timestamp, varchar, int, decimal, boolean, index } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
 
 /**
@@ -903,8 +903,10 @@ export const indicatorGoals = mysqlTable("indicatorGoals", {
   id: varchar("id", { length: 64 }).primaryKey(),
   companyId: varchar("companyId", { length: 64 }).notNull(),
   indicatorName: varchar("indicatorName", { length: 255 }).notNull(),
+  year: int("year").notNull(),
   monthlyGoal: decimal("monthlyGoal", { precision: 15, scale: 2 }),
   annualAverage: decimal("annualAverage", { precision: 15, scale: 2 }),
+  createdBy: varchar("createdBy", { length: 64 }).notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

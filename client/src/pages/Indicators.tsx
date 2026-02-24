@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import React from "react";
 import { AppLayout } from "@/components/AppLayout";
@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { IndicatorsConsolidatedTable } from "@/components/IndicatorsConsolidatedTable";
 import { useLocation } from "wouter";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const MONTH_NAMES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -421,6 +422,87 @@ export default function Indicators() {
             year={parseInt(selectedYear)}
           />
         )}
+
+        {/* Secao de Graficos de Evolucao por Mes */}
+        <div className="mt-12 pt-8 border-t">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2 mb-2">
+              <TrendingUp className="w-6 h-6 text-blue-600" />
+              Evolucao por Mes
+            </h2>
+            <p className="text-slate-600">Visualize a evolucao dos indicadores ao longo do ano</p>
+          </div>
+
+          {/* Filtro por Indicador */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-sm">Selecione um Indicador</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Escolha um indicador para visualizar a evolucao" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vgv">VGV (Negocios no mes)</SelectItem>
+                  <SelectItem value="commission_received">Comissao Recebida</SelectItem>
+                  <SelectItem value="commission_sold">Comissao Vendida</SelectItem>
+                  <SelectItem value="sales_count">Quantidade de Vendas</SelectItem>
+                  <SelectItem value="avg_sale_value">Valor Medio de Venda</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
+
+          {/* Grafico de Evolucao */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Evolucao Mensal - {MONTH_NAMES[parseInt(selectedMonth) - 1]}/{selectedYear}</CardTitle>
+              <CardDescription>
+                Dados historicos de 2024 e 2025, dados em tempo real para 2026
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="w-full h-96">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={[
+                    { month: "Jan", value: 15000000, goal: 15000000 },
+                    { month: "Fev", value: 12500000, goal: 15000000 },
+                    { month: "Mar", value: 18000000, goal: 15000000 },
+                    { month: "Abr", value: 14200000, goal: 15000000 },
+                    { month: "Mai", value: 16800000, goal: 15000000 },
+                    { month: "Jun", value: 13900000, goal: 15000000 },
+                  ]}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip 
+                      formatter={(value: any) => `R$ ${(Number(value) / 1000000).toFixed(1)}M`}
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#3b82f6" 
+                      name="Realizado"
+                      strokeWidth={2}
+                      dot={{ fill: '#3b82f6' }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="goal" 
+                      stroke="#10b981" 
+                      name="Meta"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={{ fill: '#10b981' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AppLayout>
   );

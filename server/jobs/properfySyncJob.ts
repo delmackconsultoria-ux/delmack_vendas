@@ -28,34 +28,27 @@ export async function runProperfySyncJob(): Promise<void> {
 
 /**
  * Initialize sync job scheduler
- * Runs daily at 3 AM
+ * Runs every 2 hours
  */
 export function initProperfySyncScheduler(): void {
-  console.log("[ProperfySyncJob] Initializing scheduler...");
+  console.log("[ProperfySyncJob] Initializing scheduler (every 2 hours)...");
 
-  // Calculate time until next 3 AM
-  const now = new Date();
-  const next3AM = new Date();
-  next3AM.setHours(3, 0, 0, 0);
-  
-  if (next3AM <= now) {
-    // If 3 AM already passed today, schedule for tomorrow
-    next3AM.setDate(next3AM.getDate() + 1);
-  }
+  // Run immediately on startup
+  console.log("[ProperfySyncJob] Running initial sync...");
+  runProperfySyncJob().catch(err => 
+    console.error("[ProperfySyncJob] Initial sync error:", err)
+  );
 
-  const msUntilNext3AM = next3AM.getTime() - now.getTime();
+  // Then run every 2 hours
+  const TWO_HOURS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+  setInterval(() => {
+    console.log("[ProperfySyncJob] Running scheduled sync (every 2 hours)...");
+    runProperfySyncJob().catch(err => 
+      console.error("[ProperfySyncJob] Scheduled sync error:", err)
+    );
+  }, TWO_HOURS);
 
-  console.log(`[ProperfySyncJob] Next sync scheduled for: ${next3AM.toISOString()}`);
-
-  // Schedule first run
-  setTimeout(() => {
-    runProperfySyncJob();
-
-    // Then run every 24 hours
-    setInterval(() => {
-      runProperfySyncJob();
-    }, 24 * 60 * 60 * 1000); // 24 hours
-  }, msUntilNext3AM);
+  console.log("[ProperfySyncJob] Scheduler initialized - syncing every 2 hours");
 }
 
 /**

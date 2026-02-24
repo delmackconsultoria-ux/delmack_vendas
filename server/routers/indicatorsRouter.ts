@@ -1,9 +1,13 @@
-import { publicProcedure, router } from "../_core/trpc";
+import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { z } from "zod";
 import * as salesIndicators from "../indicators/salesIndicators";
 import * as properfyIndicators from "../indicators/properfyIndicators";
+import { getDb } from "../db";
+import { indicatorGoals } from "../../drizzle/schema";
+import { eq, and } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
+import { v4 as uuid } from "uuid";
 
 // Carregar dados históricos de 2024 se existirem
 const indicatorsDataPath = path.join(process.cwd(), "indicators-2024.json");
@@ -310,5 +314,105 @@ export const indicatorsRouter = router({
         indicatorName,
         monthlyData,
       };
+    }),
+
+  /**
+   * Obter metas de indicadores para um ano
+   */
+  getGoals: protectedProcedure
+    .input(
+      z.object({
+        year: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { year } = input;
+      const db = await getDb();
+      if (!db) return { goals: [] };
+
+      try {
+        const goals = await db
+          .select()
+          .from(indicatorGoals)
+          .where(
+            and(
+              eq(indicatorGoals.companyId, ctx.user?.companyId || ""),
+              eq(indicatorGoals.year, year)
+            )
+          );
+
+        return { goals };
+      } catch (error) {
+        console.error("[Indicators] Erro ao buscar metas:", error);
+        return { goals: [] };
+      }
+    }),
+
+  /**
+   * Atualizar meta de um indicador (apenas gerentes)
+   */
+  updateGoal: protectedProcedure
+    .input(
+      z.object({
+        indicatorName: z.string(),
+        monthlyGoal: z.number(),
+        year: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Apenas gerentes e admins podem atualizar metas
+      if (!['manager', 'admin', 'superadmin'].includes(ctx.user?.role || '')) {
+        throw new Error('Apenas gerentes podem atualizar metas');
+      }
+
+      const { indicatorName, monthlyGoal, year } = input;
+      const db = await getDb();
+      if (!db) throw new Error('Database not available');
+
+      try {
+        // Buscar meta existente
+        const existing = await db
+          .select()
+          .from(indicatorGoals)
+          .where(
+            and(
+              eq(indicatorGoals.companyId, ctx.user?.companyId || ""),
+              eq(indicatorGoals.indicatorName, indicatorName),
+              eq(indicatorGoals.year, year)
+            )
+          )
+          .limit(1);
+
+        if (existing.length > 0) {
+          // Atualizar existente
+          await db
+            .update(indicatorGoals)
+            .set({
+              monthlyGoal: monthlyGoal.toString(),
+              annualAverage: (monthlyGoal * 12).toString(),
+              updatedAt: new Date(),
+            })
+            .where(eq(indicatorGoals.id, existing[0].id));
+        } else {
+          // Criar novo
+          const newGoal: any = {
+            id: `goal-${uuid()}`,
+            companyId: ctx.user?.companyId || "",
+            indicatorName,
+            year,
+            monthlyGoal: monthlyGoal.toString(),
+            annualAverage: (monthlyGoal * 12).toString(),
+            createdBy: ctx.user?.id || 'system',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          await db.insert(indicatorGoals).values(newGoal);
+        }
+
+        return { success: true, message: 'Meta atualizada com sucesso' };
+      } catch (error) {
+        console.error('[Indicators] Erro ao atualizar meta:', error);
+        throw error;
+      }
     }),
 });
