@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 interface IndicatorHistoryModalProps {
   isOpen: boolean;
@@ -44,8 +45,21 @@ export function IndicatorHistoryModal({
   indicatorData,
 }: IndicatorHistoryModalProps) {
   const [selectedBusinessType, setSelectedBusinessType] = useState("todos");
+  const [year, setYear] = useState(new Date().getFullYear());
 
-  // Dados de exemplo para demonstração
+  // Query para buscar dados historicos do indicador
+  const { data: historyData, isLoading } = trpc.indicators.getIndicatorHistory.useQuery(
+    {
+      indicatorName,
+      year,
+      businessType: selectedBusinessType,
+    },
+    {
+      enabled: isOpen,
+    }
+  );
+
+  // Usar dados reais do banco ou mock como fallback
   const mockData = {
     total: 66100000,
     average: 6610000,
@@ -68,7 +82,14 @@ export function IndicatorHistoryModal({
     ],
   };
 
-  const data = indicatorData || mockData;
+  const data = (historyData?.statistics && historyData?.monthlyData) ? {
+    total: historyData.statistics.total,
+    average: historyData.statistics.average,
+    maximum: historyData.statistics.maximum,
+    minimum: historyData.statistics.minimum,
+    trend: historyData.statistics.trend,
+    monthlyData: historyData.monthlyData,
+  } : (indicatorData || mockData);
 
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat("pt-BR", {
@@ -89,7 +110,7 @@ export function IndicatorHistoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto w-[90vw]">
         <DialogHeader>
           <DialogTitle className="text-xl">
             {indicatorName}
@@ -100,21 +121,37 @@ export function IndicatorHistoryModal({
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
-          {/* Filtro de Tipo de Negócio */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Tipo de Negócio</label>
-            <Select value={selectedBusinessType} onValueChange={setSelectedBusinessType}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {BUSINESS_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Filtros - Ano e Tipo de Negócio */}
+          <div className="flex gap-6">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Ano</label>
+              <Select value={String(year)} onValueChange={(val) => setYear(parseInt(val))}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2024">2024</SelectItem>
+                  <SelectItem value="2025">2025</SelectItem>
+                  <SelectItem value="2026">2026</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Tipo de Negócio</label>
+              <Select value={selectedBusinessType} onValueChange={setSelectedBusinessType}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {BUSINESS_TYPES.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Cards de Resumo */}
@@ -169,7 +206,12 @@ export function IndicatorHistoryModal({
           {/* Gráfico de Evolução Mensal */}
           <div>
             <h3 className="text-sm font-semibold mb-4">Evolução Mensal</h3>
-            <div className="w-full h-80 bg-white rounded-lg border">
+            <div className="w-full h-96 bg-white rounded-lg border">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-muted-foreground">Carregando dados...</p>
+                </div>
+              ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.monthlyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -195,6 +237,7 @@ export function IndicatorHistoryModal({
                   />
                 </LineChart>
               </ResponsiveContainer>
+              )}
             </div>
           </div>
         </div>

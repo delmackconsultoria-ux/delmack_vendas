@@ -317,6 +317,85 @@ export const indicatorsRouter = router({
     }),
 
   /**
+   * Obter dados historicos de um indicador especifico com filtro por tipo de negocio
+   */
+  getIndicatorHistory: publicProcedure
+    .input(
+      z.object({
+        indicatorName: z.string(),
+        year: z.number(),
+        businessType: z.string().optional(),
+      })
+    )
+    .query(({ input }) => {
+      const { indicatorName, year, businessType = 'todos' } = input;
+
+      if (year === 2024 && historicalData) {
+        const monthlyData: any[] = [];
+        let total = 0;
+        let count = 0;
+
+        MONTH_NAMES.forEach((monthName) => {
+          const monthData = historicalData[monthName];
+          if (!monthData || !monthData[indicatorName]) {
+            monthlyData.push({
+              month: monthName,
+              value: 0,
+            });
+            return;
+          }
+
+          const indicator = monthData[indicatorName];
+          const value = Number(indicator.total || 0);
+
+          monthlyData.push({
+            month: monthName,
+            value,
+          });
+
+          total += value;
+          count++;
+        });
+
+        const average = count > 0 ? total / count : 0;
+        const values = monthlyData.map(m => m.value).filter(v => v > 0);
+        const maximum = values.length > 0 ? Math.max(...values) : 0;
+        const minimum = values.length > 0 ? Math.min(...values) : 0;
+
+        const last3 = monthlyData.slice(-3).reduce((sum, m) => sum + m.value, 0);
+        const prev3 = monthlyData.slice(-6, -3).reduce((sum, m) => sum + m.value, 0);
+        const trend = prev3 > 0 ? ((last3 - prev3) / prev3) * 100 : 0;
+
+        return {
+          success: true,
+          indicatorName,
+          businessType,
+          monthlyData,
+          statistics: {
+            total,
+            average,
+            maximum,
+            minimum,
+            trend: parseFloat(trend.toFixed(1)),
+          },
+        };
+      }
+
+      return {
+        success: false,
+        monthlyData: [],
+        statistics: {
+          total: 0,
+          average: 0,
+          maximum: 0,
+          minimum: 0,
+          trend: 0,
+        },
+        message: `Dados nao disponiveis para ${year}`,
+      };
+    }),
+
+  /**
    * Obter metas de indicadores para um ano
    */
   getGoals: protectedProcedure

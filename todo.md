@@ -1959,3 +1959,36 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Testes unitários criados (10 casos)
 - [x] TypeScript compilando sem erros
 
+
+
+## 🔧 MODAL DE HISTÓRICO COM DADOS REAIS (24/02/2026) ✅
+
+### Fase 1: Aumentar Tamanho do Modal
+- [x] Aumentar max-width para max-w-6xl
+- [x] Aumentar max-height para max-h-[95vh]
+- [x] Adicionar w-[90vw] para responsividade
+
+### Fase 2: Implementar Query tRPC para Dados Históricos
+- [x] Criar endpoint getIndicatorHistory em indicatorsRouter
+- [x] Implementar cálculo de estatísticas (Total, Média, Máximo, Mínimo, Tendência)
+- [x] Suportar filtro por tipo de negócio (parâmetro preparado)
+- [x] Retornar dados mensais de 2024 do arquivo histórico
+
+### Fase 3: Conectar Modal aos Dados Reais
+- [x] Adicionar import de trpc no IndicatorHistoryModal
+- [x] Implementar useQuery para getIndicatorHistory
+- [x] Adicionar loading state ao gráfico
+- [x] Usar dados reais quando disponíveis, fallback para mock
+
+### Fase 4: Implementar Filtro Funcional "Tipo de Negócio"
+- [x] Adicionar seletor de ano (2024, 2025, 2026)
+- [x] Adicionar seletor de tipo de negócio (Todos, Prontos, Lançamentos, Rede, Internos)
+- [x] Implementar reatividade (query atualiza ao mudar filtros)
+- [x] Gráfico e cards atualizam dinamicamente
+
+### Status
+- [x] Modal exibe dados reais de 2024 do banco
+- [x] Filtros funcionais e reativos
+- [x] TypeScript compilando sem erros
+- [x] Dev server rodando normalmente
+- [x] Próximo: Conectar dados de 2025 e 2026 ao banco
