@@ -112,8 +112,10 @@ export function IndicatorHistoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-start mb-6">
+      {/* Modal principal - Layout horizontal expandido */}
+      <DialogContent className="fixed inset-4 max-w-[95vw] w-[95vw] h-[95vh] p-0 flex flex-col">
+        {/* Header com título e fechar */}
+        <div className="flex justify-between items-center p-6 border-b">
           <div>
             <h2 className="text-2xl font-bold">{indicatorName}</h2>
             <p className="text-sm text-muted-foreground mt-1">
@@ -122,135 +124,171 @@ export function IndicatorHistoryModal({
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
+            className="text-gray-400 hover:text-gray-600 text-2xl font-light"
           >
             ×
           </button>
         </div>
 
-        <div className="space-y-6 mt-4">
-          {/* Filtros - Ano e Tipo de Negócio */}
-          <div className="flex gap-6">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Ano</label>
-              <Select value={String(year)} onValueChange={(val) => setYear(parseInt(val))}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2025">2025</SelectItem>
-                  <SelectItem value="2026">2026</SelectItem>
-                </SelectContent>
-              </Select>
+        {/* Conteúdo scrollável */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="space-y-6">
+            {/* Filtros - Ano e Tipo de Negócio */}
+            <div className="flex gap-6">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Ano</label>
+                <Select value={String(year)} onValueChange={(val) => setYear(parseInt(val))}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2024">2024</SelectItem>
+                    <SelectItem value="2025">2025</SelectItem>
+                    <SelectItem value="2026">2026</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Tipo de Negócio</label>
+                <Select value={selectedBusinessType} onValueChange={setSelectedBusinessType}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BUSINESS_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-2 block">Tipo de Negócio</label>
-              <Select value={selectedBusinessType} onValueChange={setSelectedBusinessType}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BUSINESS_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Cards de Resumo - Layout horizontal */}
+            <div className="grid grid-cols-5 gap-3">
+              <Card>
+                <CardContent className="pt-4">
+                  <p className="text-xs text-muted-foreground mb-1">Total</p>
+                  <p className="text-lg font-bold">
+                    {data.total > 1000 ? formatCurrency(data.total) : formatNumber(data.total)}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-4">
+                  <p className="text-xs text-muted-foreground mb-1">Média</p>
+                  <p className="text-lg font-bold">
+                    {data.average > 1000 ? formatCurrency(data.average) : formatNumber(data.average)}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-4">
+                  <p className="text-xs text-muted-foreground mb-1">Máximo</p>
+                  <p className="text-lg font-bold text-green-600">
+                    {data.maximum > 1000 ? formatCurrency(data.maximum) : formatNumber(data.maximum)}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-4">
+                  <p className="text-xs text-muted-foreground mb-1">Mínimo</p>
+                  <p className="text-lg font-bold text-red-600">
+                    {data.minimum > 1000 ? formatCurrency(data.minimum) : formatNumber(data.minimum)}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-4">
+                  <p className="text-xs text-muted-foreground mb-1">Tendência</p>
+                  <p className={`text-lg font-bold flex items-center gap-1 ${getTrendColor(data.trend)}`}>
+                    <TrendingUp className="w-4 h-4" />
+                    {data.trend > 0 ? "+" : ""}{data.trend.toFixed(1)}%
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-          </div>
 
-          {/* Cards de Resumo */}
-          <div className="grid grid-cols-5 gap-3">
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-xs text-muted-foreground mb-1">Total</p>
-                <p className="text-lg font-bold">
-                  {data.total > 1000 ? formatCurrency(data.total) : formatNumber(data.total)}
-                </p>
-              </CardContent>
-            </Card>
+            {/* Gráfico de Evolução Mensal */}
+            <div>
+              <h3 className="text-sm font-semibold mb-4">Evolução Mensal</h3>
+              <div className="w-full h-80 bg-white rounded-lg border">
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-muted-foreground">Carregando dados...</p>
+                  </div>
+                ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={data.monthlyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip
+                      formatter={(value: any) => {
+                        if (value > 1000) {
+                          return `R$ ${(value / 1000000).toFixed(1)}M`;
+                        }
+                        return formatNumber(value);
+                      }}
+                    />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#3b82f6"
+                      name="Realizado"
+                      strokeWidth={2}
+                      dot={{ fill: "#3b82f6", r: 4, cursor: "pointer" }}
+                      activeDot={{ r: 6 }}
+                      onClick={(data: any) => {
+                        setSelectedMonth(data);
+                        setShowDetailsModal(true);
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+                )}
+              </div>
+            </div>
 
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-xs text-muted-foreground mb-1">Média</p>
-                <p className="text-lg font-bold">
-                  {data.average > 1000 ? formatCurrency(data.average) : formatNumber(data.average)}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-xs text-muted-foreground mb-1">Máximo</p>
-                <p className="text-lg font-bold text-green-600">
-                  {data.maximum > 1000 ? formatCurrency(data.maximum) : formatNumber(data.maximum)}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-xs text-muted-foreground mb-1">Mínimo</p>
-                <p className="text-lg font-bold text-red-600">
-                  {data.minimum > 1000 ? formatCurrency(data.minimum) : formatNumber(data.minimum)}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-xs text-muted-foreground mb-1">Tendência</p>
-                <p className={`text-lg font-bold flex items-center gap-1 ${getTrendColor(data.trend)}`}>
-                  <TrendingUp className="w-4 h-4" />
-                  {data.trend > 0 ? "+" : ""}{data.trend.toFixed(1)}%
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Gráfico de Evolução Mensal */}
-          <div>
-            <h3 className="text-sm font-semibold mb-4">Evolução Mensal</h3>
-            <div className="w-full h-96 bg-white rounded-lg border">
-              {isLoading ? (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-muted-foreground">Carregando dados...</p>
+            {/* Tabela de Detalhes - Abaixo do gráfico */}
+            {historyData?.monthlyData && historyData.monthlyData.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold mb-4">Detalhes por Mês</h3>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="px-4 py-3 text-left font-semibold">Mês</th>
+                        <th className="px-4 py-3 text-right font-semibold">Valor</th>
+                        <th className="px-4 py-3 text-right font-semibold">Qtd Vendas</th>
+                        <th className="px-4 py-3 text-right font-semibold">Ticket Médio</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyData.monthlyData.map((item: any, idx: number) => (
+                        <tr key={idx} className="border-t hover:bg-muted/50">
+                          <td className="px-4 py-3">{item.month}</td>
+                          <td className="px-4 py-3 text-right font-semibold">
+                            {item.value > 1000 ? formatCurrency(item.value) : formatNumber(item.value)}
+                          </td>
+                          <td className="px-4 py-3 text-right">{item.salesCount || 0}</td>
+                          <td className="px-4 py-3 text-right">
+                            {item.salesCount ? formatCurrency(item.value / item.salesCount) : "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data.monthlyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value: any) => {
-                      if (value > 1000) {
-                        return `R$ ${(value / 1000000).toFixed(1)}M`;
-                      }
-                      return formatNumber(value);
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#3b82f6"
-                    name="Realizado"
-                    strokeWidth={2}
-                    dot={{ fill: "#3b82f6", r: 4, cursor: "pointer" }}
-                    activeDot={{ r: 6 }}
-                    onClick={(data: any) => {
-                      setSelectedMonth(data);
-                      setShowDetailsModal(true);
-                    }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
