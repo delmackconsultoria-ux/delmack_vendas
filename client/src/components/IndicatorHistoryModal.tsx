@@ -113,7 +113,7 @@ export function IndicatorHistoryModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       {/* Modal principal - Layout horizontal expandido e centralizado */}
-      <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[99vw] h-[97vh] max-w-full p-0 flex flex-col">
+      <DialogContent className="fixed inset-2 max-w-none p-0 flex flex-col rounded-lg shadow-2xl">
         {/* Header com título e fechar */}
         <div className="flex justify-between items-center p-6 border-b">
           <div>
