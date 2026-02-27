@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -166,94 +166,97 @@ export function IndicatorHistoryModal({
               </div>
             </div>
 
-            {/* Cards de Resumo - Layout horizontal */}
-            <div className="grid grid-cols-5 gap-3">
-              <Card>
-                <CardContent className="pt-4">
-                  <p className="text-xs text-muted-foreground mb-1">Total</p>
-                  <p className="text-lg font-bold">
-                    {data.total > 1000 ? formatCurrency(data.total) : formatNumber(data.total)}
-                  </p>
-                </CardContent>
-              </Card>
+            {/* Layout em 2 colunas - Gráfico à esquerda (2/3), Cards à direita (1/3) */}
+            <div className="grid grid-cols-3 gap-6">
+              {/* Coluna esquerda - Gráfico (2/3 da largura) */}
+              <div className="col-span-2">
+                <h3 className="text-sm font-semibold mb-4">Evolução Mensal</h3>
+                <div className="w-full h-96 bg-white rounded-lg border">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-muted-foreground">Carregando dados...</p>
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={data.monthlyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip
+                          formatter={(value: any) => {
+                            if (value > 1000) {
+                              return `R$ ${(value / 1000000).toFixed(1)}M`;
+                            }
+                            return formatNumber(value);
+                          }}
+                        />
+                        <Legend />
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="#3b82f6"
+                          name="Realizado"
+                          strokeWidth={2}
+                          dot={{ fill: "#3b82f6", r: 4, cursor: "pointer" }}
+                          activeDot={{ r: 6 }}
+                          onClick={(data: any) => {
+                            setSelectedMonth(data);
+                            setShowDetailsModal(true);
+                          }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </div>
 
-              <Card>
-                <CardContent className="pt-4">
-                  <p className="text-xs text-muted-foreground mb-1">Média</p>
-                  <p className="text-lg font-bold">
-                    {data.average > 1000 ? formatCurrency(data.average) : formatNumber(data.average)}
-                  </p>
-                </CardContent>
-              </Card>
+              {/* Coluna direita - Cards de Resumo (1/3 da largura) */}
+              <div className="space-y-3">
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Total</p>
+                    <p className="text-lg font-bold">
+                      {data.total > 1000 ? formatCurrency(data.total) : formatNumber(data.total)}
+                    </p>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardContent className="pt-4">
-                  <p className="text-xs text-muted-foreground mb-1">Máximo</p>
-                  <p className="text-lg font-bold text-green-600">
-                    {data.maximum > 1000 ? formatCurrency(data.maximum) : formatNumber(data.maximum)}
-                  </p>
-                </CardContent>
-              </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Média</p>
+                    <p className="text-lg font-bold">
+                      {data.average > 1000 ? formatCurrency(data.average) : formatNumber(data.average)}
+                    </p>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardContent className="pt-4">
-                  <p className="text-xs text-muted-foreground mb-1">Mínimo</p>
-                  <p className="text-lg font-bold text-red-600">
-                    {data.minimum > 1000 ? formatCurrency(data.minimum) : formatNumber(data.minimum)}
-                  </p>
-                </CardContent>
-              </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Máximo</p>
+                    <p className="text-lg font-bold text-green-600">
+                      {data.maximum > 1000 ? formatCurrency(data.maximum) : formatNumber(data.maximum)}
+                    </p>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardContent className="pt-4">
-                  <p className="text-xs text-muted-foreground mb-1">Tendência</p>
-                  <p className={`text-lg font-bold flex items-center gap-1 ${getTrendColor(data.trend)}`}>
-                    <TrendingUp className="w-4 h-4" />
-                    {data.trend > 0 ? "+" : ""}{data.trend.toFixed(1)}%
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Mínimo</p>
+                    <p className="text-lg font-bold text-red-600">
+                      {data.minimum > 1000 ? formatCurrency(data.minimum) : formatNumber(data.minimum)}
+                    </p>
+                  </CardContent>
+                </Card>
 
-            {/* Gráfico de Evolução Mensal */}
-            <div>
-              <h3 className="text-sm font-semibold mb-4">Evolução Mensal</h3>
-              <div className="w-full h-80 bg-white rounded-lg border">
-                {isLoading ? (
-                  <div className="flex items-center justify-center h-full">
-                    <p className="text-muted-foreground">Carregando dados...</p>
-                  </div>
-                ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={data.monthlyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip
-                      formatter={(value: any) => {
-                        if (value > 1000) {
-                          return `R$ ${(value / 1000000).toFixed(1)}M`;
-                        }
-                        return formatNumber(value);
-                      }}
-                    />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#3b82f6"
-                      name="Realizado"
-                      strokeWidth={2}
-                      dot={{ fill: "#3b82f6", r: 4, cursor: "pointer" }}
-                      activeDot={{ r: 6 }}
-                      onClick={(data: any) => {
-                        setSelectedMonth(data);
-                        setShowDetailsModal(true);
-                      }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-                )}
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Tendência</p>
+                    <p className={`text-lg font-bold flex items-center gap-1 ${getTrendColor(data.trend)}`}>
+                      <TrendingUp className="w-4 h-4" />
+                      {data.trend > 0 ? "+" : ""}{data.trend.toFixed(1)}%
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
 
