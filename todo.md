@@ -2037,3 +2037,17 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Modal expandido horizontalmente conforme solicitado
 - [x] Melhor visualização dos dados e gráficos
 - [x] Pronto para produção
+
+
+## ✅ GERENCIAMENTO DE USUÁRIOS POR GERENTES (27/02/2026)
+
+- [x] Criar página ManagerUsers.tsx com interface de gerenciamento
+- [x] Implementar tRPC procedure para criar usuários (gerente)
+- [x] Implementar tRPC procedure para listar usuários da equipe
+- [x] Implementar tRPC procedure para remover usuários
+- [x] Validar permissões no backend (apenas gerentes podem criar)
+- [x] Gerar senha forte e enviar por email
+- [x] Adicionar rota /users na navegação do gerente
+- [x] Criar testes unitários para o router
+- [x] TypeScript compilando sem erros
+- [x] Servidor rodando com sucesso
