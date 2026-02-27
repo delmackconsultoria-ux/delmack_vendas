@@ -2051,3 +2051,15 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Criar testes unitários para o router
 - [x] TypeScript compilando sem erros
 - [x] Servidor rodando com sucesso
+
+
+## ✅ MENU DE USUÁRIOS E EDIÇÃO DE SENHA (27/02/2026)
+
+- [x] Adicionar "Usuários" no menu dropdown após "Meu Perfil"
+- [x] Redirecionar para /users ao clicar em "Usuários"
+- [x] Implementar edição de senha na página /users
+- [x] Adicionar header padrão à página /users
+- [x] Gerar nova senha forte e enviar por email
+- [x] Validar permissões (apenas gerentes podem editar senhas)
+- [x] TypeScript compilando sem erros
+- [x] Servidor rodando com sucesso

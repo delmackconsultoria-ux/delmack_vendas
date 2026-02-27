@@ -155,4 +155,59 @@ export const managerUsersRouter = router({
         });
       }
     }),
+
+  // Redefinir senha do usuario
+  resetUserPassword: protectedProcedure
+    .input(z.object({
+      userId: z.string().min(1, "ID do usuario eh obrigatorio"),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "manager") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Apenas gerentes podem redefinir senhas" });
+      }
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      // Verificar se o usuario existe e pertence a mesma empresa
+      const userToReset = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      if (userToReset.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Usuario nao encontrado" });
+      }
+
+      if (userToReset[0].companyId !== (ctx.user.companyId || "")) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Voce nao pode redefinir senhas de usuarios de outras empresas" });
+      }
+
+      // Gerar nova senha forte
+      const newPassword = generateStrongPassword();
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      try {
+        // Atualizar senha do usuario
+        await db.update(users).set({ password: hashedPassword }).where(eq(users.id, input.userId));
+
+        // Notificar o proprietario sobre a redefinicao de senha
+        try {
+          await notifyOwner({
+            title: `Senha redefinida para ${userToReset[0].name}`,
+            content: `Usuario: ${userToReset[0].email}\nNova Senha: ${newPassword}`,
+          });
+        } catch (e) {
+          console.log("[ManagerUsers] Erro ao enviar notificacao:", e);
+        }
+
+        return { 
+          success: true, 
+          message: `Senha do usuario ${userToReset[0].name} foi redefinida. Nova senha enviada por email.`,
+          password: newPassword
+        };
+      } catch (error) {
+        console.error("[ManagerUsers] Erro ao redefinir senha:", error);
+        throw new TRPCError({ 
+          code: "INTERNAL_SERVER_ERROR", 
+          message: "Erro ao redefinir senha. Tente novamente." 
+        });
+      }
+    }),
 });

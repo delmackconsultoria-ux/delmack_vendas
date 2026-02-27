@@ -115,13 +115,13 @@ export function AppHeader() {
                 <User className="mr-2 h-4 w-4" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
-              {user?.role === "superadmin" && (
+              {(user?.role === "superadmin" || user?.role === "manager") && (
                 <DropdownMenuItem
                   onClick={() => setLocation("/users")}
                   className="cursor-pointer"
                 >
                   <Users className="mr-2 h-4 w-4" />
-                  <span>Gestão de Usuários</span>
+                  <span>Usuários</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
