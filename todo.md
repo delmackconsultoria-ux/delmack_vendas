@@ -2023,3 +2023,17 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Modal centralizado conforme solicitado
 - [x] Posicionamento fixo e responsivo
 - [x] Pronto para produção
+
+
+## ✅ EXPANSÃO HORIZONTAL DO MODAL (26/02/2026)
+
+- [x] Expandir modal para 98vw de largura
+- [x] Expandir modal para 96vh de altura
+- [x] Manter posicionamento centralizado
+- [x] TypeScript compilando sem erros
+- [x] Servidor rodando com sucesso
+
+### Status
+- [x] Modal expandido horizontalmente conforme solicitado
+- [x] Melhor visualização dos dados e gráficos
+- [x] Pronto para produção
