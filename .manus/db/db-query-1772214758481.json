@@ -1,0 +1,31 @@
+{
+  "query": "\nSELECT \n  YEAR(saleDate) as ano,\n  COUNT(*) as total_vendas,\n  SUM(saleValue) as valor_total,\n  SUM(totalCommission) as comissao_total,\n  AVG(saleValue) as ticket_medio\nFROM sales\nWHERE YEAR(saleDate) IN (2024, 2025, 2026)\nGROUP BY YEAR(saleDate)\nORDER BY ano;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT \n  YEAR(saleDate) as ano,\n  COUNT(*) as total_vendas,\n  SUM(saleValue) as valor_total,\n  SUM(totalCommission) as comissao_total,\n  AVG(saleValue) as ticket_medio\nFROM sales\nWHERE YEAR(saleDate) IN (2024, 2025, 2026)\nGROUP BY YEAR(saleDate)\nORDER BY ano;\n",
+  "rows": [
+    {
+      "ano": "2024",
+      "total_vendas": "92",
+      "valor_total": "56594500.00",
+      "comissao_total": "NULL",
+      "ticket_medio": "615157.608696"
+    },
+    {
+      "ano": "2025",
+      "total_vendas": "84",
+      "valor_total": "41772692.00",
+      "comissao_total": "25624.73",
+      "ticket_medio": "497293.952381"
+    },
+    {
+      "ano": "2026",
+      "total_vendas": "1",
+      "valor_total": "0.00",
+      "comissao_total": "0.00",
+      "ticket_medio": "0.000000"
+    }
+  ],
+  "messages": [],
+  "stdout": "ano\ttotal_vendas\tvalor_total\tcomissao_total\tticket_medio\n2024\t92\t56594500.00\tNULL\t615157.608696\n2025\t84\t41772692.00\t25624.73\t497293.952381\n2026\t1\t0.00\t0.00\t0.000000\n",
+  "stderr": "",
+  "execution_time_ms": 116
+}

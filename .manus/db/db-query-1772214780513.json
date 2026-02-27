@@ -1,0 +1,90 @@
+{
+  "query": "\nSELECT \n  MONTH(saleDate) as mes,\n  COUNT(*) as qtd_vendas,\n  SUM(saleValue) as valor_total,\n  AVG(saleValue) as ticket_medio,\n  SUM(totalCommission) as comissao_total,\n  AVG(totalCommission) as comissao_media\nFROM sales\nWHERE YEAR(saleDate) = 2025\nGROUP BY MONTH(saleDate)\nORDER BY mes;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT \n  MONTH(saleDate) as mes,\n  COUNT(*) as qtd_vendas,\n  SUM(saleValue) as valor_total,\n  AVG(saleValue) as ticket_medio,\n  SUM(totalCommission) as comissao_total,\n  AVG(totalCommission) as comissao_media\nFROM sales\nWHERE YEAR(saleDate) = 2025\nGROUP BY MONTH(saleDate)\nORDER BY mes;\n",
+  "rows": [
+    {
+      "mes": "1",
+      "qtd_vendas": "16",
+      "valor_total": "9747800.00",
+      "ticket_medio": "609237.500000",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "2",
+      "qtd_vendas": "10",
+      "valor_total": "5011000.00",
+      "ticket_medio": "501100.000000",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "3",
+      "qtd_vendas": "5",
+      "valor_total": "1835000.00",
+      "ticket_medio": "367000.000000",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "4",
+      "qtd_vendas": "3",
+      "valor_total": "2532500.00",
+      "ticket_medio": "844166.666667",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "5",
+      "qtd_vendas": "12",
+      "valor_total": "7025000.00",
+      "ticket_medio": "585416.666667",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "6",
+      "qtd_vendas": "8",
+      "valor_total": "6068028.00",
+      "ticket_medio": "758503.500000",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "7",
+      "qtd_vendas": "14",
+      "valor_total": "7447000.00",
+      "ticket_medio": "531928.571429",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "10",
+      "qtd_vendas": "3",
+      "valor_total": "543887.00",
+      "ticket_medio": "181295.666667",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    },
+    {
+      "mes": "11",
+      "qtd_vendas": "2",
+      "valor_total": "1500000.00",
+      "ticket_medio": "750000.000000",
+      "comissao_total": "22500.00",
+      "comissao_media": "22500.000000"
+    },
+    {
+      "mes": "12",
+      "qtd_vendas": "11",
+      "valor_total": "62477.00",
+      "ticket_medio": "5679.727273",
+      "comissao_total": "3124.73",
+      "comissao_media": "284.066364"
+    }
+  ],
+  "messages": [],
+  "stdout": "mes\tqtd_vendas\tvalor_total\tticket_medio\tcomissao_total\tcomissao_media\n1\t16\t9747800.00\t609237.500000\tNULL\tNULL\n2\t10\t5011000.00\t501100.000000\tNULL\tNULL\n3\t5\t1835000.00\t367000.000000\tNULL\tNULL\n4\t3\t2532500.00\t844166.666667\tNULL\tNULL\n5\t12\t7025000.00\t585416.666667\tNULL\tNULL\n6\t8\t6068028.00\t758503.500000\tNULL\tNULL\n7\t14\t7447000.00\t531928.571429\tNULL\tNULL\n10\t3\t543887.00\t181295.666667\tNULL\tNULL\n11\t2\t1500000.00\t750000.000000\t22500.00\t22500.000000\n12\t11\t62477.00\t5679.727273\t3124.73\t284.066364\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

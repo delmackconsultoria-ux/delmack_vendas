@@ -1,0 +1,17 @@
+{
+  "query": "SELECT COUNT(*) as total_sales, SUM(salePrice) as total_value, MIN(saleDate) as first_sale, MAX(saleDate) as last_sale, COUNT(DISTINCT companyId) as companies FROM historicalSales;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_sales, SUM(salePrice) as total_value, MIN(saleDate) as first_sale, MAX(saleDate) as last_sale, COUNT(DISTINCT companyId) as companies FROM historicalSales;",
+  "rows": [
+    {
+      "total_sales": "0",
+      "total_value": "NULL",
+      "first_sale": "NULL",
+      "last_sale": "NULL",
+      "companies": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_sales\ttotal_value\tfirst_sale\tlast_sale\tcompanies\n0\tNULL\tNULL\tNULL\t0\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

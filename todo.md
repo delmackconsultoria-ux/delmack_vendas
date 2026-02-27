@@ -2063,3 +2063,12 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [x] Validar permissões (apenas gerentes podem editar senhas)
 - [x] TypeScript compilando sem erros
 - [x] Servidor rodando com sucesso
+
+
+## ☐ INTEGRAÇÃO DE DADOS HISTÓRICOS REAIS NA PÁGINA DE INDICADORES (27/02/2026)
+
+- [ ] Criar queries tRPC para buscar dados de 2024, 2025 e 2026 do banco
+- [ ] Atualizar página de Indicadores com dados reais
+- [ ] Documentar mapeamento: Quais dados vêm do Properfy vs Delmack
+- [ ] Testar indicadores com dados históricos
+- [ ] Validar cálculos de comissão e ticket médio

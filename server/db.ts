@@ -1,8 +1,15 @@
-import { eq, and } from "drizzle-orm";
+import { mysqlTable, varchar, text, timestamp, mysqlEnum, decimal, int, boolean, date, json, datetime, index } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, InsertSale, users, companies, sales, commissions, properties, commissionRules, type Company, type Sale, type Commission, type Property, type CommissionRule } from "../drizzle/schema";
+import { eq, and, or, sql, gte, lte } from "drizzle-orm";
+import * as schema from "../drizzle/schema";
 import { ENV } from './_core/env';
-import bcrypt from 'bcryptjs';
+
+const { users, companies, sales, commissions, historicalSales } = schema;
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = typeof companies.$inferInsert;
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -19,82 +26,6 @@ export async function getDb() {
   return _db;
 }
 
-/**
- * Hash a password using bcrypt
- */
-export async function hashPassword(password: string): Promise<string> {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-}
-
-/**
- * Compare a password with its hash
- */
-export async function comparePassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
-}
-
-/**
- * Authenticate user with email and password
- */
-export async function authenticateUser(email: string, password: string) {
-  const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
-
-  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
-  const user = result.length > 0 ? result[0] : null;
-
-  if (!user || !user.password) {
-    return null;
-  }
-
-  const isPasswordValid = await comparePassword(password, user.password);
-  if (!isPasswordValid) {
-    return null;
-  }
-
-  // Update last signed in
-  await db.update(users).set({ lastSignedIn: new Date() }).where(eq(users.id, user.id));
-
-  return user;
-}
-
-/**
- * Create a new user with email and password
- */
-export async function createUser(data: {
-  email: string;
-  password: string;
-  name: string;
-  role: 'admin' | 'manager' | 'broker' | 'finance' | 'viewer';
-  companyId?: string;
-}) {
-  const db = await getDb();
-  if (!db) {
-    throw new Error("Database not available");
-  }
-
-  const hashedPassword = await hashPassword(data.password);
-  const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-  await db.insert(users).values({
-    id: userId,
-    email: data.email,
-    password: hashedPassword,
-    name: data.name,
-    role: data.role,
-    companyId: data.companyId,
-    loginMethod: 'email',
-  });
-
-  return { id: userId, email: data.email, name: data.name, role: data.role };
-}
-
-/**
- * Upsert user (for OAuth compatibility)
- */
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.id) {
     throw new Error("User ID is required for upsert");
@@ -158,39 +89,83 @@ export async function getUser(id: string) {
   }
 
   const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
-  
-  if (result.length === 0) return undefined;
-  
-  const user = result[0];
-  
-  // Buscar nome da empresa se o usuário tiver companyId
-  let companyName: string | null = null;
-  let companyTradeName: string | null = null;
-  if (user.companyId) {
-    const companyResult = await db.select().from(companies).where(eq(companies.id, user.companyId)).limit(1);
-    if (companyResult.length > 0) {
-      companyName = companyResult[0].name;
-      companyTradeName = companyResult[0].tradeName || null;
-    }
-  }
-  
-  // Usar Nome Fantasia se existir, senão Razão Social
-  const displayCompanyName = companyTradeName || companyName;
-  
-  return { ...user, companyName: displayCompanyName, companyTradeName, companyLegalName: companyName };
+
+  return result.length > 0 ? result[0] : undefined;
 }
 
-/**
- * Get user by email
- */
 export async function getUserByEmail(email: string) {
   const db = await getDb();
   if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
     return undefined;
   }
 
   const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+
   return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Get users by company
+ */
+export async function getCompanyUsers(companyId: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(users).where(eq(users.companyId, companyId));
+}
+
+/**
+ * Get users by role
+ */
+export async function getUsersByRole(role: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db.select().from(users).where(eq(users.role, role));
+}
+
+/**
+ * Update user
+ */
+export async function updateUser(id: string, data: Partial<InsertUser>) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update user: database not available");
+    return;
+  }
+
+  await db.update(users).set(data).where(eq(users.id, id));
+}
+
+/**
+ * Delete user
+ */
+export async function deleteUser(id: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot delete user: database not available");
+    return;
+  }
+
+  await db.delete(users).where(eq(users.id, id));
+}
+
+/**
+ * Create a new user
+ */
+export async function createUser(data: InsertUser) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const userId = data.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  await db.insert(users).values({
+    ...data,
+    id: userId,
+  });
+
+  return { id: userId, ...data };
 }
 
 /**
@@ -299,8 +274,6 @@ export async function createCompany(data: {
   name: string;
   email?: string;
   phone?: string;
-  address?: string;
-  logo?: string;
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -309,28 +282,14 @@ export async function createCompany(data: {
 
   await db.insert(companies).values({
     id: companyId,
-    name: data.name,
-    email: data.email,
-    phone: data.phone,
-    address: data.address,
-    logo: data.logo,
+    ...data,
   });
 
   return { id: companyId, ...data };
 }
 
 /**
- * Get all users for a company
- */
-export async function getCompanyUsers(companyId: string) {
-  const db = await getDb();
-  if (!db) return [];
-
-  return db.select().from(users).where(eq(users.companyId, companyId));
-}
-
-/**
- * Get all sales for a company
+ * Get sales for a company
  */
 export async function getCompanySales(companyId: string) {
   const db = await getDb();
@@ -340,14 +299,11 @@ export async function getCompanySales(companyId: string) {
 }
 
 /**
- * Get sales for a specific broker
- * Busca vendas onde o corretor aparece como angariador OU vendedor
+ * Get sales for a broker
  */
 export async function getBrokerSales(brokerId: string) {
   const db = await getDb();
   if (!db) return [];
-
-  const { or } = await import('drizzle-orm');
 
   return db.select().from(sales).where(
     or(
@@ -358,20 +314,9 @@ export async function getBrokerSales(brokerId: string) {
 }
 
 /**
- * Get sale by ID with related data
+ * Create sale
  */
-export async function getSaleWithDetails(saleId: string) {
-  const db = await getDb();
-  if (!db) return null;
-
-  const result = await db.select().from(sales).where(eq(sales.id, saleId)).limit(1);
-  return result.length > 0 ? result[0] : null;
-}
-
-/**
- * Create a new sale
- */
-export async function createSale(data: Omit<InsertSale, 'id'>) {
+export async function createSale(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -380,24 +325,9 @@ export async function createSale(data: Omit<InsertSale, 'id'>) {
   await db.insert(sales).values({
     ...data,
     id: saleId,
-  } as InsertSale);
+  });
 
   return { id: saleId, ...data };
-}
-
-/**
- * Update sale status
- */
-export async function updateSaleStatus(saleId: string, status: 'pending' | 'received' | 'paid' | 'cancelled', observation?: string) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const updateData: any = { status, updatedAt: new Date() };
-  if (observation) {
-    updateData.observation = observation;
-  }
-
-  await db.update(sales).set(updateData).where(eq(sales.id, saleId));
 }
 
 /**
@@ -435,12 +365,10 @@ export async function createCommission(data: any) {
  * Estas vendas NÃO passam por fluxo de aprovação (status fixo: "commission_paid")
  */
 
-import { historicalSales, type HistoricalSale } from "../drizzle/schema";
-
 /**
  * Get all historical sales for a company
  */
-export async function getCompanyHistoricalSales(companyId: string): Promise<HistoricalSale[]> {
+export async function getCompanyHistoricalSales(companyId: string) {
   const db = await getDb();
   if (!db) return [];
 
@@ -451,11 +379,9 @@ export async function getCompanyHistoricalSales(companyId: string): Promise<Hist
  * Get historical sales for a specific broker (by name)
  * Busca vendas onde o corretor aparece como angariador OU vendedor
  */
-export async function getBrokerHistoricalSales(companyId: string, brokerName: string): Promise<HistoricalSale[]> {
+export async function getBrokerHistoricalSales(companyId: string, brokerName: string) {
   const db = await getDb();
   if (!db) return [];
-
-  const { or } = await import('drizzle-orm');
 
   return db.select().from(historicalSales).where(
     and(
@@ -471,7 +397,7 @@ export async function getBrokerHistoricalSales(companyId: string, brokerName: st
 /**
  * Get historical sale by ID
  */
-export async function getHistoricalSaleById(id: string): Promise<HistoricalSale | null> {
+export async function getHistoricalSaleById(id: string) {
   const db = await getDb();
   if (!db) return null;
 
@@ -498,8 +424,7 @@ export async function countBrokerHistoricalSales(companyId: string, brokerName: 
   const db = await getDb();
   if (!db) return 0;
 
-  const { or, count } = await import('drizzle-orm');
-
+  const { count } = await import('drizzle-orm');
   const result = await db.select({ count: count() }).from(historicalSales).where(
     and(
       eq(historicalSales.companyId, companyId),
@@ -510,4 +435,26 @@ export async function countBrokerHistoricalSales(companyId: string, brokerName: 
     )
   );
   return result[0]?.count || 0;
+}
+
+/**
+ * Authenticate user with email and password
+ */
+export async function authenticateUser(email: string, password: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const user = await getUserByEmail(email);
+  if (!user || !user.password) return null;
+
+  const bcrypt = await import('bcryptjs');
+  const isValid = await bcrypt.compare(password, user.password);
+  
+  return isValid ? user : null;
+}
+
+// Password hashing helper
+export async function hashPassword(password: string): Promise<string> {
+  const bcrypt = await import('bcryptjs');
+  return bcrypt.hash(password, 10);
 }

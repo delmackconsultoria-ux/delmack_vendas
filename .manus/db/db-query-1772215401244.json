@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, email, name, role, companyId FROM users LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, name, role, companyId FROM users LIMIT 5;",
+  "rows": [
+    {
+      "id": "_NMODURqWYOCipgt",
+      "email": "sandra.lima@baggioimoveis.com.br",
+      "name": "Sandra Maria Alves de Lima Przybysz",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "2VInLmDh7hPrvuvj",
+      "email": "carolina.munhoz@baggioimoveis.com.br",
+      "name": "Maria Carolina Munhoz de Miranda Nicolodi",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "alPFDbR10pSjNbp0",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "name": "Edmar Antunes",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "bGIqIZHMpe-yBhds",
+      "email": "odair@baggioimoveis.com.br",
+      "name": "Odair Amancio",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "DaAbrQn5dHcHd89k",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "name": "Diego Ferreira dos Santos",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\trole\tcompanyId\n_NMODURqWYOCipgt\tsandra.lima@baggioimoveis.com.br\tSandra Maria Alves de Lima Przybysz\tbroker\tcompany_1766331506068\n2VInLmDh7hPrvuvj\tcarolina.munhoz@baggioimoveis.com.br\tMaria Carolina Munhoz de Miranda Nicolodi\tbroker\tcompany_1766331506068\nalPFDbR10pSjNbp0\tedmar.antunes@baggioimoveis.com.br\tEdmar Antunes\tbroker\tcompany_1766331506068\nbGIqIZHMpe-yBhds\todair@baggioimoveis.com.br\tOdair Amancio\tbroker\tcompany_1766331506068\nDaAbrQn5dHcHd89k\tdiego.ferreira@baggioimoveis.com.br\tDiego Ferreira dos Santos\tbroker\tcompany_1766331506068\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

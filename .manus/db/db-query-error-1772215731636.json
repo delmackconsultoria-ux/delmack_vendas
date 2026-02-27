@@ -1,0 +1,8 @@
+{
+  "query": "INSERT INTO sales (id, companyId, propertyId, buyerName, saleDate, saleValue, status, createdAt) \nSELECT CONCAT('sales_', id), companyId, CONCAT('prop_', id), 'Buyer', saleDate, salePrice, 'completed', createdAt \nFROM historicalSales \nWHERE companyId = 'company_test_001';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute INSERT INTO sales (id, companyId, propertyId, buyerName, saleDate, saleValue, status, createdAt) \nSELECT CONCAT('sales_', id), companyId, CONCAT('prop_', id), 'Buyer', saleDate, salePrice, 'completed', createdAt \nFROM historicalSales \nWHERE companyId = 'company_test_001';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1265 (01000) at line 1: Data truncated for column '%s' at row %d"
+  ]
+}

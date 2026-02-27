@@ -1,0 +1,17 @@
+{
+  "query": "\nSELECT \n  COUNT(*) as qtd_vendas,\n  SUM(saleValue) as valor_total,\n  AVG(saleValue) as ticket_medio,\n  SUM(totalCommission) as comissao_total,\n  AVG(totalCommission) as comissao_media\nFROM sales\nWHERE YEAR(saleDate) = 2026 AND MONTH(saleDate) = 1;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \nSELECT \n  COUNT(*) as qtd_vendas,\n  SUM(saleValue) as valor_total,\n  AVG(saleValue) as ticket_medio,\n  SUM(totalCommission) as comissao_total,\n  AVG(totalCommission) as comissao_media\nFROM sales\nWHERE YEAR(saleDate) = 2026 AND MONTH(saleDate) = 1;\n",
+  "rows": [
+    {
+      "qtd_vendas": "0",
+      "valor_total": "NULL",
+      "ticket_medio": "NULL",
+      "comissao_total": "NULL",
+      "comissao_media": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "qtd_vendas\tvalor_total\tticket_medio\tcomissao_total\tcomissao_media\n0\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

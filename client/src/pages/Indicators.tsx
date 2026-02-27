@@ -43,7 +43,7 @@ export default function Indicators() {
   // Buscar indicadores reais do backend
   const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getRealtimeIndicators.useQuery(
     {
-      companyId: user?.id || "",
+      companyId: user?.companyId || user?.id || "",
       month: parseInt(selectedMonth),
       year: parseInt(selectedYear),
     },
