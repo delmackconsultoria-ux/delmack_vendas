@@ -1,0 +1,70 @@
+{
+  "query": "SELECT chrStatus, isActive, chrPurpose, COUNT(*) as count FROM properfyProperties GROUP BY chrStatus, isActive, chrPurpose LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT chrStatus, isActive, chrPurpose, COUNT(*) as count FROM properfyProperties GROUP BY chrStatus, isActive, chrPurpose LIMIT 10;",
+  "rows": [
+    {
+      "chrStatus": "MAINTENANCE",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "6"
+    },
+    {
+      "chrStatus": "OWN_PROPERTY",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "37"
+    },
+    {
+      "chrStatus": "NEW_LISTING",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "4"
+    },
+    {
+      "chrStatus": "INITIAL_PREPARE",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "18"
+    },
+    {
+      "chrStatus": "INITIAL_DOC",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "2"
+    },
+    {
+      "chrStatus": "REMOVED",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "2401"
+    },
+    {
+      "chrStatus": "PROPOSAL",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "1"
+    },
+    {
+      "chrStatus": "LISTED",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "573"
+    },
+    {
+      "chrStatus": "INTERNAL",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "280"
+    },
+    {
+      "chrStatus": "RENTED",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "count": "1659"
+    }
+  ],
+  "messages": [],
+  "stdout": "chrStatus\tisActive\tchrPurpose\tcount\nMAINTENANCE\t0\tNULL\t6\nOWN_PROPERTY\t0\tNULL\t37\nNEW_LISTING\t0\tNULL\t4\nINITIAL_PREPARE\t0\tNULL\t18\nINITIAL_DOC\t0\tNULL\t2\nREMOVED\t0\tNULL\t2401\nPROPOSAL\t0\tNULL\t1\nLISTED\t0\tNULL\t573\nINTERNAL\t0\tNULL\t280\nRENTED\t0\tNULL\t1659\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

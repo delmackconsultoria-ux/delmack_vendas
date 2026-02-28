@@ -16,6 +16,7 @@ import { protectedProcedure, router } from "./_core/trpc";
 import { createProperfyService } from "./properfy";
 import { TRPCError } from "@trpc/server";
 import { getListingRejections } from "./services/properfyService";
+import { runProperfySyncJob } from "./jobs/properfySyncJob";
 
 export const properfyRouter = router({
   /**
@@ -343,6 +344,31 @@ export const properfyRouter = router({
         };
       }
     }),
+
+  /**
+   * Sincronizar propriedades do Properfy manualmente
+   * Usado para atualizar a carteira de imóveis
+   */
+  syncProperties: protectedProcedure.mutation(async ({ ctx }) => {
+    try {
+      console.log(`[Properfy] Sincronização manual iniciada por ${ctx.user?.email}`);
+      
+      const result = await runProperfySyncJob();
+      
+      return {
+        success: true,
+        message: "Sincronização iniciada com sucesso",
+        result
+      };
+    } catch (error) {
+      console.error("[Properfy Router] Erro ao sincronizar:", error);
+      
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Erro ao sincronizar propriedades do Properfy",
+      });
+    }
+  }),
 
   /**
    * Buscar baixas de angariação (listing rejections)
