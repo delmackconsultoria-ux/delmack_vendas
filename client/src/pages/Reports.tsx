@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/AppHeader";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, TrendingUp, Download, AlertCircle } from "lucide-react";
 import { useState } from "react";
@@ -48,13 +49,23 @@ export default function ReportsPage() {
   );
 
   // Buscar dados reais de vendas da empresa (apenas se não usar histórico)
-  const { data: salesData } = trpc.sales.listMySales.useQuery(undefined, {
+  const { data: salesData, isLoading: salesLoading } = trpc.sales.listMySales.useQuery(undefined, {
     enabled: !hasHistoricalData,
   });
   const sales = salesData?.sales || [];
   const { data: brokers = [] } = trpc.brokers.list.useQuery();
+  
+  // Debug
+  React.useEffect(() => {
+    console.log('[Reports] salesData:', salesData);
+    console.log('[Reports] sales array:', sales);
+    console.log('[Reports] sales.length:', sales.length);
+    console.log('[Reports] hasHistoricalData:', hasHistoricalData);
+    console.log('[Reports] salesLoading:', salesLoading);
+  }, [salesData, sales, hasHistoricalData, salesLoading]);
 
   // Calcular dados agregados por corretor
+  console.log('[Reports] brokers:', brokers);
   const salesByBroker = brokers.map((broker: any) => {
     // Vendas onde o corretor é vendedor OU angariador
     const brokerSales = sales.filter((s: any) => 
@@ -90,6 +101,15 @@ export default function ReportsPage() {
   const totalAngariações = salesByBroker.reduce((sum: number, b: any) => sum + b.angariações, 0);
   const totalQtdAngariações = salesByBroker.reduce((sum: number, b: any) => sum + b.qtdAngariações, 0);
   const totalQtdBaixas = salesByBroker.reduce((sum: number, b: any) => sum + b.qtdBaixas, 0);
+  
+  console.log('[Reports] brokers.length:', brokers.length);
+  console.log('[Reports] salesByBroker:', salesByBroker);
+  console.log('[Reports] totalVendas:', totalVendas, 'totalAngariações:', totalAngariações);
+  
+  // Debug: Verificar se há dados nas vendas
+  if (sales.length > 0) {
+    console.log('[Reports] Primeira venda:', sales[0]);
+  }
 
   // Determinar dados a exibir baseado no filtro
   const getChartData = () => {
@@ -349,7 +369,14 @@ export default function ReportsPage() {
             </Card>
           )}
 
-          {!hasData ? (
+          {salesLoading ? (
+            <Card className="border-0 shadow-md">
+              <CardContent className="py-16 text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <h3 className="text-xl font-semibold text-slate-700 mb-2">Carregando dados...</h3>
+              </CardContent>
+            </Card>
+          ) : !hasData ? (
             <Card className="border-0 shadow-md">
               <CardContent className="py-16 text-center">
                 <AlertCircle className="h-16 w-16 text-slate-300 mx-auto mb-4" />

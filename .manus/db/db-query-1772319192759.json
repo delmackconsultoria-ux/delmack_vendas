@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, name, email, role, companyId FROM users WHERE email = 'gerente@delmack.com'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role, companyId FROM users WHERE email = 'gerente@delmack.com'",
+  "rows": [
+    {
+      "id": "user_manager_001",
+      "name": "Gerente Teste",
+      "email": "gerente@delmack.com",
+      "role": "manager",
+      "companyId": "company_test_001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tcompanyId\nuser_manager_001\tGerente Teste\tgerente@delmack.com\tmanager\tcompany_test_001\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}

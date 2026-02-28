@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE sales SET brokerVendedor = 'broker_001', brokerAngariador = 'broker_002' WHERE id IN ('sales_2024_001', 'sales_2024_002', 'sales_2024_003', 'sales_2024_004', 'sales_2024_005');\nUPDATE sales SET brokerVendedor = 'broker_002', brokerAngariador = 'broker_003' WHERE id IN ('sales_2024_006', 'sales_2024_007', 'sales_2024_008', 'sales_2024_009', 'sales_2024_010')",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute UPDATE sales SET brokerVendedor = 'broker_001', brokerAngariador = 'broker_002' WHERE id IN ('sales_2024_001', 'sales_2024_002', 'sales_2024_003', 'sales_2024_004', 'sales_2024_005');\nUPDATE sales SET brokerVendedor = 'broker_002', brokerAngariador = 'broker_003' WHERE id IN ('sales_2024_006', 'sales_2024_007', 'sales_2024_008', 'sales_2024_009', 'sales_2024_010')",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 61
+}
