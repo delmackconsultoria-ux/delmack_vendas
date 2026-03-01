@@ -1,0 +1,154 @@
+{
+  "query": "SELECT YEAR(saleDate) as ano, MONTH(saleDate) as mes, COUNT(*) as total_vendas, SUM(saleValue) as total_valor FROM sales GROUP BY YEAR(saleDate), MONTH(saleDate) ORDER BY ano DESC, mes DESC",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT YEAR(saleDate) as ano, MONTH(saleDate) as mes, COUNT(*) as total_vendas, SUM(saleValue) as total_valor FROM sales GROUP BY YEAR(saleDate), MONTH(saleDate) ORDER BY ano DESC, mes DESC",
+  "rows": [
+    {
+      "ano": "2026",
+      "mes": "2",
+      "total_vendas": "1",
+      "total_valor": "0.00"
+    },
+    {
+      "ano": "2026",
+      "mes": "1",
+      "total_vendas": "2",
+      "total_valor": "1200000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "12",
+      "total_vendas": "11",
+      "total_valor": "62477.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "11",
+      "total_vendas": "2",
+      "total_valor": "1500000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "10",
+      "total_vendas": "3",
+      "total_valor": "543887.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "7",
+      "total_vendas": "14",
+      "total_valor": "7447000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "6",
+      "total_vendas": "8",
+      "total_valor": "6068028.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "5",
+      "total_vendas": "12",
+      "total_valor": "7025000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "4",
+      "total_vendas": "3",
+      "total_valor": "2532500.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "3",
+      "total_vendas": "6",
+      "total_valor": "2735000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "2",
+      "total_vendas": "11",
+      "total_valor": "5811000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "1",
+      "total_vendas": "17",
+      "total_valor": "10447800.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "12",
+      "total_vendas": "4",
+      "total_valor": "5525000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "11",
+      "total_vendas": "6",
+      "total_valor": "3559500.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "10",
+      "total_vendas": "9",
+      "total_valor": "3765000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "9",
+      "total_vendas": "5",
+      "total_valor": "2620000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "8",
+      "total_vendas": "8",
+      "total_valor": "7505000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "7",
+      "total_vendas": "5",
+      "total_valor": "1975000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "6",
+      "total_vendas": "14",
+      "total_valor": "8105000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "5",
+      "total_vendas": "10",
+      "total_valor": "6405000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "4",
+      "total_vendas": "10",
+      "total_valor": "8835000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "3",
+      "total_vendas": "11",
+      "total_valor": "5379000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "2",
+      "total_vendas": "6",
+      "total_valor": "1861000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "1",
+      "total_vendas": "9",
+      "total_valor": "4110000.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "ano\tmes\ttotal_vendas\ttotal_valor\n2026\t2\t1\t0.00\n2026\t1\t2\t1200000.00\n2025\t12\t11\t62477.00\n2025\t11\t2\t1500000.00\n2025\t10\t3\t543887.00\n2025\t7\t14\t7447000.00\n2025\t6\t8\t6068028.00\n2025\t5\t12\t7025000.00\n2025\t4\t3\t2532500.00\n2025\t3\t6\t2735000.00\n2025\t2\t11\t5811000.00\n2025\t1\t17\t10447800.00\n2024\t12\t4\t5525000.00\n2024\t11\t6\t3559500.00\n2024\t10\t9\t3765000.00\n2024\t9\t5\t2620000.00\n2024\t8\t8\t7505000.00\n2024\t7\t5\t1975000.00\n2024\t6\t14\t8105000.00\n2024\t5\t10\t6405000.00\n2024\t4\t10\t8835000.00\n2024\t3\t11\t5379000.00\n2024\t2\t6\t1861000.00\n2024\t1\t9\t4110000.00\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

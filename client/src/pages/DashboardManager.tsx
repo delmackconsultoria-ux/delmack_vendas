@@ -29,25 +29,7 @@ export default function DashboardManager() {
     return null;
   }
 
-  // Verificar se é empresa de Testes para mostrar dados mock
-  const isTestCompany = user?.companyName?.toLowerCase().includes("testes") || user?.companyName?.toLowerCase().includes("teste");
-
-  // Dados mock para performance da equipe (apenas para empresa de testes)
-  const teamPerformance = isTestCompany ? [
-    { name: "João Silva", vendas: 12, comissoes: 45000, meta: 50000 },
-    { name: "Maria Santos", vendas: 8, comissoes: 35000, meta: 50000 },
-    { name: "Pedro Costa", vendas: 15, comissoes: 65000, meta: 50000 },
-  ] : [];
-
-  // Dados mock para evolução de vendas (apenas para empresa de testes)
-  const salesEvolution = isTestCompany ? [
-    { mes: "Jan", vendas: 8, angariações: 15, canceladas: 2 },
-    { mes: "Fev", vendas: 12, angariações: 18, canceladas: 1 },
-    { mes: "Mar", vendas: 15, angariações: 22, canceladas: 3 },
-    { mes: "Abr", vendas: 18, angariações: 25, canceladas: 2 },
-    { mes: "Mai", vendas: 22, angariações: 28, canceladas: 4 },
-    { mes: "Jun", vendas: 25, angariações: 32, canceladas: 3 },
-  ] : [];
+  // Dados mock removidos - usar dados reais do backend quando disponível
 
   return (
     <>
@@ -63,16 +45,7 @@ export default function DashboardManager() {
             </p>
           </div>
 
-          {/* Aviso de dados vazios */}
-          {!isTestCompany && (
-            <div className="mb-8 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-amber-800 font-medium">Nenhum dado cadastrado para esta empresa.</p>
-                <p className="text-amber-700 text-sm mt-1">Os dados serão exibidos quando houver vendas registradas.</p>
-              </div>
-            </div>
-          )}
+          {/* Aviso de dados vazios - removido, agora mostra dados reais */}
 
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -168,10 +141,28 @@ export default function DashboardManager() {
                 <p className="text-xs text-slate-600 mt-2">Este mês</p>
               </CardContent>
             </Card>
+
+            {/* Carteira Ativa */}
+            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <Users className="h-4 w-4 text-indigo-600" />
+                  Carteira Ativa
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoadingKPIs ? (
+                  <p className="text-3xl font-bold text-slate-400">...</p>
+                ) : (
+                  <p className="text-3xl font-bold text-slate-900">{kpis?.activePortfolio || 0}</p>
+                )}
+                <p className="text-xs text-slate-600 mt-2">Imóveis ativos</p>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Charts - apenas para empresa de testes */}
-          {isTestCompany && (
+          {/* Charts - Removido dados mock, será implementado com dados reais */}
+          {false && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Team Performance */}
               <Card className="border-0 shadow-md">

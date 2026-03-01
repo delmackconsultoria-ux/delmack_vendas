@@ -1,0 +1,64 @@
+{
+  "query": "SELECT YEAR(saleDate) as ano, MONTH(saleDate) as mes, COUNT(*) as total_vendas, SUM(salePrice) as total_valor FROM historicalSales GROUP BY YEAR(saleDate), MONTH(saleDate) ORDER BY ano DESC, mes DESC",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT YEAR(saleDate) as ano, MONTH(saleDate) as mes, COUNT(*) as total_vendas, SUM(salePrice) as total_valor FROM historicalSales GROUP BY YEAR(saleDate), MONTH(saleDate) ORDER BY ano DESC, mes DESC",
+  "rows": [
+    {
+      "ano": "2026",
+      "mes": "1",
+      "total_vendas": "2",
+      "total_valor": "1200000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "3",
+      "total_vendas": "1",
+      "total_valor": "900000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "2",
+      "total_vendas": "1",
+      "total_valor": "800000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "1",
+      "total_vendas": "1",
+      "total_valor": "700000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "5",
+      "total_vendas": "1",
+      "total_valor": "650000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "4",
+      "total_vendas": "1",
+      "total_valor": "550000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "3",
+      "total_vendas": "1",
+      "total_valor": "750000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "2",
+      "total_vendas": "1",
+      "total_valor": "600000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "1",
+      "total_vendas": "1",
+      "total_valor": "500000.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "ano\tmes\ttotal_vendas\ttotal_valor\n2026\t1\t2\t1200000.00\n2025\t3\t1\t900000.00\n2025\t2\t1\t800000.00\n2025\t1\t1\t700000.00\n2024\t5\t1\t650000.00\n2024\t4\t1\t550000.00\n2024\t3\t1\t750000.00\n2024\t2\t1\t600000.00\n2024\t1\t1\t500000.00\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

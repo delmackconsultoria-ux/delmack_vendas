@@ -4,6 +4,7 @@ import {
   calculateMonthlySalesCount,
   calculateMonthlyAverageTicket,
   calculateReceivedCommissions,
+  calculateActivePortfolio,
 } from "../dashboardHelpers";
 
 export const dashboardRouter = router({
@@ -23,11 +24,12 @@ export const dashboardRouter = router({
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
-    const [vgv, salesCount, averageTicket, receivedCommissions] = await Promise.all([
+    const [vgv, salesCount, averageTicket, receivedCommissions, activePortfolio] = await Promise.all([
       calculateMonthlyVGV(companyId, month, year),
       calculateMonthlySalesCount(companyId, month, year),
       calculateMonthlyAverageTicket(companyId, month, year),
       calculateReceivedCommissions(companyId, month, year),
+      calculateActivePortfolio(companyId),
     ]);
 
     return {
@@ -35,6 +37,7 @@ export const dashboardRouter = router({
       salesCount,
       averageTicket,
       receivedCommissions,
+      activePortfolio,
     };
   }),
 });

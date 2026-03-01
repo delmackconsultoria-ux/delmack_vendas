@@ -1,0 +1,14 @@
+{
+  "query": "SELECT COUNT(*) as total_propriedades, SUM(CASE WHEN chrStatus = 'LISTED' THEN 1 ELSE 0 END) as ativas FROM properfyProperties WHERE isActive = 1 LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_propriedades, SUM(CASE WHEN chrStatus = 'LISTED' THEN 1 ELSE 0 END) as ativas FROM properfyProperties WHERE isActive = 1 LIMIT 1",
+  "rows": [
+    {
+      "total_propriedades": "0",
+      "ativas": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_propriedades\tativas\n0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 89
+}
