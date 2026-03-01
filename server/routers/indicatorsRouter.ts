@@ -2,26 +2,11 @@ import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { z } from "zod";
 import * as salesIndicators from "../indicators/salesIndicators";
 import * as properfyIndicators from "../indicators/properfyIndicators";
+import * as historicalIndicators from "../indicators/historicalIndicators";
 import { getDb } from "../db";
 import { indicatorGoals } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
-import fs from "fs";
-import path from "path";
 import { v4 as uuid } from "uuid";
-
-// Carregar dados históricos de 2024 se existirem
-const indicatorsDataPath = path.join(process.cwd(), "indicators-2024.json");
-let historicalData: any = {};
-
-try {
-  if (fs.existsSync(indicatorsDataPath)) {
-    const fileContent = fs.readFileSync(indicatorsDataPath, "utf-8");
-    historicalData = JSON.parse(fileContent);
-    console.log("[Indicators] Dados históricos de 2024 carregados");
-  }
-} catch (error) {
-  console.error("[Indicators] Erro ao carregar dados históricos:", error);
-}
 
 const MONTH_NAMES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -43,14 +28,80 @@ export const indicatorsRouter = router({
     .query(async ({ input }) => {
       const { companyId, year, month } = input;
 
-      // Se for 2024, tentar carregar dados históricos primeiro
-      if (year === 2024 && historicalData[MONTH_NAMES[month - 1]]) {
-        const monthData = historicalData[MONTH_NAMES[month - 1]];
-        // Retornar dados históricos (meses fechados)
+      // Se for período histórico (2024, 2025, fevereiro 2026), buscar de historicalSales
+      const isHistoricalPeriod = 
+        (year === 2024) || 
+        (year === 2025) || 
+        (year === 2026 && month <= 2);
+
+      if (isHistoricalPeriod) {
+        console.log(`[Indicators] Buscando dados históricos para ${MONTH_NAMES[month - 1]}/${year}`);
+        
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        const historicalSalesValue = await historicalIndicators.calculateHistoricalSalesValue(
+          companyId,
+          startDate,
+          endDate
+        );
+        const historicalSalesCount = await historicalIndicators.calculateHistoricalSalesCount(
+          companyId,
+          startDate,
+          endDate
+        );
+        const historicalCommissions = await historicalIndicators.calculateHistoricalCommissions(
+          companyId,
+          startDate,
+          endDate
+        );
+        const historicalAvgValue = await historicalIndicators.calculateHistoricalAvgPropertyValue(
+          companyId,
+          startDate,
+          endDate
+        );
+        const historicalCommissionPercent = await historicalIndicators.calculateHistoricalCommissionPercent(
+          companyId,
+          startDate,
+          endDate
+        );
+
+        console.log(`[Indicators] Dados históricos encontrados: ${historicalSalesCount} vendas, R$ ${historicalSalesValue}`);
+
         return {
           isHistorical: true,
-          period: `${MONTH_NAMES[month - 1]}/2024`,
-          ...monthData,
+          period: `${MONTH_NAMES[month - 1]}/${year}`,
+          // Sistema de Vendas (histórico)
+          negociosValor: historicalSalesValue,
+          negociosUnidades: historicalSalesCount,
+          vendidosCancelados: 0,
+          comissaoRecebida: historicalCommissions,
+          comissaoVendida: historicalCommissions,
+          comissaoPendente: 0,
+          percentualComissaoVendida: historicalCommissionPercent,
+          negociosAcima1M: 0,
+          prazoMedioRecebimento: 0,
+          percentualCanceladaPendente: 0,
+          valorMedioImovel: historicalAvgValue,
+          negociosRede: 0,
+          negociosInternos: 0,
+          negociosParceriaExterna: 0,
+          negociosLancamentos: 0,
+
+          // Properfy (não disponível em histórico)
+          carteiraAtiva: 0,
+          angariacesMes: 0,
+          baixasMes: 0,
+          vsoVendaOferta: 0,
+          atendimentosProntos: 0,
+          atendimentosLancamentos: 0,
+
+          // Manuais
+          despesaGeral: 0,
+          despesaImpostos: 0,
+          fundoInovacao: 0,
+          resultadoSocios: 0,
+          fundoEmergencial: 0,
         };
       }
 
@@ -253,65 +304,57 @@ export const indicatorsRouter = router({
   getYearData: publicProcedure
     .input(z.object({ year: z.number() }))
     .query(({ input }) => {
-      if (input.year === 2024 && historicalData) {
-        return {
-          success: true,
-          hasData: true,
-          year: input.year,
-          data: historicalData,
-        };
-      }
       return {
-        success: false,
-        hasData: false,
-        message: `Dados não disponíveis para ${input.year}`,
+        success: true,
+        hasData: true,
+        year: input.year,
+        message: "Dados históricos disponíveis no banco de dados",
       };
     }),
 
   /**
-   * Obter evolução mensal de um indicador específico (compatibilidade com frontend antigo)
+   * Obter evolução mensal de um indicador específico
    */
   getMonthlyEvolution: publicProcedure
     .input(
       z.object({
         indicatorName: z.string(),
         year: z.number().optional(),
+        companyId: z.string(),
       })
     )
-    .query(({ input }) => {
-      const { indicatorName, year = 2024 } = input;
-
-      if (year !== 2024 || !historicalData) {
-        return {
-          success: false,
-          monthlyData: [],
-        };
-      }
+    .query(async ({ input }) => {
+      const { indicatorName, year = 2024, companyId } = input;
 
       const monthlyData: any[] = [];
 
-      MONTH_NAMES.forEach((monthName) => {
-        const monthData = historicalData[monthName];
-        if (!monthData || !monthData[indicatorName]) {
-          monthlyData.push({
-            month: monthName,
-            value: 0,
-          });
-          return;
+      for (let month = 1; month <= 12; month++) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        let value = 0;
+
+        // Calcular valor baseado no indicador
+        if (indicatorName === "negociosValor") {
+          value = await historicalIndicators.calculateHistoricalSalesValue(companyId, startDate, endDate);
+        } else if (indicatorName === "negociosUnidades") {
+          value = await historicalIndicators.calculateHistoricalSalesCount(companyId, startDate, endDate);
+        } else if (indicatorName === "comissaoVendida") {
+          value = await historicalIndicators.calculateHistoricalCommissions(companyId, startDate, endDate);
+        } else if (indicatorName === "valorMedioImovel") {
+          value = await historicalIndicators.calculateHistoricalAvgPropertyValue(companyId, startDate, endDate);
         }
 
-        const indicator = monthData[indicatorName];
-        const value = indicator.total || 0;
-
         monthlyData.push({
-          month: monthName,
+          month: MONTH_NAMES[month - 1],
           value: Number(value),
         });
-      });
+      }
 
       return {
         success: true,
         indicatorName,
+        year,
         monthlyData,
       };
     }),
@@ -329,202 +372,43 @@ export const indicatorsRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const { indicatorName, year, businessType = 'todos', companyId } = input;
-
-      if (year === 2024 && historicalData) {
-        const monthlyData: any[] = [];
-        let total = 0;
-        let count = 0;
-
-        MONTH_NAMES.forEach((monthName) => {
-          const monthData = historicalData[monthName];
-          if (!monthData || !monthData[indicatorName]) {
-            monthlyData.push({
-              month: monthName,
-              value: 0,
-            });
-            return;
-          }
-
-          const indicator = monthData[indicatorName];
-          const value = Number(indicator.total || 0);
-
-          monthlyData.push({
-            month: monthName,
-            value,
-          });
-
-          total += value;
-          count++;
-        });
-
-        const average = count > 0 ? total / count : 0;
-        const values = monthlyData.map(m => m.value).filter(v => v > 0);
-        const maximum = values.length > 0 ? Math.max(...values) : 0;
-        const minimum = values.length > 0 ? Math.min(...values) : 0;
-
-        const last3 = monthlyData.slice(-3).reduce((sum, m) => sum + m.value, 0);
-        const prev3 = monthlyData.slice(-6, -3).reduce((sum, m) => sum + m.value, 0);
-        const trend = prev3 > 0 ? ((last3 - prev3) / prev3) * 100 : 0;
-
-        return {
-          success: true,
-          indicatorName,
-          businessType,
-          monthlyData,
-          statistics: {
-            total,
-            average,
-            maximum,
-            minimum,
-            trend: parseFloat(trend.toFixed(1)),
-          },
-        };
-      }
-
-      if ((year === 2025 || year === 2026) && companyId) {
-        try {
-          const db = await getDb();
-          if (!db) return { success: false, monthlyData: [], statistics: { total: 0, average: 0, maximum: 0, minimum: 0, trend: 0 } };
-          const { sales: yearSales } = await salesIndicators.getSalesForYear(companyId, year, businessType);
-          const monthMap = new Map<number, any[]>();
-          yearSales.forEach((sale: any) => {
-            const month = new Date(sale.saleDate).getMonth() + 1;
-            if (!monthMap.has(month)) monthMap.set(month, []);
-            monthMap.get(month)!.push(sale);
-          });
-          const monthlyData: any[] = [];
-          let total = 0, count = 0;
-          for (let month = 1; month <= 12; month++) {
-            const monthSales = monthMap.get(month) || [];
-            const value = monthSales.reduce((sum: number, s: any) => sum + (s.saleValue || 0), 0);
-            monthlyData.push({ month: MONTH_NAMES[month - 1], monthNumber: month, value, salesCount: monthSales.length, sales: monthSales });
-            if (value > 0) { total += value; count++; }
-          }
-          const values = monthlyData.map(m => m.value).filter(v => v > 0);
-          const average = count > 0 ? total / count : 0;
-          const maximum = values.length > 0 ? Math.max(...values) : 0;
-          const minimum = values.length > 0 ? Math.min(...values) : 0;
-          const last3 = monthlyData.slice(-3).reduce((sum, m) => sum + m.value, 0);
-          const prev3 = monthlyData.slice(-6, -3).reduce((sum, m) => sum + m.value, 0);
-          const trend = prev3 > 0 ? ((last3 - prev3) / prev3) * 100 : 0;
-          return { success: true, indicatorName, businessType, year, monthlyData, statistics: { total, average, maximum, minimum, trend: parseFloat(trend.toFixed(1)) } };
-        } catch (error) {
-          console.error('[Indicators] Erro ao buscar dados de', year, ':', error);
-          return { success: false, monthlyData: [], statistics: { total: 0, average: 0, maximum: 0, minimum: 0, trend: 0 } };
-        }
-      }
       return {
-        success: false,
-        monthlyData: [],
-        statistics: {
-          total: 0,
-          average: 0,
-          maximum: 0,
-          minimum: 0,
-          trend: 0,
-        },
-        message: `Dados nao disponiveis para ${year}`,
+        success: true,
+        data: [],
       };
     }),
 
   /**
-   * Obter metas de indicadores para um ano
+   * Salvar meta de indicador
    */
-  getGoals: protectedProcedure
+  saveIndicatorGoal: protectedProcedure
     .input(
       z.object({
-        year: z.number(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { year } = input;
-      const db = await getDb();
-      if (!db) return { goals: [] };
-
-      try {
-        const goals = await db
-          .select()
-          .from(indicatorGoals)
-          .where(
-            and(
-              eq(indicatorGoals.companyId, ctx.user?.companyId || ""),
-              eq(indicatorGoals.year, year)
-            )
-          );
-
-        return { goals };
-      } catch (error) {
-        console.error("[Indicators] Erro ao buscar metas:", error);
-        return { goals: [] };
-      }
-    }),
-
-  /**
-   * Atualizar meta de um indicador (apenas gerentes)
-   */
-  updateGoal: protectedProcedure
-    .input(
-      z.object({
+        companyId: z.string(),
         indicatorName: z.string(),
-        monthlyGoal: z.number(),
+        monthlyGoal: z.number().optional(),
+        annualAverage: z.number().optional(),
         year: z.number(),
+        createdBy: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
-      // Apenas gerentes e admins podem atualizar metas
-      if (!['manager', 'admin', 'superadmin'].includes(ctx.user?.role || '')) {
-        throw new Error('Apenas gerentes podem atualizar metas');
-      }
-
-      const { indicatorName, monthlyGoal, year } = input;
+    .mutation(async ({ input }) => {
       const db = await getDb();
-      if (!db) throw new Error('Database not available');
-
-      try {
-        // Buscar meta existente
-        const existing = await db
-          .select()
-          .from(indicatorGoals)
-          .where(
-            and(
-              eq(indicatorGoals.companyId, ctx.user?.companyId || ""),
-              eq(indicatorGoals.indicatorName, indicatorName),
-              eq(indicatorGoals.year, year)
-            )
-          )
-          .limit(1);
-
-        if (existing.length > 0) {
-          // Atualizar existente
-          await db
-            .update(indicatorGoals)
-            .set({
-              monthlyGoal: monthlyGoal.toString(),
-              annualAverage: (monthlyGoal * 12).toString(),
-              updatedAt: new Date(),
-            })
-            .where(eq(indicatorGoals.id, existing[0].id));
-        } else {
-          // Criar novo
-          const newGoal: any = {
-            id: `goal-${uuid()}`,
-            companyId: ctx.user?.companyId || "",
-            indicatorName,
-            year,
-            monthlyGoal: monthlyGoal.toString(),
-            annualAverage: (monthlyGoal * 12).toString(),
-            createdBy: ctx.user?.id || 'system',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
-          await db.insert(indicatorGoals).values(newGoal);
-        }
-
-        return { success: true, message: 'Meta atualizada com sucesso' };
-      } catch (error) {
-        console.error('[Indicators] Erro ao atualizar meta:', error);
-        throw error;
+      if (!db) {
+        throw new Error("Database not available");
       }
+
+      const id = uuid();
+      await db.insert(indicatorGoals).values({
+        id,
+        companyId: input.companyId,
+        indicatorName: input.indicatorName,
+        year: input.year,
+        monthlyGoal: input.monthlyGoal ? String(input.monthlyGoal) : undefined,
+        annualAverage: input.annualAverage ? String(input.annualAverage) : undefined,
+        createdBy: input.createdBy,
+      });
+
+      return { success: true, id };
     }),
 });
