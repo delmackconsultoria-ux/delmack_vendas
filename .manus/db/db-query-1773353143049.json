@@ -1,0 +1,317 @@
+{
+  "query": "DESCRIBE properfyProperties; SELECT COUNT(*) as total FROM properfyProperties;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute DESCRIBE properfyProperties; SELECT COUNT(*) as total FROM properfyProperties;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrReference",
+      "Type": "varchar(100)",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrInnerReference",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrType",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrStatus",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrTransactionType",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmAreaTotal",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmAreaPrivate",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmAreaUsable",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmAreaBuilt",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "intRooms",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "intBedrooms",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "intSuites",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "intBathrooms",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "intGarage",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmSale",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmRentNetValue",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmCondoValue",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dcmPropertyTax",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressPostalCode",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressStreet",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressNumber",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressComplement",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressNeighborhood",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressCity",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressCityCode",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrAddressState",
+      "Type": "varchar(2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "chrCondoName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "fkCondo",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "intBuiltYear",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "intFloors",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "lastSyncedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "isActive",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "chrPurpose",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dteNewListing",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dteTermination",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [
+    "total",
+    "5072"
+  ],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\t\nchrReference\tvarchar(100)\tNO\tMUL\tNULL\t\nchrInnerReference\tvarchar(100)\tYES\t\tNULL\t\nchrType\tvarchar(50)\tYES\t\tNULL\t\nchrStatus\tvarchar(50)\tYES\t\tNULL\t\nchrTransactionType\tvarchar(50)\tYES\t\tNULL\t\ndcmAreaTotal\tdecimal(10,2)\tYES\t\tNULL\t\ndcmAreaPrivate\tdecimal(10,2)\tYES\t\tNULL\t\ndcmAreaUsable\tdecimal(10,2)\tYES\t\tNULL\t\ndcmAreaBuilt\tdecimal(10,2)\tYES\t\tNULL\t\nintRooms\tint\tYES\t\tNULL\t\nintBedrooms\tint\tYES\t\tNULL\t\nintSuites\tint\tYES\t\tNULL\t\nintBathrooms\tint\tYES\t\tNULL\t\nintGarage\tint\tYES\t\tNULL\t\ndcmSale\tdecimal(15,2)\tYES\t\tNULL\t\ndcmRentNetValue\tdecimal(15,2)\tYES\t\tNULL\t\ndcmCondoValue\tdecimal(15,2)\tYES\t\tNULL\t\ndcmPropertyTax\tdecimal(15,2)\tYES\t\tNULL\t\nchrAddressPostalCode\tvarchar(20)\tYES\tMUL\tNULL\t\nchrAddressStreet\ttext\tYES\t\tNULL\t\nchrAddressNumber\tvarchar(20)\tYES\t\tNULL\t\nchrAddressComplement\tvarchar(255)\tYES\t\tNULL\t\nchrAddressNeighborhood\tvarchar(255)\tYES\t\tNULL\t\nchrAddressCity\tvarchar(255)\tYES\t\tNULL\t\nchrAddressCityCode\tvarchar(20)\tYES\tMUL\tNULL\t\nchrAddressState\tvarchar(2)\tYES\t\tNULL\t\nchrCondoName\tvarchar(255)\tYES\t\tNULL\t\nfkCondo\tint\tYES\t\tNULL\t\nintBuiltYear\tint\tYES\t\tNULL\t\nintFloors\tint\tYES\t\tNULL\t\nlastSyncedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\t\ncreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nisActive\tint\tYES\t\t0\t\nchrPurpose\tvarchar(100)\tYES\t\tNULL\t\ndteNewListing\ttimestamp\tYES\t\tNULL\t\ndteTermination\ttimestamp\tYES\t\tNULL\t\ntotal\n5072\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

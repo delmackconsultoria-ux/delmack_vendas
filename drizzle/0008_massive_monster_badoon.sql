@@ -1,1 +1,0 @@
-ALTER TABLE `actionLogs` MODIFY COLUMN `action` enum('create','update','delete','activate','deactivate','login','reset_password','block_user','unblock_user') NOT NULL;

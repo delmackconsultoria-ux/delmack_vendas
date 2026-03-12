@@ -1,1 +1,0 @@
-ALTER TABLE `companies` ADD `tradeName` varchar(255);

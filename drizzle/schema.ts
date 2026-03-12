@@ -785,6 +785,9 @@ export const properfyProperties = mysqlTable("properfyProperties", {
   intBuiltYear: int("intBuiltYear"),
   intFloors: int("intFloors"),
   
+  // Company/Imobiliária
+  companyId: varchar("companyId", { length: 64 }), // Baggio company reference
+  
   // Indicadores
   chrPurpose: varchar("chrPurpose", { length: 50 }), // SALE, RENT, etc
   isActive: int("isActive").default(1), // 1 = ativo, 0 = inativo

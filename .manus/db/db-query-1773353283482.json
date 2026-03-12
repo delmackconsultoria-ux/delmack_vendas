@@ -1,0 +1,17 @@
+{
+  "query": "SELECT \n  COUNT(*) as total_properties,\n  SUM(CASE WHEN chrStatus = 'LISTED' AND chrPurpose = 'SALE' THEN 1 ELSE 0 END) as active_for_sale,\n  SUM(CASE WHEN dteNewListing >= DATE_SUB(NOW(), INTERVAL 1 MONTH) THEN 1 ELSE 0 END) as angariacoes_mes,\n  SUM(CASE WHEN dteTermination >= DATE_SUB(NOW(), INTERVAL 1 MONTH) THEN 1 ELSE 0 END) as baixas_mes,\n  AVG(dcmSale) as valor_medio\nFROM properfyProperties \nWHERE companyId = 'company_1766331506068';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  COUNT(*) as total_properties,\n  SUM(CASE WHEN chrStatus = 'LISTED' AND chrPurpose = 'SALE' THEN 1 ELSE 0 END) as active_for_sale,\n  SUM(CASE WHEN dteNewListing >= DATE_SUB(NOW(), INTERVAL 1 MONTH) THEN 1 ELSE 0 END) as angariacoes_mes,\n  SUM(CASE WHEN dteTermination >= DATE_SUB(NOW(), INTERVAL 1 MONTH) THEN 1 ELSE 0 END) as baixas_mes,\n  AVG(dcmSale) as valor_medio\nFROM properfyProperties \nWHERE companyId = 'company_1766331506068';",
+  "rows": [
+    {
+      "total_properties": "5072",
+      "active_for_sale": "0",
+      "angariacoes_mes": "0",
+      "baixas_mes": "0",
+      "valor_medio": "492794.727522"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_properties\tactive_for_sale\tangariacoes_mes\tbaixas_mes\tvalor_medio\n5072\t0\t0\t0\t492794.727522\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

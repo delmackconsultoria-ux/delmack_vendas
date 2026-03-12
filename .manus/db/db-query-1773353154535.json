@@ -1,0 +1,124 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'properfyProperties' AND TABLE_SCHEMA = DATABASE();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'properfyProperties' AND TABLE_SCHEMA = DATABASE();",
+  "rows": [
+    {
+      "COLUMN_NAME": "id"
+    },
+    {
+      "COLUMN_NAME": "chrReference"
+    },
+    {
+      "COLUMN_NAME": "chrInnerReference"
+    },
+    {
+      "COLUMN_NAME": "chrType"
+    },
+    {
+      "COLUMN_NAME": "chrStatus"
+    },
+    {
+      "COLUMN_NAME": "chrTransactionType"
+    },
+    {
+      "COLUMN_NAME": "dcmAreaTotal"
+    },
+    {
+      "COLUMN_NAME": "dcmAreaPrivate"
+    },
+    {
+      "COLUMN_NAME": "dcmAreaUsable"
+    },
+    {
+      "COLUMN_NAME": "dcmAreaBuilt"
+    },
+    {
+      "COLUMN_NAME": "intRooms"
+    },
+    {
+      "COLUMN_NAME": "intBedrooms"
+    },
+    {
+      "COLUMN_NAME": "intSuites"
+    },
+    {
+      "COLUMN_NAME": "intBathrooms"
+    },
+    {
+      "COLUMN_NAME": "intGarage"
+    },
+    {
+      "COLUMN_NAME": "dcmSale"
+    },
+    {
+      "COLUMN_NAME": "dcmRentNetValue"
+    },
+    {
+      "COLUMN_NAME": "dcmCondoValue"
+    },
+    {
+      "COLUMN_NAME": "dcmPropertyTax"
+    },
+    {
+      "COLUMN_NAME": "chrAddressPostalCode"
+    },
+    {
+      "COLUMN_NAME": "chrAddressStreet"
+    },
+    {
+      "COLUMN_NAME": "chrAddressNumber"
+    },
+    {
+      "COLUMN_NAME": "chrAddressComplement"
+    },
+    {
+      "COLUMN_NAME": "chrAddressNeighborhood"
+    },
+    {
+      "COLUMN_NAME": "chrAddressCity"
+    },
+    {
+      "COLUMN_NAME": "chrAddressCityCode"
+    },
+    {
+      "COLUMN_NAME": "chrAddressState"
+    },
+    {
+      "COLUMN_NAME": "chrCondoName"
+    },
+    {
+      "COLUMN_NAME": "fkCondo"
+    },
+    {
+      "COLUMN_NAME": "intBuiltYear"
+    },
+    {
+      "COLUMN_NAME": "intFloors"
+    },
+    {
+      "COLUMN_NAME": "lastSyncedAt"
+    },
+    {
+      "COLUMN_NAME": "createdAt"
+    },
+    {
+      "COLUMN_NAME": "updatedAt"
+    },
+    {
+      "COLUMN_NAME": "isActive"
+    },
+    {
+      "COLUMN_NAME": "chrPurpose"
+    },
+    {
+      "COLUMN_NAME": "dteNewListing"
+    },
+    {
+      "COLUMN_NAME": "dteTermination"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\nid\nchrReference\nchrInnerReference\nchrType\nchrStatus\nchrTransactionType\ndcmAreaTotal\ndcmAreaPrivate\ndcmAreaUsable\ndcmAreaBuilt\nintRooms\nintBedrooms\nintSuites\nintBathrooms\nintGarage\ndcmSale\ndcmRentNetValue\ndcmCondoValue\ndcmPropertyTax\nchrAddressPostalCode\nchrAddressStreet\nchrAddressNumber\nchrAddressComplement\nchrAddressNeighborhood\nchrAddressCity\nchrAddressCityCode\nchrAddressState\nchrCondoName\nfkCondo\nintBuiltYear\nintFloors\nlastSyncedAt\ncreatedAt\nupdatedAt\nisActive\nchrPurpose\ndteNewListing\ndteTermination\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}
