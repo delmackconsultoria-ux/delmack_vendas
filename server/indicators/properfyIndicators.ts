@@ -96,23 +96,29 @@ export async function calculateVSO(
 /**
  * Número de atendimentos Prontos
  * Contagem de leads vinculados a imóveis prontos no mês
- * Nota: Requer integração com endpoint /api/crm/lead do Properfy
- * Por enquanto, retorna 0 até que leads sejam sincronizados
+ * Importado de properfyLeadsSync.ts
  */
-export async function calculateReadyAttendances(): Promise<number> {
-  // TODO: Implementar sincronização de leads do Properfy
-  // Quando implementado, buscar leads com tipo = "prontos"
-  return 0;
+export async function calculateReadyAttendances(
+  startDate: Date,
+  endDate: Date
+): Promise<number> {
+  const { calculateReadyAttendances: calculateReady } = await import(
+    "./properfyLeadsSync"
+  );
+  return calculateReady(startDate, endDate);
 }
 
 /**
  * Número de atendimentos Lançamentos
  * Contagem de leads vinculados a lançamentos no mês
- * Nota: Requer integração com endpoint /api/crm/lead do Properfy
- * Por enquanto, retorna 0 até que leads sejam sincronizados
+ * Importado de properfyLeadsSync.ts
  */
-export async function calculateLaunchAttendances(): Promise<number> {
-  // TODO: Implementar sincronização de leads do Properfy
-  // Quando implementado, buscar leads com tipo = "lançamentos"
-  return 0;
+export async function calculateLaunchAttendances(
+  startDate: Date,
+  endDate: Date
+): Promise<number> {
+  const { calculateLaunchAttendances: calculateLaunch } = await import(
+    "./properfyLeadsSync"
+  );
+  return calculateLaunch(startDate, endDate);
 }

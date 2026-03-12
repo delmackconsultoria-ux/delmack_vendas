@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `properfyLeads` (\n\t`id` varchar(64) NOT NULL,\n\t`propertyId` varchar(64),\n\t`leadId` varchar(64) NOT NULL,\n\t`leadName` varchar(255),\n\t`leadEmail` varchar(320),\n\t`leadPhone` varchar(20),\n\t`leadType` enum('ready','launch','other') DEFAULT 'other',\n\t`status` varchar(64) DEFAULT 'active',\n\t`createdAt` timestamp,\n\t`updatedAt` timestamp,\n\t`syncedAt` timestamp DEFAULT CURRENT_TIMESTAMP,\n\tCONSTRAINT `properfyLeads_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute CREATE TABLE IF NOT EXISTS `properfyLeads` (\n\t`id` varchar(64) NOT NULL,\n\t`propertyId` varchar(64),\n\t`leadId` varchar(64) NOT NULL,\n\t`leadName` varchar(255),\n\t`leadEmail` varchar(320),\n\t`leadPhone` varchar(20),\n\t`leadType` enum('ready','launch','other') DEFAULT 'other',\n\t`status` varchar(64) DEFAULT 'active',\n\t`createdAt` timestamp,\n\t`updatedAt` timestamp,\n\t`syncedAt` timestamp DEFAULT CURRENT_TIMESTAMP,\n\tCONSTRAINT `properfyLeads_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 138
+}

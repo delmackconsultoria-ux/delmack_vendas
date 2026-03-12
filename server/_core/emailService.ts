@@ -5,6 +5,7 @@
 
 import nodemailer from 'nodemailer';
 import { ENV } from './env';
+import { filterEmailsForTests, isEmailAuthorizedForTests } from './emailTestFilter';
 
 // Configuração do transporter SMTP
 const transporter = nodemailer.createTransport({
@@ -34,15 +35,25 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       return false;
     }
 
+    // Filtrar emails para testes (apenas Delmack)
+    let recipients = Array.isArray(options.to) ? options.to : [options.to];
+    const filteredRecipients = filterEmailsForTests(recipients);
+
+    // Se nenhum email autorizado, não enviar
+    if (filteredRecipients.length === 0) {
+      console.warn('[Email] Nenhum email autorizado para receber notificação em modo de teste');
+      return false;
+    }
+
     const info = await transporter.sendMail({
       from: `"${ENV.smtpFromName || 'Delmack'}" <${ENV.smtpUser}>`,
-      to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
+      to: filteredRecipients.join(', '),
       subject: options.subject,
       text: options.text,
       html: options.html,
     });
 
-    console.log('[Email] Email enviado:', info.messageId, 'para:', options.to);
+    console.log('[Email] Email enviado:', info.messageId, 'para:', filteredRecipients);
     return true;
   } catch (error) {
     console.error('[Email] Erro ao enviar email:', error);
@@ -761,5 +772,313 @@ export async function sendInvoiceAttachedNotification(data: {
     subject: `✅ Nota Fiscal Anexada: ${data.buyerName}${data.propertyReference ? ` | Ref. ${data.propertyReference}` : ''} - Comissão Paga`,
     html: getEmailTemplate(content),
     text: `Nota Fiscal anexada. Comissão paga: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.commissionValue)}. Comprador: ${data.buyerName}. Acesse o sistema para mais detalhes.`,
+  });
+}
+
+
+/**
+ * 7. COMISSÃO PENDENTE (NOVO)
+ * Enviado para: Corretor + Gerente
+ * Quando: Venda é aprovada mas comissão fica pendente de pagamento
+ */
+export async function sendPendingCommissionNotification(data: {
+  brokerEmail: string; // Email do corretor
+  managerEmails: string[]; // Emails dos gerentes
+  brokerName: string;
+  buyerName: string;
+  propertyAddress: string;
+  propertyReference?: string;
+  saleValue: number;
+  commissionValue: number;
+  expectedPaymentDate: string;
+  proposalId: string;
+}): Promise<boolean> {
+  const referenceDisplay = data.propertyReference 
+    ? `<div class="reference-badge">Ref. Properfy: ${data.propertyReference}</div>` 
+    : '';
+
+  const content = `
+    <h2 style="color: #111827; margin-top: 0;">⏳ Comissão Pendente de Pagamento</h2>
+    
+    <div class="alert-box">
+      <strong>Atenção:</strong> A venda foi aprovada e a comissão está pendente de pagamento.
+    </div>
+
+    ${referenceDisplay}
+
+    <div class="info-card">
+      <h3 style="color: #374151; margin-top: 0; font-size: 16px;">Detalhes da Venda</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Corretor</span>
+        <span class="info-value highlight">${data.brokerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Comprador</span>
+        <span class="info-value">${data.buyerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Imóvel</span>
+        <span class="info-value">${data.propertyAddress}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Valor da Venda</span>
+        <span class="info-value highlight">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.saleValue)}</span>
+      </div>
+    </div>
+
+    <div class="info-card" style="background-color: #fef3c7; border-color: #fcd34d;">
+      <h3 style="color: #92400e; margin-top: 0; font-size: 16px;">Informações da Comissão</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Valor da Comissão</span>
+        <span class="info-value highlight" style="font-size: 18px; color: #d97706;">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.commissionValue)}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value"><span class="status-badge" style="background-color: #fef3c7; color: #92400e;">Pendente</span></span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Previsão de Pagamento</span>
+        <span class="info-value">${new Date(data.expectedPaymentDate).toLocaleDateString('pt-BR')}</span>
+      </div>
+    </div>
+
+    <p style="color: #6b7280; margin: 20px 0;">
+      <strong>Próximos Passos:</strong><br>
+      1. Acompanhe o status da comissão no sistema<br>
+      2. Verifique se todos os documentos foram anexados<br>
+      3. Contacte o financeiro se houver atrasos
+    </p>
+
+    <center>
+      <a href="${ENV.frontendUrl || 'https://delmack.manus.space'}/proposals/${data.proposalId}#observations" class="button">
+        Acompanhar Comissão
+      </a>
+    </center>
+  `;
+
+  // Enviar para corretor + gerentes
+  const recipients = [data.brokerEmail, ...data.managerEmails];
+
+  return sendEmail({
+    to: recipients,
+    subject: `⏳ Comissão Pendente: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.commissionValue)}${data.propertyReference ? ` | Ref. ${data.propertyReference}` : ''}`,
+    html: getEmailTemplate(content),
+    text: `Comissão pendente de pagamento: R$ ${data.commissionValue.toFixed(2)}. Venda: ${data.buyerName}. Previsão: ${new Date(data.expectedPaymentDate).toLocaleDateString('pt-BR')}.`,
+  });
+}
+
+/**
+ * 8. VENDA CANCELADA (NOVO)
+ * Enviado para: Corretor + Gerente + Financeiro
+ * Quando: Venda é cancelada
+ */
+export async function sendSaleCancelledNotification(data: {
+  brokerEmail: string; // Email do corretor
+  managerEmails: string[]; // Emails dos gerentes
+  financeEmails: string[]; // Emails dos financeiros
+  brokerName: string;
+  buyerName: string;
+  propertyAddress: string;
+  propertyReference?: string;
+  saleValue: number;
+  cancelledBy: string; // Nome de quem cancelou
+  cancelledByRole: string; // Perfil de quem cancelou
+  cancelledAt: string;
+  reason: string; // Motivo do cancelamento
+  proposalId: string;
+}): Promise<boolean> {
+  const referenceDisplay = data.propertyReference 
+    ? `<div class="reference-badge">Ref. Properfy: ${data.propertyReference}</div>` 
+    : '';
+
+  const content = `
+    <h2 style="color: #111827; margin-top: 0;">❌ Venda Cancelada</h2>
+    
+    <div class="alert-box error">
+      <strong>Aviso Importante:</strong> A venda foi cancelada e não será mais processada.
+    </div>
+
+    ${referenceDisplay}
+
+    <div class="info-card">
+      <h3 style="color: #374151; margin-top: 0; font-size: 16px;">Detalhes da Venda Cancelada</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Corretor</span>
+        <span class="info-value highlight">${data.brokerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Comprador</span>
+        <span class="info-value">${data.buyerName}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Imóvel</span>
+        <span class="info-value">${data.propertyAddress}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Valor da Venda</span>
+        <span class="info-value">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.saleValue)}</span>
+      </div>
+    </div>
+
+    <div class="info-card" style="background-color: #fef2f2; border-color: #fca5a5;">
+      <h3 style="color: #991b1b; margin-top: 0; font-size: 16px;">Informações do Cancelamento</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Cancelado por</span>
+        <span class="info-value highlight">${data.cancelledBy}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Perfil</span>
+        <span class="info-value">${data.cancelledByRole}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Data/Hora</span>
+        <span class="info-value">${new Date(data.cancelledAt).toLocaleString('pt-BR')}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value"><span class="status-badge status-rejected">Cancelada</span></span>
+      </div>
+    </div>
+
+    <div class="alert-box error">
+      <strong>Motivo do Cancelamento:</strong><br>
+      "${data.reason}"
+    </div>
+
+    <p style="color: #6b7280; margin: 20px 0;">
+      <strong>Impacto:</strong><br>
+      • A comissão desta venda não será processada<br>
+      • O imóvel retorna à carteira disponível<br>
+      • Nenhuma ação necessária neste momento
+    </p>
+
+    <center>
+      <a href="${ENV.frontendUrl || 'https://delmack.manus.space'}/proposals/${data.proposalId}#observations" class="button">
+        Ver Detalhes do Cancelamento
+      </a>
+    </center>
+  `;
+
+  // Enviar para corretor + gerentes + financeiros
+  const recipients = [data.brokerEmail, ...data.managerEmails, ...data.financeEmails];
+
+  return sendEmail({
+    to: recipients,
+    subject: `❌ Venda Cancelada: ${data.buyerName}${data.propertyReference ? ` | Ref. ${data.propertyReference}` : ''} - Cancelada por ${data.cancelledByRole}`,
+    html: getEmailTemplate(content),
+    text: `Venda cancelada por ${data.cancelledBy} (${data.cancelledByRole}). Comprador: ${data.buyerName}. Motivo: ${data.reason}.`,
+  });
+}
+
+/**
+ * 9. RELATÓRIO MENSAL (NOVO)
+ * Enviado para: Gerentes + Financeiros
+ * Quando: Último dia do mês (job agendado)
+ */
+export async function sendMonthlyReportNotification(data: {
+  recipients: string[]; // Emails dos gerentes e financeiros
+  companyName: string;
+  month: number; // 1-12
+  year: number;
+  totalSales: number; // Quantidade de vendas
+  totalSalesValue: number; // Valor total em vendas
+  totalCommissions: number; // Valor total em comissões
+  averageTicket: number; // Ticket médio
+  topBroker: {
+    name: string;
+    salesCount: number;
+    salesValue: number;
+  };
+  brokerCount: number; // Quantidade de corretores ativos
+}): Promise<boolean> {
+  const monthName = new Date(data.year, data.month - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+  const content = `
+    <h2 style="color: #111827; margin-top: 0;">📊 Relatório Mensal de Vendas</h2>
+    
+    <div class="alert-box success">
+      <strong>Relatório de ${monthName}</strong> - ${data.companyName}
+    </div>
+
+    <div class="info-card">
+      <h3 style="color: #374151; margin-top: 0; font-size: 16px;">Resumo Executivo</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Total de Vendas</span>
+        <span class="info-value highlight">${data.totalSales} venda${data.totalSales !== 1 ? 's' : ''}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Valor Total em Vendas</span>
+        <span class="info-value highlight" style="font-size: 18px; color: #059669;">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.totalSalesValue)}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Total em Comissões</span>
+        <span class="info-value highlight">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.totalCommissions)}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Ticket Médio</span>
+        <span class="info-value">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.averageTicket)}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Corretores Ativos</span>
+        <span class="info-value">${data.brokerCount}</span>
+      </div>
+    </div>
+
+    <div class="info-card" style="background-color: #f0fdf4; border-color: #86efac;">
+      <h3 style="color: #166534; margin-top: 0; font-size: 16px;">Top Corretor do Mês</h3>
+      
+      <div class="info-row">
+        <span class="info-label">Corretor</span>
+        <span class="info-value highlight">${data.topBroker.name}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Vendas</span>
+        <span class="info-value">${data.topBroker.salesCount} venda${data.topBroker.salesCount !== 1 ? 's' : ''}</span>
+      </div>
+      
+      <div class="info-row">
+        <span class="info-label">Valor Total</span>
+        <span class="info-value highlight">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.topBroker.salesValue)}</span>
+      </div>
+    </div>
+
+    <p style="color: #6b7280; margin: 20px 0; text-align: center;">
+      <strong>Este é um relatório automático gerado no final do mês.</strong><br>
+      Para análises detalhadas, acesse o sistema de relatórios.
+    </p>
+
+    <center>
+      <a href="${ENV.frontendUrl || 'https://delmack.manus.space'}/reports" class="button">
+        Ver Relatório Completo
+      </a>
+    </center>
+  `;
+
+  return sendEmail({
+    to: data.recipients,
+    subject: `📊 Relatório Mensal: ${monthName} - ${data.companyName}`,
+    html: getEmailTemplate(content),
+    text: `Relatório de vendas de ${monthName}. Total: ${data.totalSales} venda(s). Valor: R$ ${data.totalSalesValue.toFixed(2)}. Comissões: R$ ${data.totalCommissions.toFixed(2)}.`,
   });
 }

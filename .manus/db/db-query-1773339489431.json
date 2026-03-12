@@ -1,0 +1,82 @@
+{
+  "query": "SELECT id, name, email, role FROM users WHERE email LIKE '%@ex.baggioimoveis.com.br' ORDER BY name ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role FROM users WHERE email LIKE '%@ex.baggioimoveis.com.br' ORDER BY name ASC;",
+  "rows": [
+    {
+      "id": "broker_company_1766331506068_005",
+      "name": "Anna Cristina",
+      "email": "anna.cristina@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_006",
+      "name": "Arlindo",
+      "email": "arlindo@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_009",
+      "name": "Cleverson",
+      "email": "cleverson@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_012",
+      "name": "Dinamar",
+      "email": "dinamar@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_014",
+      "name": "Elis",
+      "email": "elis@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_015",
+      "name": "Eric",
+      "email": "eric@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_018",
+      "name": "Fernando",
+      "email": "fernando@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_019",
+      "name": "Ione",
+      "email": "ione@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_024",
+      "name": "Paula",
+      "email": "paula@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_025",
+      "name": "Pietro",
+      "email": "pietro@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_028",
+      "name": "Rafaele",
+      "email": "rafaele@ex.baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_032",
+      "name": "Tatiane",
+      "email": "tatiane@ex.baggioimoveis.com.br",
+      "role": "broker"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\nbroker_company_1766331506068_005\tAnna Cristina\tanna.cristina@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_006\tArlindo\tarlindo@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_009\tCleverson\tcleverson@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_012\tDinamar\tdinamar@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_014\tElis\telis@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_015\tEric\teric@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_018\tFernando\tfernando@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_019\tIone\tione@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_024\tPaula\tpaula@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_025\tPietro\tpietro@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_028\tRafaele\trafaele@ex.baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_032\tTatiane\ttatiane@ex.baggioimoveis.com.br\tbroker\n",
+  "stderr": "",
+  "execution_time_ms": 118
+}

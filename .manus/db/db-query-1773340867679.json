@@ -1,0 +1,38 @@
+{
+  "query": "SELECT id, name, email, companyId, role FROM users \nWHERE email LIKE '%@testes.com%'\n  OR email LIKE '%@test%'\nORDER BY email ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, companyId, role FROM users \nWHERE email LIKE '%@testes.com%'\n  OR email LIKE '%@test%'\nORDER BY email ASC;",
+  "rows": [
+    {
+      "id": "broker_company_1766331506068_010",
+      "name": "Corretor Testes",
+      "email": "corretor@testes.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "user-financeiro-testes",
+      "name": "Financeiro Testes",
+      "email": "financeiro@testes.com.br",
+      "companyId": "company_1766344499112",
+      "role": "finance"
+    },
+    {
+      "id": "user-gerente-testes",
+      "name": "Gerente Testes",
+      "email": "gerente@testes.com.br",
+      "companyId": "company_1766344499112",
+      "role": "manager"
+    },
+    {
+      "id": "user_1766357600050_mxemhxyo8",
+      "name": "Ver",
+      "email": "Ver@testes.com.br",
+      "companyId": "company_1766344499112",
+      "role": "viewer"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\trole\nbroker_company_1766331506068_010\tCorretor Testes\tcorretor@testes.com.br\tcompany_1766331506068\tbroker\nuser-financeiro-testes\tFinanceiro Testes\tfinanceiro@testes.com.br\tcompany_1766344499112\tfinance\nuser-gerente-testes\tGerente Testes\tgerente@testes.com.br\tcompany_1766344499112\tmanager\nuser_1766357600050_mxemhxyo8\tVer\tVer@testes.com.br\tcompany_1766344499112\tviewer\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

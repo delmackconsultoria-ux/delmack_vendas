@@ -2072,3 +2072,35 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Documentar mapeamento: Quais dados vêm do Properfy vs Delmack
 - [ ] Testar indicadores com dados históricos
 - [ ] Validar cálculos de comissão e ticket médio
+
+## 📧 IMPLEMENTAÇÃO DE EMAILS FALTANTES (10/03/2026)
+
+### Emails Implementados
+- [x] Nova Venda
+- [x] Venda Aprovada
+- [x] Venda Reprovada
+- [x] Comissão Paga
+- [x] Contrato/Escritura Anexado
+- [x] Nota Fiscal Anexada
+
+### Emails NÃO Implementados (Faltam)
+- [ ] Email 1: Comissão Pendente (notificar corretor quando comissão fica pendente)
+- [ ] Email 2: Venda Cancelada (notificar quando venda é cancelada)
+- [ ] Email 3: Relatório Mensal (enviar relatório consolidado no último dia do mês)
+
+### Configuração de Testes
+- [ ] Configurar filtro de emails para testes (apenas Delmack)
+  - [ ] angellicapassosup@gmail.com
+  - [ ] delmackconsultoria@gmail.com
+  - [ ] Nenhum email da Baggio deve receber durante testes
+
+### Tarefas de Implementação
+- [ ] Adicionar função sendPendingCommissionNotification() em server/_core/emailService.ts
+- [ ] Adicionar função sendSaleCancelledNotification() em server/_core/emailService.ts
+- [ ] Adicionar função sendMonthlyReportNotification() em server/_core/emailService.ts
+- [ ] Implementar endpoint tRPC para notificar comissão pendente
+- [ ] Implementar endpoint tRPC para notificar venda cancelada
+- [ ] Implementar job agendado para relatório mensal (último dia do mês)
+- [ ] Adicionar filtro de emails para testes (apenas Delmack)
+- [ ] Testar fluxo completo de emails
+- [ ] Documentar fluxo de emails para produção

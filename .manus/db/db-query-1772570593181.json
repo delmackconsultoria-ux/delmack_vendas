@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, email, role, companyId FROM users WHERE name LIKE '%Camila%' OR name LIKE '%Diego%' OR name LIKE '%Odair%' OR name LIKE '%Fabiano%' OR name LIKE '%Regiana%' ORDER BY companyId, name",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role, companyId FROM users WHERE name LIKE '%Camila%' OR name LIKE '%Diego%' OR name LIKE '%Odair%' OR name LIKE '%Fabiano%' OR name LIKE '%Regiana%' ORDER BY companyId, name",
+  "rows": [
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "name": "Camila Pires",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "role": "manager",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "DaAbrQn5dHcHd89k",
+      "name": "Diego Ferreira dos Santos",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "tkrpv3bQxeb4XuDa",
+      "name": "Fabiano Buziak",
+      "email": "fabiano@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "bGIqIZHMpe-yBhds",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "UjIM7HpiYDb6c8X7",
+      "name": "Regiana Mirian Baggio Favarini",
+      "email": "regiana@baggioimoveis.com.br",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\tcompanyId\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\tcompany_1766331506068\nDaAbrQn5dHcHd89k\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tbroker\tcompany_1766331506068\ntkrpv3bQxeb4XuDa\tFabiano Buziak\tfabiano@baggioimoveis.com.br\tbroker\tcompany_1766331506068\nbGIqIZHMpe-yBhds\tOdair Amancio\todair@baggioimoveis.com.br\tbroker\tcompany_1766331506068\nUjIM7HpiYDb6c8X7\tRegiana Mirian Baggio Favarini\tregiana@baggioimoveis.com.br\tbroker\tcompany_1766331506068\n",
+  "stderr": "",
+  "execution_time_ms": 117
+}

@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO users (id, name, email, password, loginMethod, role, managerId, companyId, isActive, createdAt, lastSignedIn)\nSELECT \n  CONCAT('baggio_', SUBSTRING(id, POSITION('_' IN id)+1)),\n  name,\n  CONCAT('baggio_', SUBSTRING(email, 1, POSITION('@' IN email)-1), '@baggio.com'),\n  password,\n  loginMethod,\n  role,\n  CASE WHEN managerId IS NOT NULL THEN CONCAT('baggio_', SUBSTRING(managerId, POSITION('_' IN managerId)+1)) ELSE NULL END,\n  'company_baggio_001',\n  isActive,\n  NOW(),\n  NOW()\nFROM users \nWHERE companyId = 'company_delmack_001'\nON DUPLICATE KEY UPDATE email = VALUES(email)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute INSERT INTO users (id, name, email, password, loginMethod, role, managerId, companyId, isActive, createdAt, lastSignedIn)\nSELECT \n  CONCAT('baggio_', SUBSTRING(id, POSITION('_' IN id)+1)),\n  name,\n  CONCAT('baggio_', SUBSTRING(email, 1, POSITION('@' IN email)-1), '@baggio.com'),\n  password,\n  loginMethod,\n  role,\n  CASE WHEN managerId IS NOT NULL THEN CONCAT('baggio_', SUBSTRING(managerId, POSITION('_' IN managerId)+1)) ELSE NULL END,\n  'company_baggio_001',\n  isActive,\n  NOW(),\n  NOW()\nFROM users \nWHERE companyId = 'company_delmack_001'\nON DUPLICATE KEY UPDATE email = VALUES(email)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 166
+}

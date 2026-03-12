@@ -129,7 +129,7 @@ export default function AuditLogTable() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <History className="h-5 w-5" />
-            Histórico de Alterações
+            Observações e histórico de alterações
             {auditData?.total && (
               <Badge variant="secondary" className="ml-auto">
                 {auditData.total} registro{auditData.total !== 1 ? "s" : ""}

@@ -931,3 +931,24 @@ export const indicatorDetails = mysqlTable("indicatorDetails", {
 
 export type IndicatorDetail = typeof indicatorDetails.$inferSelect;
 export type InsertIndicatorDetail = typeof indicatorDetails.$inferInsert;
+
+/**
+ * Properfy Leads/Atendimentos
+ * Sincronizados do endpoint /api/crm/lead do Properfy
+ */
+export const properfyLeads = mysqlTable("properfyLeads", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  propertyId: varchar("propertyId", { length: 64 }), // Referência ao imóvel (properfyProperties.id)
+  leadId: varchar("leadId", { length: 64 }).notNull(), // ID do lead no Properfy
+  leadName: varchar("leadName", { length: 255 }), // Nome do lead/cliente
+  leadEmail: varchar("leadEmail", { length: 320 }), // Email do lead
+  leadPhone: varchar("leadPhone", { length: 20 }), // Telefone do lead
+  leadType: mysqlEnum("leadType", ["ready", "launch", "other"]).default("other"), // Tipo de imóvel: pronto, lançamento, outro
+  status: varchar("status", { length: 64 }).default("active"), // Status do lead: active, converted, lost, etc
+  createdAt: timestamp("createdAt"), // Data de criação do lead no Properfy
+  updatedAt: timestamp("updatedAt"), // Data de última atualização
+  syncedAt: timestamp("syncedAt").defaultNow(), // Data de sincronização com nosso banco
+});
+
+export type ProperfyLead = typeof properfyLeads.$inferSelect;
+export type InsertProperfyLead = typeof properfyLeads.$inferInsert;

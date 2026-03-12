@@ -1,0 +1,25 @@
+{
+  "query": "\n-- Listar usuários da Delmack com email e role\nSELECT id, name, email, role FROM users WHERE companyId = 'company_delmack_001' LIMIT 5;\n\n-- Verificar configuração de email da Delmack\nSELECT id, name, notificationEmail FROM companies WHERE id = 'company_delmack_001';\n\n-- Verificar configuração de email das outras companies\nSELECT id, name, notificationEmail FROM companies;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Listar usuários da Delmack com email e role\nSELECT id, name, email, role FROM users WHERE companyId = 'company_delmack_001' LIMIT 5;\n\n-- Verificar configuração de email da Delmack\nSELECT id, name, notificationEmail FROM companies WHERE id = 'company_delmack_001';\n\n-- Verificar configuração de email das outras companies\nSELECT id, name, notificationEmail FROM companies;\n",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "notificationEmail": "NULL"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes",
+      "notificationEmail": "NULL"
+    },
+    {
+      "id": "company_test_001",
+      "name": "Delmack Imóveis",
+      "notificationEmail": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tnotificationEmail\ncompany_1766331506068\tB I IMOVEIS LTDA\tNULL\ncompany_1766344499112\tTestes\tNULL\ncompany_test_001\tDelmack Imóveis\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 73
+}

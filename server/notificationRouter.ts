@@ -170,5 +170,140 @@ export const notificationRouter = router({
         return { success: false };
       }
     }),
-});
 
+  /**
+   * Envia notificação de comissão pendente
+   */
+  notifyPendingCommission: protectedProcedure
+    .input(
+      z.object({
+        brokerEmail: z.string().email(),
+        managerEmails: z.array(z.string().email()),
+        brokerName: z.string(),
+        buyerName: z.string(),
+        propertyAddress: z.string(),
+        propertyReference: z.string().optional(),
+        saleValue: z.number(),
+        commissionValue: z.number(),
+        expectedPaymentDate: z.date(),
+        proposalId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { sendPendingCommissionNotification } = await import("./_core/emailService");
+        
+        await sendPendingCommissionNotification({
+          brokerEmail: input.brokerEmail,
+          managerEmails: input.managerEmails,
+          brokerName: input.brokerName,
+          buyerName: input.buyerName,
+          propertyAddress: input.propertyAddress,
+          propertyReference: input.propertyReference,
+          saleValue: input.saleValue,
+          commissionValue: input.commissionValue,
+          expectedPaymentDate: input.expectedPaymentDate.toISOString(),
+          proposalId: input.proposalId,
+        });
+
+        return { success: true };
+      } catch (error) {
+        console.error("[Notification] Erro ao enviar notificação de comissão pendente:", error);
+        return { success: false };
+      }
+    }),
+
+  /**
+   * Envia notificação de venda cancelada
+   */
+  notifySaleCancelled: protectedProcedure
+    .input(
+      z.object({
+        brokerEmail: z.string().email(),
+        managerEmails: z.array(z.string().email()),
+        financeEmails: z.array(z.string().email()),
+        brokerName: z.string(),
+        buyerName: z.string(),
+        propertyAddress: z.string(),
+        propertyReference: z.string().optional(),
+        saleValue: z.number(),
+        cancelledBy: z.string(),
+        cancelledByRole: z.string(),
+        cancelledAt: z.date(),
+        reason: z.string(),
+        proposalId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { sendSaleCancelledNotification } = await import("./_core/emailService");
+        
+        await sendSaleCancelledNotification({
+          brokerEmail: input.brokerEmail,
+          managerEmails: input.managerEmails,
+          financeEmails: input.financeEmails,
+          brokerName: input.brokerName,
+          buyerName: input.buyerName,
+          propertyAddress: input.propertyAddress,
+          propertyReference: input.propertyReference,
+          saleValue: input.saleValue,
+          cancelledBy: input.cancelledBy,
+          cancelledByRole: input.cancelledByRole,
+          cancelledAt: input.cancelledAt.toISOString(),
+          reason: input.reason,
+          proposalId: input.proposalId,
+        });
+
+        return { success: true };
+      } catch (error) {
+        console.error("[Notification] Erro ao enviar notificação de venda cancelada:", error);
+        return { success: false };
+      }
+    }),
+
+  /**
+   * Envia relatório mensal de vendas
+   */
+  sendMonthlyReport: protectedProcedure
+    .input(
+      z.object({
+        recipients: z.array(z.string().email()),
+        companyName: z.string(),
+        month: z.number().min(1).max(12),
+        year: z.number(),
+        totalSales: z.number(),
+        totalSalesValue: z.number(),
+        totalCommissions: z.number(),
+        averageTicket: z.number(),
+        topBroker: z.object({
+          name: z.string(),
+          salesCount: z.number(),
+          salesValue: z.number(),
+        }),
+        brokerCount: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { sendMonthlyReportNotification } = await import("./_core/emailService");
+        
+        await sendMonthlyReportNotification({
+          recipients: input.recipients,
+          companyName: input.companyName,
+          month: input.month,
+          year: input.year,
+          totalSales: input.totalSales,
+          totalSalesValue: input.totalSalesValue,
+          totalCommissions: input.totalCommissions,
+          averageTicket: input.averageTicket,
+          topBroker: input.topBroker,
+          brokerCount: input.brokerCount,
+        });
+
+        return { success: true };
+      } catch (error) {
+        console.error("[Notification] Erro ao enviar relatório mensal:", error);
+        return { success: false };
+      }
+    }),
+});

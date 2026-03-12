@@ -211,6 +211,13 @@
       "when": 1771942043851,
       "tag": "0029_eminent_barracuda",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "5",
+      "when": 1773350159560,
+      "tag": "0030_easy_meteorite",
+      "breakpoints": true
     }
   ]
 }

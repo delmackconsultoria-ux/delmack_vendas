@@ -142,23 +142,7 @@ export default function DashboardManager() {
               </CardContent>
             </Card>
 
-            {/* Carteira Ativa */}
-            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-indigo-600" />
-                  Carteira Ativa
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoadingKPIs ? (
-                  <p className="text-3xl font-bold text-slate-400">...</p>
-                ) : (
-                  <p className="text-3xl font-bold text-slate-900">{kpis?.activePortfolio || 0}</p>
-                )}
-                <p className="text-xs text-slate-600 mt-2">Imóveis ativos</p>
-              </CardContent>
-            </Card>
+
           </div>
 
           {/* Charts - Removido dados mock, será implementado com dados reais */}

@@ -1,0 +1,58 @@
+{
+  "query": "SELECT YEAR(saleDate) as ano, MONTH(saleDate) as mes, COUNT(*) as total_vendas, SUM(salePrice) as valor_total FROM historicalSales WHERE YEAR(saleDate) IN (2024, 2025) GROUP BY YEAR(saleDate), MONTH(saleDate) ORDER BY ano, mes",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT YEAR(saleDate) as ano, MONTH(saleDate) as mes, COUNT(*) as total_vendas, SUM(salePrice) as valor_total FROM historicalSales WHERE YEAR(saleDate) IN (2024, 2025) GROUP BY YEAR(saleDate), MONTH(saleDate) ORDER BY ano, mes",
+  "rows": [
+    {
+      "ano": "2024",
+      "mes": "1",
+      "total_vendas": "1",
+      "valor_total": "500000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "2",
+      "total_vendas": "1",
+      "valor_total": "600000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "3",
+      "total_vendas": "1",
+      "valor_total": "750000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "4",
+      "total_vendas": "1",
+      "valor_total": "550000.00"
+    },
+    {
+      "ano": "2024",
+      "mes": "5",
+      "total_vendas": "1",
+      "valor_total": "650000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "1",
+      "total_vendas": "1",
+      "valor_total": "700000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "2",
+      "total_vendas": "1",
+      "valor_total": "800000.00"
+    },
+    {
+      "ano": "2025",
+      "mes": "3",
+      "total_vendas": "1",
+      "valor_total": "900000.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "ano\tmes\ttotal_vendas\tvalor_total\n2024\t1\t1\t500000.00\n2024\t2\t1\t600000.00\n2024\t3\t1\t750000.00\n2024\t4\t1\t550000.00\n2024\t5\t1\t650000.00\n2025\t1\t1\t700000.00\n2025\t2\t1\t800000.00\n2025\t3\t1\t900000.00\n",
+  "stderr": "",
+  "execution_time_ms": 1571
+}

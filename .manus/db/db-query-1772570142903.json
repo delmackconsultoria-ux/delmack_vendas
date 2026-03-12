@@ -1,0 +1,25 @@
+{
+  "query": "SELECT COUNT(*) as total_companies FROM companies; SELECT CONCAT('ID: ', id, ' | Nome: ', name, ' | Email: ', COALESCE(email, 'N/A')) as company_info FROM companies",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_companies FROM companies; SELECT CONCAT('ID: ', id, ' | Nome: ', name, ' | Email: ', COALESCE(email, 'N/A')) as company_info FROM companies",
+  "rows": [
+    {
+      "total_companies": "3"
+    },
+    {
+      "total_companies": "company_info"
+    },
+    {
+      "total_companies": "ID: company_1766331506068 | Nome: B I IMOVEIS LTDA | Email: Darlan@baggioimoveis.com.br"
+    },
+    {
+      "total_companies": "ID: company_1766344499112 | Nome: Testes | Email: delmackconsultoria@gmail.com"
+    },
+    {
+      "total_companies": "ID: company_test_001 | Nome: Delmack Imóveis | Email: contact@delmack.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_companies\n3\ncompany_info\nID: company_1766331506068 | Nome: B I IMOVEIS LTDA | Email: Darlan@baggioimoveis.com.br\nID: company_1766344499112 | Nome: Testes | Email: delmackconsultoria@gmail.com\nID: company_test_001 | Nome: Delmack Imóveis | Email: contact@delmack.com\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

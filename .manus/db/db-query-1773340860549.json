@@ -1,0 +1,9 @@
+{
+  "query": "SELECT DISTINCT u.companyId, COUNT(u.id) as total_usuarios\nFROM users u\nLEFT JOIN companies c ON u.companyId = c.id\nWHERE u.companyId IS NOT NULL AND u.companyId != ''\n  AND c.id IS NULL\nGROUP BY u.companyId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DISTINCT u.companyId, COUNT(u.id) as total_usuarios\nFROM users u\nLEFT JOIN companies c ON u.companyId = c.id\nWHERE u.companyId IS NOT NULL AND u.companyId != ''\n  AND c.id IS NULL\nGROUP BY u.companyId;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 191
+}

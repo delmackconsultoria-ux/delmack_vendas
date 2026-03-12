@@ -1,0 +1,31 @@
+{
+  "query": "SELECT \n  'company_test_001' as companyId,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_test_001') as sales,\n  (SELECT COUNT(*) FROM historicalSales WHERE companyId = 'company_test_001') as historicalSales,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_test_001') as commissions,\n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_test_001') as properties\nUNION ALL\nSELECT \n  'company_baggio_001',\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_baggio_001'),\n  (SELECT COUNT(*) FROM historicalSales WHERE companyId = 'company_baggio_001'),\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_baggio_001'),\n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_baggio_001')\nUNION ALL\nSELECT \n  'company_delmack_001',\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_delmack_001'),\n  (SELECT COUNT(*) FROM historicalSales WHERE companyId = 'company_delmack_001'),\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_delmack_001'),\n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_delmack_001')",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  'company_test_001' as companyId,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_test_001') as sales,\n  (SELECT COUNT(*) FROM historicalSales WHERE companyId = 'company_test_001') as historicalSales,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_test_001') as commissions,\n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_test_001') as properties\nUNION ALL\nSELECT \n  'company_baggio_001',\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_baggio_001'),\n  (SELECT COUNT(*) FROM historicalSales WHERE companyId = 'company_baggio_001'),\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_baggio_001'),\n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_baggio_001')\nUNION ALL\nSELECT \n  'company_delmack_001',\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_delmack_001'),\n  (SELECT COUNT(*) FROM historicalSales WHERE companyId = 'company_delmack_001'),\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_delmack_001'),\n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_delmack_001')",
+  "rows": [
+    {
+      "companyId": "company_test_001",
+      "sales": "14",
+      "historicalSales": "10",
+      "commissions": "0",
+      "properties": "0"
+    },
+    {
+      "companyId": "company_baggio_001",
+      "sales": "0",
+      "historicalSales": "0",
+      "commissions": "0",
+      "properties": "0"
+    },
+    {
+      "companyId": "company_delmack_001",
+      "sales": "0",
+      "historicalSales": "0",
+      "commissions": "0",
+      "properties": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "companyId\tsales\thistoricalSales\tcommissions\tproperties\ncompany_test_001\t14\t10\t0\t0\ncompany_baggio_001\t0\t0\t0\t0\ncompany_delmack_001\t0\t0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 82
+}

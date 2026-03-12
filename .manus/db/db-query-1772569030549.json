@@ -1,0 +1,17 @@
+{
+  "query": "SELECT u.id, u.name, u.email, u.companyId, c.name as companyName FROM users u LEFT JOIN companies c ON u.companyId = c.id WHERE u.name LIKE '%Camila%' OR u.email LIKE '%camila%' ORDER BY u.createdAt DESC",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT u.id, u.name, u.email, u.companyId, c.name as companyName FROM users u LEFT JOIN companies c ON u.companyId = c.id WHERE u.name LIKE '%Camila%' OR u.email LIKE '%camila%' ORDER BY u.createdAt DESC",
+  "rows": [
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "name": "Camila Pires",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "companyName": "B I IMOVEIS LTDA"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\tcompanyName\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tcompany_1766331506068\tB I IMOVEIS LTDA\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

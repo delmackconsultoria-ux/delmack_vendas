@@ -2,7 +2,7 @@ import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { z } from "zod";
 import * as salesIndicators from "../indicators/salesIndicators";
 import * as properfyIndicators from "../indicators/properfyIndicators";
-import * as historicalIndicators from "../indicators/historicalIndicators";
+import * as properfyLeadsSync from "../indicators/properfyLeadsSync";
 import { getDb } from "../db";
 import { indicatorGoals } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
@@ -16,6 +16,7 @@ const MONTH_NAMES = [
 export const indicatorsRouter = router({
   /**
    * Obter todos os indicadores em tempo real para um período
+   * Busca dados de sales apenas - usa status 'commission_paid' para diferenciar histórico
    */
   getRealtimeIndicators: publicProcedure
     .input(
@@ -27,83 +28,6 @@ export const indicatorsRouter = router({
     )
     .query(async ({ input }) => {
       const { companyId, year, month } = input;
-
-      // Se for período histórico (2024, 2025, fevereiro 2026), buscar de historicalSales
-      const isHistoricalPeriod = 
-        (year === 2024) || 
-        (year === 2025) || 
-        (year === 2026 && month <= 2);
-
-      if (isHistoricalPeriod) {
-        console.log(`[Indicators] Buscando dados históricos para ${MONTH_NAMES[month - 1]}/${year}`);
-        
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0);
-
-        const historicalSalesValue = await historicalIndicators.calculateHistoricalSalesValue(
-          companyId,
-          startDate,
-          endDate
-        );
-        const historicalSalesCount = await historicalIndicators.calculateHistoricalSalesCount(
-          companyId,
-          startDate,
-          endDate
-        );
-        const historicalCommissions = await historicalIndicators.calculateHistoricalCommissions(
-          companyId,
-          startDate,
-          endDate
-        );
-        const historicalAvgValue = await historicalIndicators.calculateHistoricalAvgPropertyValue(
-          companyId,
-          startDate,
-          endDate
-        );
-        const historicalCommissionPercent = await historicalIndicators.calculateHistoricalCommissionPercent(
-          companyId,
-          startDate,
-          endDate
-        );
-
-        console.log(`[Indicators] Dados históricos encontrados: ${historicalSalesCount} vendas, R$ ${historicalSalesValue}`);
-
-        return {
-          isHistorical: true,
-          period: `${MONTH_NAMES[month - 1]}/${year}`,
-          // Sistema de Vendas (histórico)
-          negociosValor: historicalSalesValue,
-          negociosUnidades: historicalSalesCount,
-          vendidosCancelados: 0,
-          comissaoRecebida: historicalCommissions,
-          comissaoVendida: historicalCommissions,
-          comissaoPendente: 0,
-          percentualComissaoVendida: historicalCommissionPercent,
-          negociosAcima1M: 0,
-          prazoMedioRecebimento: 0,
-          percentualCanceladaPendente: 0,
-          valorMedioImovel: historicalAvgValue,
-          negociosRede: 0,
-          negociosInternos: 0,
-          negociosParceriaExterna: 0,
-          negociosLancamentos: 0,
-
-          // Properfy (não disponível em histórico)
-          carteiraAtiva: 0,
-          angariacesMes: 0,
-          baixasMes: 0,
-          vsoVendaOferta: 0,
-          atendimentosProntos: 0,
-          atendimentosLancamentos: 0,
-
-          // Manuais
-          despesaGeral: 0,
-          despesaImpostos: 0,
-          fundoInovacao: 0,
-          resultadoSocios: 0,
-          fundoEmergencial: 0,
-        };
-      }
 
       // Calcular datas do mês
       const startDate = new Date(year, month - 1, 1);
@@ -212,8 +136,14 @@ export const indicatorsRouter = router({
           salesCount,
           prevMonthActiveProperties
         );
-        const readyAttendances = await properfyIndicators.calculateReadyAttendances();
-        const launchAttendances = await properfyIndicators.calculateLaunchAttendances();
+        const readyAttendances = await properfyIndicators.calculateReadyAttendances(
+          startDate,
+          endDate
+        );
+        const launchAttendances = await properfyIndicators.calculateLaunchAttendances(
+          startDate,
+          endDate
+        );
 
         return {
           isHistorical: false,
@@ -332,83 +262,87 @@ export const indicatorsRouter = router({
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0);
 
-        let value = 0;
+        try {
+          let value = 0;
 
-        // Calcular valor baseado no indicador
-        if (indicatorName === "negociosValor") {
-          value = await historicalIndicators.calculateHistoricalSalesValue(companyId, startDate, endDate);
-        } else if (indicatorName === "negociosUnidades") {
-          value = await historicalIndicators.calculateHistoricalSalesCount(companyId, startDate, endDate);
-        } else if (indicatorName === "comissaoVendida") {
-          value = await historicalIndicators.calculateHistoricalCommissions(companyId, startDate, endDate);
-        } else if (indicatorName === "valorMedioImovel") {
-          value = await historicalIndicators.calculateHistoricalAvgPropertyValue(companyId, startDate, endDate);
+          // Calcular o valor do indicador para o mês
+          switch (indicatorName) {
+            case "negociosValor":
+              const salesVal = await salesIndicators.calculateSalesValueMonth(
+                companyId,
+                startDate,
+                endDate
+              );
+              value = salesVal.value;
+              break;
+            case "negociosUnidades":
+              value = await salesIndicators.calculateSalesCountMonth(
+                companyId,
+                startDate,
+                endDate
+              );
+              break;
+            case "comissaoRecebida":
+              value = await salesIndicators.calculateCommissionReceived(
+                companyId,
+                startDate,
+                endDate
+              );
+              break;
+            case "comissaoVendida":
+              value = await salesIndicators.calculateCommissionSold(
+                companyId,
+                startDate,
+                endDate
+              );
+              break;
+            default:
+              value = 0;
+          }
+
+          monthlyData.push({
+            month: MONTH_NAMES[month - 1],
+            value,
+          });
+        } catch (error) {
+          console.error(
+            `[Indicators] Erro ao calcular ${indicatorName} para ${month}/${year}:`,
+            error
+          );
+          monthlyData.push({
+            month: MONTH_NAMES[month - 1],
+            value: 0,
+          });
         }
-
-        monthlyData.push({
-          month: MONTH_NAMES[month - 1],
-          value: Number(value),
-        });
       }
 
       return {
         success: true,
         indicatorName,
         year,
-        monthlyData,
+        data: monthlyData,
       };
     }),
 
   /**
-   * Obter dados historicos de um indicador especifico com filtro por tipo de negocio
+   * Sincronizar propriedades e leads do Properfy
    */
-  getIndicatorHistory: publicProcedure
-    .input(
-      z.object({
-        indicatorName: z.string(),
-        year: z.number(),
-        businessType: z.string().optional(),
-        companyId: z.string().optional(),
-      })
-    )
-    .query(async ({ input }) => {
+  syncProperfy: protectedProcedure.mutation(async () => {
+    try {
+      // Trigger manual sync de leads
+      const result = await properfyLeadsSync.syncProperfyLeads();
       return {
         success: true,
-        data: [],
+        message: "Sincronização de leads iniciada",
+        result,
       };
-    }),
-
-  /**
-   * Salvar meta de indicador
-   */
-  saveIndicatorGoal: protectedProcedure
-    .input(
-      z.object({
-        companyId: z.string(),
-        indicatorName: z.string(),
-        monthlyGoal: z.number().optional(),
-        annualAverage: z.number().optional(),
-        year: z.number(),
-        createdBy: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) {
-        throw new Error("Database not available");
-      }
-
-      const id = uuid();
-      await db.insert(indicatorGoals).values({
-        id,
-        companyId: input.companyId,
-        indicatorName: input.indicatorName,
-        year: input.year,
-        monthlyGoal: input.monthlyGoal ? String(input.monthlyGoal) : undefined,
-        annualAverage: input.annualAverage ? String(input.annualAverage) : undefined,
-        createdBy: input.createdBy,
-      });
-
-      return { success: true, id };
-    }),
+    } catch (error) {
+      console.error("[Indicators] Erro ao sincronizar Properfy:", error);
+      return {
+        success: false,
+        message: "Erro ao sincronizar",
+        error: String(error),
+      };
+    }
+  }),
 });

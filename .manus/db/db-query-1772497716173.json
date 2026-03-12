@@ -1,0 +1,22 @@
+{
+  "query": "SELECT saleBrokerName, salePrice, commissionAmount, acquisitionBrokerName FROM historicalSales WHERE MONTH(saleDate) = 1 AND YEAR(saleDate) = 2026 LIMIT 25",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT saleBrokerName, salePrice, commissionAmount, acquisitionBrokerName FROM historicalSales WHERE MONTH(saleDate) = 1 AND YEAR(saleDate) = 2026 LIMIT 25",
+  "rows": [
+    {
+      "saleBrokerName": "Corretor E",
+      "salePrice": "550000.00",
+      "commissionAmount": "16500.00",
+      "acquisitionBrokerName": "Corretor D"
+    },
+    {
+      "saleBrokerName": "Corretor A",
+      "salePrice": "650000.00",
+      "commissionAmount": "19500.00",
+      "acquisitionBrokerName": "Corretor F"
+    }
+  ],
+  "messages": [],
+  "stdout": "saleBrokerName\tsalePrice\tcommissionAmount\tacquisitionBrokerName\nCorretor E\t550000.00\t16500.00\tCorretor D\nCorretor A\t650000.00\t19500.00\tCorretor F\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

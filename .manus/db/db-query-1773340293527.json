@@ -1,0 +1,28 @@
+{
+  "query": "SELECT id, name, tradeName, cnpj FROM companies ORDER BY name ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, tradeName, cnpj FROM companies ORDER BY name ASC;",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "tradeName": "Baggio Imóveis",
+      "cnpj": "12.142.829/0001-08"
+    },
+    {
+      "id": "company_test_001",
+      "name": "Delmack Imóveis",
+      "tradeName": "Delmack",
+      "cnpj": "NULL"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes",
+      "tradeName": "NULL",
+      "cnpj": "61.887.193/0001-39"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttradeName\tcnpj\ncompany_1766331506068\tB I IMOVEIS LTDA\tBaggio Imóveis\t12.142.829/0001-08\ncompany_test_001\tDelmack Imóveis\tDelmack\tNULL\ncompany_1766344499112\tTestes\tNULL\t61.887.193/0001-39\n",
+  "stderr": "",
+  "execution_time_ms": 124
+}

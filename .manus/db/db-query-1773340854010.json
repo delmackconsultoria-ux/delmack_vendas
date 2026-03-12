@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, name, email, companyId, role FROM users \nWHERE companyId IS NULL OR companyId = ''\nORDER BY name ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, companyId, role FROM users \nWHERE companyId IS NULL OR companyId = ''\nORDER BY name ASC;",
+  "rows": [
+    {
+      "id": "superadmin_1765831175979",
+      "name": "Super Admin Delmack",
+      "email": "delmackconsultoria@gmail.com",
+      "companyId": "NULL",
+      "role": "superadmin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\trole\nsuperadmin_1765831175979\tSuper Admin Delmack\tdelmackconsultoria@gmail.com\tNULL\tsuperadmin\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

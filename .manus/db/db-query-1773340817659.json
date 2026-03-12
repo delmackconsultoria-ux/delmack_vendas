@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE users SET companyId = 'company_1766331506068' WHERE name = 'Lucas' AND email = 'Lucas@baggioimoveis.com.br';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute UPDATE users SET companyId = 'company_1766331506068' WHERE name = 'Lucas' AND email = 'Lucas@baggioimoveis.com.br';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 146
+}

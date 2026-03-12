@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, name, email, companyId, role FROM users \nWHERE email IN ('maria@delmack.com', 'carlos@delmack.com', 'joao@delmack.com')\nORDER BY name ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, companyId, role FROM users \nWHERE email IN ('maria@delmack.com', 'carlos@delmack.com', 'joao@delmack.com')\nORDER BY name ASC;",
+  "rows": [
+    {
+      "id": "broker_company_test_001_001",
+      "name": "Carlos Oliveira",
+      "email": "carlos@delmack.com",
+      "companyId": "company_test_001",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_test_001_002",
+      "name": "João Silva",
+      "email": "joao@delmack.com",
+      "companyId": "company_test_001",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_test_001_003",
+      "name": "Maria Santos",
+      "email": "maria@delmack.com",
+      "companyId": "company_test_001",
+      "role": "broker"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\trole\nbroker_company_test_001_001\tCarlos Oliveira\tcarlos@delmack.com\tcompany_test_001\tbroker\nbroker_company_test_001_002\tJoão Silva\tjoao@delmack.com\tcompany_test_001\tbroker\nbroker_company_test_001_003\tMaria Santos\tmaria@delmack.com\tcompany_test_001\tbroker\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

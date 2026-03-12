@@ -366,9 +366,9 @@ ${sale.observation || "Nenhuma observação"}
             </Card>
           )}
 
-          {/* Histórico */}
-          <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> Histórico de Alterações</CardTitle></CardHeader>
+          {/* Observações e Histórico */}
+          <Card id="observations">
+            <CardHeader><CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> Observações e histórico de alterações</CardTitle></CardHeader>
             <CardContent>
               {!history || history.length === 0 ? (
                 <p className="text-slate-500">Nenhuma alteração registrada</p>

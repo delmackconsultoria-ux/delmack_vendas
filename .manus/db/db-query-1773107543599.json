@@ -1,0 +1,78 @@
+{
+  "query": "\n-- Listar todas as companies\nSELECT id, name FROM companies;\n\n-- Contar usuários por company\nSELECT companyId, COUNT(*) as total_usuarios FROM users GROUP BY companyId;\n\n-- Contar vendas por company\nSELECT companyId, COUNT(*) as total_vendas FROM sales GROUP BY companyId;\n\n-- Contar vendas históricas por company\nSELECT companyId, COUNT(*) as total_historicas FROM historicalSales GROUP BY companyId;\n\n-- Contar comissões por company\nSELECT companyId, COUNT(*) as total_comissoes FROM commissions GROUP BY companyId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute \n-- Listar todas as companies\nSELECT id, name FROM companies;\n\n-- Contar usuários por company\nSELECT companyId, COUNT(*) as total_usuarios FROM users GROUP BY companyId;\n\n-- Contar vendas por company\nSELECT companyId, COUNT(*) as total_vendas FROM sales GROUP BY companyId;\n\n-- Contar vendas históricas por company\nSELECT companyId, COUNT(*) as total_historicas FROM historicalSales GROUP BY companyId;\n\n-- Contar comissões por company\nSELECT companyId, COUNT(*) as total_comissoes FROM commissions GROUP BY companyId;\n",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes"
+    },
+    {
+      "id": "company_test_001",
+      "name": "Delmack Imóveis"
+    },
+    {
+      "id": "companyId",
+      "name": "total_usuarios"
+    },
+    {
+      "id": "company_1766331506068",
+      "name": "35"
+    },
+    {
+      "id": "B I IMOVEIS LTDA",
+      "name": "1"
+    },
+    {
+      "id": "company_test_001",
+      "name": "4"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "3"
+    },
+    {
+      "id": "NULL",
+      "name": "1"
+    },
+    {
+      "id": "companyId",
+      "name": "total_vendas"
+    },
+    {
+      "id": "B I IMOVEIS LTDA",
+      "name": "161"
+    },
+    {
+      "id": "company_1766331506068",
+      "name": "16"
+    },
+    {
+      "id": "company_test_001",
+      "name": "14"
+    },
+    {
+      "id": "companyId",
+      "name": "total_historicas"
+    },
+    {
+      "id": "company_test_001",
+      "name": "10"
+    },
+    {
+      "id": "companyId",
+      "name": "total_comissoes"
+    },
+    {
+      "id": "company_1766331506068",
+      "name": "12"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ncompany_1766331506068\tB I IMOVEIS LTDA\ncompany_1766344499112\tTestes\ncompany_test_001\tDelmack Imóveis\ncompanyId\ttotal_usuarios\ncompany_1766331506068\t35\nB I IMOVEIS LTDA\t1\ncompany_test_001\t4\ncompany_1766344499112\t3\nNULL\t1\ncompanyId\ttotal_vendas\nB I IMOVEIS LTDA\t161\ncompany_1766331506068\t16\ncompany_test_001\t14\ncompanyId\ttotal_historicas\ncompany_test_001\t10\ncompanyId\ttotal_comissoes\ncompany_1766331506068\t12\n",
+  "stderr": "",
+  "execution_time_ms": 109
+}

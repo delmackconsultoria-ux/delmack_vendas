@@ -1,0 +1,30 @@
+{
+  "query": "SELECT companyId, COUNT(*) as total_usuarios FROM users GROUP BY companyId ORDER BY companyId",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT companyId, COUNT(*) as total_usuarios FROM users GROUP BY companyId ORDER BY companyId",
+  "rows": [
+    {
+      "companyId": "NULL",
+      "total_usuarios": "1"
+    },
+    {
+      "companyId": "B I IMOVEIS LTDA",
+      "total_usuarios": "1"
+    },
+    {
+      "companyId": "company_1766331506068",
+      "total_usuarios": "35"
+    },
+    {
+      "companyId": "company_1766344499112",
+      "total_usuarios": "3"
+    },
+    {
+      "companyId": "company_test_001",
+      "total_usuarios": "4"
+    }
+  ],
+  "messages": [],
+  "stdout": "companyId\ttotal_usuarios\nNULL\t1\nB I IMOVEIS LTDA\t1\ncompany_1766331506068\t35\ncompany_1766344499112\t3\ncompany_test_001\t4\n",
+  "stderr": "",
+  "execution_time_ms": 68
+}

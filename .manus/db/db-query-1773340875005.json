@@ -1,0 +1,234 @@
+{
+  "query": "SELECT id, name, email, companyId, role FROM users ORDER BY companyId, name ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, companyId, role FROM users ORDER BY companyId, name ASC;",
+  "rows": [
+    {
+      "id": "superadmin_1765831175979",
+      "name": "Super Admin Delmack",
+      "email": "delmackconsultoria@gmail.com",
+      "companyId": "NULL",
+      "role": "superadmin"
+    },
+    {
+      "id": "broker_company_1766331506068_001",
+      "name": "Adriana Simões Barbosa Karter",
+      "email": "adriana.simoes@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_002",
+      "name": "Allan Sobiech",
+      "email": "allan.sobiech@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_003",
+      "name": "Alu Corretora",
+      "email": "aluguese2025@gmail.com",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "user_1770950171305_j1ap3gfaz",
+      "name": "Angéllica Gerente Teste UP",
+      "email": "angellicapassosup@gmail.com",
+      "companyId": "company_1766331506068",
+      "role": "manager"
+    },
+    {
+      "id": "broker_company_1766331506068_004",
+      "name": "Angellica testes ",
+      "email": "angellicadelle@gmail.com",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "name": "Camila Pires",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "manager"
+    },
+    {
+      "id": "broker_company_1766331506068_007",
+      "name": "Carolina Cardoso ",
+      "email": "carolina.cardoso@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_008",
+      "name": "Charles Luciano Lucca",
+      "email": "charles.lucca@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_010",
+      "name": "Corretor Testes",
+      "email": "corretor@testes.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "user_1766355269539_rf51il6kt",
+      "name": "Darlan Santos Ribeiro ",
+      "email": "Darlan@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "finance"
+    },
+    {
+      "id": "broker_company_1766331506068_011",
+      "name": "Diego Ferreira dos Santos",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_013",
+      "name": "Edmar Antunes",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_016",
+      "name": "Fabiano Buziak",
+      "email": "fabiano@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_017",
+      "name": "Fabio Simões",
+      "email": "fabio@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_020",
+      "name": "Joseli do Rocio Bueno",
+      "email": "joseli@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "user_1766351453637_typa30p2q",
+      "name": "Lucas ",
+      "email": "Lucas@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "manager"
+    },
+    {
+      "id": "broker_company_1766331506068_021",
+      "name": "Marco Antonio do Nascimento João",
+      "email": "marcojoao@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_022",
+      "name": "Maria Carolina Munhoz de Miranda Nicolodi",
+      "email": "carolina.munhoz@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_023",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_026",
+      "name": "Priscilla Gomes Ziolkowski",
+      "email": "priscillagomes@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_027",
+      "name": "Priscilla Pires Andrelle",
+      "email": "priscilla.andrelle@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_029",
+      "name": "Regiana Mirian Baggio Favarini",
+      "email": "regiana@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_030",
+      "name": "Rosani Felix dos Santos",
+      "email": "rosani@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_031",
+      "name": "Sandra Maria Alves de Lima Przybysz",
+      "email": "sandra.lima@baggioimoveis.com.br",
+      "companyId": "company_1766331506068",
+      "role": "broker"
+    },
+    {
+      "id": "user-financeiro-testes",
+      "name": "Financeiro Testes",
+      "email": "financeiro@testes.com.br",
+      "companyId": "company_1766344499112",
+      "role": "finance"
+    },
+    {
+      "id": "user-gerente-testes",
+      "name": "Gerente Testes",
+      "email": "gerente@testes.com.br",
+      "companyId": "company_1766344499112",
+      "role": "manager"
+    },
+    {
+      "id": "user_1766357600050_mxemhxyo8",
+      "name": "Ver",
+      "email": "Ver@testes.com.br",
+      "companyId": "company_1766344499112",
+      "role": "viewer"
+    },
+    {
+      "id": "broker_company_test_001_001",
+      "name": "Carlos Oliveira",
+      "email": "carlos@delmack.com",
+      "companyId": "company_test_001",
+      "role": "broker"
+    },
+    {
+      "id": "user_manager_001",
+      "name": "Gerente Teste",
+      "email": "gerente@delmack.com",
+      "companyId": "company_test_001",
+      "role": "manager"
+    },
+    {
+      "id": "broker_company_test_001_002",
+      "name": "João Silva",
+      "email": "joao@delmack.com",
+      "companyId": "company_test_001",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_test_001_003",
+      "name": "Maria Santos",
+      "email": "maria@delmack.com",
+      "companyId": "company_test_001",
+      "role": "broker"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tcompanyId\trole\nsuperadmin_1765831175979\tSuper Admin Delmack\tdelmackconsultoria@gmail.com\tNULL\tsuperadmin\nbroker_company_1766331506068_001\tAdriana Simões Barbosa Karter\tadriana.simoes@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_002\tAllan Sobiech\tallan.sobiech@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_003\tAlu Corretora\taluguese2025@gmail.com\tcompany_1766331506068\tbroker\nuser_1770950171305_j1ap3gfaz\tAngéllica Gerente Teste UP\tangellicapassosup@gmail.com\tcompany_1766331506068\tmanager\nbroker_company_1766331506068_004\tAngellica testes \tangellicadelle@gmail.com\tcompany_1766331506068\tbroker\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tcompany_1766331506068\tmanager\nbroker_company_1766331506068_007\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_008\tCharles Luciano Lucca\tcharles.lucca@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_010\tCorretor Testes\tcorretor@testes.com.br\tcompany_1766331506068\tbroker\nuser_1766355269539_rf51il6kt\tDarlan Santos Ribeiro \tDarlan@baggioimoveis.com.br\tcompany_1766331506068\tfinance\nbroker_company_1766331506068_011\tDiego Ferreira dos Santos\tdiego.ferreira@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_013\tEdmar Antunes\tedmar.antunes@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_016\tFabiano Buziak\tfabiano@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_017\tFabio Simões\tfabio@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_020\tJoseli do Rocio Bueno\tjoseli@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nuser_1766351453637_typa30p2q\tLucas \tLucas@baggioimoveis.com.br\tcompany_1766331506068\tmanager\nbroker_company_1766331506068_021\tMarco Antonio do Nascimento João\tmarcojoao@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_022\tMaria Carolina Munhoz de Miranda Nicolodi\tcarolina.munhoz@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_023\tOdair Amancio\todair@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_026\tPriscilla Gomes Ziolkowski\tpriscillagomes@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_027\tPriscilla Pires Andrelle\tpriscilla.andrelle@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_029\tRegiana Mirian Baggio Favarini\tregiana@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_030\tRosani Felix dos Santos\trosani@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nbroker_company_1766331506068_031\tSandra Maria Alves de Lima Przybysz\tsandra.lima@baggioimoveis.com.br\tcompany_1766331506068\tbroker\nuser-financeiro-testes\tFinanceiro Testes\tfinanceiro@testes.com.br\tcompany_1766344499112\tfinance\nuser-gerente-testes\tGerente Testes\tgerente@testes.com.br\tcompany_1766344499112\tmanager\nuser_1766357600050_mxemhxyo8\tVer\tVer@testes.com.br\tcompany_1766344499112\tviewer\nbroker_company_test_001_001\tCarlos Oliveira\tcarlos@delmack.com\tcompany_test_001\tbroker\nuser_manager_001\tGerente Teste\tgerente@delmack.com\tcompany_test_001\tmanager\nbroker_company_test_001_002\tJoão Silva\tjoao@delmack.com\tcompany_test_001\tbroker\nbroker_company_test_001_003\tMaria Santos\tmaria@delmack.com\tcompany_test_001\tbroker\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

@@ -9,6 +9,7 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { createProperfyRestRouter } from "../properfy-rest";
 import { initProperfySyncScheduler } from "../jobs/properfySyncJob";
+import { initProperfyLeadsSyncScheduler } from "../jobs/properfyLeadsSyncJob";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -77,6 +78,9 @@ async function startServer() {
     
     // Initialize Properfy sync scheduler (runs daily at 2 AM)
     initProperfySyncScheduler();
+    
+    // Initialize Properfy leads sync scheduler (runs every hour)
+    initProperfyLeadsSyncScheduler();
   });
 }
 

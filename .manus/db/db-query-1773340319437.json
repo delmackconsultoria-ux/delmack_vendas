@@ -1,0 +1,35 @@
+{
+  "query": "SELECT \n  companyId,\n  COUNT(*) as total_usuarios,\n  GROUP_CONCAT(DISTINCT role) as roles\nFROM users\nGROUP BY companyId\nORDER BY companyId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  companyId,\n  COUNT(*) as total_usuarios,\n  GROUP_CONCAT(DISTINCT role) as roles\nFROM users\nGROUP BY companyId\nORDER BY companyId;",
+  "rows": [
+    {
+      "companyId": "NULL",
+      "total_usuarios": "1",
+      "roles": "superadmin"
+    },
+    {
+      "companyId": "B I IMOVEIS LTDA",
+      "total_usuarios": "1",
+      "roles": "manager"
+    },
+    {
+      "companyId": "company_1766331506068",
+      "total_usuarios": "23",
+      "roles": "broker,finance,manager"
+    },
+    {
+      "companyId": "company_1766344499112",
+      "total_usuarios": "3",
+      "roles": "viewer,finance,manager"
+    },
+    {
+      "companyId": "company_test_001",
+      "total_usuarios": "4",
+      "roles": "broker,manager"
+    }
+  ],
+  "messages": [],
+  "stdout": "companyId\ttotal_usuarios\troles\nNULL\t1\tsuperadmin\nB I IMOVEIS LTDA\t1\tmanager\ncompany_1766331506068\t23\tbroker,finance,manager\ncompany_1766344499112\t3\tviewer,finance,manager\ncompany_test_001\t4\tbroker,manager\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

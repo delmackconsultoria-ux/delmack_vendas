@@ -185,7 +185,7 @@ export default function ProposalManagement() {
           <TabsList className="grid w-full max-w-3xl grid-cols-3 mb-6">
             <TabsTrigger value="history">Histórico de Vendas</TabsTrigger>
             <TabsTrigger value="commissions">Comissões Recebidas</TabsTrigger>
-            <TabsTrigger value="audit">Histórico de Alterações</TabsTrigger>
+            <TabsTrigger value="audit">Observações e histórico de alterações</TabsTrigger>
           </TabsList>
 
           <TabsContent value="history" className="space-y-6">

@@ -1,0 +1,8 @@
+{
+  "query": "SELECT 'sales' as tabela, COUNT(*) as total FROM sales WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'historicalSales', COUNT(*) FROM historicalSales WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'commissions', COUNT(*) FROM commissions WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'brokers', COUNT(*) FROM brokers WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'users', COUNT(*) FROM users WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'properties', COUNT(*) FROM properties WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'properfyProperties', COUNT(*) FROM properfyProperties",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT 'sales' as tabela, COUNT(*) as total FROM sales WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'historicalSales', COUNT(*) FROM historicalSales WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'commissions', COUNT(*) FROM commissions WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'brokers', COUNT(*) FROM brokers WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'users', COUNT(*) FROM users WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'properties', COUNT(*) FROM properties WHERE companyId = 'company_baggio_001'\nUNION ALL\nSELECT 'properfyProperties', COUNT(*) FROM properfyProperties",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'fwqutmfhrectsndnobiuko.brokers' doesn't exist"
+  ]
+}
