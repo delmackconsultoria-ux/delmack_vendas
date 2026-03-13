@@ -118,19 +118,23 @@ export const indicatorsRouter = router({
         // Indicadores do Properfy
         const activeProperties = await properfyIndicators.calculateActivePropertiesCount(
           startDate,
-          endDate
+          endDate,
+          companyId
         );
         const angariations = await properfyIndicators.calculateAngariationsCount(
           startDate,
-          endDate
+          endDate,
+          companyId
         );
         const removedProperties = await properfyIndicators.calculateRemovedPropertiesCount(
           startDate,
-          endDate
+          endDate,
+          companyId
         );
         const prevMonthActiveProperties = await properfyIndicators.calculateActivePropertiesCount(
           prevMonthStart,
-          prevMonthEnd
+          prevMonthEnd,
+          companyId
         );
         const vso = await properfyIndicators.calculateVSO(
           salesCount,
@@ -143,6 +147,11 @@ export const indicatorsRouter = router({
         const launchAttendances = await properfyIndicators.calculateLaunchAttendances(
           startDate,
           endDate
+        );
+        const averageSaleTime = await properfyIndicators.calculateAverageSaleTime(
+          startDate,
+          endDate,
+          companyId
         );
 
         return {
@@ -172,6 +181,7 @@ export const indicatorsRouter = router({
           vsoVendaOferta: vso,
           atendimentosProntos: readyAttendances,
           atendimentosLancamentos: launchAttendances,
+          tempoMedioVendaAngVenda: averageSaleTime,
 
           // Manuais (valores padrão - devem ser preenchidos manualmente)
           despesaGeral: 0,
@@ -184,6 +194,221 @@ export const indicatorsRouter = router({
         console.error("[Indicators] Erro ao calcular indicadores:", error);
         throw error;
       }
+    }),
+
+  /**
+   * Obter indicadores de todos os 12 meses de um ano
+   */
+  getYearIndicators: publicProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+        year: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { companyId, year } = input;
+      const monthlyData: any[] = [];
+
+      for (let month = 1; month <= 12; month++) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+        
+        const prevMonthStart = new Date(year, month - 2, 1);
+        const prevMonthEnd = new Date(year, month - 1, 0);
+
+        try {
+          // Indicadores do Sistema de Vendas
+          const salesValue = await salesIndicators.calculateSalesValueMonth(
+            companyId,
+            startDate,
+            endDate
+          );
+          const salesCount = await salesIndicators.calculateSalesCountMonth(
+            companyId,
+            startDate,
+            endDate
+          );
+          const cancelledSales = await salesIndicators.calculateCancelledSalesCount(
+            companyId,
+            startDate,
+            endDate
+          );
+          const commissionReceived = await salesIndicators.calculateCommissionReceived(
+            companyId,
+            startDate,
+            endDate
+          );
+          const commissionSold = await salesIndicators.calculateCommissionSold(
+            companyId,
+            startDate,
+            endDate
+          );
+          const commissionPending = await salesIndicators.calculateCommissionPending(
+            companyId,
+            startDate,
+            endDate
+          );
+          const percentCommission = await salesIndicators.calculatePercentCommissionSold(
+            companyId,
+            startDate,
+            endDate
+          );
+          const salesAbove1M = await salesIndicators.calculateSalesAbove1M(
+            companyId,
+            startDate,
+            endDate
+          );
+          const avgPaymentDays = await salesIndicators.calculateAvgPaymentDays(
+            companyId,
+            startDate,
+            endDate
+          );
+          const percentCancelledPending = await salesIndicators.calculatePercentCancelledPending(
+            companyId,
+            startDate,
+            endDate
+          );
+          const avgPropertyValue = await salesIndicators.calculateAvgPropertyValue(
+            companyId,
+            startDate,
+            endDate
+          );
+          const salesUNA = await salesIndicators.calculateSalesUNA(
+            companyId,
+            startDate,
+            endDate
+          );
+          const salesInternal = await salesIndicators.calculateSalesInternal(
+            companyId,
+            startDate,
+            endDate
+          );
+          const salesExternalPartner = await salesIndicators.calculateSalesExternalPartner(
+            companyId,
+            startDate,
+            endDate
+          );
+          const salesLaunch = await salesIndicators.calculateSalesLaunch(
+            companyId,
+            startDate,
+            endDate
+          );
+
+          // Indicadores do Properfy
+          const activeProperties = await properfyIndicators.calculateActivePropertiesCount(
+            startDate,
+            endDate,
+            companyId
+          );
+          const angariations = await properfyIndicators.calculateAngariationsCount(
+            startDate,
+            endDate,
+            companyId
+          );
+          const removedProperties = await properfyIndicators.calculateRemovedPropertiesCount(
+            startDate,
+            endDate,
+            companyId
+          );
+          const prevMonthActiveProperties = await properfyIndicators.calculateActivePropertiesCount(
+            prevMonthStart,
+            prevMonthEnd,
+            companyId
+          );
+          const vso = await properfyIndicators.calculateVSO(
+            salesCount,
+            prevMonthActiveProperties
+          );
+          const readyAttendances = await properfyIndicators.calculateReadyAttendances(
+            startDate,
+            endDate
+          );
+          const launchAttendances = await properfyIndicators.calculateLaunchAttendances(
+            startDate,
+            endDate
+          );
+          const averageSaleTime = await properfyIndicators.calculateAverageSaleTime(
+            startDate,
+            endDate,
+            companyId
+          );
+
+          monthlyData.push({
+            month,
+            // Sistema de Vendas
+            negociosValor: salesValue.value,
+            negociosUnidades: salesCount,
+            vendidosCancelados: cancelledSales,
+            comissaoRecebida: commissionReceived,
+            comissaoVendida: commissionSold,
+            comissaoPendente: commissionPending,
+            percentualComissaoVendida: percentCommission,
+            negociosAcima1M: salesAbove1M,
+            prazoMedioRecebimento: avgPaymentDays,
+            percentualCanceladaPendente: percentCancelledPending,
+            valorMedioImovel: avgPropertyValue,
+            negociosRede: salesUNA,
+            negociosInternos: salesInternal,
+            negociosParceriaExterna: salesExternalPartner,
+            negociosLancamentos: salesLaunch,
+
+            // Properfy
+            carteiraAtiva: activeProperties,
+            angariacesMes: angariations,
+            baixasMes: removedProperties,
+            vsoVendaOferta: vso,
+            atendimentosProntos: readyAttendances,
+            atendimentosLancamentos: launchAttendances,
+            tempoMedioVendaAngVenda: averageSaleTime,
+
+            // Manuais
+            despesaGeral: 0,
+            despesaImpostos: 0,
+            fundoInovacao: 0,
+            resultadoSocios: 0,
+            fundoEmergencial: 0,
+          });
+        } catch (error) {
+          console.error(`[Indicators] Erro ao calcular indicadores para ${month}/${year}:`, error);
+          monthlyData.push({
+            month,
+            negociosValor: 0,
+            negociosUnidades: 0,
+            vendidosCancelados: 0,
+            comissaoRecebida: 0,
+            comissaoVendida: 0,
+            comissaoPendente: 0,
+            percentualComissaoVendida: 0,
+            negociosAcima1M: 0,
+            prazoMedioRecebimento: 0,
+            percentualCanceladaPendente: 0,
+            valorMedioImovel: 0,
+            negociosRede: 0,
+            negociosInternos: 0,
+            negociosParceriaExterna: 0,
+            negociosLancamentos: 0,
+            carteiraAtiva: 0,
+            angariacesMes: 0,
+            baixasMes: 0,
+            vsoVendaOferta: 0,
+            atendimentosProntos: 0,
+            atendimentosLancamentos: 0,
+            tempoMedioVendaAngVenda: 0,
+            despesaGeral: 0,
+            despesaImpostos: 0,
+            fundoInovacao: 0,
+            resultadoSocios: 0,
+            fundoEmergencial: 0,
+          });
+        }
+      }
+
+      return {
+        success: true,
+        year,
+        monthlyData,
+      };
     }),
 
   /**

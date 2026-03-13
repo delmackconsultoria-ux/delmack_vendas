@@ -6,6 +6,7 @@ import {
   calculateReceivedCommissions,
   calculateActivePortfolio,
 } from "../dashboardHelpers";
+import * as properfyIndicators from "../indicators/properfyIndicators";
 
 export const dashboardRouter = router({
   getKPIs: protectedProcedure.query(async ({ ctx }) => {
@@ -17,19 +18,28 @@ export const dashboardRouter = router({
         salesCount: 0,
         averageTicket: 0,
         receivedCommissions: 0,
+        activePortfolio: 0,
+        carteiraAtiva: 0,
+        angariacesMes: 0,
+        baixasMes: 0,
       };
     }
 
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
 
-    const [vgv, salesCount, averageTicket, receivedCommissions, activePortfolio] = await Promise.all([
+    const [vgv, salesCount, averageTicket, receivedCommissions, activePortfolio, carteiraAtiva, angariacesMes, baixasMes] = await Promise.all([
       calculateMonthlyVGV(companyId, month, year),
       calculateMonthlySalesCount(companyId, month, year),
       calculateMonthlyAverageTicket(companyId, month, year),
       calculateReceivedCommissions(companyId, month, year),
       calculateActivePortfolio(companyId),
+      properfyIndicators.calculateActivePropertiesCount(startDate, endDate, companyId),
+      properfyIndicators.calculateAngariationsCount(startDate, endDate, companyId),
+      properfyIndicators.calculateRemovedPropertiesCount(startDate, endDate, companyId),
     ]);
 
     return {
@@ -38,6 +48,9 @@ export const dashboardRouter = router({
       averageTicket,
       receivedCommissions,
       activePortfolio,
+      carteiraAtiva,
+      angariacesMes,
+      baixasMes,
     };
   }),
 });

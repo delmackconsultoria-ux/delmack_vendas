@@ -40,11 +40,23 @@ export default function Indicators() {
     setSelectedIndicator(null);
   };
 
-  // Buscar indicadores reais do backend
+  // Buscar indicadores do mês selecionado
   const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getRealtimeIndicators.useQuery(
     {
       companyId: user?.companyId || user?.id || "",
       month: parseInt(selectedMonth),
+      year: parseInt(selectedYear),
+    },
+    {
+      enabled: !!user,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Buscar indicadores de todos os 12 meses para a tabela consolidada
+  const { data: yearData, isLoading: isLoadingYear } = trpc.indicators.getYearIndicators.useQuery(
+    {
+      companyId: user?.companyId || user?.id || "",
       year: parseInt(selectedYear),
     },
     {
@@ -99,215 +111,195 @@ export default function Indicators() {
     );
   }
 
-  // Construir dados da tabela consolidada
+  // Construir dados da tabela consolidada a partir dos dados do ano
   const buildConsolidatedData = () => {
-    if (!indicatorsData) return [];
+    if (!yearData?.monthlyData || yearData.monthlyData.length === 0) return [];
 
-    const data = indicatorsData;
     const indicators: any[] = [];
 
-    // Mapeamento de indicadores com suas metas e dados
+    // Mapeamento de indicadores com suas metas
     const indicatorsList = [
       {
         title: "Negócios no mês (valor)",
         monthlyGoal: 100000,
         annualAverage: 1200000,
-        value: data.negociosValor || 0,
-        isCurrency: true,
+        fieldName: "negociosValor",
       },
       {
         title: "Negócios no mês (unidades)",
         monthlyGoal: 10,
         annualAverage: 120,
-        value: data.negociosUnidades || 0,
-        isCurrency: false,
+        fieldName: "negociosUnidades",
       },
       {
         title: "Vendas Canceladas",
         monthlyGoal: 2,
         annualAverage: 24,
-        value: data.vendidosCancelados || 0,
-        isCurrency: false,
+        fieldName: "vendidosCancelados",
       },
       {
         title: "VSO - venda/oferta",
         monthlyGoal: 0.05,
         annualAverage: 0.05,
-        value: data.vsoVendaOferta || 0,
-        isCurrency: false,
-        isPercentage: true,
+        fieldName: "vsoVendaOferta",
       },
       {
         title: "Comissão Recebida",
         monthlyGoal: 50000,
         annualAverage: 600000,
-        value: data.comissaoRecebida || 0,
-        isCurrency: true,
+        fieldName: "comissaoRecebida",
       },
       {
         title: "Comissão Vendida",
         monthlyGoal: 75000,
         annualAverage: 900000,
-        value: data.comissaoVendida || 0,
-        isCurrency: true,
+        fieldName: "comissaoVendida",
       },
       {
         title: "Comissão Pendente Final do mês",
         monthlyGoal: 100000,
         annualAverage: 1200000,
-        value: data.comissaoPendente || 0,
-        isCurrency: true,
+        fieldName: "comissaoPendente",
       },
       {
         title: "Carteira de Divulgação (em número)",
         monthlyGoal: 400,
         annualAverage: 400,
-        value: data.carteiraAtiva || 0,
-        isCurrency: false,
+        fieldName: "carteiraAtiva",
       },
       {
         title: "Angariações mês",
         monthlyGoal: 50,
         annualAverage: 600,
-        value: data.angariacesMes || 0,
-        isCurrency: false,
+        fieldName: "angariacesMes",
       },
       {
         title: "Baixas no mês (em quantidade)",
         monthlyGoal: 15,
         annualAverage: 180,
-        value: data.baixasMes || 0,
-        isCurrency: false,
+        fieldName: "baixasMes",
       },
       {
         title: "% comissão vendida",
         monthlyGoal: 0.05,
         annualAverage: 0.05,
-        value: data.percentualComissaoVendida || 0,
-        isCurrency: false,
-        isPercentage: true,
+        fieldName: "percentualComissaoVendida",
       },
       {
         title: "Negócios acima de 1 milhão",
         monthlyGoal: 2,
         annualAverage: 24,
-        value: data.negociosAcima1M || 0,
-        isCurrency: false,
+        fieldName: "negociosAcima1M",
       },
       {
         title: "Número de atendimentos Prontos",
         monthlyGoal: 50,
         annualAverage: 600,
-        value: data.atendimentosProntos || 0,
-        isCurrency: false,
+        fieldName: "atendimentosProntos",
       },
       {
         title: "Número de atendimentos Lançamentos",
         monthlyGoal: 20,
         annualAverage: 240,
-        value: data.atendimentosLancamentos || 0,
-        isCurrency: false,
+        fieldName: "atendimentosLancamentos",
       },
       {
         title: "Prazo médio recebimento de venda",
         monthlyGoal: 30,
         annualAverage: 30,
-        value: data.prazoMedioRecebimento || 0,
-        isCurrency: false,
-        isDays: true,
+        fieldName: "prazoMedioRecebimento",
       },
       {
         title: "% Com cancelada / com pendente",
         monthlyGoal: 0.1,
         annualAverage: 0.1,
-        value: data.percentualCanceladaPendente || 0,
-        isCurrency: false,
-        isPercentage: true,
+        fieldName: "percentualCanceladaPendente",
       },
       {
         title: "Tempo médio de venda ang X venda",
         monthlyGoal: 60,
         annualAverage: 60,
-        value: 0, // Será calculado quando houver dados
-        isCurrency: false,
-        isDays: true,
+        fieldName: "tempoMedioVendaAngVenda",
       },
       {
         title: "Valor médio do imóvel de venda",
         monthlyGoal: 500000,
         annualAverage: 500000,
-        value: data.valorMedioImovel || 0,
-        isCurrency: true,
+        fieldName: "valorMedioImovel",
       },
       {
         title: "Negócios na Rede",
         monthlyGoal: 3,
         annualAverage: 36,
-        value: data.negociosRede || 0,
-        isCurrency: false,
+        fieldName: "negociosRede",
       },
       {
         title: "Negócios Internos",
         monthlyGoal: 4,
         annualAverage: 48,
-        value: data.negociosInternos || 0,
-        isCurrency: false,
+        fieldName: "negociosInternos",
       },
       {
         title: "Negócios Parceria Externa",
         monthlyGoal: 2,
         annualAverage: 24,
-        value: data.negociosParceriaExterna || 0,
-        isCurrency: false,
+        fieldName: "negociosParceriaExterna",
       },
       {
         title: "Negócios Lançamentos",
         monthlyGoal: 1,
         annualAverage: 12,
-        value: data.negociosLancamentos || 0,
-        isCurrency: false,
+        fieldName: "negociosLancamentos",
       },
       {
         title: "Despesa Geral",
         monthlyGoal: 10000,
         annualAverage: 120000,
-        value: data.despesaGeral || 0,
-        isCurrency: true,
+        fieldName: "despesaGeral",
       },
       {
         title: "Despesa com impostos",
         monthlyGoal: 5000,
         annualAverage: 60000,
-        value: data.despesaImpostos || 0,
-        isCurrency: true,
+        fieldName: "despesaImpostos",
       },
       {
         title: "Fundo Inovação",
         monthlyGoal: 2000,
         annualAverage: 24000,
-        value: data.fundoInovacao || 0,
-        isCurrency: true,
+        fieldName: "fundoInovacao",
       },
       {
         title: "Resultado Sócios",
         monthlyGoal: 50000,
         annualAverage: 600000,
-        value: data.resultadoSocios || 0,
-        isCurrency: true,
+        fieldName: "resultadoSocios",
       },
       {
         title: "Fundo emergencial",
         monthlyGoal: 10000,
         annualAverage: 120000,
-        value: data.fundoEmergencial || 0,
-        isCurrency: true,
+        fieldName: "fundoEmergencial",
       },
     ];
 
-    // Construir dados com meses (placeholder - será preenchido com dados reais)
+    // Construir dados com meses reais
     indicatorsList.forEach((ind) => {
-      const total = ind.value;
-      const monthlyValue = total / 12; // Distribuição simplificada
+      const months = {
+        jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0,
+        jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0,
+      };
+      const monthKeys = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+      let total = 0;
+
+      // Preencher dados de cada mês
+      yearData.monthlyData.forEach((monthData: any) => {
+        const value = monthData[ind.fieldName] || 0;
+        const monthKey = monthKeys[monthData.month - 1];
+        months[monthKey as keyof typeof months] = value;
+        total += value;
+      });
+
       const percentage = ind.monthlyGoal > 0 ? (total / (ind.monthlyGoal * 12)) * 100 : 0;
 
       indicators.push({
@@ -316,20 +308,7 @@ export default function Indicators() {
         annualAverage: ind.annualAverage,
         percentageAchieved: percentage,
         total: total,
-        months: {
-          jan: monthlyValue,
-          fev: monthlyValue,
-          mar: monthlyValue,
-          abr: monthlyValue,
-          mai: monthlyValue,
-          jun: monthlyValue,
-          jul: monthlyValue,
-          ago: monthlyValue,
-          set: monthlyValue,
-          out: monthlyValue,
-          nov: monthlyValue,
-          dez: monthlyValue,
-        },
+        months: months,
       });
     });
 
@@ -528,7 +507,7 @@ export default function Indicators() {
         </div>
 
         {/* Tabela Consolidada */}
-        {isLoading ? (
+        {isLoadingYear ? (
           <Card>
             <CardContent className="flex items-center justify-center h-32">
               <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -537,7 +516,7 @@ export default function Indicators() {
         ) : (
           <IndicatorsConsolidatedTable
             indicators={buildConsolidatedData()}
-            isLoading={isLoading}
+            isLoading={false}
             year={parseInt(selectedYear)}
           />
         )}

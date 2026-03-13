@@ -117,7 +117,7 @@ export default function DashboardManager() {
               </CardContent>
             </Card>
 
-            {/* Comissões Recebidas */}
+             {/* Comissões Recebidas */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
@@ -141,8 +141,6 @@ export default function DashboardManager() {
                 <p className="text-xs text-slate-600 mt-2">Este mês</p>
               </CardContent>
             </Card>
-
-
           </div>
 
           {/* Charts - Removido dados mock, será implementado com dados reais */}

@@ -1,0 +1,16 @@
+{
+  "query": "SELECT COUNT(*) as total_vendas, \n       SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as vendas_aprovadas,\n       SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as vendas_concluidas,\n       SUM(saleValue) as valor_total_vendas\nFROM sales \nWHERE companyId = 'company_1766331506068';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_vendas, \n       SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as vendas_aprovadas,\n       SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as vendas_concluidas,\n       SUM(saleValue) as valor_total_vendas\nFROM sales \nWHERE companyId = 'company_1766331506068';",
+  "rows": [
+    {
+      "total_vendas": "16",
+      "vendas_aprovadas": "0",
+      "vendas_concluidas": "0",
+      "valor_total_vendas": "1356364.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_vendas\tvendas_aprovadas\tvendas_concluidas\tvalor_total_vendas\n16\t0\t0\t1356364.00\n",
+  "stderr": "",
+  "execution_time_ms": 90
+}

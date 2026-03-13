@@ -9,7 +9,8 @@ import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
  */
 export async function calculateActivePropertiesCount(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  companyId: string = 'company_1766331506068'
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -21,7 +22,8 @@ export async function calculateActivePropertiesCount(
       and(
         eq(properfyProperties.chrStatus, "LISTED"),
         eq(properfyProperties.isActive, 1),
-        sql`${properfyProperties.chrPurpose} LIKE '%SALE%'`
+        sql`${properfyProperties.chrPurpose} LIKE '%SALE%'`,
+        eq(properfyProperties.companyId, companyId)
       )
     );
 
@@ -35,7 +37,8 @@ export async function calculateActivePropertiesCount(
  */
 export async function calculateAngariationsCount(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  companyId: string = 'company_1766331506068'
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -47,7 +50,8 @@ export async function calculateAngariationsCount(
       and(
         isNotNull(properfyProperties.dteNewListing),
         gte(properfyProperties.dteNewListing, startDate),
-        lte(properfyProperties.dteNewListing, endDate)
+        lte(properfyProperties.dteNewListing, endDate),
+        eq(properfyProperties.companyId, companyId)
       )
     );
 
@@ -61,7 +65,8 @@ export async function calculateAngariationsCount(
  */
 export async function calculateRemovedPropertiesCount(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  companyId: string = 'company_1766331506068'
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -73,7 +78,8 @@ export async function calculateRemovedPropertiesCount(
       and(
         isNotNull(properfyProperties.dteTermination),
         gte(properfyProperties.dteTermination, startDate),
-        lte(properfyProperties.dteTermination, endDate)
+        lte(properfyProperties.dteTermination, endDate),
+        eq(properfyProperties.companyId, companyId)
       )
     );
 
@@ -121,4 +127,38 @@ export async function calculateLaunchAttendances(
     "./properfyLeadsSync"
   );
   return calculateLaunch(startDate, endDate);
+}
+
+
+/**
+ * Tempo médio de venda ang X venda
+ * Calcula o tempo médio em dias entre a data de angariação (dteNewListing) 
+ * e a data de término (dteTermination) para imóveis vendidos
+ * Apenas para imóveis com status 'SOLD'
+ */
+export async function calculateAverageSaleTime(
+  startDate: Date,
+  endDate: Date,
+  companyId: string = 'company_1766331506068'
+): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db
+    .select({
+      avgDays: sql<number>`AVG(DATEDIFF(${properfyProperties.dteTermination}, ${properfyProperties.dteNewListing}))`
+    })
+    .from(properfyProperties)
+    .where(
+      and(
+        eq(properfyProperties.chrStatus, "SOLD"),
+        gte(properfyProperties.dteTermination, startDate),
+        lte(properfyProperties.dteTermination, endDate),
+        isNotNull(properfyProperties.dteNewListing),
+        isNotNull(properfyProperties.dteTermination),
+        eq(properfyProperties.companyId, companyId)
+      )
+    );
+
+  return Math.round(result[0]?.avgDays || 0);
 }
