@@ -8,6 +8,15 @@ type UseAuthOptions = {
   redirectPath?: string;
 };
 
+// Função auxiliar para obter a URL de login corretamente
+function getLoginUrlFallback(): string {
+  try {
+    return getLoginUrl();
+  } catch {
+    return "/login";
+  }
+}
+
 export function useAuth(options?: UseAuthOptions) {
   const { redirectOnUnauthenticated = false, redirectPath = getLoginUrl() } =
     options ?? {};
@@ -38,8 +47,8 @@ export function useAuth(options?: UseAuthOptions) {
     } finally {
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
-      // Redirecionar para Landing Page (Home pública) após logout
-      window.location.href = "/";
+      // Redirecionar para página de login após logout
+      window.location.href = "/login";
     }
   }, [logoutMutation, utils]);
 
