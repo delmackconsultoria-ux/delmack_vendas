@@ -48,12 +48,17 @@ export function ManualDataModal({
 
   const [isSaving, setIsSaving] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(month);
+  const [selectedYear, setSelectedYear] = useState(year);
+
+  // Gerar lista de anos (ano atual até +10 anos)
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 11 }, (_, i) => currentYear + i);
 
   // Buscar dados existentes
   const { data: existingData, isLoading } = trpc.indicators.getMonthlyManualData.useQuery(
     {
       companyId,
-      year,
+      year: selectedYear,
       month: selectedMonth,
     },
     {
@@ -94,7 +99,7 @@ export function ManualDataModal({
     try {
       await saveMutation.mutateAsync({
         companyId,
-        year,
+        year: selectedYear,
         month: selectedMonth,
         ...formData,
       });
@@ -130,7 +135,7 @@ export function ManualDataModal({
         <DialogHeader>
           <DialogTitle>Editar Dados Manuais</DialogTitle>
           <DialogDescription>
-            Preencha os valores para o mês selecionado
+            Preencha os valores para o mês e ano selecionados
           </DialogDescription>
         </DialogHeader>
 
@@ -142,21 +147,39 @@ export function ManualDataModal({
               </p>
             </div>
           )}
-          <div className="space-y-2">
-            <Label htmlFor="month">Mês</Label>
-            <select
-              id="month"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
-              disabled={userRole !== "manager"}
-            >
-              {MONTH_NAMES.map((monthName, idx) => (
-                <option key={monthName} value={idx + 1}>
-                  {monthName} ({year})
-                </option>
-              ))}
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="year">Ano</Label>
+              <select
+                id="year"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                disabled={userRole !== "manager"}
+              >
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="month">Mês</Label>
+              <select
+                id="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                disabled={userRole !== "manager"}
+              >
+                {MONTH_NAMES.map((monthName, idx) => (
+                  <option key={monthName} value={idx + 1}>
+                    {monthName}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           {isLoading ? (
             <div className="flex justify-center py-8">

@@ -1,0 +1,1610 @@
+{
+  "query": "SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME, ORDINAL_POSITION LIMIT 200",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME, ORDINAL_POSITION LIMIT 200",
+  "rows": [
+    {
+      "TABLE_NAME": "__drizzle_migrations",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "bigint unsigned",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "__drizzle_migrations",
+      "COLUMN_NAME": "hash",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "__drizzle_migrations",
+      "COLUMN_NAME": "created_at",
+      "COLUMN_TYPE": "bigint",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "userId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "targetType",
+      "COLUMN_TYPE": "enum('user','company','sale','commission','license')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "targetId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "action",
+      "COLUMN_TYPE": "enum('create','update','delete','activate','deactivate','login','reset_password','block_user','unblock_user','assign_manager','assign_company')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "details",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "actionLogs",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "name",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "description",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "bonusValue",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "bonusPercentage",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "type",
+      "COLUMN_TYPE": "enum('bonificacao','premio','outro')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "linkedTo",
+      "COLUMN_TYPE": "enum('referencia','equipe','meta','nenhum')",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "nenhum"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "linkedValue",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "applicableTo",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "startDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "endDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "isActive",
+      "COLUMN_TYPE": "tinyint(1)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "1"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "createdBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "bonuses",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "commissionId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "saleId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "status",
+      "COLUMN_TYPE": "enum('proposta','enviado_gerente','aprovado_gerente','enviado_financeiro','aprovado_financeiro','recusado','pago')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "proposta"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "sentToManagerAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "approvedByManagerAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "approvedByManagerId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "sentToFinanceAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "approvedByFinanceAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "approvedByFinanceId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "paidAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "rejectionReason",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "rejectedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "rejectedBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "commissionApprovals",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "commissionId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "previousValue",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "newValue",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "previousStatus",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "newStatus",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "changedBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "approvedBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "approvalDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "reason",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionHistory",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "businessType",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "angariadorPercentage",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "vendedorPercentage",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "description",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "commissionRules",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "saleId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "brokerId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "commissionValue",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "commissionPercentage",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "type",
+      "COLUMN_TYPE": "enum('angariacao','venda','parceria')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "status",
+      "COLUMN_TYPE": "enum('pending','received','paid','cancelled')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "pending"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "paymentDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "commissions",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "name",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "email",
+      "COLUMN_TYPE": "varchar(320)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "phone",
+      "COLUMN_TYPE": "varchar(20)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "address",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "logo",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "licenseType",
+      "COLUMN_TYPE": "enum('perpetual','monthly','quarterly','semiannual','annual')",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "monthly"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "licenseExpiresAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "isActive",
+      "COLUMN_TYPE": "tinyint(1)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "1"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "licenseStartDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "contractResponsible",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "contractResponsibleEmail",
+      "COLUMN_TYPE": "varchar(320)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "contractResponsiblePhone",
+      "COLUMN_TYPE": "varchar(20)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "contractStartDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "contractNotes",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "totalLogins",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "0"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "cnpj",
+      "COLUMN_TYPE": "varchar(20)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "UNI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "notificationEmail",
+      "COLUMN_TYPE": "varchar(320)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "companies",
+      "COLUMN_NAME": "tradeName",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "goals",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "goals",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "goals",
+      "COLUMN_NAME": "year",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "goals",
+      "COLUMN_NAME": "month",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "goals",
+      "COLUMN_NAME": "teamGoal",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "goals",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "goals",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "propertyReference",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "propertyAddress",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "propertyNeighborhood",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "businessType",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "saleDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "acquisitionDate",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "listingPrice",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "salePrice",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "commissionAmount",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "commissionPercentage",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "acquisitionBrokerName",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "saleBrokerName",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "acquisitionStore",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "saleStore",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "clientSource",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "paymentMethod",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "status",
+      "COLUMN_TYPE": "varchar(50)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "commission_paid"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "historicalSales",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "indicatorDetails",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorDetails",
+      "COLUMN_NAME": "snapshotId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorDetails",
+      "COLUMN_NAME": "indicatorName",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorDetails",
+      "COLUMN_NAME": "entityType",
+      "COLUMN_TYPE": "varchar(50)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorDetails",
+      "COLUMN_NAME": "entityIds",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorDetails",
+      "COLUMN_NAME": "calculationDetails",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorDetails",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "indicatorName",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "year",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "monthlyGoal",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "annualAverage",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "createdBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "indicatorGoals",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "modelType",
+      "COLUMN_TYPE": "enum('paymentMethod','clientOrigin','carteiraSituation','teamType','rejectionReason','businessType')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "name",
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "description",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "isDefault",
+      "COLUMN_TYPE": "tinyint(1)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "0"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "isActive",
+      "COLUMN_TYPE": "tinyint(1)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "1"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "createdBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "models",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "month",
+      "COLUMN_TYPE": "varchar(7)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "generalExpense",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "taxExpense",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "innovationFund",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "partnerResult",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "emergencyFund",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "createdBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicators",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "companyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "month",
+      "COLUMN_TYPE": "varchar(7)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "year",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "monthNumber",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "salesValueMonth",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "salesCountMonth",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "cancelledSalesCount",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "commissionReceived",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "commissionSold",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "commissionPendingEndMonth",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "percentCommissionSold",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "salesAbove1M",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "avgPaymentDays",
+      "COLUMN_TYPE": "decimal(10,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "percentCancelledVsPending",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "avgSaleTime",
+      "COLUMN_TYPE": "decimal(10,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "avgPropertyValue",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "salesUNA",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "salesInternal",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "salesExternalPartner",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "salesLaunch",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "activePropertiesCount",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "angariationsCount",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "removedPropertiesCount",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "leadsReadyCount",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "leadsLaunchCount",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "vso",
+      "COLUMN_TYPE": "decimal(5,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "generalExpense",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "taxExpense",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "innovationFund",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "partnerResult",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "emergencyFund",
+      "COLUMN_TYPE": "decimal(15,2)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "isClosed",
+      "COLUMN_TYPE": "tinyint(1)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "0"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "closedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "closedBy",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "monthlyIndicatorsSnapshot",
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "CURRENT_TIMESTAMP"
+    },
+    {
+      "TABLE_NAME": "properfyLeads",
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "properfyLeads",
+      "COLUMN_NAME": "propertyId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    },
+    {
+      "TABLE_NAME": "properfyLeads",
+      "COLUMN_NAME": "leadId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "",
+      "COLUMN_DEFAULT": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "TABLE_NAME\tCOLUMN_NAME\tCOLUMN_TYPE\tIS_NULLABLE\tCOLUMN_KEY\tCOLUMN_DEFAULT\n__drizzle_migrations\tid\tbigint unsigned\tNO\tPRI\tNULL\n__drizzle_migrations\thash\ttext\tNO\t\tNULL\n__drizzle_migrations\tcreated_at\tbigint\tYES\t\tNULL\nactionLogs\tid\tvarchar(64)\tNO\tPRI\tNULL\nactionLogs\tcompanyId\tvarchar(64)\tYES\t\tNULL\nactionLogs\tuserId\tvarchar(64)\tNO\t\tNULL\nactionLogs\ttargetType\tenum('user','company','sale','commission','license')\tNO\t\tNULL\nactionLogs\ttargetId\tvarchar(64)\tYES\t\tNULL\nactionLogs\taction\tenum('create','update','delete','activate','deactivate','login','reset_password','block_user','unblock_user','assign_manager','assign_company')\tNO\t\tNULL\nactionLogs\tdetails\ttext\tYES\t\tNULL\nactionLogs\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nbonuses\tid\tvarchar(64)\tNO\tPRI\tNULL\nbonuses\tcompanyId\tvarchar(64)\tNO\t\tNULL\nbonuses\tname\tvarchar(255)\tNO\t\tNULL\nbonuses\tdescription\ttext\tYES\t\tNULL\nbonuses\tbonusValue\tdecimal(15,2)\tYES\t\tNULL\nbonuses\tbonusPercentage\tdecimal(5,2)\tYES\t\tNULL\nbonuses\ttype\tenum('bonificacao','premio','outro')\tNO\t\tNULL\nbonuses\tlinkedTo\tenum('referencia','equipe','meta','nenhum')\tYES\t\tnenhum\nbonuses\tlinkedValue\tvarchar(255)\tYES\t\tNULL\nbonuses\tapplicableTo\tvarchar(255)\tYES\t\tNULL\nbonuses\tstartDate\ttimestamp\tYES\t\tNULL\nbonuses\tendDate\ttimestamp\tYES\t\tNULL\nbonuses\tisActive\ttinyint(1)\tYES\t\t1\nbonuses\tcreatedBy\tvarchar(64)\tNO\t\tNULL\nbonuses\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nbonuses\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncommissionApprovals\tid\tvarchar(64)\tNO\tPRI\tNULL\ncommissionApprovals\tcommissionId\tvarchar(64)\tNO\t\tNULL\ncommissionApprovals\tsaleId\tvarchar(64)\tNO\t\tNULL\ncommissionApprovals\tcompanyId\tvarchar(64)\tNO\t\tNULL\ncommissionApprovals\tstatus\tenum('proposta','enviado_gerente','aprovado_gerente','enviado_financeiro','aprovado_financeiro','recusado','pago')\tNO\t\tproposta\ncommissionApprovals\tsentToManagerAt\ttimestamp\tYES\t\tNULL\ncommissionApprovals\tapprovedByManagerAt\ttimestamp\tYES\t\tNULL\ncommissionApprovals\tapprovedByManagerId\tvarchar(64)\tYES\t\tNULL\ncommissionApprovals\tsentToFinanceAt\ttimestamp\tYES\t\tNULL\ncommissionApprovals\tapprovedByFinanceAt\ttimestamp\tYES\t\tNULL\ncommissionApprovals\tapprovedByFinanceId\tvarchar(64)\tYES\t\tNULL\ncommissionApprovals\tpaidAt\ttimestamp\tYES\t\tNULL\ncommissionApprovals\trejectionReason\ttext\tYES\t\tNULL\ncommissionApprovals\trejectedAt\ttimestamp\tYES\t\tNULL\ncommissionApprovals\trejectedBy\tvarchar(64)\tYES\t\tNULL\ncommissionApprovals\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncommissionApprovals\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncommissionHistory\tid\tvarchar(64)\tNO\tPRI\tNULL\ncommissionHistory\tcommissionId\tvarchar(64)\tNO\t\tNULL\ncommissionHistory\tpreviousValue\tdecimal(15,2)\tYES\t\tNULL\ncommissionHistory\tnewValue\tdecimal(15,2)\tNO\t\tNULL\ncommissionHistory\tpreviousStatus\tvarchar(64)\tYES\t\tNULL\ncommissionHistory\tnewStatus\tvarchar(64)\tNO\t\tNULL\ncommissionHistory\tchangedBy\tvarchar(64)\tNO\t\tNULL\ncommissionHistory\tapprovedBy\tvarchar(64)\tYES\t\tNULL\ncommissionHistory\tapprovalDate\ttimestamp\tYES\t\tNULL\ncommissionHistory\treason\ttext\tYES\t\tNULL\ncommissionHistory\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncommissionRules\tid\tvarchar(64)\tNO\tPRI\tNULL\ncommissionRules\tcompanyId\tvarchar(64)\tNO\t\tNULL\ncommissionRules\tbusinessType\tvarchar(255)\tNO\t\tNULL\ncommissionRules\tangariadorPercentage\tdecimal(5,2)\tNO\t\tNULL\ncommissionRules\tvendedorPercentage\tdecimal(5,2)\tNO\t\tNULL\ncommissionRules\tdescription\ttext\tYES\t\tNULL\ncommissionRules\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncommissionRules\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncommissions\tid\tvarchar(64)\tNO\tPRI\tNULL\ncommissions\tsaleId\tvarchar(64)\tNO\t\tNULL\ncommissions\tcompanyId\tvarchar(64)\tNO\t\tNULL\ncommissions\tbrokerId\tvarchar(64)\tNO\t\tNULL\ncommissions\tcommissionValue\tdecimal(15,2)\tNO\t\tNULL\ncommissions\tcommissionPercentage\tdecimal(5,2)\tNO\t\tNULL\ncommissions\ttype\tenum('angariacao','venda','parceria')\tNO\t\tNULL\ncommissions\tstatus\tenum('pending','received','paid','cancelled')\tNO\t\tpending\ncommissions\tpaymentDate\ttimestamp\tYES\t\tNULL\ncommissions\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncommissions\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncompanies\tid\tvarchar(64)\tNO\tPRI\tNULL\ncompanies\tname\tvarchar(255)\tNO\t\tNULL\ncompanies\temail\tvarchar(320)\tYES\t\tNULL\ncompanies\tphone\tvarchar(20)\tYES\t\tNULL\ncompanies\taddress\ttext\tYES\t\tNULL\ncompanies\tlogo\ttext\tYES\t\tNULL\ncompanies\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncompanies\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ncompanies\tlicenseType\tenum('perpetual','monthly','quarterly','semiannual','annual')\tYES\t\tmonthly\ncompanies\tlicenseExpiresAt\ttimestamp\tYES\t\tNULL\ncompanies\tisActive\ttinyint(1)\tYES\t\t1\ncompanies\tlicenseStartDate\ttimestamp\tYES\t\tNULL\ncompanies\tcontractResponsible\tvarchar(255)\tYES\t\tNULL\ncompanies\tcontractResponsibleEmail\tvarchar(320)\tYES\t\tNULL\ncompanies\tcontractResponsiblePhone\tvarchar(20)\tYES\t\tNULL\ncompanies\tcontractStartDate\ttimestamp\tYES\t\tNULL\ncompanies\tcontractNotes\ttext\tYES\t\tNULL\ncompanies\ttotalLogins\tint\tYES\t\t0\ncompanies\tcnpj\tvarchar(20)\tYES\tUNI\tNULL\ncompanies\tnotificationEmail\tvarchar(320)\tYES\t\tNULL\ncompanies\ttradeName\tvarchar(255)\tYES\t\tNULL\ngoals\tid\tvarchar(64)\tNO\tPRI\tNULL\ngoals\tcompanyId\tvarchar(64)\tNO\t\tNULL\ngoals\tyear\tint\tNO\t\tNULL\ngoals\tmonth\tint\tNO\t\tNULL\ngoals\tteamGoal\tdecimal(15,2)\tNO\t\tNULL\ngoals\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\ngoals\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nhistoricalSales\tid\tvarchar(64)\tNO\tPRI\tNULL\nhistoricalSales\tcompanyId\tvarchar(64)\tNO\t\tNULL\nhistoricalSales\tpropertyReference\tvarchar(100)\tYES\t\tNULL\nhistoricalSales\tpropertyAddress\ttext\tYES\t\tNULL\nhistoricalSales\tpropertyNeighborhood\tvarchar(255)\tYES\t\tNULL\nhistoricalSales\tbusinessType\tvarchar(100)\tYES\t\tNULL\nhistoricalSales\tsaleDate\ttimestamp\tYES\t\tNULL\nhistoricalSales\tacquisitionDate\ttimestamp\tYES\t\tNULL\nhistoricalSales\tlistingPrice\tdecimal(15,2)\tYES\t\tNULL\nhistoricalSales\tsalePrice\tdecimal(15,2)\tYES\t\tNULL\nhistoricalSales\tcommissionAmount\tdecimal(15,2)\tYES\t\tNULL\nhistoricalSales\tcommissionPercentage\tdecimal(5,2)\tYES\t\tNULL\nhistoricalSales\tacquisitionBrokerName\tvarchar(255)\tYES\t\tNULL\nhistoricalSales\tsaleBrokerName\tvarchar(255)\tYES\t\tNULL\nhistoricalSales\tacquisitionStore\tvarchar(100)\tYES\t\tNULL\nhistoricalSales\tsaleStore\tvarchar(100)\tYES\t\tNULL\nhistoricalSales\tclientSource\tvarchar(255)\tYES\t\tNULL\nhistoricalSales\tpaymentMethod\tvarchar(255)\tYES\t\tNULL\nhistoricalSales\tstatus\tvarchar(50)\tYES\t\tcommission_paid\nhistoricalSales\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nhistoricalSales\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nindicatorDetails\tid\tvarchar(64)\tNO\tPRI\tNULL\nindicatorDetails\tsnapshotId\tvarchar(64)\tNO\t\tNULL\nindicatorDetails\tindicatorName\tvarchar(100)\tNO\t\tNULL\nindicatorDetails\tentityType\tvarchar(50)\tNO\t\tNULL\nindicatorDetails\tentityIds\ttext\tNO\t\tNULL\nindicatorDetails\tcalculationDetails\ttext\tYES\t\tNULL\nindicatorDetails\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nindicatorGoals\tid\tvarchar(64)\tNO\tPRI\tNULL\nindicatorGoals\tcompanyId\tvarchar(64)\tNO\t\tNULL\nindicatorGoals\tindicatorName\tvarchar(100)\tNO\t\tNULL\nindicatorGoals\tyear\tint\tNO\t\tNULL\nindicatorGoals\tmonthlyGoal\tdecimal(15,2)\tYES\t\tNULL\nindicatorGoals\tannualAverage\tdecimal(15,2)\tYES\t\tNULL\nindicatorGoals\tcreatedBy\tvarchar(64)\tNO\t\tNULL\nindicatorGoals\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nindicatorGoals\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nmodels\tid\tvarchar(64)\tNO\tPRI\tNULL\nmodels\tcompanyId\tvarchar(64)\tYES\t\tNULL\nmodels\tmodelType\tenum('paymentMethod','clientOrigin','carteiraSituation','teamType','rejectionReason','businessType')\tNO\t\tNULL\nmodels\tname\tvarchar(255)\tNO\t\tNULL\nmodels\tdescription\ttext\tYES\t\tNULL\nmodels\tisDefault\ttinyint(1)\tYES\t\t0\nmodels\tisActive\ttinyint(1)\tYES\t\t1\nmodels\tcreatedBy\tvarchar(64)\tNO\t\tNULL\nmodels\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nmodels\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nmonthlyIndicators\tid\tvarchar(64)\tNO\tPRI\tNULL\nmonthlyIndicators\tmonth\tvarchar(7)\tNO\t\tNULL\nmonthlyIndicators\tcompanyId\tvarchar(64)\tNO\t\tNULL\nmonthlyIndicators\tgeneralExpense\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicators\ttaxExpense\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicators\tinnovationFund\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicators\tpartnerResult\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicators\temergencyFund\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicators\tcreatedBy\tvarchar(64)\tNO\t\tNULL\nmonthlyIndicators\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nmonthlyIndicators\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nmonthlyIndicatorsSnapshot\tid\tvarchar(64)\tNO\tPRI\tNULL\nmonthlyIndicatorsSnapshot\tcompanyId\tvarchar(64)\tNO\t\tNULL\nmonthlyIndicatorsSnapshot\tmonth\tvarchar(7)\tNO\t\tNULL\nmonthlyIndicatorsSnapshot\tyear\tint\tNO\t\tNULL\nmonthlyIndicatorsSnapshot\tmonthNumber\tint\tNO\t\tNULL\nmonthlyIndicatorsSnapshot\tsalesValueMonth\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tsalesCountMonth\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tcancelledSalesCount\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tcommissionReceived\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tcommissionSold\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tcommissionPendingEndMonth\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tpercentCommissionSold\tdecimal(5,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tsalesAbove1M\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tavgPaymentDays\tdecimal(10,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tpercentCancelledVsPending\tdecimal(5,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tavgSaleTime\tdecimal(10,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tavgPropertyValue\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tsalesUNA\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tsalesInternal\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tsalesExternalPartner\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tsalesLaunch\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tactivePropertiesCount\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tangariationsCount\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tremovedPropertiesCount\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tleadsReadyCount\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tleadsLaunchCount\tint\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tvso\tdecimal(5,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tgeneralExpense\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\ttaxExpense\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tinnovationFund\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tpartnerResult\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\temergencyFund\tdecimal(15,2)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tisClosed\ttinyint(1)\tYES\t\t0\nmonthlyIndicatorsSnapshot\tclosedAt\ttimestamp\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tclosedBy\tvarchar(64)\tYES\t\tNULL\nmonthlyIndicatorsSnapshot\tcreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nmonthlyIndicatorsSnapshot\tupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\nproperfyLeads\tid\tvarchar(64)\tNO\tPRI\tNULL\nproperfyLeads\tpropertyId\tvarchar(64)\tYES\t\tNULL\nproperfyLeads\tleadId\tvarchar(64)\tNO\t\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 109
+}
