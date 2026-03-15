@@ -20,7 +20,14 @@ interface ManualDataModalProps {
   companyId: string;
   year: number;
   month: number;
+  onMonthChange?: (month: number) => void;
+  userRole?: string;
 }
+
+const MONTH_NAMES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
 
 export function ManualDataModal({
   isOpen,
@@ -28,6 +35,8 @@ export function ManualDataModal({
   companyId,
   year,
   month,
+  onMonthChange,
+  userRole = "user",
 }: ManualDataModalProps) {
   const [formData, setFormData] = useState({
     generalExpense: 0,
@@ -38,13 +47,14 @@ export function ManualDataModal({
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(month);
 
   // Buscar dados existentes
   const { data: existingData, isLoading } = trpc.indicators.getMonthlyManualData.useQuery(
     {
       companyId,
       year,
-      month,
+      month: selectedMonth,
     },
     {
       enabled: isOpen,
@@ -76,20 +86,31 @@ export function ManualDataModal({
   });
 
   const handleSave = async () => {
+    if (userRole !== "manager") {
+      toast.error("Apenas gerentes podem salvar dados manuais");
+      return;
+    }
     setIsSaving(true);
     try {
       await saveMutation.mutateAsync({
         companyId,
         year,
-        month,
+        month: selectedMonth,
         ...formData,
       });
+      if (onMonthChange) {
+        onMonthChange(selectedMonth);
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
+    if (userRole !== "manager") {
+      toast.error("Apenas gerentes podem editar dados manuais");
+      return;
+    }
     setFormData({
       ...formData,
       [field]: parseFloat(value) || 0,
@@ -109,11 +130,34 @@ export function ManualDataModal({
         <DialogHeader>
           <DialogTitle>Editar Dados Manuais</DialogTitle>
           <DialogDescription>
-            Preencha os valores para {month}/{year}
+            Preencha os valores para o mês selecionado
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {userRole !== "manager" && (
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+              <p className="text-sm text-yellow-800">
+                ⚠️ Apenas gerentes podem editar dados manuais. Seu perfil atual é: <strong>{userRole}</strong>
+              </p>
+            </div>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor="month">Mês</Label>
+            <select
+              id="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+              disabled={userRole !== "manager"}
+            >
+              {MONTH_NAMES.map((monthName, idx) => (
+                <option key={monthName} value={idx + 1}>
+                  {monthName} ({year})
+                </option>
+              ))}
+            </select>
+          </div>
           {isLoading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin" />
@@ -130,6 +174,7 @@ export function ManualDataModal({
                   onChange={(e) => handleInputChange("generalExpense", e.target.value)}
                   step="0.01"
                   min="0"
+                  disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
                   {formatCurrency(formData.generalExpense)}
@@ -146,6 +191,7 @@ export function ManualDataModal({
                   onChange={(e) => handleInputChange("taxExpense", e.target.value)}
                   step="0.01"
                   min="0"
+                  disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
                   {formatCurrency(formData.taxExpense)}
@@ -162,6 +208,7 @@ export function ManualDataModal({
                   onChange={(e) => handleInputChange("innovationFund", e.target.value)}
                   step="0.01"
                   min="0"
+                  disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
                   {formatCurrency(formData.innovationFund)}
@@ -178,6 +225,7 @@ export function ManualDataModal({
                   onChange={(e) => handleInputChange("partnerResult", e.target.value)}
                   step="0.01"
                   min="0"
+                  disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
                   {formatCurrency(formData.partnerResult)}
@@ -194,6 +242,7 @@ export function ManualDataModal({
                   onChange={(e) => handleInputChange("emergencyFund", e.target.value)}
                   step="0.01"
                   min="0"
+                  disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
                   {formatCurrency(formData.emergencyFund)}
@@ -207,7 +256,7 @@ export function ManualDataModal({
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={handleSave} disabled={isSaving || isLoading}>
+          <Button onClick={handleSave} disabled={isSaving || isLoading || userRole !== "manager"}>
             {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Salvar
           </Button>

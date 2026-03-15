@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, name, email, role FROM users WHERE email = 'odair@baggioimoveis.com.br'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role FROM users WHERE email = 'odair@baggioimoveis.com.br'",
+  "rows": [
+    {
+      "id": "broker_company_1766331506068_023",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "role": "broker"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\nbroker_company_1766331506068_023\tOdair Amancio\todair@baggioimoveis.com.br\tbroker\n",
+  "stderr": "",
+  "execution_time_ms": 167
+}

@@ -1,0 +1,23 @@
+{
+  "query": "SELECT * FROM monthlyIndicators LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT * FROM monthlyIndicators LIMIT 5",
+  "rows": [
+    {
+      "id": "indicator_1773591512719_a5ej1d9gu",
+      "month": "2026-03",
+      "companyId": "company_1766331506068",
+      "generalExpense": "5000.00",
+      "taxExpense": "2000.00",
+      "innovationFund": "0.00",
+      "partnerResult": "0.00",
+      "emergencyFund": "0.00",
+      "createdBy": "broker_company_1766331506068_023",
+      "createdAt": "2026-03-15 16:18:32",
+      "updatedAt": "2026-03-15 16:18:32"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tmonth\tcompanyId\tgeneralExpense\ttaxExpense\tinnovationFund\tpartnerResult\temergencyFund\tcreatedBy\tcreatedAt\tupdatedAt\nindicator_1773591512719_a5ej1d9gu\t2026-03\tcompany_1766331506068\t5000.00\t2000.00\t0.00\t0.00\t0.00\tbroker_company_1766331506068_023\t2026-03-15 16:18:32\t2026-03-15 16:18:32\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

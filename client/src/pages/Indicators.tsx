@@ -31,6 +31,7 @@ export default function Indicators() {
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isManualDataModalOpen, setIsManualDataModalOpen] = useState(false);
+  const [manualDataByMonth, setManualDataByMonth] = useState<Record<string, any>>({});
 
   const openIndicatorModal = (indicatorName: string) => {
     setSelectedIndicator(indicatorName);
@@ -68,6 +69,31 @@ export default function Indicators() {
   );
 
   // Mutation para sincronização Properfy
+  // Buscar dados manuais para o mês selecionado
+  const { data: currentMonthManualData } = trpc.indicators.getMonthlyManualData.useQuery(
+    {
+      companyId: user?.companyId || "",
+      year: parseInt(selectedYear),
+      month: parseInt(selectedMonth),
+    },
+    {
+      enabled: !!user?.companyId,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Atualizar manualDataByMonth quando os dados forem carregados
+  useEffect(() => {
+    if (currentMonthManualData) {
+      const monthKey = `${parseInt(selectedYear)}-${String(parseInt(selectedMonth)).padStart(2, '0')}`;
+      setManualDataByMonth({
+        ...manualDataByMonth,
+        [monthKey]: currentMonthManualData,
+      });
+    }
+  }, [currentMonthManualData]);
+
+  
   const syncMutation = trpc.system.syncPropertyfyNow.useMutation({
     onSuccess: () => {
       toast.success("Sincronização concluída!");
@@ -92,6 +118,34 @@ export default function Indicators() {
       refetch();
     }
   }, [selectedMonth, selectedYear, user, refetch]);
+
+  // Scroll para topo
+  // Recarregar dados manuais quando modal fecha
+  const handleManualDataClose = () => {
+    setIsManualDataModalOpen(false);
+    // Recarregar dados manuais
+    const fetchManualData = async () => {
+      if (!user?.companyId) return;
+      const data: Record<string, any> = {};
+      for (let month = 1; month <= 12; month++) {
+        try {
+          const monthKey = `${parseInt(selectedYear)}-${String(month).padStart(2, '0')}`;
+          const result = await trpc.indicators.getMonthlyManualData.query({
+            companyId: user.companyId,
+            year: parseInt(selectedYear),
+            month,
+          });
+          if (result) {
+            data[monthKey] = result;
+          }
+        } catch (error) {
+          // Silenciosamente ignorar erros
+        }
+      }
+      setManualDataByMonth(data);
+    };
+    fetchManualData();
+  };
 
   // Scroll para topo ao entrar na página
   React.useEffect(() => {
@@ -258,30 +312,35 @@ export default function Indicators() {
         monthlyGoal: 10000,
         annualAverage: 120000,
         fieldName: "despesaGeral",
+        manualField: "generalExpense",
       },
       {
         title: "Despesa com impostos",
         monthlyGoal: 5000,
         annualAverage: 60000,
         fieldName: "despesaImpostos",
+        manualField: "taxExpense",
       },
       {
         title: "Fundo Inovação",
         monthlyGoal: 2000,
         annualAverage: 24000,
         fieldName: "fundoInovacao",
+        manualField: "innovationFund",
       },
       {
         title: "Resultado Sócios",
         monthlyGoal: 50000,
         annualAverage: 600000,
         fieldName: "resultadoSocios",
+        manualField: "partnerResult",
       },
       {
         title: "Fundo emergencial",
         monthlyGoal: 10000,
         annualAverage: 120000,
         fieldName: "fundoEmergencial",
+        manualField: "emergencyFund",
       },
     ];
 
@@ -305,6 +364,15 @@ export default function Indicators() {
         // Para "Carteira de Divulgação", mostrar apenas no mês atual
         if (ind.fieldName === 'carteiraAtiva' && monthData.month !== CURRENT_MONTH_NUM) {
           value = 0;
+        }
+        
+        // Para campos manuais, usar dados salvos no banco
+        if ((ind as any).manualField) {
+          const monthKeyForManual = `${parseInt(selectedYear)}-${String(monthData.month).padStart(2, '0')}`;
+          const manualData = manualDataByMonth[monthKeyForManual];
+          if (manualData && manualData[(ind as any).manualField]) {
+            value = manualData[(ind as any).manualField];
+          }
         }
         
         months[monthKey as keyof typeof months] = value;
@@ -340,15 +408,26 @@ export default function Indicators() {
             <h1 className="text-3xl font-bold">Indicadores de Vendas</h1>
             <p className="text-muted-foreground">Acompanhe os principais indicadores de desempenho</p>
           </div>
-          <Button
-            onClick={handleSyncPropertyfy}
-            disabled={isSyncing}
-            variant="outline"
-            size="sm"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? "animate-spin" : ""}`} />
-            {isSyncing ? "Sincronizando..." : "Sincronizar Properfy"}
-          </Button>
+          <div className="flex gap-2">
+            {user?.role === "manager" && (
+              <Button
+                onClick={() => setIsManualDataModalOpen(true)}
+                variant="outline"
+                size="sm"
+              >
+                Editar Dados Manuais
+              </Button>
+            )}
+            <Button
+              onClick={handleSyncPropertyfy}
+              disabled={isSyncing}
+              variant="outline"
+              size="sm"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? "animate-spin" : ""}`} />
+              {isSyncing ? "Sincronizando..." : "Sincronizar Properfy"}
+            </Button>
+          </div>
         </div>
 
         {/* Filtros */}
@@ -383,13 +462,6 @@ export default function Indicators() {
             </Select>
           </div>
 
-          <Button
-            onClick={() => setIsManualDataModalOpen(true)}
-            variant="outline"
-            size="sm"
-          >
-            Editar Dados Manuais
-          </Button>
         </div>
 
         {/* Cards de Indicadores - Primeira linha */}
@@ -557,10 +629,11 @@ export default function Indicators() {
         {user && (
           <ManualDataModal
             isOpen={isManualDataModalOpen}
-            onClose={() => setIsManualDataModalOpen(false)}
+            onClose={handleManualDataClose}
             companyId={user.companyId || ""}
             year={parseInt(selectedYear)}
             month={parseInt(selectedMonth)}
+            userRole={user.role}
           />
         )}
       </div>
