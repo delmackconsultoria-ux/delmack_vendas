@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total, COUNT(CASE WHEN chrStatus = 'LISTED' THEN 1 END) as listed, COUNT(CASE WHEN dteNewListing IS NOT NULL THEN 1 END) as with_listing_date FROM properfyProperties WHERE companyId = 'company_1766331506068';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total, COUNT(CASE WHEN chrStatus = 'LISTED' THEN 1 END) as listed, COUNT(CASE WHEN dteNewListing IS NOT NULL THEN 1 END) as with_listing_date FROM properfyProperties WHERE companyId = 'company_1766331506068';",
+  "rows": [
+    {
+      "total": "5072",
+      "listed": "568",
+      "with_listing_date": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tlisted\twith_listing_date\n5072\t568\t0\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

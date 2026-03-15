@@ -1,0 +1,31 @@
+{
+  "query": "SELECT DISTINCT companyId FROM properfyProperties LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DISTINCT companyId FROM properfyProperties LIMIT 10;",
+  "rows": [
+    {
+      "companyId": "6"
+    },
+    {
+      "companyId": "1"
+    },
+    {
+      "companyId": "9"
+    },
+    {
+      "companyId": "5"
+    },
+    {
+      "companyId": "4"
+    },
+    {
+      "companyId": "3"
+    },
+    {
+      "companyId": "8"
+    }
+  ],
+  "messages": [],
+  "stdout": "companyId\n6\n1\n9\n5\n4\n3\n8\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

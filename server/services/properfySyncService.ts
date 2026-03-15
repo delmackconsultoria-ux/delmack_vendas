@@ -2,8 +2,9 @@ import { getDb } from "../db";
 import { properfyProperties } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 
-const PROPERFY_API_URL = process.env.PROPERFY_API_URL;
-const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN;
+const envUrl = process.env.PROPERFY_API_URL || 'https://sandbox.properfy.com.br/api';
+const PROPERFY_API_URL = envUrl.replace('/auth/token', '').replace(/\/$/, '');
+const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN || '';
 
 interface ProperfyPropertyRaw {
   id: number;
@@ -37,6 +38,12 @@ interface ProperfyPropertyRaw {
   fkCondo?: number;
   intBuiltYear?: number;
   intFloors?: number;
+  // Indicadores
+  dteNewListing?: string | Date; // Data de angariação
+  dteTermination?: string | Date; // Data de baixa/remoção
+  chrPurpose?: string; // Finalidade: SALE, RENT, etc
+  isLaunched?: boolean; // Se é lançamento
+  fkCompany?: string; // ID da imobiliária/empresa
 }
 
 /**
@@ -202,6 +209,12 @@ async function upsertProperty(db: any, property: ProperfyPropertyRaw): Promise<v
     fkCondo: property.fkCondo || null,
     intBuiltYear: property.intBuiltYear || null,
     intFloors: property.intFloors || null,
+    // Indicadores
+    dteNewListing: property.dteNewListing ? new Date(property.dteNewListing) : null,
+    dteTermination: property.dteTermination ? new Date(property.dteTermination) : null,
+    chrPurpose: property.chrPurpose || null,
+    isActive: 1, // Padrão ativo
+    companyId: property.fkCompany || null,
     lastSyncedAt: new Date(),
   };
 

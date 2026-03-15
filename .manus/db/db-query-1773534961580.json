@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, chrReference, chrStatus, dteNewListing, dteTermination FROM properfyProperties LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, chrReference, chrStatus, dteNewListing, dteTermination FROM properfyProperties LIMIT 1;",
+  "rows": [
+    {
+      "id": "3",
+      "chrReference": "BG00005013",
+      "chrStatus": "REMOVED",
+      "dteNewListing": "NULL",
+      "dteTermination": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tchrReference\tchrStatus\tdteNewListing\tdteTermination\n3\tBG00005013\tREMOVED\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

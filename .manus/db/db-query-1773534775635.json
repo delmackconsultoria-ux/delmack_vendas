@@ -1,0 +1,16 @@
+{
+  "query": "SELECT COUNT(*) as total, COUNT(DISTINCT companyId) as companies, COUNT(CASE WHEN dteNewListing IS NOT NULL THEN 1 END) as with_dates, COUNT(CASE WHEN dteTermination IS NOT NULL THEN 1 END) as with_termination FROM properfyProperties LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total, COUNT(DISTINCT companyId) as companies, COUNT(CASE WHEN dteNewListing IS NOT NULL THEN 1 END) as with_dates, COUNT(CASE WHEN dteTermination IS NOT NULL THEN 1 END) as with_termination FROM properfyProperties LIMIT 1;",
+  "rows": [
+    {
+      "total": "5075",
+      "companies": "7",
+      "with_dates": "0",
+      "with_termination": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tcompanies\twith_dates\twith_termination\n5075\t7\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 71
+}

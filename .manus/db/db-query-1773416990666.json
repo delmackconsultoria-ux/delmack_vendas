@@ -1,0 +1,62 @@
+{
+  "query": "SELECT DISTINCT chrStatus, chrPurpose FROM properfyProperties WHERE companyId = 'company_1766331506068' ORDER BY chrStatus, chrPurpose;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DISTINCT chrStatus, chrPurpose FROM properfyProperties WHERE companyId = 'company_1766331506068' ORDER BY chrStatus, chrPurpose;",
+  "rows": [
+    {
+      "chrStatus": "DOCUMENTATION",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "IN_TERMINATION",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "INITIAL_DOC",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "INITIAL_PREPARE",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "INTERNAL",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "LISTED",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "MAINTENANCE",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "NEW_LISTING",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "OWN_PROPERTY",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "OWNER_MAINTENANCE",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "PROPOSAL",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "REMOVED",
+      "chrPurpose": "NULL"
+    },
+    {
+      "chrStatus": "RENTED",
+      "chrPurpose": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "chrStatus\tchrPurpose\nDOCUMENTATION\tNULL\nIN_TERMINATION\tNULL\nINITIAL_DOC\tNULL\nINITIAL_PREPARE\tNULL\nINTERNAL\tNULL\nLISTED\tNULL\nMAINTENANCE\tNULL\nNEW_LISTING\tNULL\nOWN_PROPERTY\tNULL\nOWNER_MAINTENANCE\tNULL\nPROPOSAL\tNULL\nREMOVED\tNULL\nRENTED\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

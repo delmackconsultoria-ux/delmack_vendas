@@ -1,0 +1,13 @@
+{
+  "query": "SELECT DISTINCT chrPurpose FROM properfyProperties WHERE companyId = 'company_1766331506068' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DISTINCT chrPurpose FROM properfyProperties WHERE companyId = 'company_1766331506068' LIMIT 10;",
+  "rows": [
+    {
+      "chrPurpose": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "chrPurpose\nNULL\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

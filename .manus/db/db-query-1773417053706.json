@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, chrStatus, isActive, chrPurpose, dteNewListing, dteTermination FROM properfyProperties WHERE companyId = 'company_1766331506068' LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, chrStatus, isActive, chrPurpose, dteNewListing, dteTermination FROM properfyProperties WHERE companyId = 'company_1766331506068' LIMIT 3;",
+  "rows": [
+    {
+      "id": "3",
+      "chrStatus": "REMOVED",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "dteNewListing": "NULL",
+      "dteTermination": "NULL"
+    },
+    {
+      "id": "4",
+      "chrStatus": "RENTED",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "dteNewListing": "NULL",
+      "dteTermination": "NULL"
+    },
+    {
+      "id": "9",
+      "chrStatus": "RENTED",
+      "isActive": "0",
+      "chrPurpose": "NULL",
+      "dteNewListing": "NULL",
+      "dteTermination": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tchrStatus\tisActive\tchrPurpose\tdteNewListing\tdteTermination\n3\tREMOVED\t0\tNULL\tNULL\tNULL\n4\tRENTED\t0\tNULL\tNULL\tNULL\n9\tRENTED\t0\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

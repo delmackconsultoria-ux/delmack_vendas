@@ -208,6 +208,7 @@ export const indicatorsRouter = router({
     )
     .query(async ({ input }) => {
       const { companyId, year } = input;
+      console.log(`[getYearIndicators] Fetching data for companyId: ${companyId}, year: ${year}`);
       const monthlyData: any[] = [];
 
       for (let month = 1; month <= 12; month++) {
@@ -218,6 +219,7 @@ export const indicatorsRouter = router({
         const prevMonthEnd = new Date(year, month - 1, 0);
 
         try {
+          console.log(`[getYearIndicators] Processing month ${month} with companyId: ${companyId}`);
           // Indicadores do Sistema de Vendas
           const salesValue = await salesIndicators.calculateSalesValueMonth(
             companyId,

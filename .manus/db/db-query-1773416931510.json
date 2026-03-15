@@ -1,0 +1,75 @@
+{
+  "query": "SELECT COUNT(*) as total, chrStatus, isActive FROM properfyProperties WHERE companyId = 'company_1766331506068' GROUP BY chrStatus, isActive;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total, chrStatus, isActive FROM properfyProperties WHERE companyId = 'company_1766331506068' GROUP BY chrStatus, isActive;",
+  "rows": [
+    {
+      "total": "8",
+      "chrStatus": "NEW_LISTING",
+      "isActive": "0"
+    },
+    {
+      "total": "568",
+      "chrStatus": "LISTED",
+      "isActive": "0"
+    },
+    {
+      "total": "7",
+      "chrStatus": "OWNER_MAINTENANCE",
+      "isActive": "0"
+    },
+    {
+      "total": "1655",
+      "chrStatus": "RENTED",
+      "isActive": "0"
+    },
+    {
+      "total": "11",
+      "chrStatus": "DOCUMENTATION",
+      "isActive": "0"
+    },
+    {
+      "total": "20",
+      "chrStatus": "INITIAL_PREPARE",
+      "isActive": "0"
+    },
+    {
+      "total": "284",
+      "chrStatus": "INTERNAL",
+      "isActive": "0"
+    },
+    {
+      "total": "4",
+      "chrStatus": "INITIAL_DOC",
+      "isActive": "0"
+    },
+    {
+      "total": "36",
+      "chrStatus": "OWN_PROPERTY",
+      "isActive": "0"
+    },
+    {
+      "total": "2",
+      "chrStatus": "PROPOSAL",
+      "isActive": "0"
+    },
+    {
+      "total": "2",
+      "chrStatus": "MAINTENANCE",
+      "isActive": "0"
+    },
+    {
+      "total": "2421",
+      "chrStatus": "REMOVED",
+      "isActive": "0"
+    },
+    {
+      "total": "54",
+      "chrStatus": "IN_TERMINATION",
+      "isActive": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tchrStatus\tisActive\n8\tNEW_LISTING\t0\n568\tLISTED\t0\n7\tOWNER_MAINTENANCE\t0\n1655\tRENTED\t0\n11\tDOCUMENTATION\t0\n20\tINITIAL_PREPARE\t0\n284\tINTERNAL\t0\n4\tINITIAL_DOC\t0\n36\tOWN_PROPERTY\t0\n2\tPROPOSAL\t0\n2\tMAINTENANCE\t0\n2421\tREMOVED\t0\n54\tIN_TERMINATION\t0\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

@@ -43,7 +43,7 @@ export default function Indicators() {
   // Buscar indicadores do mês selecionado
   const { data: indicatorsData, isLoading, refetch } = trpc.indicators.getRealtimeIndicators.useQuery(
     {
-      companyId: user?.companyId || user?.id || "",
+      companyId: user?.companyId || "",
       month: parseInt(selectedMonth),
       year: parseInt(selectedYear),
     },
@@ -56,7 +56,7 @@ export default function Indicators() {
   // Buscar indicadores de todos os 12 meses para a tabela consolidada
   const { data: yearData, isLoading: isLoadingYear } = trpc.indicators.getYearIndicators.useQuery(
     {
-      companyId: user?.companyId || user?.id || "",
+      companyId: user?.companyId || "",
       year: parseInt(selectedYear),
     },
     {

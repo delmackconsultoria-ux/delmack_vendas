@@ -5,12 +5,12 @@ import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
 /**
  * Carteira de Divulgação (em número)
  * Contagem de imóveis ativos para venda
- * Filtro: chrStatus = 'LISTED' AND isActive = 1 AND chrPurpose LIKE '%SALE%'
+ * Filtro: chrStatus = 'LISTED' AND isActive = 1
  */
 export async function calculateActivePropertiesCount(
   startDate: Date,
   endDate: Date,
-  companyId: string = 'company_1766331506068'
+  companyId?: string
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -21,9 +21,7 @@ export async function calculateActivePropertiesCount(
     .where(
       and(
         eq(properfyProperties.chrStatus, "LISTED"),
-        eq(properfyProperties.isActive, 1),
-        sql`${properfyProperties.chrPurpose} LIKE '%SALE%'`,
-        eq(properfyProperties.companyId, companyId)
+        eq(properfyProperties.isActive, 1)
       )
     );
 
@@ -38,7 +36,7 @@ export async function calculateActivePropertiesCount(
 export async function calculateAngariationsCount(
   startDate: Date,
   endDate: Date,
-  companyId: string = 'company_1766331506068'
+  companyId?: string
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -50,8 +48,7 @@ export async function calculateAngariationsCount(
       and(
         isNotNull(properfyProperties.dteNewListing),
         gte(properfyProperties.dteNewListing, startDate),
-        lte(properfyProperties.dteNewListing, endDate),
-        eq(properfyProperties.companyId, companyId)
+        lte(properfyProperties.dteNewListing, endDate)
       )
     );
 
@@ -66,7 +63,7 @@ export async function calculateAngariationsCount(
 export async function calculateRemovedPropertiesCount(
   startDate: Date,
   endDate: Date,
-  companyId: string = 'company_1766331506068'
+  companyId?: string
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -78,8 +75,7 @@ export async function calculateRemovedPropertiesCount(
       and(
         isNotNull(properfyProperties.dteTermination),
         gte(properfyProperties.dteTermination, startDate),
-        lte(properfyProperties.dteTermination, endDate),
-        eq(properfyProperties.companyId, companyId)
+        lte(properfyProperties.dteTermination, endDate)
       )
     );
 

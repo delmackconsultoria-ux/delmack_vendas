@@ -1,0 +1,14 @@
+{
+  "query": "SELECT COUNT(*) as total, COUNT(DISTINCT YEAR(dteNewListing)) as years FROM properfyProperties WHERE companyId = 'company_1766331506068' AND dteNewListing IS NOT NULL AND YEAR(dteNewListing) = 2026;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total, COUNT(DISTINCT YEAR(dteNewListing)) as years FROM properfyProperties WHERE companyId = 'company_1766331506068' AND dteNewListing IS NOT NULL AND YEAR(dteNewListing) = 2026;",
+  "rows": [
+    {
+      "total": "0",
+      "years": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tyears\n0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

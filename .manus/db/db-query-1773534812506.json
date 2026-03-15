@@ -1,0 +1,38 @@
+{
+  "query": "SELECT DISTINCT companyId, COUNT(*) as count FROM properfyProperties GROUP BY companyId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DISTINCT companyId, COUNT(*) as count FROM properfyProperties GROUP BY companyId;",
+  "rows": [
+    {
+      "companyId": "3",
+      "count": "17"
+    },
+    {
+      "companyId": "9",
+      "count": "51"
+    },
+    {
+      "companyId": "5",
+      "count": "109"
+    },
+    {
+      "companyId": "1",
+      "count": "4651"
+    },
+    {
+      "companyId": "6",
+      "count": "125"
+    },
+    {
+      "companyId": "4",
+      "count": "48"
+    },
+    {
+      "companyId": "8",
+      "count": "74"
+    }
+  ],
+  "messages": [],
+  "stdout": "companyId\tcount\n3\t17\n9\t51\n5\t109\n1\t4651\n6\t125\n4\t48\n8\t74\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}
