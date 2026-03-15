@@ -318,10 +318,11 @@ export const indicatorsRouter = router({
             prevMonthEnd,
             companyId
           );
-          const vso = await properfyIndicators.calculateVSO(
+          // VSO só é calculado a partir de março (mês 3)
+          const vso = month >= 3 ? await properfyIndicators.calculateVSO(
             salesCount,
             prevMonthActiveProperties
-          );
+          ) : 0;
           const readyAttendances = await properfyIndicators.calculateReadyAttendances(
             startDate,
             endDate
@@ -356,7 +357,8 @@ export const indicatorsRouter = router({
             negociosLancamentos: salesLaunch,
 
             // Properfy
-            carteiraAtiva: activeProperties,
+            // Carteira ativa só é mostrada no mês atual (março = 3)
+            carteiraAtiva: month === 3 ? activeProperties : 0,
             angariacesMes: angariations,
             baixasMes: removedProperties,
             vsoVendaOferta: vso,

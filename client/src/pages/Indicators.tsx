@@ -284,7 +284,8 @@ export default function Indicators() {
     ];
 
     // Construir dados com meses reais
-    console.log("[DEBUG] yearData.monthlyData:", JSON.stringify(yearData.monthlyData, null, 2));
+    const CURRENT_MONTH_NUM = new Date().getMonth() + 1; // Março = 3
+    
     indicatorsList.forEach((ind) => {
       const months = {
         jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0,
@@ -296,8 +297,14 @@ export default function Indicators() {
 
       // Preencher dados de cada mês
       yearData.monthlyData.forEach((monthData: any) => {
-        const value = monthData[ind.fieldName] || 0;
+        let value = monthData[ind.fieldName] || 0;
         const monthKey = monthKeys[monthData.month - 1];
+        
+        // Para "Carteira de Divulgação", mostrar apenas no mês atual
+        if (ind.fieldName === 'carteiraAtiva' && monthData.month !== CURRENT_MONTH_NUM) {
+          value = 0;
+        }
+        
         months[monthKey as keyof typeof months] = value;
         
         // Apenas somar o mês selecionado para o total e percentual
