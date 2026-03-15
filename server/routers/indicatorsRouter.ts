@@ -574,4 +574,60 @@ export const indicatorsRouter = router({
       };
     }
   }),
+
+  /**
+   * Obter dados manuais de um mês
+   */
+  getMonthlyManualData: publicProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+        year: z.number(),
+        month: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { companyId, year, month } = input;
+      const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+      
+      const { getMonthlyIndicator } = await import('../db');
+      const data = await getMonthlyIndicator(companyId, monthKey);
+      
+      return {
+        generalExpense: data?.generalExpense || 0,
+        taxExpense: data?.taxExpense || 0,
+        innovationFund: data?.innovationFund || 0,
+        partnerResult: data?.partnerResult || 0,
+        emergencyFund: data?.emergencyFund || 0,
+      };
+    }),
+
+  /**
+   * Salvar dados manuais de um mês
+   */
+  saveMonthlyManualData: protectedProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+        year: z.number(),
+        month: z.number(),
+        generalExpense: z.number().optional(),
+        taxExpense: z.number().optional(),
+        innovationFund: z.number().optional(),
+        partnerResult: z.number().optional(),
+        emergencyFund: z.number().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { companyId, year, month, ...data } = input;
+      const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+      
+      const { upsertMonthlyIndicator } = await import('../db');
+      await upsertMonthlyIndicator(companyId, monthKey, ctx.user.id, data);
+      
+      return {
+        success: true,
+        message: "Dados salvos com sucesso",
+      };
+    }),
 });

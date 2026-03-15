@@ -458,3 +458,79 @@ export async function hashPassword(password: string): Promise<string> {
   const bcrypt = await import('bcryptjs');
   return bcrypt.hash(password, 10);
 }
+
+
+/**
+ * Monthly Indicators - Dados Manuais de Despesas e Fundos
+ */
+
+export async function getMonthlyIndicator(companyId: string, month: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db.select()
+    .from(schema.monthlyIndicators)
+    .where(
+      and(
+        eq(schema.monthlyIndicators.companyId, companyId),
+        eq(schema.monthlyIndicators.month, month)
+      )
+    )
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function upsertMonthlyIndicator(
+  companyId: string,
+  month: string,
+  userId: string,
+  data: {
+    generalExpense?: number;
+    taxExpense?: number;
+    innovationFund?: number;
+    partnerResult?: number;
+    emergencyFund?: number;
+  }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await getMonthlyIndicator(companyId, month);
+
+  if (existing) {
+    // Update existing
+    const updateData: any = {};
+    if (data.generalExpense !== undefined) updateData.generalExpense = data.generalExpense;
+    if (data.taxExpense !== undefined) updateData.taxExpense = data.taxExpense;
+    if (data.innovationFund !== undefined) updateData.innovationFund = data.innovationFund;
+    if (data.partnerResult !== undefined) updateData.partnerResult = data.partnerResult;
+    if (data.emergencyFund !== undefined) updateData.emergencyFund = data.emergencyFund;
+    updateData.updatedAt = new Date();
+
+    await db.update(schema.monthlyIndicators)
+      .set(updateData)
+      .where(
+        and(
+          eq(schema.monthlyIndicators.companyId, companyId),
+          eq(schema.monthlyIndicators.month, month)
+        )
+      );
+  } else {
+    // Insert new
+    const id = `indicator_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const insertData: any = {
+      id,
+      companyId,
+      month,
+      createdBy: userId,
+    };
+    if (data.generalExpense !== undefined) insertData.generalExpense = data.generalExpense;
+    if (data.taxExpense !== undefined) insertData.taxExpense = data.taxExpense;
+    if (data.innovationFund !== undefined) insertData.innovationFund = data.innovationFund;
+    if (data.partnerResult !== undefined) insertData.partnerResult = data.partnerResult;
+    if (data.emergencyFund !== undefined) insertData.emergencyFund = data.emergencyFund;
+
+    await db.insert(schema.monthlyIndicators).values(insertData);
+  }
+}

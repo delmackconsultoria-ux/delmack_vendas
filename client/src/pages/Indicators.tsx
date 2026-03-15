@@ -1,4 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,7 +9,9 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { IndicatorsConsolidatedTable } from "@/components/IndicatorsConsolidatedTable";
 import { IndicatorHistoryModal } from "@/components/IndicatorHistoryModal";
+import { ManualDataModal } from "@/components/ManualDataModal";
 import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 
 const MONTH_NAMES = [
@@ -29,6 +30,7 @@ export default function Indicators() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isManualDataModalOpen, setIsManualDataModalOpen] = useState(false);
 
   const openIndicatorModal = (indicatorName: string) => {
     setSelectedIndicator(indicatorName);
@@ -350,7 +352,7 @@ export default function Indicators() {
         </div>
 
         {/* Filtros */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-end">
           <div className="w-48">
             <label className="text-sm font-medium mb-2 block">Mês</label>
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
@@ -380,6 +382,14 @@ export default function Indicators() {
               </SelectContent>
             </Select>
           </div>
+
+          <Button
+            onClick={() => setIsManualDataModalOpen(true)}
+            variant="outline"
+            size="sm"
+          >
+            Editar Dados Manuais
+          </Button>
         </div>
 
         {/* Cards de Indicadores - Primeira linha */}
@@ -541,6 +551,16 @@ export default function Indicators() {
             isOpen={isModalOpen}
             onClose={closeIndicatorModal}
             indicatorName={selectedIndicator}
+          />
+        )}
+
+        {user && (
+          <ManualDataModal
+            isOpen={isManualDataModalOpen}
+            onClose={() => setIsManualDataModalOpen(false)}
+            companyId={user.companyId || ""}
+            year={parseInt(selectedYear)}
+            month={parseInt(selectedMonth)}
           />
         )}
       </div>
