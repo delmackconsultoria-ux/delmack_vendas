@@ -284,6 +284,7 @@ export default function Indicators() {
     ];
 
     // Construir dados com meses reais
+    console.log("[DEBUG] yearData.monthlyData:", JSON.stringify(yearData.monthlyData, null, 2));
     indicatorsList.forEach((ind) => {
       const months = {
         jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0,
@@ -291,16 +292,22 @@ export default function Indicators() {
       };
       const monthKeys = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
       let total = 0;
+      let selectedMonthValue = 0;
 
       // Preencher dados de cada mês
       yearData.monthlyData.forEach((monthData: any) => {
         const value = monthData[ind.fieldName] || 0;
         const monthKey = monthKeys[monthData.month - 1];
         months[monthKey as keyof typeof months] = value;
-        total += value;
+        
+        // Apenas somar o mês selecionado para o total e percentual
+        if (monthData.month === parseInt(selectedMonth)) {
+          selectedMonthValue = value;
+          total = value;
+        }
       });
 
-      const percentage = ind.monthlyGoal > 0 ? (total / (ind.monthlyGoal * 12)) * 100 : 0;
+      const percentage = ind.monthlyGoal > 0 ? (total / ind.monthlyGoal) * 100 : 0;
 
       indicators.push({
         title: ind.title,

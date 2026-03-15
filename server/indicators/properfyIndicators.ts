@@ -85,6 +85,7 @@ export async function calculateRemovedPropertiesCount(
 /**
  * VSO — venda / oferta
  * Vendas do mês (unidades) ÷ carteira de imóveis ativos do mês anterior
+ * Retorna como decimal (ex: 0.034 para 3,4%)
  * Requer dados do Sistema de Vendas + Properfy
  */
 export async function calculateVSO(
@@ -92,7 +93,7 @@ export async function calculateVSO(
   previousMonthActiveProperties: number
 ): Promise<number> {
   if (previousMonthActiveProperties === 0) return 0;
-  return (salesCountMonth / previousMonthActiveProperties) * 100;
+  return salesCountMonth / previousMonthActiveProperties;
 }
 
 /**

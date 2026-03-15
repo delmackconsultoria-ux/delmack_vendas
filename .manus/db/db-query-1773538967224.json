@@ -1,0 +1,14 @@
+{
+  "query": "SELECT \n  MONTH(createdAt) as mes,\n  COUNT(*) as total_vendas\nFROM sales\nWHERE companyId = 'company_1766331506068' \n  AND YEAR(createdAt) = 2026 \n  AND MONTH(createdAt) IN (1, 2)\nGROUP BY MONTH(createdAt)\nORDER BY MONTH(createdAt);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  MONTH(createdAt) as mes,\n  COUNT(*) as total_vendas\nFROM sales\nWHERE companyId = 'company_1766331506068' \n  AND YEAR(createdAt) = 2026 \n  AND MONTH(createdAt) IN (1, 2)\nGROUP BY MONTH(createdAt)\nORDER BY MONTH(createdAt);",
+  "rows": [
+    {
+      "mes": "2",
+      "total_vendas": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "mes\ttotal_vendas\n2\t2\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

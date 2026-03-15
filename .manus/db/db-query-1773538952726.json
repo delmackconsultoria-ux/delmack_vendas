@@ -1,0 +1,25 @@
+{
+  "query": "SELECT \n  companyId,\n  MONTH(createdAt) as mes,\n  COUNT(*) as total_vendas\nFROM sales\nWHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2)\nGROUP BY companyId, MONTH(createdAt)\nORDER BY companyId, MONTH(createdAt);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  companyId,\n  MONTH(createdAt) as mes,\n  COUNT(*) as total_vendas\nFROM sales\nWHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2)\nGROUP BY companyId, MONTH(createdAt)\nORDER BY companyId, MONTH(createdAt);",
+  "rows": [
+    {
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "total_vendas": "161"
+    },
+    {
+      "companyId": "company_1766331506068",
+      "mes": "2",
+      "total_vendas": "2"
+    },
+    {
+      "companyId": "company_test_001",
+      "mes": "2",
+      "total_vendas": "10"
+    }
+  ],
+  "messages": [],
+  "stdout": "companyId\tmes\ttotal_vendas\nB I IMOVEIS LTDA\t2\t161\ncompany_1766331506068\t2\t2\ncompany_test_001\t2\t10\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

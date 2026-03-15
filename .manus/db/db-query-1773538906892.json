@@ -1,0 +1,22 @@
+{
+  "query": "SELECT \n  MONTH(createdAt) as mes,\n  YEAR(createdAt) as ano,\n  COUNT(*) as total_vendas,\n  status\nFROM sales\nWHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2)\nGROUP BY MONTH(createdAt), YEAR(createdAt), status\nORDER BY MONTH(createdAt), status;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  MONTH(createdAt) as mes,\n  YEAR(createdAt) as ano,\n  COUNT(*) as total_vendas,\n  status\nFROM sales\nWHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2)\nGROUP BY MONTH(createdAt), YEAR(createdAt), status\nORDER BY MONTH(createdAt), status;",
+  "rows": [
+    {
+      "mes": "2",
+      "ano": "2026",
+      "total_vendas": "1",
+      "status": "draft"
+    },
+    {
+      "mes": "2",
+      "ano": "2026",
+      "total_vendas": "172",
+      "status": "commission_paid"
+    }
+  ],
+  "messages": [],
+  "stdout": "mes\tano\ttotal_vendas\tstatus\n2\t2026\t1\tdraft\n2\t2026\t172\tcommission_paid\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

@@ -1,0 +1,810 @@
+{
+  "query": "DESCRIBE sales;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute DESCRIBE sales;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "varchar(64)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "companyId",
+      "Type": "varchar(64)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "propertyId",
+      "Type": "varchar(64)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "buyerName",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "buyerCpfCnpj",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "saleDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "angariationDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "saleValue",
+      "Type": "decimal(15,2)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "clientOrigin",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "paymentMethod",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerAngariador",
+      "Type": "varchar(64)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerVendedor",
+      "Type": "varchar(64)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "businessType",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "status",
+      "Type": "enum('draft','pending','sale','manager_review','finance_review','commission_paid','cancelled')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "draft",
+      "Extra": ""
+    },
+    {
+      "Field": "observation",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "proposalDocumentUrl",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "propertyType",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "bedrooms",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "costPerM2",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "privateArea",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "totalArea",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "propertyAge",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "investmentType",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "financedValue",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "cartoryBank",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "despachante",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sellerName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sellerCpfCnpj",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sellerPhone",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "buyerPhone",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "condominiumName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "advertisementValue",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "totalCommission",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "totalCommissionPercent",
+      "Type": "decimal(5,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "angariadorCommission",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "vendedorCommission",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "baggioCommission",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "expectedPaymentDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerAngariadorType",
+      "Type": "enum('internal','external')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "internal",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerAngariadorName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerAngariadorCreci",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerAngariadorEmail",
+      "Type": "varchar(320)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerVendedorType",
+      "Type": "enum('internal','external')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "internal",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerVendedorName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerVendedorCreci",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "brokerVendedorEmail",
+      "Type": "varchar(320)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "registeredBy",
+      "Type": "varchar(64)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "registeredByName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "registeredAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "realEstateCommission",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "saleType",
+      "Type": "enum('lancamento','pronto')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "responsible",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "invoiceNumber",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "listingDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "listingStore",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sellingStore",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "team",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "region",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "managementResponsible",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "deedStatus",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "bankName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "financedAmount",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "bankReturnPercentage",
+      "Type": "decimal(5,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "bankReturnAmount",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "observations",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "wasRemoved",
+      "Type": "tinyint(1)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "priceDiscount",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "listingToSaleDays",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "commissionPaymentDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "commissionAmountReceived",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "commissionPaymentBank",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "commissionPaymentMethod",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "commissionPaymentObservations",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "downPaymentPercentage",
+      "Type": "decimal(5,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "contractNumber",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "contractSignatureDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "portfolioStatus",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "tipoComissao",
+      "Type": "enum('Venda Interna','Parceria UNA','Parceria Externa','Lançamento')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "porcentagemComissao",
+      "Type": "decimal(5,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoTotal",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoAngariador",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoCoordenador",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoVendedor",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoImobiliaria",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoParceira",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoAutonomo",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "possuiBonificacao",
+      "Type": "tinyint(1)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "tipoBonificacao",
+      "Type": "enum('Dinheiro','Material')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "valorBonificacao",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "descricaoBonificacao",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoBonificacaoCorretor",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "comissaoBonificacaoImobiliaria",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sinalNegocio",
+      "Type": "enum('Baggio','Outra')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sinalNegocioEmpresa",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sinalNegocioValor",
+      "Type": "decimal(15,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sinalNegocioDataPagamento",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sinalNegocioComprovanteUrl",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "documents",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tvarchar(64)\tNO\tPRI\tNULL\t\ncompanyId\tvarchar(64)\tNO\t\tNULL\t\npropertyId\tvarchar(64)\tNO\t\tNULL\t\nbuyerName\tvarchar(255)\tNO\t\tNULL\t\nbuyerCpfCnpj\tvarchar(20)\tYES\t\tNULL\t\nsaleDate\ttimestamp\tYES\t\tNULL\t\nangariationDate\ttimestamp\tYES\t\tNULL\t\nsaleValue\tdecimal(15,2)\tNO\t\tNULL\t\nclientOrigin\tvarchar(255)\tYES\t\tNULL\t\npaymentMethod\tvarchar(255)\tYES\t\tNULL\t\nbrokerAngariador\tvarchar(64)\tYES\t\tNULL\t\nbrokerVendedor\tvarchar(64)\tYES\t\tNULL\t\nbusinessType\tvarchar(255)\tYES\t\tNULL\t\nstatus\tenum('draft','pending','sale','manager_review','finance_review','commission_paid','cancelled')\tNO\t\tdraft\t\nobservation\ttext\tYES\t\tNULL\t\nproposalDocumentUrl\ttext\tYES\t\tNULL\t\ncreatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\npropertyType\tvarchar(255)\tYES\t\tNULL\t\nbedrooms\tint\tYES\t\tNULL\t\ncostPerM2\tdecimal(15,2)\tYES\t\tNULL\t\nprivateArea\tdecimal(10,2)\tYES\t\tNULL\t\ntotalArea\tdecimal(10,2)\tYES\t\tNULL\t\npropertyAge\tint\tYES\t\tNULL\t\ninvestmentType\tvarchar(255)\tYES\t\tNULL\t\nfinancedValue\tdecimal(15,2)\tYES\t\tNULL\t\ncartoryBank\tvarchar(255)\tYES\t\tNULL\t\ndespachante\tvarchar(255)\tYES\t\tNULL\t\nsellerName\tvarchar(255)\tYES\t\tNULL\t\nsellerCpfCnpj\tvarchar(20)\tYES\t\tNULL\t\nsellerPhone\tvarchar(20)\tYES\t\tNULL\t\nbuyerPhone\tvarchar(20)\tYES\t\tNULL\t\ncondominiumName\tvarchar(255)\tYES\t\tNULL\t\nadvertisementValue\tdecimal(15,2)\tYES\t\tNULL\t\ntotalCommission\tdecimal(15,2)\tYES\t\tNULL\t\ntotalCommissionPercent\tdecimal(5,2)\tYES\t\tNULL\t\nangariadorCommission\tdecimal(15,2)\tYES\t\tNULL\t\nvendedorCommission\tdecimal(15,2)\tYES\t\tNULL\t\nbaggioCommission\tdecimal(15,2)\tYES\t\tNULL\t\nexpectedPaymentDate\ttimestamp\tYES\t\tNULL\t\nbrokerAngariadorType\tenum('internal','external')\tYES\t\tinternal\t\nbrokerAngariadorName\tvarchar(255)\tYES\t\tNULL\t\nbrokerAngariadorCreci\tvarchar(50)\tYES\t\tNULL\t\nbrokerAngariadorEmail\tvarchar(320)\tYES\t\tNULL\t\nbrokerVendedorType\tenum('internal','external')\tYES\t\tinternal\t\nbrokerVendedorName\tvarchar(255)\tYES\t\tNULL\t\nbrokerVendedorCreci\tvarchar(50)\tYES\t\tNULL\t\nbrokerVendedorEmail\tvarchar(320)\tYES\t\tNULL\t\nregisteredBy\tvarchar(64)\tYES\t\tNULL\t\nregisteredByName\tvarchar(255)\tYES\t\tNULL\t\nregisteredAt\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\t\nrealEstateCommission\tdecimal(15,2)\tYES\t\tNULL\t\nsaleType\tenum('lancamento','pronto')\tYES\t\tNULL\t\nresponsible\tvarchar(255)\tYES\t\tNULL\t\ninvoiceNumber\tvarchar(100)\tYES\t\tNULL\t\nlistingDate\ttimestamp\tYES\t\tNULL\t\nlistingStore\tvarchar(100)\tYES\t\tNULL\t\nsellingStore\tvarchar(100)\tYES\t\tNULL\t\nteam\tvarchar(100)\tYES\t\tNULL\t\nregion\tvarchar(100)\tYES\t\tNULL\t\nmanagementResponsible\tvarchar(100)\tYES\t\tNULL\t\ndeedStatus\tvarchar(50)\tYES\t\tNULL\t\nbankName\tvarchar(255)\tYES\t\tNULL\t\nfinancedAmount\tdecimal(15,2)\tYES\t\tNULL\t\nbankReturnPercentage\tdecimal(5,2)\tYES\t\tNULL\t\nbankReturnAmount\tdecimal(15,2)\tYES\t\tNULL\t\nobservations\ttext\tYES\t\tNULL\t\nwasRemoved\ttinyint(1)\tYES\t\t0\t\npriceDiscount\tdecimal(15,2)\tYES\t\tNULL\t\nlistingToSaleDays\tint\tYES\t\tNULL\t\ncommissionPaymentDate\ttimestamp\tYES\t\tNULL\t\ncommissionAmountReceived\tdecimal(15,2)\tYES\t\tNULL\t\ncommissionPaymentBank\tvarchar(255)\tYES\t\tNULL\t\ncommissionPaymentMethod\tvarchar(100)\tYES\t\tNULL\t\ncommissionPaymentObservations\ttext\tYES\t\tNULL\t\ndownPaymentPercentage\tdecimal(5,2)\tYES\t\tNULL\t\ncontractNumber\tvarchar(100)\tYES\t\tNULL\t\ncontractSignatureDate\ttimestamp\tYES\t\tNULL\t\nportfolioStatus\tvarchar(100)\tYES\t\tNULL\t\ntipoComissao\tenum('Venda Interna','Parceria UNA','Parceria Externa','Lançamento')\tYES\t\tNULL\t\nporcentagemComissao\tdecimal(5,2)\tYES\t\tNULL\t\ncomissaoTotal\tdecimal(15,2)\tYES\t\tNULL\t\ncomissaoAngariador\tdecimal(15,2)\tYES\t\tNULL\t\ncomissaoCoordenador\tdecimal(15,2)\tYES\t\tNULL\t\ncomissaoVendedor\tdecimal(15,2)\tYES\t\tNULL\t\ncomissaoImobiliaria\tdecimal(15,2)\tYES\t\tNULL\t\ncomissaoParceira\tdecimal(15,2)\tYES\t\tNULL\t\ncomissaoAutonomo\tdecimal(15,2)\tYES\t\tNULL\t\npossuiBonificacao\ttinyint(1)\tYES\t\t0\t\ntipoBonificacao\tenum('Dinheiro','Material')\tYES\t\tNULL\t\nvalorBonificacao\tdecimal(15,2)\tYES\t\tNULL\t\ndescricaoBonificacao\ttext\tYES\t\tNULL\t\ncomissaoBonificacaoCorretor\tdecimal(15,2)\tYES\t\tNULL\t\ncomissaoBonificacaoImobiliaria\tdecimal(15,2)\tYES\t\tNULL\t\nsinalNegocio\tenum('Baggio','Outra')\tYES\t\tNULL\t\nsinalNegocioEmpresa\tvarchar(255)\tYES\t\tNULL\t\nsinalNegocioValor\tdecimal(15,2)\tYES\t\tNULL\t\nsinalNegocioDataPagamento\ttimestamp\tYES\t\tNULL\t\nsinalNegocioComprovanteUrl\ttext\tYES\t\tNULL\t\ndocuments\ttext\tYES\t\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

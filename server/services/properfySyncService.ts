@@ -72,6 +72,7 @@ export async function syncAllProperties(): Promise<{ success: boolean; message: 
     let insertedCount = 0;
     let updatedCount = 0;
     let errorCount = 0;
+    let propertiesWithDates = 0;
 
     // Fetch first page to get total count
     console.log('[ProperfySync] Fetching first page to determine total...');
@@ -141,6 +142,10 @@ export async function syncAllProperties(): Promise<{ success: boolean; message: 
 
         for (const property of data.data) {
           try {
+            // Debug: Count properties with dates
+            if (property.dteNewListing || property.dteTermination) {
+              propertiesWithDates++;
+            }
             await upsertProperty(db, property);
             insertedCount++;
           } catch (error) {
@@ -152,7 +157,7 @@ export async function syncAllProperties(): Promise<{ success: boolean; message: 
     }
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    const message = `[ProperfySync] Sync completed in ${duration}s. Total: ${totalProperties}, Inserted/Updated: ${insertedCount}, Errors: ${errorCount}`;
+    const message = `[ProperfySync] Sync completed in ${duration}s. Total: ${totalProperties}, Inserted/Updated: ${insertedCount}, Errors: ${errorCount}, Properties with dates: ${propertiesWithDates}`;
     console.log(message);
 
     return {

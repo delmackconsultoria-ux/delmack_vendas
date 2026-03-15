@@ -1,0 +1,16 @@
+{
+  "query": "SELECT \n  COUNT(*) as total_imóveis,\n  COUNT(CASE WHEN dteNewListing IS NOT NULL THEN 1 END) as com_dteNewListing,\n  COUNT(CASE WHEN dteTermination IS NOT NULL THEN 1 END) as com_dteTermination,\n  COUNT(CASE WHEN dteNewListing IS NOT NULL AND dteTermination IS NOT NULL THEN 1 END) as com_ambas_datas\nFROM properfyProperties;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  COUNT(*) as total_imóveis,\n  COUNT(CASE WHEN dteNewListing IS NOT NULL THEN 1 END) as com_dteNewListing,\n  COUNT(CASE WHEN dteTermination IS NOT NULL THEN 1 END) as com_dteTermination,\n  COUNT(CASE WHEN dteNewListing IS NOT NULL AND dteTermination IS NOT NULL THEN 1 END) as com_ambas_datas\nFROM properfyProperties;",
+  "rows": [
+    {
+      "total_imóveis": "5075",
+      "com_dteNewListing": "0",
+      "com_dteTermination": "0",
+      "com_ambas_datas": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_imóveis\tcom_dteNewListing\tcom_dteTermination\tcom_ambas_datas\n5075\t0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

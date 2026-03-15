@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as total_with_dteNewListing FROM properfyProperties WHERE dteNewListing IS NOT NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_with_dteNewListing FROM properfyProperties WHERE dteNewListing IS NOT NULL;",
+  "rows": [
+    {
+      "total_with_dteNewListing": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_with_dteNewListing\n0\n",
+  "stderr": "",
+  "execution_time_ms": 66
+}

@@ -1,0 +1,19 @@
+{
+  "query": "SELECT DISTINCT companyId FROM sales WHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DISTINCT companyId FROM sales WHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2);",
+  "rows": [
+    {
+      "companyId": "company_test_001"
+    },
+    {
+      "companyId": "company_1766331506068"
+    },
+    {
+      "companyId": "B I IMOVEIS LTDA"
+    }
+  ],
+  "messages": [],
+  "stdout": "companyId\ncompany_test_001\ncompany_1766331506068\nB I IMOVEIS LTDA\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

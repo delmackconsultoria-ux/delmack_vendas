@@ -1,0 +1,360 @@
+{
+  "query": "SELECT \n  id,\n  companyId,\n  MONTH(createdAt) as mes,\n  saleValue,\n  status\nFROM sales\nWHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2)\nLIMIT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  id,\n  companyId,\n  MONTH(createdAt) as mes,\n  saleValue,\n  status\nFROM sales\nWHERE YEAR(createdAt) = 2026 AND MONTH(createdAt) IN (1, 2)\nLIMIT 50;",
+  "rows": [
+    {
+      "id": "a437ed63-f049-4d0f-a62f-f6ebe6cc4269",
+      "companyId": "company_1766331506068",
+      "mes": "2",
+      "saleValue": "0.00",
+      "status": "draft"
+    },
+    {
+      "id": "hist-2024-01-00001",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "290000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-01-00002",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "270000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-01-00003",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "350000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-01-00004",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "850000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-01-00005",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "520000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-01-00006",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "280000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-01-00007",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "750000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-01-00008",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "300000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-02-00001",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "123000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-02-00002",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "520000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-02-00003",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "120000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-02-00004",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "330000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-02-00005",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "168000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00001",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "285000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00002",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "320000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00003",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "315000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00004",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "480000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00005",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "300000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00006",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "394000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00007",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "515000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00008",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "1050000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00009",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "660000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-03-00010",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "310000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00001",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "765000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00002",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "830000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00003",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "970000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00004",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "280000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00005",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "440000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00006",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "1000000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00007",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "230000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00008",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "3200000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-04-00009",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "570000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00001",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "550000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00002",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "1000000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00003",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "550000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00004",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "1600000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00005",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "320000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00006",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "135000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00007",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "180000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00008",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "1100000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-05-00009",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "320000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00001",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "320000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00002",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "700000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00003",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "735000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00004",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "550000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00005",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "390000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00006",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "680000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00007",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "670000.00",
+      "status": "commission_paid"
+    },
+    {
+      "id": "hist-2024-06-00008",
+      "companyId": "B I IMOVEIS LTDA",
+      "mes": "2",
+      "saleValue": "212000.00",
+      "status": "commission_paid"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcompanyId\tmes\tsaleValue\tstatus\na437ed63-f049-4d0f-a62f-f6ebe6cc4269\tcompany_1766331506068\t2\t0.00\tdraft\nhist-2024-01-00001\tB I IMOVEIS LTDA\t2\t290000.00\tcommission_paid\nhist-2024-01-00002\tB I IMOVEIS LTDA\t2\t270000.00\tcommission_paid\nhist-2024-01-00003\tB I IMOVEIS LTDA\t2\t350000.00\tcommission_paid\nhist-2024-01-00004\tB I IMOVEIS LTDA\t2\t850000.00\tcommission_paid\nhist-2024-01-00005\tB I IMOVEIS LTDA\t2\t520000.00\tcommission_paid\nhist-2024-01-00006\tB I IMOVEIS LTDA\t2\t280000.00\tcommission_paid\nhist-2024-01-00007\tB I IMOVEIS LTDA\t2\t750000.00\tcommission_paid\nhist-2024-01-00008\tB I IMOVEIS LTDA\t2\t300000.00\tcommission_paid\nhist-2024-02-00001\tB I IMOVEIS LTDA\t2\t123000.00\tcommission_paid\nhist-2024-02-00002\tB I IMOVEIS LTDA\t2\t520000.00\tcommission_paid\nhist-2024-02-00003\tB I IMOVEIS LTDA\t2\t120000.00\tcommission_paid\nhist-2024-02-00004\tB I IMOVEIS LTDA\t2\t330000.00\tcommission_paid\nhist-2024-02-00005\tB I IMOVEIS LTDA\t2\t168000.00\tcommission_paid\nhist-2024-03-00001\tB I IMOVEIS LTDA\t2\t285000.00\tcommission_paid\nhist-2024-03-00002\tB I IMOVEIS LTDA\t2\t320000.00\tcommission_paid\nhist-2024-03-00003\tB I IMOVEIS LTDA\t2\t315000.00\tcommission_paid\nhist-2024-03-00004\tB I IMOVEIS LTDA\t2\t480000.00\tcommission_paid\nhist-2024-03-00005\tB I IMOVEIS LTDA\t2\t300000.00\tcommission_paid\nhist-2024-03-00006\tB I IMOVEIS LTDA\t2\t394000.00\tcommission_paid\nhist-2024-03-00007\tB I IMOVEIS LTDA\t2\t515000.00\tcommission_paid\nhist-2024-03-00008\tB I IMOVEIS LTDA\t2\t1050000.00\tcommission_paid\nhist-2024-03-00009\tB I IMOVEIS LTDA\t2\t660000.00\tcommission_paid\nhist-2024-03-00010\tB I IMOVEIS LTDA\t2\t310000.00\tcommission_paid\nhist-2024-04-00001\tB I IMOVEIS LTDA\t2\t765000.00\tcommission_paid\nhist-2024-04-00002\tB I IMOVEIS LTDA\t2\t830000.00\tcommission_paid\nhist-2024-04-00003\tB I IMOVEIS LTDA\t2\t970000.00\tcommission_paid\nhist-2024-04-00004\tB I IMOVEIS LTDA\t2\t280000.00\tcommission_paid\nhist-2024-04-00005\tB I IMOVEIS LTDA\t2\t440000.00\tcommission_paid\nhist-2024-04-00006\tB I IMOVEIS LTDA\t2\t1000000.00\tcommission_paid\nhist-2024-04-00007\tB I IMOVEIS LTDA\t2\t230000.00\tcommission_paid\nhist-2024-04-00008\tB I IMOVEIS LTDA\t2\t3200000.00\tcommission_paid\nhist-2024-04-00009\tB I IMOVEIS LTDA\t2\t570000.00\tcommission_paid\nhist-2024-05-00001\tB I IMOVEIS LTDA\t2\t550000.00\tcommission_paid\nhist-2024-05-00002\tB I IMOVEIS LTDA\t2\t1000000.00\tcommission_paid\nhist-2024-05-00003\tB I IMOVEIS LTDA\t2\t550000.00\tcommission_paid\nhist-2024-05-00004\tB I IMOVEIS LTDA\t2\t1600000.00\tcommission_paid\nhist-2024-05-00005\tB I IMOVEIS LTDA\t2\t320000.00\tcommission_paid\nhist-2024-05-00006\tB I IMOVEIS LTDA\t2\t135000.00\tcommission_paid\nhist-2024-05-00007\tB I IMOVEIS LTDA\t2\t180000.00\tcommission_paid\nhist-2024-05-00008\tB I IMOVEIS LTDA\t2\t1100000.00\tcommission_paid\nhist-2024-05-00009\tB I IMOVEIS LTDA\t2\t320000.00\tcommission_paid\nhist-2024-06-00001\tB I IMOVEIS LTDA\t2\t320000.00\tcommission_paid\nhist-2024-06-00002\tB I IMOVEIS LTDA\t2\t700000.00\tcommission_paid\nhist-2024-06-00003\tB I IMOVEIS LTDA\t2\t735000.00\tcommission_paid\nhist-2024-06-00004\tB I IMOVEIS LTDA\t2\t550000.00\tcommission_paid\nhist-2024-06-00005\tB I IMOVEIS LTDA\t2\t390000.00\tcommission_paid\nhist-2024-06-00006\tB I IMOVEIS LTDA\t2\t680000.00\tcommission_paid\nhist-2024-06-00007\tB I IMOVEIS LTDA\t2\t670000.00\tcommission_paid\nhist-2024-06-00008\tB I IMOVEIS LTDA\t2\t212000.00\tcommission_paid\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
