@@ -64,6 +64,16 @@ export default function AuditLogTable() {
   const formatValue = (fieldName: string | null, value: string | null) => {
     if (!value) return "-";
     
+    // Tentar parsear como JSON
+    try {
+      const parsed = JSON.parse(value);
+      if (typeof parsed === "object" && parsed !== null) {
+        return formatObjectValue(parsed);
+      }
+    } catch {
+      // Não é JSON, continuar com formatação normal
+    }
+    
     // Formatar valores monetários
     if (fieldName === "saleValue" || fieldName === "comissaoTotal") {
       const numValue = parseFloat(value);
@@ -81,6 +91,58 @@ export default function AuditLogTable() {
     }
 
     return value;
+  };
+
+  const formatObjectValue = (obj: any): string => {
+    // Campos importantes para exibir
+    const importantFields = [
+      "buyerName",
+      "sellerName",
+      "saleValue",
+      "propertyAddress",
+      "status",
+      "expectedPaymentDate",
+      "comissaoTotal",
+      "porcentagemComissao",
+      "businessType",
+      "brokerVendedor",
+      "brokerAngariador",
+    ];
+
+    const displayParts: string[] = [];
+
+    for (const field of importantFields) {
+      if (obj[field] !== undefined && obj[field] !== null && obj[field] !== "") {
+        let displayValue = obj[field];
+
+        // Formatar valores monetários
+        if (
+          (field === "saleValue" || field === "comissaoTotal") &&
+          typeof displayValue === "number"
+        ) {
+          displayValue = formatCurrency(displayValue);
+        }
+
+        // Formatar datas
+        if (
+          (field === "expectedPaymentDate" || field.includes("Date")) &&
+          typeof displayValue === "string"
+        ) {
+          try {
+            const date = new Date(displayValue);
+            displayValue = date.toLocaleDateString("pt-BR");
+          } catch {
+            // Manter valor original se não conseguir parsear
+          }
+        }
+
+        // Traduzir nomes de campos
+        const fieldLabel = FIELD_LABELS[field] || field;
+        displayParts.push(`${fieldLabel}: ${displayValue}`);
+      }
+    }
+
+    return displayParts.length > 0 ? displayParts.join(" | ") : "-";
   };
 
   return (

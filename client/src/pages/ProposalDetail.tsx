@@ -374,16 +374,36 @@ ${sale.observation || "Nenhuma observação"}
                 <p className="text-slate-500">Nenhuma alteração registrada</p>
               ) : (
                 <div className="space-y-3">
-                  {history.map((item: any, idx: number) => (
-                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
-                      <div className="w-2 h-2 mt-2 rounded-full bg-indigo-500" />
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{item.action}</p>
-                        <p className="text-xs text-slate-500">{item.userName} - {formatDateTime(item.createdAt)}</p>
-                        {item.details && <p className="text-sm text-slate-600 mt-1">{item.details}</p>}
+                  {history.map((item: any, idx: number) => {
+                    const actionLabels: Record<string, string> = {
+                      create: "Venda criada",
+                      update: "Venda atualizada",
+                      delete: "Venda excluída",
+                      status_change: "Status alterado",
+                      approval: "Venda aprovada",
+                      rejection: "Venda rejeitada",
+                    };
+                    const actionLabel = actionLabels[item.action] || item.action;
+                    const actionColors: Record<string, string> = {
+                      create: "bg-green-50 border-l-4 border-green-500",
+                      update: "bg-blue-50 border-l-4 border-blue-500",
+                      delete: "bg-red-50 border-l-4 border-red-500",
+                      status_change: "bg-purple-50 border-l-4 border-purple-500",
+                      approval: "bg-emerald-50 border-l-4 border-emerald-500",
+                      rejection: "bg-orange-50 border-l-4 border-orange-500",
+                    };
+                    const colorClass = actionColors[item.action] || "bg-slate-50 border-l-4 border-slate-500";
+                    
+                    return (
+                      <div key={idx} className={`flex items-start gap-3 p-3 rounded-lg ${colorClass}`}>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{actionLabel}</p>
+                          <p className="text-xs text-slate-500">{item.userName || "Sistema"} - {formatDateTime(item.createdAt)}</p>
+                          {item.details && <p className="text-sm text-slate-600 mt-1">{item.details}</p>}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
