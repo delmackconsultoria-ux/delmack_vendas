@@ -183,8 +183,8 @@ export default function ProposalManagement() {
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="commissions" className="w-full">
           <TabsList className="grid w-full max-w-3xl grid-cols-3 mb-6">
-            <TabsTrigger value="commissions">{user?.role === "broker" ? "Recebidas" : "Pagas"}</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
+            <TabsTrigger value="commissions">{user?.role === "broker" ? "Recebidas" : "Histórico"}</TabsTrigger>
+            <TabsTrigger value="history">Pagos</TabsTrigger>
             <TabsTrigger value="audit">Alterações</TabsTrigger>
           </TabsList>
 
