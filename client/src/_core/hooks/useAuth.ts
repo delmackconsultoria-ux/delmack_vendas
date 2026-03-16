@@ -48,7 +48,8 @@ export function useAuth(options?: UseAuthOptions) {
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
       // Redirecionar para página de login após logout
-      window.location.href = "/login";
+      // Usar window.location.href com URL absoluta para garantir redirecionamento correto
+      window.location.href = `${window.location.origin}/login`;
     }
   }, [logoutMutation, utils]);
 
