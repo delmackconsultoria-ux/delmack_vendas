@@ -20,7 +20,7 @@ import {
 
 export default function DashboardManager() {
   const { user } = useAuth();
-  const [, setLocation] = require('wouter').useLocation();
+  const [, setLocation] = useLocation();
 
   // Buscar KPIs do dashboard
   const { data: kpis, isLoading: isLoadingKPIs } = trpc.dashboard.getKPIs.useQuery();
