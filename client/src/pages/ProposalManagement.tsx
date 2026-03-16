@@ -57,33 +57,31 @@ export default function ProposalManagement() {
     },
   });
 
-  // Métricas (apenas vendas do sistema)
+  // Métricas (sempre do mês atual, independente dos filtros)
   const metrics = useMemo(() => {
     const currentSales = salesData?.sales || [];
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1; // 1-12
+    const currentYear = now.getFullYear();
     
-    if (currentSales.length === 0) {
-      return { total: 0, sales: 0, approved: 0, cancelled: 0, conversionRate: 0, avgDays: 0 };
+    // Filtrar apenas vendas do mês atual
+    const currentMonthSales = currentSales.filter((s: any) => {
+      const saleDate = s.saleDate ? new Date(s.saleDate) : null;
+      if (!saleDate) return false;
+      return saleDate.getMonth() + 1 === currentMonth && saleDate.getFullYear() === currentYear;
+    });
+    
+    if (currentMonthSales.length === 0) {
+      return { total: 0, sales: 0, approved: 0, cancelled: 0, pending: 0 };
     }
     
-    const total = currentSales.length;
-    const salesCount = currentSales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length;
-    const approved = currentSales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length;
-    const cancelled = currentSales.filter((s: any) => s.status === "cancelled").length;
-    const conversionRate = total > 0 ? (salesCount / total) * 100 : 0;
+    const total = currentMonthSales.length;
+    const salesCount = currentMonthSales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length;
+    const approved = currentMonthSales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length;
+    const cancelled = currentMonthSales.filter((s: any) => s.status === "cancelled").length;
+    const pending = currentMonthSales.filter((s: any) => ["draft", "pending", "sale", "manager_review", "finance_review"].includes(s.status)).length;
     
-    // Calcular tempo médio de proposta para venda (apenas vendas atuais)
-    const completedSales = currentSales.filter((s: any) => s.status === "commission_paid" && s.saleDate && s.createdAt);
-    let avgDays = 0;
-    if (completedSales.length > 0) {
-      const totalDays = completedSales.reduce((acc: number, sale: any) => {
-        const created = new Date(sale.createdAt!);
-        const saleDate = new Date(sale.saleDate!);
-        return acc + Math.ceil((saleDate.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
-      }, 0);
-      avgDays = Math.round(totalDays / completedSales.length);
-    }
-    
-    return { total, sales: salesCount, approved, cancelled, conversionRate, avgDays };
+    return { total, sales: salesCount, approved, cancelled, pending };
   }, [salesData]);
 
   const filteredSales = useMemo(() => {
@@ -213,9 +211,8 @@ export default function ProposalManagement() {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="commissions" className="w-full">
-          <TabsList className="grid w-full max-w-3xl grid-cols-3 mb-6">
+          <TabsList className="grid w-full max-w-2xl grid-cols-2 mb-6">
             <TabsTrigger value="commissions">{user?.role === "broker" ? "Recebidas" : "Histórico"}</TabsTrigger>
-            <TabsTrigger value="history">Pagos</TabsTrigger>
             <TabsTrigger value="audit">Alterações</TabsTrigger>
           </TabsList>
 
@@ -258,21 +255,10 @@ export default function ProposalManagement() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
+                <AlertCircle className="h-5 w-5 text-amber-500" />
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{metrics.conversionRate.toFixed(1)}%</p>
-                  <p className="text-xs text-slate-500">Taxa Conversão</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-purple-500" />
-                <div>
-                  <p className="text-2xl font-bold text-purple-600">{metrics.avgDays}</p>
-                  <p className="text-xs text-slate-500">Dias Médios</p>
+                  <p className="text-2xl font-bold text-amber-600">{metrics.pending}</p>
+                  <p className="text-xs text-slate-500">Pendentes</p>
                 </div>
               </div>
             </CardContent>
@@ -430,145 +416,7 @@ export default function ProposalManagement() {
         </Card>
           </TabsContent>
 
-          <TabsContent value="history" className="space-y-6">
-            {/* Filtros */}
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex-1 min-w-[200px]">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                      <Input
-                        placeholder="Buscar por comprador ou referência..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  {user?.role === "manager" && brokersData && brokersData.length > 0 && (
-                    <Select value={brokerFilter} onValueChange={setBrokerFilter}>
-                      <SelectTrigger className="w-[200px]">
-                        <SelectValue placeholder="Corretor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos os Corretores</SelectItem>
-                        {brokersData.map((broker: any) => (
-                          <SelectItem key={broker.id} value={broker.id}>{broker.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                  
-                  {/* Filtro de Mês */}
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
-                  >
-                    <option value="all">Todos os meses</option>
-                    <option value="1">Janeiro</option>
-                    <option value="2">Fevereiro</option>
-                    <option value="3">Março</option>
-                    <option value="4">Abril</option>
-                    <option value="5">Maio</option>
-                    <option value="6">Junho</option>
-                    <option value="7">Julho</option>
-                    <option value="8">Agosto</option>
-                    <option value="9">Setembro</option>
-                    <option value="10">Outubro</option>
-                    <option value="11">Novembro</option>
-                    <option value="12">Dezembro</option>
-                  </select>
-                  
-                  {/* Filtro de Ano */}
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
-                  >
-                    <option value="all">Todos os anos</option>
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                  </select>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Lista de Propostas */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Pagos ({paidCommissions.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="text-center pt-24 text-slate-500">Carregando...</div>
-                ) : paidCommissions.length === 0 ? (
-                  <div className="text-center pt-24 text-slate-500">Nenhuma comissão paga encontrada</div>
-                ) : (
-                  <div className="space-y-3">
-                    {paidCommissions.map((sale: any) => {
-                      const statusConfig = STATUS_CONFIG[sale.status] || STATUS_CONFIG.pending;
-                      return (
-                        <div key={sale.id} className={`border rounded-lg p-4 hover:bg-slate-50 transition-colors ${sale.isHistorical ? 'bg-amber-50/30 border-amber-200' : ''}`}>
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="font-semibold text-slate-900">{sale.buyerName}</h3>
-                                <Badge className={`${statusConfig.bgColor} ${statusConfig.color} border-0`}>
-                                  {statusConfig.label}
-                                </Badge>
-                              </div>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-slate-600">
-                                <div>
-                                  <span className="text-slate-400">Valor:</span> {formatCurrency(sale.saleValue)}
-                                </div>
-                                <div>
-                                  <span className="text-slate-400">Ref:</span> {sale.propertyId?.slice(0, 8) || "-"}
-                                </div>
-                                <div>
-                                  <span className="text-slate-400">Data:</span> {sale.createdAt ? new Date(sale.createdAt).toLocaleDateString("pt-BR") : "-"}
-                                </div>
-                                {user?.role === "manager" && (
-                                  <div>
-                                    <span className="text-slate-400">Registrado por:</span> {sale.registeredByName || "-"}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/${sale.id}`)}>
-                                <Eye className="h-4 w-4 mr-1" />
-                                Ver
-                              </Button>
-                              {(!["commission_paid"].includes(sale.status) || user?.role === "manager") && (
-                                <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/edit/${sale.id}`)}>
-                                  <Edit className="h-4 w-4 mr-1" />
-                                  Editar
-                                </Button>
-                              )}
-                              {getNextStatuses(sale.status).length > 0 && (
-                                <Button 
-                                  variant="default" 
-                                  size="sm"
-                                  onClick={() => setStatusDialog({ open: true, saleId: sale.id, currentStatus: sale.status })}
-                                >
-                                  <MessageSquare className="h-4 w-4 mr-1" />
-                                  Alterar Status
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           <TabsContent value="audit">
             <AuditLogTable />
