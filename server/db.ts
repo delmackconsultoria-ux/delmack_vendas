@@ -93,6 +93,32 @@ export async function getUser(id: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+/**
+ * Get user with company name
+ */
+export async function getUserWithCompany(id: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  if (result.length === 0) return undefined;
+
+  const user = result[0];
+  let companyName: string | null = null;
+
+  if (user.companyId) {
+    const companyResult = await db.select().from(companies).where(eq(companies.id, user.companyId)).limit(1);
+    if (companyResult.length > 0) {
+      companyName = companyResult[0].name || null;
+    }
+  }
+
+  return { ...user, companyName } as any;
+}
+
 export async function getUserByEmail(email: string) {
   const db = await getDb();
   if (!db) {
@@ -118,7 +144,7 @@ export async function getCompanyUsers(companyId: string) {
 /**
  * Get users by role
  */
-export async function getUsersByRole(role: string) {
+export async function getUsersByRole(role: "superadmin" | "admin" | "manager" | "broker" | "finance" | "viewer") {
   const db = await getDb();
   if (!db) return [];
 
@@ -160,12 +186,13 @@ export async function createUser(data: InsertUser) {
 
   const userId = data.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+  const { id: _, ...cleanData } = data;
   await db.insert(users).values({
-    ...data,
+    ...cleanData,
     id: userId,
   });
 
-  return { id: userId, ...data };
+  return { ...data, id: userId };
 }
 
 /**

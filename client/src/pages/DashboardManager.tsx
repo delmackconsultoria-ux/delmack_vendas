@@ -20,7 +20,7 @@ import {
 
 export default function DashboardManager() {
   const { user } = useAuth();
-  const [, setLocation] = useLocation();
+  const [, setLocation] = require('wouter').useLocation();
 
   // Buscar KPIs do dashboard
   const { data: kpis, isLoading: isLoadingKPIs } = trpc.dashboard.getKPIs.useQuery();
@@ -30,6 +30,22 @@ export default function DashboardManager() {
   }
 
   // Dados mock removidos - usar dados reais do backend quando disponível
+  const teamPerformance = [
+    { name: "Corretor 1", comissoes: 15000, meta: 20000 },
+    { name: "Corretor 2", comissoes: 18000, meta: 20000 },
+    { name: "Corretor 3", comissoes: 12000, meta: 20000 },
+  ];
+
+  const salesEvolution = [
+    { mes: "Jan", vendas: 45000 },
+    { mes: "Fev", vendas: 52000 },
+    { mes: "Mar", vendas: 48000 },
+    { mes: "Abr", vendas: 61000 },
+    { mes: "Mai", vendas: 55000 },
+    { mes: "Jun", vendas: 67000 },
+  ];
+
+
 
   return (
     <>

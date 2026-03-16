@@ -119,32 +119,10 @@ export default function Indicators() {
     }
   }, [selectedMonth, selectedYear, user, refetch]);
 
-  // Scroll para topo
   // Recarregar dados manuais quando modal fecha
   const handleManualDataClose = () => {
     setIsManualDataModalOpen(false);
-    // Recarregar dados manuais
-    const fetchManualData = async () => {
-      if (!user?.companyId) return;
-      const data: Record<string, any> = {};
-      for (let month = 1; month <= 12; month++) {
-        try {
-          const monthKey = `${parseInt(selectedYear)}-${String(month).padStart(2, '0')}`;
-          const result = await trpc.indicators.getMonthlyManualData.query({
-            companyId: user.companyId,
-            year: parseInt(selectedYear),
-            month,
-          });
-          if (result) {
-            data[monthKey] = result;
-          }
-        } catch (error) {
-          // Silenciosamente ignorar erros
-        }
-      }
-      setManualDataByMonth(data);
-    };
-    fetchManualData();
+    // Recarregar dados será feito automaticamente pelo useQuery
   };
 
   // Scroll para topo ao entrar na página

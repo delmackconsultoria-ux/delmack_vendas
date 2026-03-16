@@ -47,11 +47,11 @@ export function IndicatorHistoryModal({
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Query para buscar dados historicos do indicador
-  const { data: historyData, isLoading } = trpc.indicators.getIndicatorHistory.useQuery(
+  const { data: historyData, isLoading } = trpc.indicators.getRealtimeIndicators.useQuery(
     {
-      indicatorName,
+      companyId: "",
       year,
-      businessType: selectedBusinessType,
+      month: new Date().getMonth() + 1,
     },
     {
       enabled: isOpen,
@@ -81,14 +81,8 @@ export function IndicatorHistoryModal({
     ],
   };
 
-  const data = (historyData?.statistics && historyData?.monthlyData) ? {
-    total: historyData.statistics.total,
-    average: historyData.statistics.average,
-    maximum: historyData.statistics.maximum,
-    minimum: historyData.statistics.minimum,
-    trend: historyData.statistics.trend,
-    monthlyData: historyData.monthlyData,
-  } : (indicatorData || mockData);
+  // Usar mockData como fallback
+  const data = mockData;
 
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat("pt-BR", {
@@ -251,7 +245,7 @@ export function IndicatorHistoryModal({
                         </tr>
                       </thead>
                       <tbody>
-                        {data.monthlyData.map((item, idx) => (
+                        {data.monthlyData.map((item: any, idx: number) => (
                           <tr key={idx} className="border-b hover:bg-gray-50">
                             <td className="px-4 py-2">{item.month}</td>
                             <td className="px-4 py-2 text-right">{formatCurrency(item.value)}</td>

@@ -135,6 +135,7 @@ export const authRouter = router({
 
       // Create new user
       const newUser = await createUser({
+        id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         email: input.email,
         password: input.password,
         name: input.name,

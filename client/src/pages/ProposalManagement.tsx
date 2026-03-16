@@ -167,9 +167,9 @@ export default function ProposalManagement() {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Histórico de Vendas</h1>
+              <h1 className="text-2xl font-bold text-slate-900">Comissões</h1>
               <p className="text-sm text-slate-500 mt-1">
-                {user?.role === "broker" ? "Seu histórico completo" : "Histórico completo de vendas aprovadas e reprovadas"}
+                {user?.role === "broker" ? "Suas comissões a receber" : "Gerenciamento de comissões"}
               </p>
             </div>
             <Button onClick={() => setLocation("/proposals/new")} className="bg-primary hover:bg-primary/90">
@@ -181,14 +181,14 @@ export default function ProposalManagement() {
       </div>
 
       <main className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="history" className="w-full">
+        <Tabs defaultValue="commissions" className="w-full">
           <TabsList className="grid w-full max-w-3xl grid-cols-3 mb-6">
-            <TabsTrigger value="history">Histórico de Vendas</TabsTrigger>
-            <TabsTrigger value="commissions">Comissões Recebidas</TabsTrigger>
-            <TabsTrigger value="audit">Observações e histórico de alterações</TabsTrigger>
+            <TabsTrigger value="commissions">{user?.role === "broker" ? "Recebidas" : "Pagas"}</TabsTrigger>
+            <TabsTrigger value="history">Histórico</TabsTrigger>
+            <TabsTrigger value="audit">Alterações</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="history" className="space-y-6">
+          <TabsContent value="commissions" className="space-y-6">
             {/* Métricas */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card>
@@ -399,8 +399,156 @@ export default function ProposalManagement() {
         </Card>
           </TabsContent>
 
-          <TabsContent value="commissions">
-            <CommissionsReceived />
+          <TabsContent value="history" className="space-y-6">
+            {/* Filtros */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Buscar por comprador ou referência..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-[200px]">
+                      <Filter className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os Status</SelectItem>
+                      {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                        <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {user?.role === "manager" && brokersData && brokersData.length > 0 && (
+                    <Select value={brokerFilter} onValueChange={setBrokerFilter}>
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Corretor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos os Corretores</SelectItem>
+                        {brokersData.map((broker: any) => (
+                          <SelectItem key={broker.id} value={broker.id}>{broker.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  
+                  {/* Filtro de Mês */}
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
+                  >
+                    <option value="all">Todos os meses</option>
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                  </select>
+                  
+                  {/* Filtro de Ano */}
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
+                  >
+                    <option value="all">Todos os anos</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Lista de Propostas */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Histórico ({filteredSales.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="text-center pt-24 text-slate-500">Carregando...</div>
+                ) : filteredSales.length === 0 ? (
+                  <div className="text-center pt-24 text-slate-500">Nenhuma proposta encontrada</div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredSales.map((sale: any) => {
+                      const statusConfig = STATUS_CONFIG[sale.status] || STATUS_CONFIG.pending;
+                      return (
+                        <div key={sale.id} className={`border rounded-lg p-4 hover:bg-slate-50 transition-colors ${sale.isHistorical ? 'bg-amber-50/30 border-amber-200' : ''}`}>
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h3 className="font-semibold text-slate-900">{sale.buyerName}</h3>
+                                <Badge className={`${statusConfig.bgColor} ${statusConfig.color} border-0`}>
+                                  {statusConfig.label}
+                                </Badge>
+                              </div>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-slate-600">
+                                <div>
+                                  <span className="text-slate-400">Valor:</span> {formatCurrency(sale.saleValue)}
+                                </div>
+                                <div>
+                                  <span className="text-slate-400">Ref:</span> {sale.propertyId?.slice(0, 8) || "-"}
+                                </div>
+                                <div>
+                                  <span className="text-slate-400">Data:</span> {sale.createdAt ? new Date(sale.createdAt).toLocaleDateString("pt-BR") : "-"}
+                                </div>
+                                {user?.role === "manager" && (
+                                  <div>
+                                    <span className="text-slate-400">Registrado por:</span> {sale.registeredByName || "-"}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/${sale.id}`)}>
+                                <Eye className="h-4 w-4 mr-1" />
+                                Ver
+                              </Button>
+                              {(!["commission_paid"].includes(sale.status) || user?.role === "manager") && (
+                                <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/edit/${sale.id}`)}>
+                                  <Edit className="h-4 w-4 mr-1" />
+                                  Editar
+                                </Button>
+                              )}
+                              {getNextStatuses(sale.status).length > 0 && (
+                                <Button 
+                                  variant="default" 
+                                  size="sm"
+                                  onClick={() => setStatusDialog({ open: true, saleId: sale.id, currentStatus: sale.status })}
+                                >
+                                  <MessageSquare className="h-4 w-4 mr-1" />
+                                  Alterar Status
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="audit">

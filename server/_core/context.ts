@@ -41,7 +41,7 @@ export async function createContext(
           if (parts.length === 3) {
             const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
             if (payload.userId) {
-              const fetchedUser = await db.getUser(payload.userId);
+              const fetchedUser = await db.getUserWithCompany(payload.userId);
               user = fetchedUser || null;
             }
           }
@@ -53,7 +53,7 @@ export async function createContext(
         // JSON simples
         const sessionData = JSON.parse(decodedCookie);
         if (sessionData.userId) {
-          const fetchedUser = await db.getUser(sessionData.userId);
+          const fetchedUser = await db.getUserWithCompany(sessionData.userId);
           user = fetchedUser || null;
         }
       }
