@@ -58,19 +58,11 @@ export default function ProposalManagement() {
   });
 
   // Métricas (sempre do mês atual, independente dos filtros)
-  // Memoizar a data atual para evitar recálculos desnecessários
-  const currentDate = useMemo(() => {
-    const now = new Date();
-    return {
-      month: now.getMonth() + 1,
-      year: now.getFullYear()
-    };
-  }, []);
-
   const metrics = useMemo(() => {
     const currentSales = salesData?.sales || [];
-    const currentMonth = currentDate.month;
-    const currentYear = currentDate.year;
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1; // 1-12
+    const currentYear = now.getFullYear();
     
     // Filtrar apenas vendas do mês atual
     const currentMonthSales = currentSales.filter((s: any) => {
@@ -90,7 +82,7 @@ export default function ProposalManagement() {
     const pending = currentMonthSales.filter((s: any) => ["draft", "pending", "sale", "manager_review", "finance_review"].includes(s.status)).length;
     
     return { total, sales: salesCount, approved, cancelled, pending };
-  }, [salesData, currentDate]);
+  }, [salesData]);
 
   const filteredSales = useMemo(() => {
     const currentSales = salesData?.sales || [];
