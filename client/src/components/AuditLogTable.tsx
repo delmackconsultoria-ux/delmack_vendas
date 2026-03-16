@@ -145,6 +145,67 @@ export default function AuditLogTable() {
     return displayParts.length > 0 ? displayParts.join(" | ") : "-";
   };
 
+  const formatChangeMessage = (fieldName: string | null, previousValue: string | null, newValue: string | null): string => {
+    if (!fieldName) return "-";
+    
+    // Se o fieldName for "sale" e newValue for um JSON, extrair campos importantes
+    if (fieldName === "sale" && newValue) {
+      try {
+        const parsed = JSON.parse(newValue);
+        if (typeof parsed === "object" && parsed !== null) {
+          return formatObjectValue(parsed);
+        }
+      } catch {}
+    }
+    
+    const fieldLabel = FIELD_LABELS[fieldName] || fieldName;
+    
+    // Formatar valores
+    let formattedPrevious = previousValue;
+    let formattedNew = newValue;
+    
+    // Formatar valores monetários
+    if ((fieldName === "saleValue" || fieldName === "comissaoTotal") && newValue) {
+      try {
+        const numValue = parseFloat(newValue);
+        if (!isNaN(numValue)) formattedNew = formatCurrency(numValue);
+      } catch {}
+    }
+    
+    if ((fieldName === "saleValue" || fieldName === "comissaoTotal") && previousValue) {
+      try {
+        const numValue = parseFloat(previousValue);
+        if (!isNaN(numValue)) formattedPrevious = formatCurrency(numValue);
+      } catch {}
+    }
+    
+    // Formatar datas
+    if ((fieldName === "expectedPaymentDate" || fieldName.includes("Date")) && newValue) {
+      try {
+        const date = new Date(newValue);
+        formattedNew = date.toLocaleDateString("pt-BR");
+      } catch {}
+    }
+    
+    if ((fieldName === "expectedPaymentDate" || fieldName.includes("Date")) && previousValue) {
+      try {
+        const date = new Date(previousValue);
+        formattedPrevious = date.toLocaleDateString("pt-BR");
+      } catch {}
+    }
+    
+    // Criar mensagem amigável
+    if (formattedNew && !formattedPrevious) {
+      return `${fieldLabel} adicionado: ${formattedNew}`;
+    } else if (formattedNew && formattedPrevious) {
+      return `${fieldLabel} alterado de ${formattedPrevious} para ${formattedNew}`;
+    } else if (!formattedNew && formattedPrevious) {
+      return `${fieldLabel} removido: ${formattedPrevious}`;
+    }
+    
+    return "-";
+  };
+
   return (
     <div className="space-y-6">
       {/* Filtros */}
@@ -215,16 +276,14 @@ export default function AuditLogTable() {
                       <TableHead>Data/Hora</TableHead>
                       <TableHead>Usuário</TableHead>
                       <TableHead>Ação</TableHead>
-                      <TableHead>Campo Alterado</TableHead>
-                      <TableHead>Valor Anterior</TableHead>
-                      <TableHead>Valor Novo</TableHead>
+                      <TableHead>Alteração</TableHead>
                       <TableHead>Motivo</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredLogs.map((log: any) => {
                       const actionConfig = ACTION_LABELS[log.action] || { label: log.action, color: "bg-slate-100 text-slate-700" };
-                      const fieldLabel = FIELD_LABELS[log.fieldName || ""] || log.fieldName || "-";
+                      const changeMessage = formatChangeMessage(log.fieldName, log.previousValue, log.newValue);
 
                       return (
                         <TableRow key={log.id}>
@@ -239,12 +298,8 @@ export default function AuditLogTable() {
                               {actionConfig.label}
                             </Badge>
                           </TableCell>
-                          <TableCell>{fieldLabel}</TableCell>
-                          <TableCell className="text-slate-600">
-                            {formatValue(log.fieldName, log.previousValue)}
-                          </TableCell>
                           <TableCell className="font-medium text-blue-600">
-                            {formatValue(log.fieldName, log.newValue)}
+                            {changeMessage}
                           </TableCell>
                           <TableCell className="text-sm text-slate-500 max-w-xs truncate">
                             {log.changeReason || "-"}

@@ -120,6 +120,37 @@ export default function ProposalManagement() {
     });
   }, [salesData, searchTerm, statusFilter, brokerFilter, selectedMonth, selectedYear]);
 
+  // Filtro específico para aba "Pagos" - apenas comissões pagas
+  const paidCommissions = useMemo(() => {
+    const currentSales = salesData?.sales || [];
+    
+    if (currentSales.length === 0) return [];
+    return currentSales.filter((sale: any) => {
+      const matchesSearch = searchTerm === "" || 
+        sale.buyerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.propertyId?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesBroker = brokerFilter === "all" || sale.brokerVendedor === brokerFilter;
+      
+      // Filtro de Mês/Ano
+      let matchesMonth = true;
+      let matchesYear = true;
+      if (selectedMonth !== "all" || selectedYear !== "all") {
+        const saleDate = sale.saleDate ? new Date(sale.saleDate) : null;
+        if (saleDate) {
+          const saleMonth = saleDate.getMonth() + 1; // 1-12
+          const saleYear = saleDate.getFullYear();
+          matchesMonth = selectedMonth === "all" || saleMonth === parseInt(selectedMonth);
+          matchesYear = selectedYear === "all" || saleYear === parseInt(selectedYear);
+        } else {
+          matchesMonth = false;
+          matchesYear = false;
+        }
+      }
+      
+      return matchesSearch && sale.status === "commission_paid" && matchesBroker && matchesMonth && matchesYear;
+    });
+  }, [salesData, searchTerm, brokerFilter, selectedMonth, selectedYear]);
+
   const formatCurrency = (value: number | string | null) => {
     if (!value) return "R$ 0,00";
     const num = typeof value === "string" ? parseFloat(value) : value;
@@ -415,18 +446,6 @@ export default function ProposalManagement() {
                       />
                     </div>
                   </div>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-[200px]">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos os Status</SelectItem>
-                      {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-                        <SelectItem key={key} value={key}>{config.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   {user?.role === "manager" && brokersData && brokersData.length > 0 && (
                     <Select value={brokerFilter} onValueChange={setBrokerFilter}>
                       <SelectTrigger className="w-[200px]">
@@ -481,16 +500,16 @@ export default function ProposalManagement() {
             {/* Lista de Propostas */}
             <Card>
               <CardHeader>
-                <CardTitle>Histórico ({filteredSales.length})</CardTitle>
+                <CardTitle>Pagos ({paidCommissions.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
                   <div className="text-center pt-24 text-slate-500">Carregando...</div>
-                ) : filteredSales.length === 0 ? (
-                  <div className="text-center pt-24 text-slate-500">Nenhuma proposta encontrada</div>
+                ) : paidCommissions.length === 0 ? (
+                  <div className="text-center pt-24 text-slate-500">Nenhuma comissão paga encontrada</div>
                 ) : (
                   <div className="space-y-3">
-                    {filteredSales.map((sale: any) => {
+                    {paidCommissions.map((sale: any) => {
                       const statusConfig = STATUS_CONFIG[sale.status] || STATUS_CONFIG.pending;
                       return (
                         <div key={sale.id} className={`border rounded-lg p-4 hover:bg-slate-50 transition-colors ${sale.isHistorical ? 'bg-amber-50/30 border-amber-200' : ''}`}>
