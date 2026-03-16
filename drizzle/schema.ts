@@ -336,20 +336,34 @@ export type Proposal = typeof proposals.$inferSelect;
 export type InsertProposal = typeof proposals.$inferInsert;
 
 /**
- * Goals/Metas
+ * Goals/Metas Anuais
  */
 export const goals = mysqlTable("goals", {
   id: varchar("id", { length: 64 }).primaryKey(),
+  managerId: varchar("managerId", { length: 64 }).notNull(),
   companyId: varchar("companyId", { length: 64 }).notNull(),
-  year: int("year").notNull(), // Ano da meta
-  month: int("month").notNull(), // Mês da meta (1-12)
-  teamGoal: decimal("teamGoal", { precision: 15, scale: 2 }).notNull(), // Meta do time em R$
+  year: int("year").notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
 
 export type Goal = typeof goals.$inferSelect;
 export type InsertGoal = typeof goals.$inferInsert;
+
+/**
+ * Goal Indicators - 27 indicadores de metas
+ */
+export const goalIndicators = mysqlTable("goalIndicators", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  goalId: varchar("goalId", { length: 64 }).notNull(),
+  indicatorName: varchar("indicatorName", { length: 100 }).notNull(),
+  targetValue: decimal("targetValue", { precision: 15, scale: 2 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type GoalIndicator = typeof goalIndicators.$inferSelect;
+export type InsertGoalIndicator = typeof goalIndicators.$inferInsert;
 
 /**
  * Commission History/Histórico de Comissões

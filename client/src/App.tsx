@@ -35,7 +35,7 @@ import SuperAdminUsers from "./pages/SuperAdminUsers";
 import Profile from "./pages/Profile";
 import SalesByResponsible from "./pages/SalesByResponsible";
 import ListingRejections from "./pages/ListingRejections";
-import GoalsDashboard from "./pages/GoalsDashboard";
+
 import GoalNotifications from "./pages/GoalNotifications";
 import Tutorials from "./pages/Tutorials";
 import LandingPage from "./pages/LandingPage";
@@ -113,7 +113,6 @@ function Router() {
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/sales-by-responsible" component={SalesByResponsible} />
-              <Route path="/goals-dashboard" component={GoalsDashboard} />
               <Route path="/goal-notifications" component={GoalNotifications} />
               <Route path="/tutorials" component={Tutorials} />
               <Route path="/dashboard" component={DashboardFinance} />
@@ -136,7 +135,6 @@ function Router() {
               <Route path="/sales-approval" component={SalesApproval} />
               <Route path="/document-upload" component={DocumentUpload} />
               <Route path="/goals" component={GoalsManagement} />
-              <Route path="/goals-dashboard" component={GoalsDashboard} />
               <Route path="/goal-notifications" component={GoalNotifications} />
               <Route path="/tutorials" component={Tutorials} />
               <Route path="/brokers" component={BrokerManagement} />

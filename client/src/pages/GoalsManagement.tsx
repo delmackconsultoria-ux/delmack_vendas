@@ -1,5 +1,3 @@
-import { useAuth } from "@/_core/hooks/useAuth";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +7,8 @@ import { Target, Save, AlertCircle, TrendingUp } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 
 const INDICATORS = [
@@ -51,13 +51,29 @@ export default function GoalsManagement() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Verificar se é gerente
-  const isManager = user?.role === "manager";
+  const isManager = user?.role === "manager" || user?.role === "admin" || user?.role === "superadmin";
 
-  // Mock data - em produção, buscar do servidor
-  const { data: goalsData, isLoading } = trpc.goals.getGoal.useQuery(
-    { year: new Date().getFullYear(), month: new Date().getMonth() + 1 },
-    { enabled: false }
+  // Buscar metas do servidor
+  const { data: goalsData, isLoading, refetch } = trpc.goals.getOrCreateGoals.useQuery(
+    { year: new Date().getFullYear() }
   );
+
+  // Carregar dados das metas quando disponíveis
+  useEffect(() => {
+    if (goalsData?.indicators) {
+      setGoals(goalsData.indicators as GoalData);
+    }
+  }, [goalsData?.indicators]);
+
+  const saveIndicatorsMutation = trpc.goals.saveIndicators.useMutation({
+    onSuccess: () => {
+      toast.success("Metas salvas com sucesso!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Erro ao salvar metas: ${error.message}`);
+    },
+  });
 
   // Calcular meta mensal
   const calculateMonthlyGoal = (annualGoal: number | string): string => {
@@ -80,13 +96,26 @@ export default function GoalsManagement() {
       return;
     }
 
+    if (!goalsData?.goalId) {
+      toast.error("Meta não encontrada");
+      return;
+    }
+
     setIsSaving(true);
     try {
-      // Em produção, chamar API para salvar
-      // await trpc.goals.updateGoals.mutate(goals);
-      toast.success("Metas salvas com sucesso!");
+      // Converter valores para números
+      const indicatorsToSave: Record<string, number | null> = {};
+      for (const [key, value] of Object.entries(goals)) {
+        const numValue = value ? parseFloat(value.toString()) : null;
+        indicatorsToSave[key] = isNaN(numValue as number) ? null : numValue;
+      }
+
+      await saveIndicatorsMutation.mutateAsync({
+        goalId: goalsData.goalId,
+        indicators: indicatorsToSave,
+      });
     } catch (error) {
-      toast.error("Erro ao salvar metas");
+      console.error("Erro ao salvar metas:", error);
     } finally {
       setIsSaving(false);
     }

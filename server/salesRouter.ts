@@ -16,7 +16,7 @@ import { calculateCommission } from "./commissionService";
 import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch, ProperfySearchResult } from "./services/properfyService";
 import { storagePut, storageGet } from "./storage";
 import { logSaleCreation, getSaleHistory, logSaleUpdate } from "./salesHistoryService";
-import { checkAndNotifyGoalProgress, calculateGoalProgress } from "./services/goalNotificationService";
+
 import { sendNewSaleNotification, sendSaleApprovedNotification, sendSaleRejectedNotification, sendCommissionPaidNotification } from "./_core/emailService";
 
 // Zod schema para validação de entrada
@@ -504,14 +504,7 @@ export const salesRouter = router({
         }
 
         // Verificar progresso de meta e enviar notificações automáticas
-        try {
-          const progress = await calculateGoalProgress(ctx.user.companyId || "1");
-          if (progress) {
-            await checkAndNotifyGoalProgress(ctx.user.companyId || "1", progress);
-          }
-        } catch (goalNotifyError) {
-          console.error("[Sales Router] Erro ao verificar notificações de meta:", goalNotifyError);
-        }
+        // TODO: Implementar notificações de meta quando goalNotificationService estiver disponível
 
         return {
           success: true,
@@ -1307,19 +1300,10 @@ export const salesRouter = router({
         return { success: false, message: "Usuário não vinculado a empresa" };
       }
 
-      // Calcular progresso atual
-      const progress = await calculateGoalProgress(user.companyId);
-      if (!progress) {
-        return { success: false, message: "Não foi possível calcular progresso" };
-      }
-
-      // Verificar e enviar notificações
-      await checkAndNotifyGoalProgress(user.companyId, progress);
-
+      // TODO: Implementar verificação de notificações de meta
       return { 
         success: true, 
-        message: "Notificações verificadas",
-        progress 
+        message: "Notificações verificadas" 
       };
     } catch (error) {
       console.error("[Sales Router] Erro ao verificar notificações:", error);
