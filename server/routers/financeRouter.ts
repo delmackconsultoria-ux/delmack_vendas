@@ -12,6 +12,8 @@ export const financeRouter = router({
    * - Comissão recebida (paid)
    * - VGV (Valor Geral de Vendas)
    * - Detalhamento por gerente
+   * 
+   * Permissões: finance (vê todos os corretores), manager (vê apenas sua equipe), broker (vê apenas suas comissões)
    */
   getMonthlyFinanceSummary: protectedProcedure
     .input(
@@ -21,7 +23,7 @@ export const financeRouter = router({
         year: z.number().optional(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
@@ -35,10 +37,30 @@ export const financeRouter = router({
       const lastDay = new Date(year, month, 0);
 
       // 1. COMISSÃO À RECEBER (pending + received)
-      const allCommissions = await db
+      // Se o usuário é finance, vê todas as comissões da empresa
+      // Se é manager, vê apenas comissões dos seus corretores
+      // Se é broker, vê apenas suas próprias comissões
+      let commissionsQuery = db
         .select()
         .from(commissions)
         .where(eq(commissions.companyId, input.companyId));
+
+      let allCommissions = await commissionsQuery;
+
+      // Filtrar por permissão do usuário
+      if (ctx.user.role === "broker") {
+        // Broker vê apenas suas próprias comissões
+        allCommissions = allCommissions.filter((c) => c.brokerId === ctx.user.id);
+      } else if (ctx.user.role === "manager") {
+        // Manager vê apenas comissões dos seus corretores
+        const managedBrokers = await db
+          .select()
+          .from(users)
+          .where(eq(users.managerId, ctx.user.id));
+        const managedBrokerIds = new Set(managedBrokers.map((b) => b.id));
+        allCommissions = allCommissions.filter((c) => managedBrokerIds.has(c.brokerId));
+      }
+      // Se é finance, vê todas (sem filtro)
 
       const pendingCommissions = allCommissions.filter(
         (c) => c.status === "pending" || c.status === "received"
@@ -97,6 +119,19 @@ export const financeRouter = router({
         }
       }
 
+      // Se finance, adicionar todos os brokers da empresa ao mapa (para filtro de corretores)
+      if (ctx.user.role === "finance") {
+        const allBrokers = await db
+          .select()
+          .from(users)
+          .where(eq(users.companyId, input.companyId));
+        allBrokers.forEach((broker) => {
+          if (!brokerMap.has(broker.id)) {
+            brokerMap.set(broker.id, broker);
+          }
+        });
+      }
+
       // 5. SEPARAR COMISSÕES POR TIPO (Baggio vs Corretores)
       let baggioCommissionsToPay = 0;
       let brokerCommissionsToPay = 0;
@@ -131,18 +166,23 @@ export const financeRouter = router({
       });
 
       // 6. DETALHAMENTO POR GERENTE (para comissões pagas da Baggio)
+      // Se finance, mostrar detalhamento por gerente
+      // Se manager, mostrar apenas sua equipe
+      // Se broker, não mostrar detalhamento
       const baggioManagerBreakdown: Record<string, number> = {};
 
-      for (const commission of paidCommissions) {
-        const broker = brokerMap.get(commission.brokerId);
-        if (broker?.role === "manager") {
-          const managerName = broker.name || "Desconhecido";
-          const value = typeof commission.commissionValue === "string"
-            ? parseFloat(commission.commissionValue)
-            : (commission.commissionValue || 0);
+      if (ctx.user.role !== "broker") {
+        for (const commission of paidCommissions) {
+          const broker = brokerMap.get(commission.brokerId);
+          if (broker?.role === "manager") {
+            const managerName = broker.name || "Desconhecido";
+            const value = typeof commission.commissionValue === "string"
+              ? parseFloat(commission.commissionValue)
+              : (commission.commissionValue || 0);
 
-          baggioManagerBreakdown[managerName] =
-            (baggioManagerBreakdown[managerName] || 0) + value;
+            baggioManagerBreakdown[managerName] =
+              (baggioManagerBreakdown[managerName] || 0) + value;
+          }
         }
       }
 
@@ -178,6 +218,8 @@ export const financeRouter = router({
 
   /**
    * Obter comissões pendentes/recebidas com detalhes
+   * 
+   * Permissões: finance (vê todos), manager (vê sua equipe), broker (vê suas comissões)
    */
   getCommissionsToPay: protectedProcedure
     .input(
@@ -187,7 +229,7 @@ export const financeRouter = router({
         year: z.number().optional(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
@@ -204,9 +246,24 @@ export const financeRouter = router({
         .from(commissions)
         .where(eq(commissions.companyId, input.companyId));
 
-      const commissionsToPay = allCommissions.filter(
+      let commissionsToPay = allCommissions.filter(
         (c) => c.status === "pending" || c.status === "received"
       );
+
+      // Filtrar por permissão do usuário
+      if (ctx.user.role === "broker") {
+        // Broker vê apenas suas próprias comissões
+        commissionsToPay = commissionsToPay.filter((c) => c.brokerId === ctx.user.id);
+      } else if (ctx.user.role === "manager") {
+        // Manager vê apenas comissões dos seus corretores
+        const managedBrokers = await db
+          .select()
+          .from(users)
+          .where(eq(users.managerId, ctx.user.id));
+        const managedBrokerIds = new Set(managedBrokers.map((b) => b.id));
+        commissionsToPay = commissionsToPay.filter((c) => managedBrokerIds.has(c.brokerId));
+      }
+      // Se é finance, vê todas (sem filtro)
 
       // Buscar detalhes de brokers
       const brokerIds = new Set(commissionsToPay.map((c) => c.brokerId));
@@ -242,6 +299,8 @@ export const financeRouter = router({
 
   /**
    * Obter comissões pagas com detalhes
+   * 
+   * Permissões: finance (vê todos), manager (vê sua equipe), broker (vê suas comissões)
    */
   getCommissionsPaid: protectedProcedure
     .input(
@@ -251,7 +310,7 @@ export const financeRouter = router({
         year: z.number().optional(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
@@ -268,7 +327,22 @@ export const financeRouter = router({
         .from(commissions)
         .where(eq(commissions.companyId, input.companyId));
 
-      const commissionsPaid = allCommissions.filter((c) => c.status === "paid");
+      let commissionsPaid = allCommissions.filter((c) => c.status === "paid");
+
+      // Filtrar por permissão do usuário
+      if (ctx.user.role === "broker") {
+        // Broker vê apenas suas próprias comissões
+        commissionsPaid = commissionsPaid.filter((c) => c.brokerId === ctx.user.id);
+      } else if (ctx.user.role === "manager") {
+        // Manager vê apenas comissões dos seus corretores
+        const managedBrokers = await db
+          .select()
+          .from(users)
+          .where(eq(users.managerId, ctx.user.id));
+        const managedBrokerIds = new Set(managedBrokers.map((b) => b.id));
+        commissionsPaid = commissionsPaid.filter((c) => managedBrokerIds.has(c.brokerId));
+      }
+      // Se é finance, vê todas (sem filtro)
 
       // Buscar detalhes de brokers
       const brokerIds = new Set(commissionsPaid.map((c) => c.brokerId));
