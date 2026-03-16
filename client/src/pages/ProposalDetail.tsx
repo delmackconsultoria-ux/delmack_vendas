@@ -120,7 +120,12 @@ export default function ProposalDetail() {
     return new Date(date).toLocaleString("pt-BR");
   };
 
-  const canEdit = (user?.role === "broker" && sale.status === "draft") || user?.role === "manager";
+  // Validação de edição: Broker só pode editar em rascunho, Gerente pode editar sempre, Financeiro não pode editar
+  const canEdit = user?.role === "manager" || (user?.role === "broker" && sale.status === "draft");
+  
+  // Se já foi pago, apenas gerente pode editar
+  const isCommissionPaid = sale.status === "commission_paid";
+  const canEditAfterPayment = user?.role === "manager" && isCommissionPaid;
 
   const handleExportPDF = () => {
     const content = `
@@ -190,22 +195,31 @@ ${sale.observation || "Nenhuma observação"}
             <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
           </Button>
           <div className="flex gap-2">
-            {canEdit && (
-              <Button variant="outline" onClick={() => {
-                setEditForm({
-                  buyerName: sale.buyerName || "",
-                  buyerCpfCnpj: sale.buyerCpfCnpj || "",
-                  buyerPhone: sale.buyerPhone || "",
-                  sellerName: sale.sellerName || "",
-                  sellerCpfCnpj: sale.sellerCpfCnpj || "",
-                  sellerPhone: sale.sellerPhone || "",
-                  saleValue: sale.saleValue || "",
-                  businessType: sale.businessType || "",
-                  observation: sale.observation || "",
-                  changeReason: "",
-                });
-                setEditModalOpen(true);
-              }}>
+            {(canEdit || canEditAfterPayment) && (
+              <Button 
+                variant="outline" 
+                disabled={isCommissionPaid && !canEditAfterPayment}
+                onClick={() => {
+                  if (isCommissionPaid && !canEditAfterPayment) {
+                    toast.error("Esta venda já foi paga. Apenas gerentes podem editar.");
+                    return;
+                  }
+                  setEditForm({
+                    buyerName: sale.buyerName || "",
+                    buyerCpfCnpj: sale.buyerCpfCnpj || "",
+                    buyerPhone: sale.buyerPhone || "",
+                    sellerName: sale.sellerName || "",
+                    sellerCpfCnpj: sale.sellerCpfCnpj || "",
+                    sellerPhone: sale.sellerPhone || "",
+                    saleValue: sale.saleValue || "",
+                    businessType: sale.businessType || "",
+                    observation: sale.observation || "",
+                    changeReason: "",
+                  });
+                  setEditModalOpen(true);
+                }}
+                title={isCommissionPaid && !canEditAfterPayment ? "Esta venda já foi paga. Apenas gerentes podem editar." : ""}
+              >
                 <Edit className="h-4 w-4 mr-2" /> Editar
               </Button>
             )}

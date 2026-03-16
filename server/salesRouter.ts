@@ -814,6 +814,14 @@ export const salesRouter = router({
 
         // Atualizar comissões associadas
         if (input.status === "commission_paid") {
+          // Validar se há comprovante de pagamento
+          const currentSaleData = currentSale[0];
+          const documents = currentSaleData.documents ? JSON.parse(currentSaleData.documents as string) : {};
+          
+          if (!documents.comprovante_pagamento) {
+            throw new Error("Comprovante de pagamento é obrigatório para marcar como comissão paga");
+          }
+          
           await db
             .update(commissions)
             .set({
@@ -867,6 +875,32 @@ export const salesRouter = router({
                 approvedByRole: ctx.user.role === "manager" ? "Gerente" : "Financeiro",
                 approvedAt: new Date().toISOString(),
                 comment: input.observation,
+                proposalId: sale.id,
+              });
+            }
+          }
+
+          // Email de comissão paga
+          if (input.status === "commission_paid") {
+            const recipients = [];
+            if (brokerEmail) recipients.push(brokerEmail);
+            recipients.push(...managerEmails, ...financeEmails);
+
+            if (recipients.length > 0) {
+              await sendCommissionPaidNotification({
+                brokerEmail: brokerEmail || "",
+                managerEmail: managerEmails[0] || "",
+                financeEmail: financeEmails[0] || "",
+                brokerName: broker[0]?.name || "Corretor",
+                buyerName: sale.buyerName || "N/A",
+                propertyAddress: property[0]?.address || "N/A",
+                propertyReference: property[0]?.propertyReference || undefined,
+                saleValue: parseFloat(sale.saleValue || "0"),
+                commissionValue: 0, // Será calculado depois
+                paidBy: ctx.user.name || "Usuário",
+                paidAt: new Date().toISOString(),
+                paymentMethod: "transferencia",
+                bankName: "",
                 proposalId: sale.id,
               });
             }
@@ -1188,7 +1222,7 @@ export const salesRouter = router({
   uploadDocument: protectedProcedure
     .input(z.object({
       saleId: z.string(),
-      documentType: z.enum(["sinal_comprovante", "contrato_escritura", "nota_fiscal", "proposta", "outro"]),
+      documentType: z.enum(["sinal_comprovante", "contrato_escritura", "nota_fiscal", "proposta", "comprovante_pagamento", "outro"]),
       fileName: z.string(),
       fileData: z.string(), // Base64 encoded file
       mimeType: z.string(),
@@ -1232,6 +1266,12 @@ export const salesRouter = router({
 
         // Atualizar campo documents no banco (JSON)
         const currentDocuments = sale[0].documents ? JSON.parse(sale[0].documents as string) : {};
+        
+        // Se for comprovante de pagamento, validar que está sendo feito por Finance ou Manager
+        if (input.documentType === "comprovante_pagamento" && ctx.user.role !== "finance" && ctx.user.role !== "manager") {
+          throw new Error("Apenas Financeiro e Gerente podem fazer upload de comprovante de pagamento");
+        }
+        
         currentDocuments[input.documentType] = {
           url,
           fileName: input.fileName,
