@@ -218,36 +218,36 @@ export default function ProposalManagement() {
 
           <TabsContent value="commissions" className="space-y-6">
             {/* Métricas */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-slate-500" />
-                <div>
-                  <p className="text-2xl font-bold">{metrics.total}</p>
-                  <p className="text-xs text-slate-500">Total de Vendas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <div>
-                  <p className="text-2xl font-bold text-green-600">{metrics.approved}</p>
-                  <p className="text-xs text-slate-500">Aprovadas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <XCircle className="h-5 w-5 text-red-500" />
-                <div>
-                  <p className="text-2xl font-bold text-red-600">{metrics.cancelled}</p>
-                  <p className="text-xs text-slate-500">Canceladas</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+              <Card className="flex-1">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-6 w-6 text-slate-400" />
+                    <div className="flex-1">
+                      <p className="text-2xl font-bold">{metrics.total}</p>
+                      <p className="text-xs text-slate-500">Total de Vendas</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="flex-1">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-500" />
+                    <div className="flex-1">
+                      <p className="text-2xl font-bold text-green-600">{metrics.approved}</p>
+                      <p className="text-xs text-slate-500">Aprovadas</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="flex-1">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <XCircle className="h-6 w-6 text-red-500" />
+                    <div className="flex-1">
+                      <p className="text-2xl font-bold text-red-600">{metrics.cancelled}</p>
+                      <p className="text-xs text-slate-500">Canceladas</p>
                 </div>
               </div>
             </CardContent>

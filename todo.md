@@ -331,14 +331,25 @@
 - [ ] Endereço errado: Rua Professor Assis Gonçalves (não é o imóvel BG96925001)
 - [ ] Verificar lógica de busca por referência (chrDocument vs chrReference)
 - [ ] Corrigir mapeamento de campos da API para formulário
-
 ## 🚨 CRÍTICO: Busca Properfy preenchendo dados errados (08/02/2026 - 15:30)
 
 - [x] Verificar qual campo usar: chrDocument vs chrReference - RESOLVIDO: chrDocument está vazio, usar chrReference
 - [x] Corrigir busca para NUNCA preencher dados se imóvel não for encontrado - Implementado match EXATO (sem busca parcial)
 - [x] Implementar busca paginada rápida e eficiente - Já existe (50 páginas, lotes de 5 paralelos)
 - [x] Retornar apenas mensagem de erro quando não encontrar - Já implementado
-- [ ] Testar com BG96925001 e garantir que não preenche dados errados
+- [ ] Testar com BG969250...
+
+## 🆕 AJUSTES SOLICITADOS (16/03/2026)
+
+### Página de Comissões
+- [ ] Formatar 4 cards de métricas (Total de Vendas, Aprovadas, Canceladas, Pendentes) para espaçar até o final do container
+- [ ] Traduzir nomes de campos do banco para frontend na aba "Alterações" (ex: propertyAddress → Endereço, businessType → Tipo de Negócio)
+
+### Página de Metas
+- [ ] Criar página de Metas com interface para gerente editar metas anuais
+- [ ] Implementar edição dos 27 indicadores com cálculo automático de meta mensal
+- [ ] Permitir edição apenas para gerentes
+- [ ] Salvar metas no banco de dados e garantir que não preenche dados errados
 
 ## 🐛 BUGS REPORTADOS (08/02/2026 - 18:30)
 

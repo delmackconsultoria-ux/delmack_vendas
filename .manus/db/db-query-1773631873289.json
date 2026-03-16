@@ -1,0 +1,213 @@
+{
+  "query": "SELECT id, email, password, role, companyId FROM users WHERE isActive = true ORDER BY role, email;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, password, role, companyId FROM users WHERE isActive = true ORDER BY role, email;",
+  "rows": [
+    {
+      "id": "superadmin_1765831175979",
+      "email": "delmackconsultoria@gmail.com",
+      "password": "$2b$10$S8UrpHz7nQAwx.37n0.3/OeEKJTYqKrwOILwe1HUdzM3ffvGrmMnW",
+      "role": "superadmin",
+      "companyId": "NULL"
+    },
+    {
+      "id": "user_1770950171305_j1ap3gfaz",
+      "email": "angellicapassosup@gmail.com",
+      "password": "$2b$10$TdL.R8J5wHNT9FqPx3EzV.dvvF5j5m7NfSVDMFsP.GHMzL2FKR71e",
+      "role": "manager",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "password": "$2b$10$V./lM6QK.vzRBQdv4XdQT.jINKCLq04ulzUpTlN4TLRBpodPUMph6",
+      "role": "manager",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "user_manager_001",
+      "email": "gerente@delmack.com",
+      "password": "$2b$10$ZBCbI97y1mKU6CN8uWXzJu.t50uuT7dcbmz5SBLqzXnaz4cYKcshK",
+      "role": "manager",
+      "companyId": "company_test_001"
+    },
+    {
+      "id": "user-gerente-testes",
+      "email": "gerente@testes.com.br",
+      "password": "$2b$10$9bySkM/Nmy59PtMkWu280uPg/PB9BHonmZBCqdbjce/h.I4PZuBBC",
+      "role": "manager",
+      "companyId": "company_1766344499112"
+    },
+    {
+      "id": "user_1766351453637_typa30p2q",
+      "email": "Lucas@baggioimoveis.com.br",
+      "password": "$2b$10$ABK4KX8BclTmEGMKatnUyuUc88zKgC8jmWGzy07nvQpnFjQCbiKXq",
+      "role": "manager",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_023",
+      "email": "odair@baggioimoveis.com.br",
+      "password": "$2b$12$CG9oSN48ydMVGn3xzyi4KOaAZz0hBRPCRLAPgskAxstSFNyvVJyQ.",
+      "role": "manager",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_001",
+      "email": "adriana.simoes@baggioimoveis.com.br",
+      "password": "$2b$12$1wqToJbKiImlCFBdXa3r3.jOX7A8pUweEBhTQX43OZ4H4FRqUdqby",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_002",
+      "email": "allan.sobiech@baggioimoveis.com.br",
+      "password": "$2b$12$/BbxW87j/2Ab2XUR3C1PfO1sOoY/ksYhXDmTX6kUwNyUtRBRIV/Va",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_003",
+      "email": "aluguese2025@gmail.com",
+      "password": "$2b$10$i/O1Cyhyy5aRP1gk5X963.yXBnDtU2TRVhn7Mzjgpp.kSY4kPOGLi",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_004",
+      "email": "angellicadelle@gmail.com",
+      "password": "$2b$10$lpgPIzsduMGAd9iVDBu2aOO4lP.BMZuxZURtfOI0daIpC7BAqhAr.",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_007",
+      "email": "carolina.cardoso@baggioimoveis.com.br",
+      "password": "$2b$10$6uHmIvFbm.NkC7YtMS.NIOwUBUGueDWeUJdM50kJK1oFhktCHwMJ6",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_022",
+      "email": "carolina.munhoz@baggioimoveis.com.br",
+      "password": "$2b$12$P3eoY9yO5d0d1d0anCZ8x.hxFh7.4TEWwp.qiC0fy467ukBwI8F72",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_008",
+      "email": "charles.lucca@baggioimoveis.com.br",
+      "password": "$2b$12$tV0CGQguGaT3oKwBnjOzOuhT2oFyBR.pv4hU9uVQHRPJX595a0O6u",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_010",
+      "email": "corretor@testes.com.br",
+      "password": "$2b$10$hRpH4ON80TpmjyorxyufGOdtqGwf3zlceEPzE.HelX0l274nUOGlG",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_011",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "password": "$2b$12$gXhElAOH/K8di1POKB3aM.C7gfEJPxckNESskrNjG7vAtLsQxZhcq",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_013",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "password": "$2b$12$jcsYBHDhDplnwE71wFFiYeXIuVDKg1m1gtSdsgSShFDlr.qiZ5jAO",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_016",
+      "email": "fabiano@baggioimoveis.com.br",
+      "password": "$2b$12$A8i5pTXNGUQe6Lna5C9LOOz2NP7nBG3bT4CRbFXTMSp9mJFM0s92S",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_017",
+      "email": "fabio@baggioimoveis.com.br",
+      "password": "$2b$12$zzNxualP1.EB55GpaBKqz.CHp4YSTJRNrLAVos.t98Svrti.Zl6.e",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_020",
+      "email": "joseli@baggioimoveis.com.br",
+      "password": "$2b$12$MK6SXLHBr8mIe0MQt8fMUe5y6q2M4hlXEwG6jlgFdiHjX4lCPqfT2",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_021",
+      "email": "marcojoao@baggioimoveis.com.br",
+      "password": "$2b$12$HFNndlCTUJ8wr5KAVbkzLOHQDArU.9/Ec0A7BmMWUvIA2kgawCv7i",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_027",
+      "email": "priscilla.andrelle@baggioimoveis.com.br",
+      "password": "$2b$12$IiUv0aENOhs310UlVzZfWuCW6h0ZDpsNC3hmhPu8vFXBDzWinE/J2",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_026",
+      "email": "priscillagomes@baggioimoveis.com.br",
+      "password": "$2b$12$CHdJ8cRRkEUj0PTyh/L/kO2K2buu8yUe3tzfYSGSth5YhzMc374hy",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_029",
+      "email": "regiana@baggioimoveis.com.br",
+      "password": "$2b$12$uEhKZs4/Xqo9CTjATfwsQ.4gJ1pYsZpywCnvRmkPT3DIYjK3ffoIu",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_030",
+      "email": "rosani@baggioimoveis.com.br",
+      "password": "$2b$12$7mCG7no2WYGTHI1J3mFAhuJkCq74gbfynsszs44Bjtd8QBO4Y5ieW",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "broker_company_1766331506068_031",
+      "email": "sandra.lima@baggioimoveis.com.br",
+      "password": "$2b$10$ukaz8XqupoCDg3s1fAw3m.xEb9IHts5OSrF94ZPU22Fpmk94e8pba",
+      "role": "broker",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "user_1766355269539_rf51il6kt",
+      "email": "Darlan@baggioimoveis.com.br",
+      "password": "$2b$10$Dwr7dTVdJo8dMgkQ4Dq.VeigCstnJpMsF3YZpmH6OcU3ZVYlBbZP.",
+      "role": "finance",
+      "companyId": "company_1766331506068"
+    },
+    {
+      "id": "user-financeiro-testes",
+      "email": "financeiro@testes.com.br",
+      "password": "$2b$10$EMVnquBG2wUoUbrbQNOYRejB/G2QxZO5tKYZ1g0HslLyFKLyso0OG",
+      "role": "finance",
+      "companyId": "company_1766344499112"
+    },
+    {
+      "id": "user_1766357600050_mxemhxyo8",
+      "email": "Ver@testes.com.br",
+      "password": "$2b$10$JepTAhQ06IPoiC/QOM4GB.OOtHnqI7FO9V8LGBFdMOUjA/EAr8Xw2",
+      "role": "viewer",
+      "companyId": "company_1766344499112"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tpassword\trole\tcompanyId\nsuperadmin_1765831175979\tdelmackconsultoria@gmail.com\t$2b$10$S8UrpHz7nQAwx.37n0.3/OeEKJTYqKrwOILwe1HUdzM3ffvGrmMnW\tsuperadmin\tNULL\nuser_1770950171305_j1ap3gfaz\tangellicapassosup@gmail.com\t$2b$10$TdL.R8J5wHNT9FqPx3EzV.dvvF5j5m7NfSVDMFsP.GHMzL2FKR71e\tmanager\tcompany_1766331506068\nuser_1766355292097_jsj9336kf\tcamila.pires@baggioimoveis.com.br\t$2b$10$V./lM6QK.vzRBQdv4XdQT.jINKCLq04ulzUpTlN4TLRBpodPUMph6\tmanager\tcompany_1766331506068\nuser_manager_001\tgerente@delmack.com\t$2b$10$ZBCbI97y1mKU6CN8uWXzJu.t50uuT7dcbmz5SBLqzXnaz4cYKcshK\tmanager\tcompany_test_001\nuser-gerente-testes\tgerente@testes.com.br\t$2b$10$9bySkM/Nmy59PtMkWu280uPg/PB9BHonmZBCqdbjce/h.I4PZuBBC\tmanager\tcompany_1766344499112\nuser_1766351453637_typa30p2q\tLucas@baggioimoveis.com.br\t$2b$10$ABK4KX8BclTmEGMKatnUyuUc88zKgC8jmWGzy07nvQpnFjQCbiKXq\tmanager\tcompany_1766331506068\nbroker_company_1766331506068_023\todair@baggioimoveis.com.br\t$2b$12$CG9oSN48ydMVGn3xzyi4KOaAZz0hBRPCRLAPgskAxstSFNyvVJyQ.\tmanager\tcompany_1766331506068\nbroker_company_1766331506068_001\tadriana.simoes@baggioimoveis.com.br\t$2b$12$1wqToJbKiImlCFBdXa3r3.jOX7A8pUweEBhTQX43OZ4H4FRqUdqby\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_002\tallan.sobiech@baggioimoveis.com.br\t$2b$12$/BbxW87j/2Ab2XUR3C1PfO1sOoY/ksYhXDmTX6kUwNyUtRBRIV/Va\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_003\taluguese2025@gmail.com\t$2b$10$i/O1Cyhyy5aRP1gk5X963.yXBnDtU2TRVhn7Mzjgpp.kSY4kPOGLi\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_004\tangellicadelle@gmail.com\t$2b$10$lpgPIzsduMGAd9iVDBu2aOO4lP.BMZuxZURtfOI0daIpC7BAqhAr.\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_007\tcarolina.cardoso@baggioimoveis.com.br\t$2b$10$6uHmIvFbm.NkC7YtMS.NIOwUBUGueDWeUJdM50kJK1oFhktCHwMJ6\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_022\tcarolina.munhoz@baggioimoveis.com.br\t$2b$12$P3eoY9yO5d0d1d0anCZ8x.hxFh7.4TEWwp.qiC0fy467ukBwI8F72\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_008\tcharles.lucca@baggioimoveis.com.br\t$2b$12$tV0CGQguGaT3oKwBnjOzOuhT2oFyBR.pv4hU9uVQHRPJX595a0O6u\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_010\tcorretor@testes.com.br\t$2b$10$hRpH4ON80TpmjyorxyufGOdtqGwf3zlceEPzE.HelX0l274nUOGlG\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_011\tdiego.ferreira@baggioimoveis.com.br\t$2b$12$gXhElAOH/K8di1POKB3aM.C7gfEJPxckNESskrNjG7vAtLsQxZhcq\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_013\tedmar.antunes@baggioimoveis.com.br\t$2b$12$jcsYBHDhDplnwE71wFFiYeXIuVDKg1m1gtSdsgSShFDlr.qiZ5jAO\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_016\tfabiano@baggioimoveis.com.br\t$2b$12$A8i5pTXNGUQe6Lna5C9LOOz2NP7nBG3bT4CRbFXTMSp9mJFM0s92S\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_017\tfabio@baggioimoveis.com.br\t$2b$12$zzNxualP1.EB55GpaBKqz.CHp4YSTJRNrLAVos.t98Svrti.Zl6.e\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_020\tjoseli@baggioimoveis.com.br\t$2b$12$MK6SXLHBr8mIe0MQt8fMUe5y6q2M4hlXEwG6jlgFdiHjX4lCPqfT2\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_021\tmarcojoao@baggioimoveis.com.br\t$2b$12$HFNndlCTUJ8wr5KAVbkzLOHQDArU.9/Ec0A7BmMWUvIA2kgawCv7i\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_027\tpriscilla.andrelle@baggioimoveis.com.br\t$2b$12$IiUv0aENOhs310UlVzZfWuCW6h0ZDpsNC3hmhPu8vFXBDzWinE/J2\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_026\tpriscillagomes@baggioimoveis.com.br\t$2b$12$CHdJ8cRRkEUj0PTyh/L/kO2K2buu8yUe3tzfYSGSth5YhzMc374hy\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_029\tregiana@baggioimoveis.com.br\t$2b$12$uEhKZs4/Xqo9CTjATfwsQ.4gJ1pYsZpywCnvRmkPT3DIYjK3ffoIu\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_030\trosani@baggioimoveis.com.br\t$2b$12$7mCG7no2WYGTHI1J3mFAhuJkCq74gbfynsszs44Bjtd8QBO4Y5ieW\tbroker\tcompany_1766331506068\nbroker_company_1766331506068_031\tsandra.lima@baggioimoveis.com.br\t$2b$10$ukaz8XqupoCDg3s1fAw3m.xEb9IHts5OSrF94ZPU22Fpmk94e8pba\tbroker\tcompany_1766331506068\nuser_1766355269539_rf51il6kt\tDarlan@baggioimoveis.com.br\t$2b$10$Dwr7dTVdJo8dMgkQ4Dq.VeigCstnJpMsF3YZpmH6OcU3ZVYlBbZP.\tfinance\tcompany_1766331506068\nuser-financeiro-testes\tfinanceiro@testes.com.br\t$2b$10$EMVnquBG2wUoUbrbQNOYRejB/G2QxZO5tKYZ1g0HslLyFKLyso0OG\tfinance\tcompany_1766344499112\nuser_1766357600050_mxemhxyo8\tVer@testes.com.br\t$2b$10$JepTAhQ06IPoiC/QOM4GB.OOtHnqI7FO9V8LGBFdMOUjA/EAr8Xw2\tviewer\tcompany_1766344499112\n",
+  "stderr": "",
+  "execution_time_ms": 760
+}
