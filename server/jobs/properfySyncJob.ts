@@ -33,13 +33,13 @@ export async function runProperfySyncJob(): Promise<void> {
 export function initProperfySyncScheduler(): void {
   console.log("[ProperfySyncJob] Initializing scheduler (every 2 hours)...");
 
-  // Run immediately on startup
-  console.log("[ProperfySyncJob] Running initial sync...");
-  runProperfySyncJob().catch(err => 
-    console.error("[ProperfySyncJob] Initial sync error:", err)
-  );
+  // NÃO executar sync na inicialização - esperar o primeiro intervalo
+  // console.log("[ProperfySyncJob] Running initial sync...");
+  // runProperfySyncJob().catch(err => 
+  //   console.error("[ProperfySyncJob] Initial sync error:", err)
+  // );
 
-  // Then run every 2 hours
+  // Executar a cada 2 horas (mas não na inicialização)
   const TWO_HOURS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
   setInterval(() => {
     console.log("[ProperfySyncJob] Running scheduled sync (every 2 hours)...");
@@ -47,7 +47,6 @@ export function initProperfySyncScheduler(): void {
       console.error("[ProperfySyncJob] Scheduled sync error:", err)
     );
   }, TWO_HOURS);
-
   console.log("[ProperfySyncJob] Scheduler initialized - syncing every 2 hours");
 }
 
