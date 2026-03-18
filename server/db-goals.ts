@@ -3,35 +3,35 @@ import { goals, type Goal } from "../drizzle/schema";
 import { getDb } from "./db";
 
 /**
- * Mapeamento de nomes de indicadores para colunas do banco
+ * Mapeamento de nomes de indicadores (camelCase) para colunas do banco
  */
 const indicatorColumnMap: Record<string, keyof Goal> = {
-  "Negócios no mês": "businessMonth",
-  "Vendas Canceladas": "cancelledSales",
-  "VSO Ratio": "vsoRatio",
-  "Comissão Recebida": "commissionReceived",
-  "Comissão Vendida": "commissionSold",
-  "Comissão Pendente": "commissionPending",
-  "Divulgação Portfólio": "portfolioDisclosure",
-  "Prospecção no mês": "prospectingMonth",
-  "Remoções no mês": "removalsMonth",
-  "Percentual Comissão": "commissionPercentage",
-  "Negócios acima de 1M": "businessOver1m",
-  "Chamadas Prontas": "readyCalls",
-  "Chamadas Lançamento": "launchCalls",
-  "Tempo Médio Recebimento": "avgReceiptTime",
-  "Ratio Canceladas Pendentes": "cancelledPendingRatio",
-  "Tempo Médio Venda": "avgSaleTime",
-  "Valor Médio Imóvel": "avgPropertyValue",
-  "Negócios Rede": "networkBusiness",
-  "Negócios Internos": "internalBusiness",
-  "Parcerias Externas": "externalPartnership",
-  "Negócios Lançamento": "launchBusiness",
-  "Despesa Geral": "generalExpense",
-  "Despesa com Impostos": "taxExpense",
-  "Fundo Inovação": "innovationFund",
-  "Resultado Sócios": "partnersResult",
-  "Fundo Emergencial": "emergencyFund",
+  "businessMonth": "businessMonth",
+  "cancelledSales": "cancelledSales",
+  "vsoRatio": "vsoRatio",
+  "commissionReceived": "commissionReceived",
+  "commissionSold": "commissionSold",
+  "commissionPending": "commissionPending",
+  "portfolioDisclosure": "portfolioDisclosure",
+  "prospectingMonth": "prospectingMonth",
+  "removalsMonth": "removalsMonth",
+  "commissionPercentage": "commissionPercentage",
+  "businessOver1m": "businessOver1m",
+  "readyCalls": "readyCalls",
+  "launchCalls": "launchCalls",
+  "avgReceiptTime": "avgReceiptTime",
+  "cancelledPendingRatio": "cancelledPendingRatio",
+  "avgSaleTime": "avgSaleTime",
+  "avgPropertyValue": "avgPropertyValue",
+  "networkBusiness": "networkBusiness",
+  "internalBusiness": "internalBusiness",
+  "externalPartnership": "externalPartnership",
+  "launchBusiness": "launchBusiness",
+  "generalExpense": "generalExpense",
+  "taxExpense": "taxExpense",
+  "innovationFund": "innovationFund",
+  "partnersResult": "partnersResult",
+  "emergencyFund": "emergencyFund",
 };
 
 /**
@@ -115,11 +115,11 @@ export async function getGoalsWithIndicators(managerId: string, companyId: strin
 
   const goal = goalsData[0];
 
-  // Converter colunas para objeto de indicadores
+  // Converter colunas para objeto de indicadores (usando chaves camelCase)
   const indicators: Record<string, number | null> = {};
-  for (const [indicatorName, columnName] of Object.entries(indicatorColumnMap)) {
+  for (const [indicatorKey, columnName] of Object.entries(indicatorColumnMap)) {
     const value = goal[columnName];
-    indicators[indicatorName] = value ? parseFloat(value.toString()) : null;
+    indicators[indicatorKey] = value !== null && value !== undefined ? parseFloat(value.toString()) : null;
   }
 
   return {
