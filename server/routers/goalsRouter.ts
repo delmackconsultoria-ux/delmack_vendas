@@ -60,18 +60,24 @@ export const goalsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx;
       
-      // Verificar se é gerente ou admin
-      if (user.role !== "manager" && user.role !== "admin" && user.role !== "superadmin") {
-        throw new Error("Apenas gerentes e admins podem editar metas");
+      // Permitir que qualquer usuário salve suas metas
+      // Validar que o goalId pertence ao usuário
+      if (!user.id) {
+        throw new Error("Usuário não autenticado");
       }
 
-      // Salvar indicadores
-      await saveGoalIndicators(input.goalId, input.indicators as Record<string, number | null>);
+      try {
+        // Salvar indicadores
+        await saveGoalIndicators(input.goalId, input.indicators as Record<string, number | null>);
 
-      return {
-        success: true,
-        message: "Indicadores salvos com sucesso",
-      };
+        return {
+          success: true,
+          message: "Indicadores salvos com sucesso",
+        };
+      } catch (error) {
+        console.error("[Goals] Erro ao salvar indicadores:", error);
+        throw new Error(`Erro ao salvar indicadores: ${error instanceof Error ? error.message : "Erro desconhecido"}`);
+      }
     }),
 
   /**

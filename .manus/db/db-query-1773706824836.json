@@ -1,0 +1,28 @@
+{
+  "query": "SELECT c.id, c.name, COUNT(DISTINCT s.id) as total_vendas, COUNT(DISTINCT g.id) as total_metas FROM companies c LEFT JOIN sales s ON c.id = s.companyId LEFT JOIN goals g ON c.id = g.companyId GROUP BY c.id, c.name ORDER BY total_vendas ASC, total_metas ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT c.id, c.name, COUNT(DISTINCT s.id) as total_vendas, COUNT(DISTINCT g.id) as total_metas FROM companies c LEFT JOIN sales s ON c.id = s.companyId LEFT JOIN goals g ON c.id = g.companyId GROUP BY c.id, c.name ORDER BY total_vendas ASC, total_metas ASC;",
+  "rows": [
+    {
+      "id": "company_1766344499112",
+      "name": "Testes",
+      "total_vendas": "0",
+      "total_metas": "0"
+    },
+    {
+      "id": "company_test_001",
+      "name": "Delmack Imóveis",
+      "total_vendas": "14",
+      "total_metas": "0"
+    },
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "total_vendas": "55",
+      "total_metas": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttotal_vendas\ttotal_metas\ncompany_1766344499112\tTestes\t0\t0\ncompany_test_001\tDelmack Imóveis\t14\t0\ncompany_1766331506068\tB I IMOVEIS LTDA\t55\t0\n",
+  "stderr": "",
+  "execution_time_ms": 1006
+}

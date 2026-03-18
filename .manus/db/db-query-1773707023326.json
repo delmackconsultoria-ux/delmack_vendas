@@ -1,0 +1,31 @@
+{
+  "query": "SELECT \n  c.id,\n  c.name,\n  COUNT(DISTINCT u.id) as usuarios,\n  COUNT(DISTINCT s.id) as vendas,\n  COUNT(DISTINCT g.id) as metas\nFROM companies c\nLEFT JOIN users u ON c.id = u.companyId\nLEFT JOIN sales s ON c.id = s.companyId\nLEFT JOIN goals g ON c.id = g.companyId\nGROUP BY c.id, c.name\nORDER BY usuarios DESC, vendas DESC, metas DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  c.id,\n  c.name,\n  COUNT(DISTINCT u.id) as usuarios,\n  COUNT(DISTINCT s.id) as vendas,\n  COUNT(DISTINCT g.id) as metas\nFROM companies c\nLEFT JOIN users u ON c.id = u.companyId\nLEFT JOIN sales s ON c.id = s.companyId\nLEFT JOIN goals g ON c.id = g.companyId\nGROUP BY c.id, c.name\nORDER BY usuarios DESC, vendas DESC, metas DESC;",
+  "rows": [
+    {
+      "id": "company_1766331506068",
+      "name": "B I IMOVEIS LTDA",
+      "usuarios": "24",
+      "vendas": "55",
+      "metas": "0"
+    },
+    {
+      "id": "company_1766344499112",
+      "name": "Testes",
+      "usuarios": "3",
+      "vendas": "0",
+      "metas": "0"
+    },
+    {
+      "id": "company_test_001",
+      "name": "Delmack Imóveis",
+      "usuarios": "1",
+      "vendas": "14",
+      "metas": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tusuarios\tvendas\tmetas\ncompany_1766331506068\tB I IMOVEIS LTDA\t24\t55\t0\ncompany_1766344499112\tTestes\t3\t0\t0\ncompany_test_001\tDelmack Imóveis\t1\t14\t0\n",
+  "stderr": "",
+  "execution_time_ms": 71
+}
