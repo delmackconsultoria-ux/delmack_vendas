@@ -68,6 +68,17 @@ export default function Indicators() {
     }
   );
 
+  // Buscar metas do ano selecionado
+  const { data: goalsData } = trpc.goals.getOrCreateGoals.useQuery(
+    {
+      year: parseInt(selectedYear),
+    },
+    {
+      enabled: !!user,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   // Mutation para sincronização Properfy
   // Buscar dados manuais para o mês selecionado
   const { data: currentMonthManualData } = trpc.indicators.getMonthlyManualData.useQuery(
@@ -151,172 +162,179 @@ export default function Indicators() {
 
     const indicators: any[] = [];
 
-    // Mapeamento de indicadores com suas metas
+    // Função para obter valor de meta
+    const getGoalValue = (fieldName: string): number => {
+      if (!goalsData?.indicators) return 0;
+      const value = (goalsData.indicators as any)[fieldName];
+      return value !== null && value !== undefined ? Number(value) : 0;
+    };
+
+    // Mapeamento de indicadores com suas metas (dinâmicas do banco)
     const indicatorsList = [
       {
         title: "Negócios no mês (valor)",
-        monthlyGoal: 100000,
-        annualAverage: 1200000,
+        monthlyGoal: getGoalValue("businessMonth") / 12 || 100000,
+        annualAverage: getGoalValue("businessMonth") || 1200000,
         fieldName: "negociosValor",
       },
       {
         title: "Negócios no mês (unidades)",
-        monthlyGoal: 10,
-        annualAverage: 120,
+        monthlyGoal: getGoalValue("businessMonth") / 12 || 10,
+        annualAverage: getGoalValue("businessMonth") || 120,
         fieldName: "negociosUnidades",
       },
       {
         title: "Vendas Canceladas",
-        monthlyGoal: 2,
-        annualAverage: 24,
+        monthlyGoal: getGoalValue("cancelledSales") / 12 || 2,
+        annualAverage: getGoalValue("cancelledSales") || 24,
         fieldName: "vendidosCancelados",
       },
       {
         title: "VSO - venda/oferta",
-        monthlyGoal: 0.05,
-        annualAverage: 0.05,
+        monthlyGoal: getGoalValue("vsoRatio") / 12 || 0.05,
+        annualAverage: getGoalValue("vsoRatio") || 0.05,
         fieldName: "vsoVendaOferta",
       },
       {
         title: "Comissão Recebida",
-        monthlyGoal: 50000,
-        annualAverage: 600000,
+        monthlyGoal: getGoalValue("commissionReceived") / 12 || 50000,
+        annualAverage: getGoalValue("commissionReceived") || 600000,
         fieldName: "comissaoRecebida",
       },
       {
         title: "Comissão Vendida",
-        monthlyGoal: 75000,
-        annualAverage: 900000,
+        monthlyGoal: getGoalValue("commissionSold") / 12 || 75000,
+        annualAverage: getGoalValue("commissionSold") || 900000,
         fieldName: "comissaoVendida",
       },
       {
         title: "Comissão Pendente Final do mês",
-        monthlyGoal: 100000,
-        annualAverage: 1200000,
+        monthlyGoal: getGoalValue("commissionPending") / 12 || 100000,
+        annualAverage: getGoalValue("commissionPending") || 1200000,
         fieldName: "comissaoPendente",
       },
       {
         title: "Carteira de Divulgação (em número)",
-        monthlyGoal: 400,
-        annualAverage: 400,
+        monthlyGoal: getGoalValue("portfolioDisclosure") / 12 || 400,
+        annualAverage: getGoalValue("portfolioDisclosure") || 400,
         fieldName: "carteiraAtiva",
       },
       {
         title: "Angariações mês",
-        monthlyGoal: 50,
-        annualAverage: 600,
+        monthlyGoal: getGoalValue("prospectingMonth") / 12 || 50,
+        annualAverage: getGoalValue("prospectingMonth") || 600,
         fieldName: "angariacesMes",
       },
       {
         title: "Baixas no mês (em quantidade)",
-        monthlyGoal: 15,
-        annualAverage: 180,
+        monthlyGoal: getGoalValue("removalsMonth") / 12 || 15,
+        annualAverage: getGoalValue("removalsMonth") || 180,
         fieldName: "baixasMes",
       },
       {
         title: "% comissão vendida",
-        monthlyGoal: 0.05,
-        annualAverage: 0.05,
+        monthlyGoal: getGoalValue("commissionPercentage") / 12 || 0.05,
+        annualAverage: getGoalValue("commissionPercentage") || 0.05,
         fieldName: "percentualComissaoVendida",
       },
       {
         title: "Negócios acima de 1 milhão",
-        monthlyGoal: 2,
-        annualAverage: 24,
+        monthlyGoal: getGoalValue("businessOver1m") / 12 || 2,
+        annualAverage: getGoalValue("businessOver1m") || 24,
         fieldName: "negociosAcima1M",
       },
       {
         title: "Número de atendimentos Prontos",
-        monthlyGoal: 50,
-        annualAverage: 600,
+        monthlyGoal: getGoalValue("readyCalls") / 12 || 50,
+        annualAverage: getGoalValue("readyCalls") || 600,
         fieldName: "atendimentosProntos",
       },
       {
         title: "Número de atendimentos Lançamentos",
-        monthlyGoal: 20,
-        annualAverage: 240,
+        monthlyGoal: getGoalValue("launchCalls") / 12 || 20,
+        annualAverage: getGoalValue("launchCalls") || 240,
         fieldName: "atendimentosLancamentos",
       },
       {
         title: "Prazo médio recebimento de venda",
-        monthlyGoal: 30,
-        annualAverage: 30,
+        monthlyGoal: getGoalValue("avgReceiptTime") / 12 || 30,
+        annualAverage: getGoalValue("avgReceiptTime") || 30,
         fieldName: "prazoMedioRecebimento",
       },
       {
         title: "% Com cancelada / com pendente",
-        monthlyGoal: 0.1,
-        annualAverage: 0.1,
+        monthlyGoal: getGoalValue("cancelledPendingRatio") / 12 || 0.1,
+        annualAverage: getGoalValue("cancelledPendingRatio") || 0.1,
         fieldName: "percentualCanceladaPendente",
       },
       {
         title: "Tempo médio de venda ang X venda",
-        monthlyGoal: 60,
-        annualAverage: 60,
+        monthlyGoal: getGoalValue("avgSaleTime") / 12 || 60,
+        annualAverage: getGoalValue("avgSaleTime") || 60,
         fieldName: "tempoMedioVendaAngVenda",
       },
       {
         title: "Valor médio do imóvel de venda",
-        monthlyGoal: 500000,
-        annualAverage: 500000,
+        monthlyGoal: getGoalValue("avgPropertyValue") / 12 || 500000,
+        annualAverage: getGoalValue("avgPropertyValue") || 500000,
         fieldName: "valorMedioImovel",
       },
       {
         title: "Negócios na Rede",
-        monthlyGoal: 3,
-        annualAverage: 36,
+        monthlyGoal: getGoalValue("networkBusiness") / 12 || 3,
+        annualAverage: getGoalValue("networkBusiness") || 36,
         fieldName: "negociosRede",
       },
       {
         title: "Negócios Internos",
-        monthlyGoal: 4,
-        annualAverage: 48,
+        monthlyGoal: getGoalValue("internalBusiness") / 12 || 4,
+        annualAverage: getGoalValue("internalBusiness") || 48,
         fieldName: "negociosInternos",
       },
       {
         title: "Negócios Parceria Externa",
-        monthlyGoal: 2,
-        annualAverage: 24,
+        monthlyGoal: getGoalValue("externalPartnership") / 12 || 2,
+        annualAverage: getGoalValue("externalPartnership") || 24,
         fieldName: "negociosParceriaExterna",
       },
       {
         title: "Negócios Lançamentos",
-        monthlyGoal: 1,
-        annualAverage: 12,
+        monthlyGoal: getGoalValue("launchBusiness") / 12 || 1,
+        annualAverage: getGoalValue("launchBusiness") || 12,
         fieldName: "negociosLancamentos",
       },
       {
         title: "Despesa Geral",
-        monthlyGoal: 10000,
-        annualAverage: 120000,
+        monthlyGoal: getGoalValue("generalExpense") / 12 || 10000,
+        annualAverage: getGoalValue("generalExpense") || 120000,
         fieldName: "despesaGeral",
         manualField: "generalExpense",
       },
       {
         title: "Despesa com impostos",
-        monthlyGoal: 5000,
-        annualAverage: 60000,
+        monthlyGoal: getGoalValue("taxExpense") / 12 || 5000,
+        annualAverage: getGoalValue("taxExpense") || 60000,
         fieldName: "despesaImpostos",
         manualField: "taxExpense",
       },
       {
         title: "Fundo Inovação",
-        monthlyGoal: 2000,
-        annualAverage: 24000,
+        monthlyGoal: getGoalValue("innovationFund") / 12 || 2000,
+        annualAverage: getGoalValue("innovationFund") || 24000,
         fieldName: "fundoInovacao",
         manualField: "innovationFund",
       },
       {
         title: "Resultado Sócios",
-        monthlyGoal: 50000,
-        annualAverage: 600000,
+        monthlyGoal: getGoalValue("partnersResult") / 12 || 50000,
+        annualAverage: getGoalValue("partnersResult") || 600000,
         fieldName: "resultadoSocios",
-        manualField: "partnerResult",
+        manualField: "partnersResult",
       },
       {
         title: "Fundo emergencial",
-        monthlyGoal: 10000,
-        annualAverage: 120000,
+        monthlyGoal: getGoalValue("emergencyFund") / 12 || 10000,
+        annualAverage: getGoalValue("emergencyFund") || 120000,
         fieldName: "fundoEmergencial",
         manualField: "emergencyFund",
       },
@@ -334,48 +352,32 @@ export default function Indicators() {
       let total = 0;
       let selectedMonthValue = 0;
 
-      // Preencher dados de cada mês
-      yearData.monthlyData.forEach((monthData: any) => {
-        let value = monthData[ind.fieldName] || 0;
-        const monthKey = monthKeys[monthData.month - 1];
-        
-        // Para "Carteira de Divulgação", mostrar apenas no mês atual
-        if (ind.fieldName === 'carteiraAtiva' && monthData.month !== CURRENT_MONTH_NUM) {
-          value = 0;
-        }
-        
-        // Para campos manuais, usar dados salvos no banco
-        if ((ind as any).manualField) {
-          const monthKeyForManual = `${parseInt(selectedYear)}-${String(monthData.month).padStart(2, '0')}`;
-          const manualData = manualDataByMonth[monthKeyForManual];
-          if (manualData && manualData[(ind as any).manualField]) {
-            value = manualData[(ind as any).manualField];
-          }
-        }
-        
-        months[monthKey as keyof typeof months] = value;
-        
-        // Apenas somar o mês selecionado para o total e percentual
-        if (monthData.month === parseInt(selectedMonth)) {
+      monthKeys.forEach((monthKey, monthIndex) => {
+        const monthData = yearData?.monthlyData?.find((m: any) => m.month === monthIndex + 1);
+        const value = monthData ? (monthData as any)[ind.fieldName] || 0 : 0;
+        (months as any)[monthKey] = value;
+        total += value;
+        if (monthIndex + 1 === parseInt(selectedMonth)) {
           selectedMonthValue = value;
-          total = value;
         }
       });
 
-      const percentage = ind.monthlyGoal > 0 ? (total / ind.monthlyGoal) * 100 : 0;
+      const percentage = ind.monthlyGoal > 0 ? ((selectedMonthValue / ind.monthlyGoal) * 100).toFixed(1) : "0.0";
 
       indicators.push({
         title: ind.title,
         monthlyGoal: ind.monthlyGoal,
         annualAverage: ind.annualAverage,
-        percentageAchieved: percentage,
+        percentage: `${percentage}%`,
         total: total,
-        months: months,
+        ...months,
       });
     });
 
     return indicators;
   };
+
+  const consolidatedData = buildConsolidatedData();
 
   return (
     <AppLayout>
@@ -383,224 +385,89 @@ export default function Indicators() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Indicadores de Vendas</h1>
-            <p className="text-muted-foreground">Acompanhe os principais indicadores de desempenho</p>
+            <h1 className="text-3xl font-bold">Indicadores</h1>
+            <p className="text-gray-600 mt-1">Acompanhe o desempenho mensal e anual</p>
           </div>
-          <div className="flex gap-2">
-            {user?.role === "manager" && (
-              <Button
-                onClick={() => setIsManualDataModalOpen(true)}
-                variant="outline"
-                size="sm"
-              >
-                Editar Dados Manuais
-              </Button>
-            )}
-            <Button
-              onClick={handleSyncPropertyfy}
-              disabled={isSyncing}
-              variant="outline"
-              size="sm"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? "animate-spin" : ""}`} />
-              {isSyncing ? "Sincronizando..." : "Sincronizar Properfy"}
-            </Button>
-          </div>
+          <Button 
+            onClick={handleSyncPropertyfy} 
+            disabled={isSyncing}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Sincronizando...' : 'Sincronizar Properfy'}
+          </Button>
         </div>
 
         {/* Filtros */}
-        <div className="flex gap-4 items-end">
-          <div className="w-48">
-            <label className="text-sm font-medium mb-2 block">Mês</label>
-            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {MONTH_NAMES.map((month, idx) => (
-                  <SelectItem key={month} value={String(idx + 1)}>
-                    {month}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="text-sm font-medium">Mês</label>
+                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MONTH_NAMES.map((month, index) => (
+                      <SelectItem key={index} value={String(index + 1)}>
+                        {month}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1">
+                <label className="text-sm font-medium">Ano</label>
+                <Select value={selectedYear} onValueChange={setSelectedYear}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[2024, 2025, 2026, 2027].map((year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          <div className="w-48">
-            <label className="text-sm font-medium mb-2 block">Ano</label>
-            <Select value={selectedYear} onValueChange={setSelectedYear}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 11 }, (_, i) => {
-                  const year = new Date().getFullYear() + i;
-                  return (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-
-        </div>
-
-        {/* Cards de Indicadores - Primeira linha */}
-        <div className="grid grid-cols-3 gap-4">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Negócios no mês")}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Negócios no mês</CardTitle>
+        {/* Indicadores em tempo real */}
+        {isLoading ? (
+          <Card>
+            <CardContent className="pt-6 flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </CardContent>
+          </Card>
+        ) : indicatorsData ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Indicadores - {MONTH_NAMES[parseInt(selectedMonth) - 1]} de {selectedYear}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Média Anual</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Percentual</p>
-                  <p className="text-lg font-semibold text-red-600">0%</p>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Indicadores renderizados aqui */}
               </div>
             </CardContent>
           </Card>
+        ) : null}
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Negócios no mês (unidades)")}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Negócios no mês (unidades)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Média Anual</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Percentual</p>
-                  <p className="text-lg font-semibold text-red-600">0%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Vendas Canceladas")}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Vendas Canceladas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Média Anual</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Percentual</p>
-                  <p className="text-lg font-semibold text-red-600">0%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Cards de Indicadores - Segunda linha */}
-        <div className="grid grid-cols-3 gap-4">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("VSO - venda/oferta")}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">VSO - venda/oferta</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Média Anual</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Percentual</p>
-                  <p className="text-lg font-semibold text-red-600">0%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Comissão Recebida")}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Comissão Recebida</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Média Anual</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Percentual</p>
-                  <p className="text-lg font-semibold text-red-600">0%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => openIndicatorModal("Comissão Vendida")}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Comissão Vendida</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Meta Mensal</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Média Anual</p>
-                  <p className="text-lg font-semibold">-</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Percentual</p>
-                  <p className="text-lg font-semibold text-red-600">0%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Tabela Consolidada */}
+        {/* Tabela consolidada */}
         {isLoadingYear ? (
           <Card>
-            <CardContent className="flex items-center justify-center h-32">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            <CardContent className="pt-6 flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
             </CardContent>
           </Card>
         ) : (
-          <IndicatorsConsolidatedTable
-            indicators={buildConsolidatedData()}
-            isLoading={false}
-            year={parseInt(selectedYear)}
-          />
+          <IndicatorsConsolidatedTable indicators={consolidatedData} />
         )}
 
-        {/* Modal de Histórico de Indicador */}
+        {/* Modais */}
         {selectedIndicator && (
           <IndicatorHistoryModal
             isOpen={isModalOpen}
@@ -609,14 +476,13 @@ export default function Indicators() {
           />
         )}
 
-        {user && (
+        {isManualDataModalOpen && (
           <ManualDataModal
             isOpen={isManualDataModalOpen}
             onClose={handleManualDataClose}
-            companyId={user.companyId || ""}
-            year={parseInt(selectedYear)}
             month={parseInt(selectedMonth)}
-            userRole={user.role}
+            year={parseInt(selectedYear)}
+            companyId={user?.companyId || ""}
           />
         )}
       </div>
