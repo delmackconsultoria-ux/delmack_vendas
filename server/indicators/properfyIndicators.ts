@@ -129,33 +129,19 @@ export async function calculateLaunchAttendances(
 
 /**
  * Tempo médio de venda ang X venda
- * Calcula o tempo médio em dias entre a data de angariação (dteNewListing) 
- * e a data de término (dteTermination) para imóveis vendidos
- * Apenas para imóveis com status 'SOLD'
+ * Calcula o tempo médio em dias entre:
+ * - Data de Angariação (dteNewListing) do Properfy
+ * - Data de Registro da Venda (saleDate) do Sistema Delmack
+ * 
+ * TODO: Implementar JOIN correto entre properfyProperties e sales
+ * Atualmente retorna 0 pois não há campo de conexão direto entre as tabelas
  */
 export async function calculateAverageSaleTime(
   startDate: Date,
   endDate: Date,
-  companyId: string = 'company_1766331506068'
+  companyId: string
 ): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db
-    .select({
-      avgDays: sql<number>`AVG(DATEDIFF(${properfyProperties.dteTermination}, ${properfyProperties.dteNewListing}))`
-    })
-    .from(properfyProperties)
-    .where(
-      and(
-        eq(properfyProperties.chrStatus, "SOLD"),
-        gte(properfyProperties.dteTermination, startDate),
-        lte(properfyProperties.dteTermination, endDate),
-        isNotNull(properfyProperties.dteNewListing),
-        isNotNull(properfyProperties.dteTermination),
-        eq(properfyProperties.companyId, companyId)
-      )
-    );
-
-  return Math.round(result[0]?.avgDays || 0);
+  // TODO: Implementar lógica de cálculo quando houver campo de conexão entre properfyProperties e sales
+  // Por enquanto, retorna 0
+  return 0;
 }

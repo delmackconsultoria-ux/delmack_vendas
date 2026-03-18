@@ -2115,3 +2115,58 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Adicionar filtro de emails para testes (apenas Delmack)
 - [ ] Testar fluxo completo de emails
 - [ ] Documentar fluxo de emails para produção
+
+
+---
+
+## 🔄 NOVA FASE: Correção de Cálculos de Indicadores (18/03/2026)
+
+### FASE 1: Corrigir Cálculos de Indicadores do Sistema Delmack
+- [ ] Corrigir "% Com cancelada / com pendente" (salesIndicators.ts:255)
+  - Problema: Lógica de filtro confusa
+  - Solução: Contar vendas canceladas ÷ vendas pendentes (status ≠ 'commission_paid')
+  
+- [ ] Corrigir "Comissão Pendente" (salesIndicators.ts:152)
+  - Problema: Filtra todas as não-pagas, não apenas pendentes
+  - Solução: Filtrar apenas comissões com status = 'pending'
+
+### FASE 2: Corrigir Cálculos de Indicadores da API Properfy
+- [ ] Verificar se "Carteira de Divulgação" precisa filtrar por companyId
+  - Nota: API Properfy só tem dados da Baggio
+  
+- [ ] Verificar se "Angariações mês" precisa filtrar por companyId
+  - Nota: API Properfy só tem dados da Baggio
+  
+- [ ] Verificar se "Baixas no mês" precisa filtrar por companyId
+  - Nota: API Properfy só tem dados da Baggio
+
+### FASE 3: Implementar Integração Properfy + Sistema Delmack
+- [ ] Corrigir "Tempo médio de venda ang X venda" (properfyIndicators.ts:136)
+  - Problema: Usa hardcoded companyId e calcula entre datas do Properfy
+  - Solução: Usar dteNewListing (Properfy) + saleDate (Sistema Delmack)
+  - Implementar JOIN entre properfyProperties e sales
+
+### FASE 4: Implementar "Média Anual" do Cadastro de Metas
+- [ ] Buscar "Média Anual" da tabela indicatorGoals (Goals/Metas)
+  - Solução: Fazer JOIN com indicatorGoals na query de indicadores
+  - Apenas gerentes podem alterar
+
+### FASE 5: Implementar Edição de Dados Manuais
+- [ ] Criar tabela para armazenar dados manuais (Despesas e Resultados)
+  - Campos: id, companyId, month, year, despesaGeral, despesaImpostos, fundoInovacao, resultadoSocios, fundoEmergencial
+  
+- [ ] Criar endpoint para salvar dados manuais (apenas gerentes)
+  
+- [ ] Adicionar UI na tabela de indicadores para editar dados manuais
+  - Apenas gerentes podem editar
+  - Mostrar campos editáveis para: Despesa Geral, Despesa com impostos, Fundo Inovação, Resultado Sócios, Fundo emergencial
+
+### FASE 6: Testar Todos os Indicadores
+- [ ] Testar cálculos do Sistema Delmack
+- [ ] Testar cálculos da API Properfy
+- [ ] Testar integração Properfy + Delmack
+- [ ] Testar edição de dados manuais por gerentes
+- [ ] Validar que a "Média Anual" vem das Metas
+
+### FASE 7: Salvar Checkpoint Final
+- [ ] Criar checkpoint com todas as correções implementadas

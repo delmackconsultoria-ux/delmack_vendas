@@ -3,6 +3,7 @@ import { z } from "zod";
 import * as salesIndicators from "../indicators/salesIndicators";
 import * as properfyIndicators from "../indicators/properfyIndicators";
 import * as properfyLeadsSync from "../indicators/properfyLeadsSync";
+import * as goalsHelper from "../indicators/goalsHelper";
 import { getDb } from "../db";
 import { indicatorGoals } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";

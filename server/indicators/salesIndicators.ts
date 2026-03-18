@@ -147,7 +147,7 @@ export async function calculateCommissionSold(
 
 /**
  * Comissão Pendentes Final do mês
- * Soma das comissões com status pendente no último dia do mês
+ * Soma das comissões com status = 'pending' geradas pelas vendas do mês
  */
 export async function calculateCommissionPending(
   companyId: string,
@@ -166,7 +166,7 @@ export async function calculateCommissionPending(
     .where(
       and(
         eq(sales.companyId, companyId),
-        ne(commissions.status, sql`'paid'`),
+        eq(commissions.status, sql`'pending'`),
         gte(sales.saleDate, startDate),
         lte(sales.saleDate, endDate)
       )
@@ -250,7 +250,9 @@ export async function calculateAvgPaymentDays(
 
 /**
  * % Com cancelada / com pendente
- * Quantidade de vendas canceladas ÷ quantidade de vendas pendentes
+ * Quantidade de vendas canceladas no mês ÷ quantidade de vendas pendentes (não pagas)
+ * Vendas canceladas: status = 'cancelled'
+ * Vendas pendentes: status ≠ 'commission_paid'
  */
 export async function calculatePercentCancelledPending(
   companyId: string,
@@ -260,8 +262,10 @@ export async function calculatePercentCancelledPending(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  // Contar vendas canceladas no mês
   const cancelled = await calculateCancelledSalesCount(companyId, startDate, endDate);
 
+  // Contar vendas pendentes (status ≠ 'commission_paid')
   const pendingResult = await db
     .select({ count: sql<number>`COUNT(${sales.id})` })
     .from(sales)
