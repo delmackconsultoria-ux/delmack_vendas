@@ -364,15 +364,15 @@ export default function Indicators() {
       });
 
       const monthlyGoal = Number(ind.monthlyGoal) || 0;
-      const percentage = monthlyGoal > 0 && !isNaN(monthlyGoal) ? ((selectedMonthValue / monthlyGoal) * 100).toFixed(1) : "0.0";
+      const percentage = monthlyGoal > 0 && !isNaN(monthlyGoal) ? (selectedMonthValue / monthlyGoal) * 100 : 0;
 
       indicators.push({
         title: ind.title,
         monthlyGoal: Number(ind.monthlyGoal) || 0,
         annualAverage: Number(ind.annualAverage) || 0,
-        percentage: `${percentage}%`,
+        percentageAchieved: Number(percentage) || 0,
         total: total,
-        ...months,
+        months: months,
       });
     });
 

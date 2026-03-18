@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, email, role FROM users WHERE email = 'delmackconsultoria@gmail.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, role FROM users WHERE email = 'delmackconsultoria@gmail.com';",
+  "rows": [
+    {
+      "id": "superadmin_1765831175979",
+      "email": "delmackconsultoria@gmail.com",
+      "role": "superadmin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\trole\nsuperadmin_1765831175979\tdelmackconsultoria@gmail.com\tsuperadmin\n",
+  "stderr": "",
+  "execution_time_ms": 371
+}

@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, email, password, isActive FROM users WHERE email = 'delmackconsultoria@gmail.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, password, isActive FROM users WHERE email = 'delmackconsultoria@gmail.com';",
+  "rows": [
+    {
+      "id": "superadmin_1765831175979",
+      "email": "delmackconsultoria@gmail.com",
+      "password": "$2b$10$S8UrpHz7nQAwx.37n0.3/OeEKJTYqKrwOILwe1HUdzM3ffvGrmMnW",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tpassword\tisActive\nsuperadmin_1765831175979\tdelmackconsultoria@gmail.com\t$2b$10$S8UrpHz7nQAwx.37n0.3/OeEKJTYqKrwOILwe1HUdzM3ffvGrmMnW\t1\n",
+  "stderr": "",
+  "execution_time_ms": 349
+}
