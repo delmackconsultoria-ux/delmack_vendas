@@ -232,6 +232,13 @@
       "when": 1773708567315,
       "tag": "0032_dazzling_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "5",
+      "when": 1773864513107,
+      "tag": "0033_equal_magma",
+      "breakpoints": true
     }
   ]
 }

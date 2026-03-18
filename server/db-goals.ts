@@ -1,6 +1,38 @@
 import { eq, and } from "drizzle-orm";
-import { goals, goalIndicators, type Goal, type GoalIndicator } from "../drizzle/schema";
+import { goals, type Goal } from "../drizzle/schema";
 import { getDb } from "./db";
+
+/**
+ * Mapeamento de nomes de indicadores para colunas do banco
+ */
+const indicatorColumnMap: Record<string, keyof Goal> = {
+  "Negócios no mês": "businessMonth",
+  "Vendas Canceladas": "cancelledSales",
+  "VSO Ratio": "vsoRatio",
+  "Comissão Recebida": "commissionReceived",
+  "Comissão Vendida": "commissionSold",
+  "Comissão Pendente": "commissionPending",
+  "Divulgação Portfólio": "portfolioDisclosure",
+  "Prospecção no mês": "prospectingMonth",
+  "Remoções no mês": "removalsMonth",
+  "Percentual Comissão": "commissionPercentage",
+  "Negócios acima de 1M": "businessOver1m",
+  "Chamadas Prontas": "readyCalls",
+  "Chamadas Lançamento": "launchCalls",
+  "Tempo Médio Recebimento": "avgReceiptTime",
+  "Ratio Canceladas Pendentes": "cancelledPendingRatio",
+  "Tempo Médio Venda": "avgSaleTime",
+  "Valor Médio Imóvel": "avgPropertyValue",
+  "Negócios Rede": "networkBusiness",
+  "Negócios Internos": "internalBusiness",
+  "Parcerias Externas": "externalPartnership",
+  "Negócios Lançamento": "launchBusiness",
+  "Despesa Geral": "generalExpense",
+  "Despesa com Impostos": "taxExpense",
+  "Fundo Inovação": "innovationFund",
+  "Resultado Sócios": "partnersResult",
+  "Fundo Emergencial": "emergencyFund",
+};
 
 /**
  * Buscar ou criar metas para um gerente e ano
@@ -12,7 +44,11 @@ export async function getOrCreateGoals(managerId: string, companyId: string, yea
   const existing = await db
     .select()
     .from(goals)
-    .where(and(eq(goals.managerId, managerId), eq(goals.year, year)))
+    .where(and(
+      eq(goals.managerId, managerId),
+      eq(goals.companyId, companyId),
+      eq(goals.year, year)
+    ))
     .limit(1);
 
   if (existing.length > 0) {
@@ -25,6 +61,32 @@ export async function getOrCreateGoals(managerId: string, companyId: string, yea
     managerId,
     companyId,
     year,
+    businessMonth: null,
+    cancelledSales: null,
+    vsoRatio: null,
+    commissionReceived: null,
+    commissionSold: null,
+    commissionPending: null,
+    portfolioDisclosure: null,
+    prospectingMonth: null,
+    removalsMonth: null,
+    commissionPercentage: null,
+    businessOver1m: null,
+    readyCalls: null,
+    launchCalls: null,
+    avgReceiptTime: null,
+    cancelledPendingRatio: null,
+    avgSaleTime: null,
+    avgPropertyValue: null,
+    networkBusiness: null,
+    internalBusiness: null,
+    externalPartnership: null,
+    launchBusiness: null,
+    generalExpense: null,
+    taxExpense: null,
+    innovationFund: null,
+    partnersResult: null,
+    emergencyFund: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -34,57 +96,40 @@ export async function getOrCreateGoals(managerId: string, companyId: string, yea
 }
 
 /**
- * Buscar todos os indicadores de uma meta
+ * Buscar metas com indicadores
  */
-export async function getGoalIndicators(goalId: string): Promise<GoalIndicator[]> {
+export async function getGoalsWithIndicators(managerId: string, companyId: string, year: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  return db.select().from(goalIndicators).where(eq(goalIndicators.goalId, goalId));
-}
-
-/**
- * Salvar ou atualizar indicador de meta
- */
-export async function upsertGoalIndicator(
-  goalId: string,
-  indicatorName: string,
-  targetValue: number | null
-): Promise<GoalIndicator> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const existing = await db
+  const goalsData = await db
     .select()
-    .from(goalIndicators)
-    .where(and(eq(goalIndicators.goalId, goalId), eq(goalIndicators.indicatorName, indicatorName)))
-    .limit(1);
+    .from(goals)
+    .where(and(
+      eq(goals.managerId, managerId),
+      eq(goals.companyId, companyId),
+      eq(goals.year, year)
+    ));
 
-  if (existing.length > 0) {
-    // Atualizar
-    await db
-      .update(goalIndicators)
-      .set({ targetValue: targetValue?.toString() as any, updatedAt: new Date() })
-      .where(eq(goalIndicators.id, existing[0].id));
-    return { ...existing[0], targetValue: targetValue?.toString() as any };
+  if (goalsData.length === 0) return null;
+
+  const goal = goalsData[0];
+
+  // Converter colunas para objeto de indicadores
+  const indicators: Record<string, number | null> = {};
+  for (const [indicatorName, columnName] of Object.entries(indicatorColumnMap)) {
+    const value = goal[columnName];
+    indicators[indicatorName] = value ? parseFloat(value.toString()) : null;
   }
 
-  // Criar novo
-  const newIndicator: GoalIndicator = {
-    id: `gi_${Date.now()}_${Math.random()}`,
-    goalId,
-    indicatorName,
-    targetValue: targetValue?.toString() as any,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+  return {
+    goal,
+    indicators,
   };
-
-  await db.insert(goalIndicators).values(newIndicator);
-  return newIndicator;
 }
 
 /**
- * Salvar múltiplos indicadores de uma vez
+ * Salvar indicadores de meta
  */
 export async function saveGoalIndicators(
   goalId: string,
@@ -93,61 +138,36 @@ export async function saveGoalIndicators(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  for (const [name, value] of Object.entries(indicators)) {
-    await upsertGoalIndicator(goalId, name, value);
+  // Converter indicadores para colunas
+  const updateData: Record<string, any> = {};
+  for (const [indicatorName, value] of Object.entries(indicators)) {
+    const columnName = indicatorColumnMap[indicatorName];
+    if (columnName) {
+      updateData[columnName] = value;
+    }
   }
+
+  if (Object.keys(updateData).length === 0) {
+    throw new Error("Nenhum indicador válido para salvar");
+  }
+
+  await db
+    .update(goals)
+    .set({ ...updateData, updatedAt: new Date() })
+    .where(eq(goals.id, goalId));
 }
 
 /**
- * Buscar metas com todos os indicadores
+ * Buscar meta por ID
  */
-export async function getGoalsWithIndicators(managerId: string, year: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const goalsData = await db
-    .select()
-    .from(goals)
-    .where(and(eq(goals.managerId, managerId), eq(goals.year, year)));
-
-  if (goalsData.length === 0) return null;
-
-  const goal = goalsData[0];
-  const indicators = await getGoalIndicators(goal.id);
-
-  return {
-    goal,
-    indicators: indicators.reduce(
-      (acc, ind) => {
-        acc[ind.indicatorName] = ind.targetValue ? parseFloat(ind.targetValue as any) : null;
-        return acc;
-      },
-      {} as Record<string, number | null>
-    ),
-  };
-}
-
-/**
- * Deletar indicador
- */
-export async function deleteGoalIndicator(indicatorId: string): Promise<void> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.delete(goalIndicators).where(eq(goalIndicators.id, indicatorId));
-}
-
-/**
- * Buscar indicador específico
- */
-export async function getGoalIndicator(goalId: string, indicatorName: string): Promise<GoalIndicator | null> {
+export async function getGoalById(goalId: string): Promise<Goal | null> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   const result = await db
     .select()
-    .from(goalIndicators)
-    .where(and(eq(goalIndicators.goalId, goalId), eq(goalIndicators.indicatorName, indicatorName)))
+    .from(goals)
+    .where(eq(goals.id, goalId))
     .limit(1);
 
   return result.length > 0 ? result[0] : null;

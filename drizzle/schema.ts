@@ -336,34 +336,46 @@ export type Proposal = typeof proposals.$inferSelect;
 export type InsertProposal = typeof proposals.$inferInsert;
 
 /**
- * Goals/Metas Anuais
+ * Goals/Metas Anuais - Com 27 indicadores como colunas
  */
 export const goals = mysqlTable("goals", {
   id: varchar("id", { length: 64 }).primaryKey(),
   managerId: varchar("managerId", { length: 64 }).notNull(),
   companyId: varchar("companyId", { length: 64 }).notNull(),
   year: int("year").notNull(),
+  // 27 Indicadores de Metas
+  businessMonth: decimal("businessMonth", { precision: 15, scale: 2 }),
+  cancelledSales: decimal("cancelledSales", { precision: 15, scale: 2 }),
+  vsoRatio: decimal("vsoRatio", { precision: 5, scale: 2 }),
+  commissionReceived: decimal("commissionReceived", { precision: 15, scale: 2 }),
+  commissionSold: decimal("commissionSold", { precision: 15, scale: 2 }),
+  commissionPending: decimal("commissionPending", { precision: 15, scale: 2 }),
+  portfolioDisclosure: decimal("portfolioDisclosure", { precision: 15, scale: 2 }),
+  prospectingMonth: decimal("prospectingMonth", { precision: 15, scale: 2 }),
+  removalsMonth: decimal("removalsMonth", { precision: 15, scale: 2 }),
+  commissionPercentage: decimal("commissionPercentage", { precision: 5, scale: 2 }),
+  businessOver1m: decimal("businessOver1m", { precision: 15, scale: 2 }),
+  readyCalls: decimal("readyCalls", { precision: 15, scale: 2 }),
+  launchCalls: decimal("launchCalls", { precision: 15, scale: 2 }),
+  avgReceiptTime: decimal("avgReceiptTime", { precision: 10, scale: 2 }),
+  cancelledPendingRatio: decimal("cancelledPendingRatio", { precision: 5, scale: 2 }),
+  avgSaleTime: decimal("avgSaleTime", { precision: 10, scale: 2 }),
+  avgPropertyValue: decimal("avgPropertyValue", { precision: 15, scale: 2 }),
+  networkBusiness: decimal("networkBusiness", { precision: 15, scale: 2 }),
+  internalBusiness: decimal("internalBusiness", { precision: 15, scale: 2 }),
+  externalPartnership: decimal("externalPartnership", { precision: 15, scale: 2 }),
+  launchBusiness: decimal("launchBusiness", { precision: 15, scale: 2 }),
+  generalExpense: decimal("generalExpense", { precision: 15, scale: 2 }),
+  taxExpense: decimal("taxExpense", { precision: 15, scale: 2 }),
+  innovationFund: decimal("innovationFund", { precision: 15, scale: 2 }),
+  partnersResult: decimal("partnersResult", { precision: 15, scale: 2 }),
+  emergencyFund: decimal("emergencyFund", { precision: 15, scale: 2 }),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
 
 export type Goal = typeof goals.$inferSelect;
 export type InsertGoal = typeof goals.$inferInsert;
-
-/**
- * Goal Indicators - 27 indicadores de metas
- */
-export const goalIndicators = mysqlTable("goalIndicators", {
-  id: varchar("id", { length: 64 }).primaryKey(),
-  goalId: varchar("goalId", { length: 64 }).notNull(),
-  indicatorName: varchar("indicatorName", { length: 100 }).notNull(),
-  targetValue: decimal("targetValue", { precision: 15, scale: 2 }),
-  createdAt: timestamp("createdAt").defaultNow(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
-});
-
-export type GoalIndicator = typeof goalIndicators.$inferSelect;
-export type InsertGoalIndicator = typeof goalIndicators.$inferInsert;
 
 /**
  * Commission History/Histórico de Comissões

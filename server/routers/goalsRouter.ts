@@ -2,15 +2,13 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { 
   getOrCreateGoals, 
-  getGoalIndicators, 
-  upsertGoalIndicator,
   saveGoalIndicators,
-  getGoalsWithIndicators 
+  getGoalsWithIndicators,
+  getGoalById
 } from "../db-goals";
 
 /**
  * Router para gerenciamento de metas (goals)
- * Apenas gerentes e admins podem configurar metas
  */
 export const goalsRouter = router({
   /**
@@ -31,19 +29,21 @@ export const goalsRouter = router({
       // Buscar ou criar metas
       const goal = await getOrCreateGoals(user.id, user.companyId, input.year);
 
-      // Buscar indicadores
-      const indicators = await getGoalIndicators(goal.id);
+      // Buscar indicadores (agora são colunas da tabela goals)
+      const result = await getGoalsWithIndicators(user.id, user.companyId, input.year);
+
+      if (!result) {
+        return {
+          goalId: goal.id,
+          year: input.year,
+          indicators: {},
+        };
+      }
 
       return {
-        goalId: goal.id,
-        year: input.year,
-        indicators: indicators.reduce(
-          (acc, ind) => {
-            acc[ind.indicatorName] = ind.targetValue ? parseFloat(ind.targetValue.toString()) : null;
-            return acc;
-          },
-          {} as Record<string, number | null>
-        ),
+        goalId: result.goal.id,
+        year: result.goal.year,
+        indicators: result.indicators,
       };
     }),
 
@@ -60,13 +60,21 @@ export const goalsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx;
       
-      // Permitir que qualquer usuário salve suas metas
-      // Validar que o goalId pertence ao usuário
       if (!user.id) {
         throw new Error("Usuário não autenticado");
       }
 
       try {
+        // Validar que a meta pertence ao usuário
+        const goal = await getGoalById(input.goalId);
+        if (!goal) {
+          throw new Error("Meta não encontrada");
+        }
+
+        if (goal.managerId !== user.id) {
+          throw new Error("Você não tem permissão para editar esta meta");
+        }
+
         // Salvar indicadores
         await saveGoalIndicators(input.goalId, input.indicators as Record<string, number | null>);
 
@@ -95,7 +103,7 @@ export const goalsRouter = router({
         throw new Error("Usuário não está vinculado a uma empresa");
       }
 
-      const result = await getGoalsWithIndicators(user.id, input.year);
+      const result = await getGoalsWithIndicators(user.id, user.companyId, input.year);
       
       if (!result) {
         return null;
@@ -123,9 +131,8 @@ export const goalsRouter = router({
         throw new Error("Usuário não está vinculado a uma empresa");
       }
 
-      // Por enquanto, retornar apenas as metas do usuário
-      // Em produção, pode retornar todas as metas da empresa se for admin/finance
-      const result = await getGoalsWithIndicators(user.id, input.year || new Date().getFullYear());
+      // Retornar apenas as metas do usuário
+      const result = await getGoalsWithIndicators(user.id, user.companyId, input.year || new Date().getFullYear());
       
       if (!result) {
         return [];
