@@ -12,25 +12,40 @@ export async function calculateActivePropertiesCount(
   startDate: Date,
   endDate: Date,
   companyId?: string
-) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
+): Promise<number> {
+  try {
+    const db = await getDb();
+    if (!db) {
+      console.warn("[calculateActivePropertiesCount] Database not available");
+      return 0;
+    }
 
-  // Contar imóveis com status LISTED e isActive = 1
-  // Não usamos datas porque dteNewListing e dteTermination estão vazios
-  const conditions = [
-    eq(properfyProperties.chrStatus, "LISTED"),
-    eq(properfyProperties.isActive, 1)
-  ];
-  
-  // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
+    // Validar datas
+    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
+      console.warn("[calculateActivePropertiesCount] Invalid dates", { startDate, endDate });
+      return 0;
+    }
 
-  const result = await db
-    .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
-    .from(properfyProperties)
-    .where(and(...conditions));
+    // Contar imóveis com status LISTED e isActive = 1
+    // Não usamos datas porque dteNewListing e dteTermination estão vazios
+    const conditions = [
+      eq(properfyProperties.chrStatus, "LISTED"),
+      eq(properfyProperties.isActive, 1)
+    ];
+    
+    // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
 
-  return result[0]?.count || 0;
+    const result = await db
+      .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
+      .from(properfyProperties)
+      .where(and(...conditions));
+
+    const count = result[0]?.count || 0;
+    return typeof count === 'number' ? count : parseInt(String(count), 10) || 0;
+  } catch (error) {
+    console.error("[calculateActivePropertiesCount] Error:", error);
+    return 0;
+  }
 }
 
 /**
@@ -43,23 +58,38 @@ export async function calculateAngariationsCount(
   startDate: Date,
   endDate: Date,
   companyId?: string
-) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
+): Promise<number> {
+  try {
+    const db = await getDb();
+    if (!db) {
+      console.warn("[calculateAngariationsCount] Database not available");
+      return 0;
+    }
 
-  // Contar imóveis com status NEW_LISTING (recém angariados)
-  const conditions = [
-    eq(properfyProperties.chrStatus, "NEW_LISTING")
-  ];
-  
-  // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
+    // Validar datas
+    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
+      console.warn("[calculateAngariationsCount] Invalid dates", { startDate, endDate });
+      return 0;
+    }
 
-  const result = await db
-    .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
-    .from(properfyProperties)
-    .where(and(...conditions));
+    // Contar imóveis com status NEW_LISTING (recém angariados)
+    const conditions = [
+      eq(properfyProperties.chrStatus, "NEW_LISTING")
+    ];
+    
+    // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
 
-  return result[0]?.count || 0;
+    const result = await db
+      .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
+      .from(properfyProperties)
+      .where(and(...conditions));
+
+    const count = result[0]?.count || 0;
+    return typeof count === 'number' ? count : parseInt(String(count), 10) || 0;
+  } catch (error) {
+    console.error("[calculateAngariationsCount] Error:", error);
+    return 0;
+  }
 }
 
 /**
@@ -72,29 +102,44 @@ export async function calculateRemovedPropertiesCount(
   startDate: Date,
   endDate: Date,
   companyId?: string
-) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
+): Promise<number> {
+  try {
+    const db = await getDb();
+    if (!db) {
+      console.warn("[calculateRemovedPropertiesCount] Database not available");
+      return 0;
+    }
 
-  // Contar imóveis que saíram da carteira no período específico
-  const conditions = [
-    sql`${properfyProperties.chrStatus} IN ('REMOVED', 'RENTED', 'IN_TERMINATION')`,
-    // Filtrar por período: se dteTermination existe, usar; senão usar updatedAt
-    sql`(
-      (${properfyProperties.dteTermination} IS NOT NULL AND ${properfyProperties.dteTermination} >= ${startDate} AND ${properfyProperties.dteTermination} <= ${endDate})
-      OR
-      (${properfyProperties.dteTermination} IS NULL AND ${properfyProperties.updatedAt} >= ${startDate} AND ${properfyProperties.updatedAt} <= ${endDate})
-    )`
-  ];
-  
-  // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
+    // Validar datas
+    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
+      console.warn("[calculateRemovedPropertiesCount] Invalid dates", { startDate, endDate });
+      return 0;
+    }
 
-  const result = await db
-    .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
-    .from(properfyProperties)
-    .where(and(...conditions));
+    // Contar imóveis que saíram da carteira no período específico
+    const conditions = [
+      sql`${properfyProperties.chrStatus} IN ('REMOVED', 'RENTED', 'IN_TERMINATION')`,
+      // Filtrar por período: se dteTermination existe, usar; senão usar updatedAt
+      sql`(
+        (${properfyProperties.dteTermination} IS NOT NULL AND ${properfyProperties.dteTermination} >= ${startDate} AND ${properfyProperties.dteTermination} <= ${endDate})
+        OR
+        (${properfyProperties.dteTermination} IS NULL AND ${properfyProperties.updatedAt} >= ${startDate} AND ${properfyProperties.updatedAt} <= ${endDate})
+      )`
+    ];
+    
+    // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
 
-  return result[0]?.count || 0;
+    const result = await db
+      .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
+      .from(properfyProperties)
+      .where(and(...conditions));
+
+    const count = result[0]?.count || 0;
+    return typeof count === 'number' ? count : parseInt(String(count), 10) || 0;
+  } catch (error) {
+    console.error("[calculateRemovedPropertiesCount] Error:", error);
+    return 0;
+  }
 }
 
 /**
@@ -107,8 +152,29 @@ export async function calculateVSO(
   salesCountMonth: number,
   previousMonthActiveProperties: number
 ): Promise<number> {
-  if (previousMonthActiveProperties === 0) return 0;
-  return salesCountMonth / previousMonthActiveProperties;
+  try {
+    // Validar inputs
+    if (typeof salesCountMonth !== 'number' || typeof previousMonthActiveProperties !== 'number') {
+      console.warn("[calculateVSO] Invalid inputs", { salesCountMonth, previousMonthActiveProperties });
+      return 0;
+    }
+
+    // Se não há carteira anterior, VSO é 0
+    if (previousMonthActiveProperties === 0) {
+      return 0;
+    }
+
+    // Se não há vendas, VSO é 0
+    if (salesCountMonth === 0) {
+      return 0;
+    }
+
+    const vso = salesCountMonth / previousMonthActiveProperties;
+    return typeof vso === 'number' && !isNaN(vso) ? vso : 0;
+  } catch (error) {
+    console.error("[calculateVSO] Error:", error);
+    return 0;
+  }
 }
 
 /**
@@ -120,10 +186,22 @@ export async function calculateReadyAttendances(
   startDate: Date,
   endDate: Date
 ): Promise<number> {
-  const { calculateReadyAttendances: calculateReady } = await import(
-    "./properfyLeadsSync"
-  );
-  return calculateReady(startDate, endDate);
+  try {
+    // Validar datas
+    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
+      console.warn("[calculateReadyAttendances] Invalid dates", { startDate, endDate });
+      return 0;
+    }
+
+    const { calculateReadyAttendances: calculateReady } = await import(
+      "./properfyLeadsSync"
+    );
+    const result = await calculateReady(startDate, endDate);
+    return typeof result === 'number' && !isNaN(result) ? result : 0;
+  } catch (error) {
+    console.error("[calculateReadyAttendances] Error:", error);
+    return 0;
+  }
 }
 
 /**
@@ -135,10 +213,22 @@ export async function calculateLaunchAttendances(
   startDate: Date,
   endDate: Date
 ): Promise<number> {
-  const { calculateLaunchAttendances: calculateLaunch } = await import(
-    "./properfyLeadsSync"
-  );
-  return calculateLaunch(startDate, endDate);
+  try {
+    // Validar datas
+    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
+      console.warn("[calculateLaunchAttendances] Invalid dates", { startDate, endDate });
+      return 0;
+    }
+
+    const { calculateLaunchAttendances: calculateLaunch } = await import(
+      "./properfyLeadsSync"
+    );
+    const result = await calculateLaunch(startDate, endDate);
+    return typeof result === 'number' && !isNaN(result) ? result : 0;
+  } catch (error) {
+    console.error("[calculateLaunchAttendances] Error:", error);
+    return 0;
+  }
 }
 
 
@@ -152,10 +242,24 @@ export async function calculateAverageSaleTime(
   endDate: Date,
   companyId: string
 ): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
   try {
+    const db = await getDb();
+    if (!db) {
+      console.warn("[calculateAverageSaleTime] Database not available");
+      return 0;
+    }
+
+    // Validar inputs
+    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
+      console.warn("[calculateAverageSaleTime] Invalid dates", { startDate, endDate });
+      return 0;
+    }
+
+    if (!companyId || typeof companyId !== 'string') {
+      console.warn("[calculateAverageSaleTime] Invalid companyId", { companyId });
+      return 0;
+    }
+
     // Calcular dias entre dteNewListing (Properfy) e saleDate (Delmack)
     // Usa propertiesCache.delmackPropertyId para conectar com sales.propertyId
     const { sales } = await import("../../drizzle/schema");
@@ -172,9 +276,10 @@ export async function calculateAverageSaleTime(
     `);
 
     const avgDays = (result as any)?.[0]?.avgDays || 0;
-    return Math.round(avgDays);
+    const rounded = Math.round(avgDays);
+    return typeof rounded === 'number' && !isNaN(rounded) ? rounded : 0;
   } catch (error) {
-    console.error("Erro ao calcular tempo médio de venda:", error);
+    console.error("[calculateAverageSaleTime] Error:", error);
     return 0;
   }
 }
