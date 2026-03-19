@@ -622,17 +622,20 @@ export const indicatorsRouter = router({
     )
     .query(async ({ input }) => {
       const { companyId, year, month } = input;
-      const monthKey = `${year}-${String(month).padStart(2, '0')}`;
       
-      const { getMonthlyIndicator } = await import('../db');
-      const data = await getMonthlyIndicator(companyId, monthKey);
+      // Buscar dados manuais usando manualDataHelper
+      const manualData = await manualDataHelper.getManualData(
+        companyId,
+        year,
+        month
+      );
       
       return {
-        generalExpense: data?.generalExpense || 0,
-        taxExpense: data?.taxExpense || 0,
-        innovationFund: data?.innovationFund || 0,
-        partnerResult: data?.partnerResult || 0,
-        emergencyFund: data?.emergencyFund || 0,
+        despesaGeral: manualData.despesaGeral,
+        despesaImpostos: manualData.despesaImpostos,
+        fundoInovacao: manualData.fundoInovacao,
+        resultadoSocios: manualData.resultadoSocios,
+        fundoEmergencial: manualData.fundoEmergencial,
       };
     }),
 

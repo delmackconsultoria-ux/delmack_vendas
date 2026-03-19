@@ -39,11 +39,11 @@ export function ManualDataModal({
   userRole = "user",
 }: ManualDataModalProps) {
   const [formData, setFormData] = useState({
-    generalExpense: 0,
-    taxExpense: 0,
-    innovationFund: 0,
-    partnerResult: 0,
-    emergencyFund: 0,
+    despesaGeral: 0,
+    despesaImpostos: 0,
+    fundoInovacao: 0,
+    resultadoSocios: 0,
+    fundoEmergencial: 0,
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -70,17 +70,17 @@ export function ManualDataModal({
   useEffect(() => {
     if (existingData) {
       setFormData({
-        generalExpense: Number(existingData.generalExpense) || 0,
-        taxExpense: Number(existingData.taxExpense) || 0,
-        innovationFund: Number(existingData.innovationFund) || 0,
-        partnerResult: Number(existingData.partnerResult) || 0,
-        emergencyFund: Number(existingData.emergencyFund) || 0,
+        despesaGeral: Number(existingData.despesaGeral) || 0,
+        despesaImpostos: Number(existingData.despesaImpostos) || 0,
+        fundoInovacao: Number(existingData.fundoInovacao) || 0,
+        resultadoSocios: Number(existingData.resultadoSocios) || 0,
+        fundoEmergencial: Number(existingData.fundoEmergencial) || 0,
       });
     }
   }, [existingData]);
 
   // Mutation para salvar
-  const saveMutation = trpc.indicators.saveMonthlyManualData.useMutation({
+  const saveMutation = trpc.indicators.saveManualData.useMutation({
     onSuccess: () => {
       toast.success("Dados salvos com sucesso!");
       onClose();
@@ -188,87 +188,87 @@ export function ManualDataModal({
           ) : (
             <>
               <div className="space-y-2">
-                <Label htmlFor="generalExpense">Despesa Geral</Label>
+                <Label htmlFor="despesaGeral">Despesa Geral</Label>
                 <Input
-                  id="generalExpense"
+                  id="despesaGeral"
                   type="number"
                   placeholder="0,00"
-                  value={formData.generalExpense}
-                  onChange={(e) => handleInputChange("generalExpense", e.target.value)}
+                  value={formData.despesaGeral}
+                  onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
                   step="0.01"
                   min="0"
                   disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
-                  {formatCurrency(formData.generalExpense)}
+                  {formatCurrency(formData.despesaGeral)}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="taxExpense">Despesa com Impostos</Label>
+                <Label htmlFor="despesaImpostos">Despesa com Impostos</Label>
                 <Input
-                  id="taxExpense"
+                  id="despesaImpostos"
                   type="number"
                   placeholder="0,00"
-                  value={formData.taxExpense}
-                  onChange={(e) => handleInputChange("taxExpense", e.target.value)}
+                  value={formData.despesaImpostos}
+                  onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
                   step="0.01"
                   min="0"
                   disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
-                  {formatCurrency(formData.taxExpense)}
+                  {formatCurrency(formData.despesaImpostos)}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="innovationFund">Fundo Inovação</Label>
+                <Label htmlFor="fundoInovacao">Fundo Inovação</Label>
                 <Input
-                  id="innovationFund"
+                  id="fundoInovacao"
                   type="number"
                   placeholder="0,00"
-                  value={formData.innovationFund}
-                  onChange={(e) => handleInputChange("innovationFund", e.target.value)}
+                  value={formData.fundoInovacao}
+                  onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
                   step="0.01"
                   min="0"
                   disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
-                  {formatCurrency(formData.innovationFund)}
+                  {formatCurrency(formData.fundoInovacao)}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="partnerResult">Resultado Sócios</Label>
+                <Label htmlFor="resultadoSocios">Resultado Sócios</Label>
                 <Input
-                  id="partnerResult"
+                  id="resultadoSocios"
                   type="number"
                   placeholder="0,00"
-                  value={formData.partnerResult}
-                  onChange={(e) => handleInputChange("partnerResult", e.target.value)}
+                  value={formData.resultadoSocios}
+                  onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
                   step="0.01"
                   min="0"
                   disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
-                  {formatCurrency(formData.partnerResult)}
+                  {formatCurrency(formData.resultadoSocios)}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="emergencyFund">Fundo Emergencial</Label>
+                <Label htmlFor="fundoEmergencial">Fundo Emergencial</Label>
                 <Input
-                  id="emergencyFund"
+                  id="fundoEmergencial"
                   type="number"
                   placeholder="0,00"
-                  value={formData.emergencyFund}
-                  onChange={(e) => handleInputChange("emergencyFund", e.target.value)}
+                  value={formData.fundoEmergencial}
+                  onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
                   step="0.01"
                   min="0"
                   disabled={userRole !== "manager"}
                 />
                 <p className="text-sm text-muted-foreground">
-                  {formatCurrency(formData.emergencyFund)}
+                  {formatCurrency(formData.fundoEmergencial)}
                 </p>
               </div>
             </>
