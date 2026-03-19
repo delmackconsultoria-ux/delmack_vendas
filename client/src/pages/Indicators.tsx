@@ -244,6 +244,7 @@ export default function Indicators() {
         monthlyGoal: (getGoalValue("removalsMonth") || 180) / 12,
         annualAverage: getGoalValue("removalsMonth") || 180,
         fieldName: "baixasMes",
+        isCurrency: false,
       },
       {
         title: "% comissão vendida",

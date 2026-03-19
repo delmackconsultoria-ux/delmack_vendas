@@ -28,6 +28,7 @@ interface IndicatorData {
     nov: number;
     dez: number;
   };
+  isCurrency?: boolean;
 }
 
 interface IndicatorsConsolidatedTableProps {
@@ -70,10 +71,10 @@ export function IndicatorsConsolidatedTable({
     );
   }
 
-  const formatValue = (value: any): string => {
+  const formatValue = (value: any, isCurrency: boolean = true): string => {
     if (typeof value === "string") return value;
     if (typeof value === "number") {
-      if (value > 1000) {
+      if (isCurrency && value > 1000) {
         return formatCurrency(value);
       }
       return formatNumber(value);
@@ -121,24 +122,24 @@ export function IndicatorsConsolidatedTable({
               <TableCell className="sticky left-0 bg-inherit z-10 font-medium">
                 {indicator.title}
               </TableCell>
-              <TableCell className="text-right">{formatValue(indicator.monthlyGoal)}</TableCell>
-              <TableCell className="text-right">{formatValue(indicator.annualAverage)}</TableCell>
+              <TableCell className="text-right">{formatValue(indicator.monthlyGoal, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className="text-right">{formatValue(indicator.annualAverage, indicator.isCurrency !== false)}</TableCell>
               <TableCell className={`text-right ${getPercentageColor(parseFloat(String(indicator.percentageAchieved)))}`}>
                 {parseFloat(String(indicator.percentageAchieved)).toFixed(1)}%
               </TableCell>
-              <TableCell className="text-right font-semibold">{formatValue(indicator.total)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.fev, indicator.monthlyGoal)}`}>{formatValue(indicator.months.fev)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.mar, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mar)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.abr, indicator.monthlyGoal)}`}>{formatValue(indicator.months.abr)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.mai, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mai)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jun, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jun)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jul, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jul)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.ago, indicator.monthlyGoal)}`}>{formatValue(indicator.months.ago)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.set, indicator.monthlyGoal)}`}>{formatValue(indicator.months.set)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.out, indicator.monthlyGoal)}`}>{formatValue(indicator.months.out)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.nov, indicator.monthlyGoal)}`}>{formatValue(indicator.months.nov)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.dez, indicator.monthlyGoal)}`}>{formatValue(indicator.months.dez)}</TableCell>
+              <TableCell className="text-right font-semibold">{formatValue(indicator.total, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.fev, indicator.monthlyGoal)}`}>{formatValue(indicator.months.fev, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.mar, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mar, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.abr, indicator.monthlyGoal)}`}>{formatValue(indicator.months.abr, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.mai, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mai, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jun, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jun, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jul, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jul, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.ago, indicator.monthlyGoal)}`}>{formatValue(indicator.months.ago, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.set, indicator.monthlyGoal)}`}>{formatValue(indicator.months.set, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.out, indicator.monthlyGoal)}`}>{formatValue(indicator.months.out, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.nov, indicator.monthlyGoal)}`}>{formatValue(indicator.months.nov, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.dez, indicator.monthlyGoal)}`}>{formatValue(indicator.months.dez, indicator.isCurrency !== false)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
