@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `indicatorManualData` (\n  `id` varchar(64) NOT NULL PRIMARY KEY,\n  `companyId` varchar(64) NOT NULL,\n  `year` int NOT NULL,\n  `month` int NOT NULL,\n  `despesaGeral` decimal(15,2) DEFAULT 0,\n  `despesaImpostos` decimal(15,2) DEFAULT 0,\n  `fundoInovacao` decimal(15,2) DEFAULT 0,\n  `resultadoSocios` decimal(15,2) DEFAULT 0,\n  `fundoEmergencial` decimal(15,2) DEFAULT 0,\n  `updatedBy` varchar(64) NOT NULL,\n  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  UNIQUE KEY `unique_company_year_month` (`companyId`, `year`, `month`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute CREATE TABLE IF NOT EXISTS `indicatorManualData` (\n  `id` varchar(64) NOT NULL PRIMARY KEY,\n  `companyId` varchar(64) NOT NULL,\n  `year` int NOT NULL,\n  `month` int NOT NULL,\n  `despesaGeral` decimal(15,2) DEFAULT 0,\n  `despesaImpostos` decimal(15,2) DEFAULT 0,\n  `fundoInovacao` decimal(15,2) DEFAULT 0,\n  `resultadoSocios` decimal(15,2) DEFAULT 0,\n  `fundoEmergencial` decimal(15,2) DEFAULT 0,\n  `updatedBy` varchar(64) NOT NULL,\n  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  UNIQUE KEY `unique_company_year_month` (`companyId`, `year`, `month`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 356
+}

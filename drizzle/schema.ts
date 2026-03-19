@@ -981,3 +981,31 @@ export const properfyLeads = mysqlTable("properfyLeads", {
 
 export type ProperfyLead = typeof properfyLeads.$inferSelect;
 export type InsertProperfyLead = typeof properfyLeads.$inferInsert;
+
+
+/**
+ * Dados Manuais de Indicadores
+ * Armazena valores inseridos manualmente pelos gerentes
+ * Inclui: Despesa Geral, Despesa com Impostos, Fundo Inovação, Resultado Sócios, Fundo Emergencial
+ */
+export const indicatorManualData = mysqlTable("indicatorManualData", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  year: int("year").notNull(),
+  month: int("month").notNull(),
+  
+  // Dados manuais (valores padrão = 0)
+  despesaGeral: decimal("despesaGeral", { precision: 15, scale: 2 }).default("0"),
+  despesaImpostos: decimal("despesaImpostos", { precision: 15, scale: 2 }).default("0"),
+  fundoInovacao: decimal("fundoInovacao", { precision: 15, scale: 2 }).default("0"),
+  resultadoSocios: decimal("resultadoSocios", { precision: 15, scale: 2 }).default("0"),
+  fundoEmergencial: decimal("fundoEmergencial", { precision: 15, scale: 2 }).default("0"),
+  
+  // Auditoria
+  updatedBy: varchar("updatedBy", { length: 64 }).notNull(), // ID do gerente que atualizou
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type IndicatorManualData = typeof indicatorManualData.$inferSelect;
+export type InsertIndicatorManualData = typeof indicatorManualData.$inferInsert;

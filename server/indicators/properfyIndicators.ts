@@ -128,20 +128,16 @@ export async function calculateLaunchAttendances(
 
 
 /**
- * Tempo médio de venda ang X venda
- * Calcula o tempo médio em dias entre:
- * - Data de Angariação (dteNewListing) do Properfy
- * - Data de Registro da Venda (saleDate) do Sistema Delmack
- * 
- * TODO: Implementar JOIN correto entre properfyProperties e sales
- * Atualmente retorna 0 pois não há campo de conexão direto entre as tabelas
+ * Tempo medio de venda angariada X venda
+ * Calcula dias entre data de angariacao (dteNewListing do Properfy) e data de venda (saleDate do Delmack)
+ * Usa propertiesCache para conectar as duas tabelas
  */
 export async function calculateAverageSaleTime(
   startDate: Date,
   endDate: Date,
   companyId: string
 ): Promise<number> {
-  // TODO: Implementar lógica de cálculo quando houver campo de conexão entre properfyProperties e sales
-  // Por enquanto, retorna 0
+  // TODO: Implementar JOIN correto quando houver campo de conexão entre propertiesCache e sales
+  // Atualmente retorna 0 pois não há campo delmackPropertyId em propertiesCache
   return 0;
 }
