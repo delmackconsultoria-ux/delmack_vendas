@@ -97,11 +97,29 @@ export function ManualDataDrawer({
   };
 
   const handleInputChange = (field: string, value: string) => {
-    const numValue = value === '' ? 0 : parseFloat(value) || 0;
+    // Remove caracteres não numéricos
+    let numericValue = value.replace(/[^0-9]/g, '');
+    
+    // Limita a 8 dígitos
+    if (numericValue.length > 8) {
+      numericValue = numericValue.slice(0, 8);
+    }
+    
+    const numValue = numericValue === '' ? 0 : parseInt(numericValue) || 0;
     setFormData((prev) => ({
       ...prev,
       [field]: numValue,
     }));
+  };
+
+  const formatCurrencyDisplay = (value: number): string => {
+    if (value === 0) return '';
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value / 100);
   };
 
   // Verificar se usuário pode editar
@@ -111,12 +129,6 @@ export function ManualDataDrawer({
 
   return (
     <>
-      {/* Overlay */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
-        onClick={onClose}
-      />
-
       {/* Drawer */}
       <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-lg z-50 overflow-y-auto transition-transform">
         {/* Header */}
@@ -177,12 +189,13 @@ export function ManualDataDrawer({
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
                 <Input
-                  type="number"
-                  value={formData.despesaGeral || 0}
+                  type="text"
+                  inputMode="numeric"
+                  value={formatCurrencyDisplay(formData.despesaGeral)}
                   onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
                   disabled={!canEdit}
                   className="pl-8"
-                  placeholder="0.00"
+                  placeholder="R$ 0,00"
                 />
               </div>
             </div>
@@ -192,12 +205,13 @@ export function ManualDataDrawer({
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
                 <Input
-                  type="number"
-                  value={formData.despesaImpostos || 0}
+                  type="text"
+                  inputMode="numeric"
+                  value={formatCurrencyDisplay(formData.despesaImpostos)}
                   onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
                   disabled={!canEdit}
                   className="pl-8"
-                  placeholder="0.00"
+                  placeholder="R$ 0,00"
                 />
               </div>
             </div>
@@ -207,12 +221,13 @@ export function ManualDataDrawer({
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
                 <Input
-                  type="number"
-                  value={formData.fundoInovacao || 0}
+                  type="text"
+                  inputMode="numeric"
+                  value={formatCurrencyDisplay(formData.fundoInovacao)}
                   onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
                   disabled={!canEdit}
                   className="pl-8"
-                  placeholder="0.00"
+                  placeholder="R$ 0,00"
                 />
               </div>
             </div>
@@ -222,12 +237,13 @@ export function ManualDataDrawer({
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
                 <Input
-                  type="number"
-                  value={formData.resultadoSocios || 0}
+                  type="text"
+                  inputMode="numeric"
+                  value={formatCurrencyDisplay(formData.resultadoSocios)}
                   onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
                   disabled={!canEdit}
                   className="pl-8"
-                  placeholder="0.00"
+                  placeholder="R$ 0,00"
                 />
               </div>
             </div>
@@ -237,12 +253,13 @@ export function ManualDataDrawer({
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
                 <Input
-                  type="number"
-                  value={formData.fundoEmergencial || 0}
+                  type="text"
+                  inputMode="numeric"
+                  value={formatCurrencyDisplay(formData.fundoEmergencial)}
                   onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
                   disabled={!canEdit}
                   className="pl-8"
-                  placeholder="0.00"
+                  placeholder="R$ 0,00"
                 />
               </div>
             </div>

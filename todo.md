@@ -2289,3 +2289,14 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Criar endpoint tRPC para buscar histórico
 - [ ] Criar componente HistoryModal para visualizar edições
 - [ ] Testar sistema completo
+
+
+---
+
+## 🔧 NOVA FASE: Correções na Página de Indicadores (19/03/2026)
+
+- [ ] Remover duplicação de "Tabela Consolidada de Indicadores"
+- [ ] Remover fundo preto (overlay) do Drawer
+- [ ] Adicionar máscara de dinheiro com até 8 dígitos nos campos do Drawer
+- [ ] Dados manuais aparecerem imediatamente na tabela após salvar
+- [ ] Corrigir sincronização Properfy para mostrar apenas mês corrente (01/03 até 10/03, congelado no último dia)

@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface IndicatorData {
   title: string;
@@ -57,33 +56,17 @@ export function IndicatorsConsolidatedTable({
 }: IndicatorsConsolidatedTableProps) {
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Tabela Consolidada de Indicadores</CardTitle>
-          <CardDescription>Carregando dados...</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-32">
-            <p className="text-muted-foreground">Carregando indicadores...</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center h-32">
+        <p className="text-muted-foreground">Carregando indicadores...</p>
+      </div>
     );
   }
 
   if (!indicators || indicators.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Tabela Consolidada de Indicadores</CardTitle>
-          <CardDescription>Nenhum dado disponível</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-32">
-            <p className="text-muted-foreground">Nenhum indicador disponível para este período</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center h-32">
+        <p className="text-muted-foreground">Nenhum indicador disponível para este período</p>
+      </div>
     );
   }
 
@@ -116,58 +99,50 @@ export function IndicatorsConsolidatedTable({
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Tabela Consolidada de Indicadores</CardTitle>
-        <CardDescription>Análise detalhada de todos os indicadores para {year}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table className="text-sm">
-            <TableHeader className="sticky top-0 z-20">
-              <TableRow className="bg-muted/50">
-                <TableHead className="sticky left-0 top-0 bg-muted/50 z-30 min-w-[200px]">Título</TableHead>
-                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Meta Mensal</TableHead>
-                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Média Anual</TableHead>
-                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[80px]">%</TableHead>
-                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Total</TableHead>
-                {MONTH_ABBREVIATIONS.map((month) => (
-                  <TableHead key={month} className="sticky top-0 bg-muted/50 z-20 text-right min-w-[70px]">
-                    {month}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {indicators.map((indicator, idx) => (
-                <TableRow key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-muted/30"}>
-                  <TableCell className="sticky left-0 bg-inherit z-10 font-medium">
-                    {indicator.title}
-                  </TableCell>
-                  <TableCell className="text-right">{formatValue(indicator.monthlyGoal)}</TableCell>
-                  <TableCell className="text-right">{formatValue(indicator.annualAverage)}</TableCell>
-                  <TableCell className={`text-right ${getPercentageColor(parseFloat(String(indicator.percentageAchieved)))}`}>
-                    {parseFloat(String(indicator.percentageAchieved)).toFixed(1)}%
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">{formatValue(indicator.total)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.fev, indicator.monthlyGoal)}`}>{formatValue(indicator.months.fev)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.mar, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mar)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.abr, indicator.monthlyGoal)}`}>{formatValue(indicator.months.abr)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.mai, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mai)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.jun, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jun)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.jul, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jul)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.ago, indicator.monthlyGoal)}`}>{formatValue(indicator.months.ago)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.set, indicator.monthlyGoal)}`}>{formatValue(indicator.months.set)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.out, indicator.monthlyGoal)}`}>{formatValue(indicator.months.out)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.nov, indicator.monthlyGoal)}`}>{formatValue(indicator.months.nov)}</TableCell>
-                  <TableCell className={`text-right ${getMonthColor(indicator.months.dez, indicator.monthlyGoal)}`}>{formatValue(indicator.months.dez)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="overflow-x-auto">
+      <Table className="text-sm">
+        <TableHeader className="sticky top-0 z-20">
+          <TableRow className="bg-muted/50">
+            <TableHead className="sticky left-0 top-0 bg-muted/50 z-30 min-w-[200px]">Título</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Meta Mensal</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Média Anual</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[80px]">%</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Total</TableHead>
+            {MONTH_ABBREVIATIONS.map((month) => (
+              <TableHead key={month} className="sticky top-0 bg-muted/50 z-20 text-right min-w-[70px]">
+                {month}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {indicators.map((indicator, idx) => (
+            <TableRow key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-muted/30"}>
+              <TableCell className="sticky left-0 bg-inherit z-10 font-medium">
+                {indicator.title}
+              </TableCell>
+              <TableCell className="text-right">{formatValue(indicator.monthlyGoal)}</TableCell>
+              <TableCell className="text-right">{formatValue(indicator.annualAverage)}</TableCell>
+              <TableCell className={`text-right ${getPercentageColor(parseFloat(String(indicator.percentageAchieved)))}`}>
+                {parseFloat(String(indicator.percentageAchieved)).toFixed(1)}%
+              </TableCell>
+              <TableCell className="text-right font-semibold">{formatValue(indicator.total)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.fev, indicator.monthlyGoal)}`}>{formatValue(indicator.months.fev)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.mar, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mar)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.abr, indicator.monthlyGoal)}`}>{formatValue(indicator.months.abr)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.mai, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mai)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jun, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jun)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jul, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jul)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.ago, indicator.monthlyGoal)}`}>{formatValue(indicator.months.ago)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.set, indicator.monthlyGoal)}`}>{formatValue(indicator.months.set)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.out, indicator.monthlyGoal)}`}>{formatValue(indicator.months.out)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.nov, indicator.monthlyGoal)}`}>{formatValue(indicator.months.nov)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.dez, indicator.monthlyGoal)}`}>{formatValue(indicator.months.dez)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

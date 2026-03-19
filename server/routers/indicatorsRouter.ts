@@ -33,9 +33,25 @@ export const indicatorsRouter = router({
     .query(async ({ input }) => {
       const { companyId, year, month } = input;
 
+      // Data atual
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+
       // Calcular datas do mês
       const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0);
+      
+      // Lógica para endDate:
+      // - Se for o mês corrente (atual): usar data atual
+      // - Se for mês passado/futuro: usar último dia do mês (congelado)
+      let endDate: Date;
+      if (year === currentYear && month === currentMonth) {
+        // Mês corrente: usar data atual
+        endDate = new Date(today);
+      } else {
+        // Outro mês: usar último dia do mês (congelado)
+        endDate = new Date(year, month, 0);
+      }
       
       // Mês anterior para VSO
       const prevMonthStart = new Date(year, month - 2, 1);
