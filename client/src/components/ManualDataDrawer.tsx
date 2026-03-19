@@ -211,10 +211,10 @@ export function ManualDataDrawer({
               <Input
                 type="text"
                 inputMode="numeric"
-                value={formatCurrencyDisplay(formData.despesaGeral)}
+                placeholder="R$ 0,00"
+                defaultValue={formData.despesaGeral > 0 ? formData.despesaGeral.toString() : ''}
                 onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
                 disabled={!canEdit}
-                placeholder="R$ 0,00"
               />
             </div>
 
@@ -223,10 +223,10 @@ export function ManualDataDrawer({
               <Input
                 type="text"
                 inputMode="numeric"
-                value={formatCurrencyDisplay(formData.despesaImpostos)}
+                placeholder="R$ 0,00"
+                defaultValue={formData.despesaImpostos > 0 ? formData.despesaImpostos.toString() : ''}
                 onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
                 disabled={!canEdit}
-                placeholder="R$ 0,00"
               />
             </div>
 
@@ -235,10 +235,10 @@ export function ManualDataDrawer({
               <Input
                 type="text"
                 inputMode="numeric"
-                value={formatCurrencyDisplay(formData.fundoInovacao)}
+                placeholder="R$ 0,00"
+                defaultValue={formData.fundoInovacao > 0 ? formData.fundoInovacao.toString() : ''}
                 onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
                 disabled={!canEdit}
-                placeholder="R$ 0,00"
               />
             </div>
 
@@ -247,10 +247,10 @@ export function ManualDataDrawer({
               <Input
                 type="text"
                 inputMode="numeric"
-                value={formatCurrencyDisplay(formData.resultadoSocios)}
+                placeholder="R$ 0,00"
+                defaultValue={formData.resultadoSocios > 0 ? formData.resultadoSocios.toString() : ''}
                 onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
                 disabled={!canEdit}
-                placeholder="R$ 0,00"
               />
             </div>
 
@@ -259,10 +259,10 @@ export function ManualDataDrawer({
               <Input
                 type="text"
                 inputMode="numeric"
-                value={formatCurrencyDisplay(formData.fundoEmergencial)}
+                placeholder="R$ 0,00"
+                defaultValue={formData.fundoEmergencial > 0 ? formData.fundoEmergencial.toString() : ''}
                 onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
                 disabled={!canEdit}
-                placeholder="R$ 0,00"
               />
             </div>
           </div>
