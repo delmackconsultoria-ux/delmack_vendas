@@ -97,15 +97,36 @@ export function ManualDataDrawer({
   };
 
   const handleInputChange = (field: string, value: string) => {
-    // Remove caracteres não numéricos
-    let numericValue = value.replace(/[^0-9]/g, '');
-    
-    // Limita a 9 dígitos
-    if (numericValue.length > 9) {
-      numericValue = numericValue.slice(0, 9);
+    // Converter locale brasileiro (vírgula) para número
+    // Aceita: "0,10", "1.234,56", "0.10", "1234.56"
+    if (!value || value.trim() === '') {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: 0,
+      }));
+      return;
     }
+
+    const str = value.trim();
     
-    const numValue = numericValue === '' ? 0 : parseInt(numericValue) || 0;
+    // Se já é um número com ponto, retornar como é
+    if (!isNaN(Number(str)) && !str.includes(',')) {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: Number(str),
+      }));
+      return;
+    }
+
+    // Converter locale brasileiro (1.234,56) para número
+    // Remover pontos (separador de milhares) e substituir vírgula por ponto
+    const normalized = str
+      .replace(/\./g, '') // Remove pontos (1.234 -> 1234)
+      .replace(/,/g, '.'); // Substitui vírgula por ponto (1234,56 -> 1234.56)
+
+    const parsed = parseFloat(normalized);
+    const numValue = !isNaN(parsed) ? parsed : 0;
+    
     setFormData((prev) => ({
       ...prev,
       [field]: numValue,
@@ -114,14 +135,13 @@ export function ManualDataDrawer({
 
   const formatCurrencyDisplay = (value: number): string => {
     if (value === 0) return '';
-    // Converter de centavos para reais (333 centavos = 3.33 reais)
-    const reais = value / 100;
+    // Formatar diretamente o valor (não dividir por 100)
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(reais);
+    }).format(value);
   };
 
   // Verificar se usuário pode editar
