@@ -2249,3 +2249,30 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 
 ### FASE 5: Checkpoint Final
 - [ ] Salvar checkpoint com todas as mudanças
+
+
+---
+
+## 🎨 NOVA FASE: Refatoração da Página de Indicadores (19/03/2026)
+
+- [ ] Refatorar layout do Indicators.tsx
+  - [ ] Remover filtro de mês
+  - [ ] Remover subtítulo "Análise detalhada..."
+  - [ ] Novo layout: Ano + "Incluir dados manuais" + "Sincronizar Properfy"
+
+- [ ] Criar componente Drawer para edição de dados manuais
+  - [ ] Seletores: Ano + Mês
+  - [ ] 5 campos de input (Despesa Geral, Impostos, Fundo Inovação, Resultado Sócios, Fundo Emergencial)
+  - [ ] Pré-carregamento de valores existentes
+  - [ ] Botões: Cancelar e Salvar
+  - [ ] Fecha automaticamente após salvar
+
+- [ ] Implementar atualização em tempo real da tabela
+  - [ ] Dados salvos refletem imediatamente na tabela
+
+- [ ] Sincronizar delmackPropertyId ao importar imóveis do Properfy
+  - [ ] Preencher automaticamente ao sincronizar
+
+- [ ] Testar todas as funcionalidades
+
+- [ ] Salvar checkpoint final

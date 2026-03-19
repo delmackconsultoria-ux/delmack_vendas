@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { IndicatorsConsolidatedTable } from "@/components/IndicatorsConsolidatedTable";
 import { IndicatorHistoryModal } from "@/components/IndicatorHistoryModal";
 import { ManualDataModal } from "@/components/ManualDataModal";
-import { ManualDataInput } from "@/components/ManualDataInput";
+import { ManualDataDrawer } from "@/components/ManualDataDrawer";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 
@@ -31,7 +31,7 @@ export default function Indicators() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isManualDataModalOpen, setIsManualDataModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [manualDataByMonth, setManualDataByMonth] = useState<Record<string, any>>({});
 
   const openIndicatorModal = (indicatorName: string) => {
@@ -142,9 +142,9 @@ export default function Indicators() {
     }
   }, [selectedMonth, selectedYear, user, refetch]);
 
-  // Recarregar dados manuais quando modal fecha
-  const handleManualDataClose = () => {
-    setIsManualDataModalOpen(false);
+  // Recarregar dados manuais quando drawer fecha
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
     // Recarregar dados será feito automaticamente pelo useQuery
   };
 
@@ -252,139 +252,144 @@ export default function Indicators() {
       },
       {
         title: "Negócios acima de 1 milhão",
-        monthlyGoal: (getGoalValue("businessOver1m") || 24) / 12,
-        annualAverage: getGoalValue("businessOver1m") || 24,
-        fieldName: "negociosAcima1M",
-      },
-      {
-        title: "Número de atendimentos Prontos",
-        monthlyGoal: (getGoalValue("readyCalls") || 600) / 12,
-        annualAverage: getGoalValue("readyCalls") || 600,
-        fieldName: "atendimentosProntos",
-      },
-      {
-        title: "Número de atendimentos Lançamentos",
-        monthlyGoal: (getGoalValue("launchCalls") || 240) / 12,
-        annualAverage: getGoalValue("launchCalls") || 240,
-        fieldName: "atendimentosLancamentos",
+        monthlyGoal: (getGoalValue("businessAboveOneMillion") || 60) / 12,
+        annualAverage: getGoalValue("businessAboveOneMillion") || 60,
+        fieldName: "negociosAcimaMilhao",
       },
       {
         title: "Prazo médio recebimento de venda",
-        monthlyGoal: (getGoalValue("avgReceiptTime") || 360) / 12,
-        annualAverage: getGoalValue("avgReceiptTime") || 360,
+        monthlyGoal: (getGoalValue("averageReceiptTime") || 90) / 12,
+        annualAverage: getGoalValue("averageReceiptTime") || 90,
         fieldName: "prazoMedioRecebimento",
       },
       {
         title: "% Com cancelada / com pendente",
-        monthlyGoal: (getGoalValue("cancelledPendingRatio") || 1.2) / 12,
-        annualAverage: getGoalValue("cancelledPendingRatio") || 1.2,
-        fieldName: "percentualCanceladaPendente",
-      },
-      {
-        title: "Tempo médio de venda ang X venda",
-        monthlyGoal: (getGoalValue("avgSaleTime") || 720) / 12,
-        annualAverage: getGoalValue("avgSaleTime") || 720,
-        fieldName: "tempoMedioVendaAngVenda",
+        monthlyGoal: (getGoalValue("cancelledVsPending") || 0.2) / 12,
+        annualAverage: getGoalValue("cancelledVsPending") || 0.2,
+        fieldName: "percentualCancelada",
       },
       {
         title: "Valor médio do imóvel de venda",
-        monthlyGoal: (getGoalValue("avgPropertyValue") || 6000000) / 12,
-        annualAverage: getGoalValue("avgPropertyValue") || 6000000,
+        monthlyGoal: (getGoalValue("averagePropertyValue") || 500000) / 12,
+        annualAverage: getGoalValue("averagePropertyValue") || 500000,
         fieldName: "valorMedioImovel",
       },
       {
         title: "Negócios na Rede",
-        monthlyGoal: (getGoalValue("networkBusiness") || 36) / 12,
-        annualAverage: getGoalValue("networkBusiness") || 36,
+        monthlyGoal: (getGoalValue("businessNetwork") || 30) / 12,
+        annualAverage: getGoalValue("businessNetwork") || 30,
         fieldName: "negociosRede",
       },
       {
         title: "Negócios Internos",
-        monthlyGoal: (getGoalValue("internalBusiness") || 48) / 12,
-        annualAverage: getGoalValue("internalBusiness") || 48,
+        monthlyGoal: (getGoalValue("businessInternal") || 30) / 12,
+        annualAverage: getGoalValue("businessInternal") || 30,
         fieldName: "negociosInternos",
       },
       {
         title: "Negócios Parceria Externa",
-        monthlyGoal: (getGoalValue("externalPartnership") || 24) / 12,
-        annualAverage: getGoalValue("externalPartnership") || 24,
-        fieldName: "negociosParceriaExterna",
+        monthlyGoal: (getGoalValue("businessExternalPartnership") || 30) / 12,
+        annualAverage: getGoalValue("businessExternalPartnership") || 30,
+        fieldName: "negociosParcerias",
       },
       {
         title: "Negócios Lançamentos",
-        monthlyGoal: (getGoalValue("launchBusiness") || 12) / 12,
-        annualAverage: getGoalValue("launchBusiness") || 12,
+        monthlyGoal: (getGoalValue("businessLaunches") || 30) / 12,
+        annualAverage: getGoalValue("businessLaunches") || 30,
         fieldName: "negociosLancamentos",
       },
       {
+        title: "Número de atendimentos Prontos",
+        monthlyGoal: (getGoalValue("attendanceReady") || 300) / 12,
+        annualAverage: getGoalValue("attendanceReady") || 300,
+        fieldName: "atendimentosProntos",
+      },
+      {
+        title: "Número de atendimentos Lançamentos",
+        monthlyGoal: (getGoalValue("attendanceLaunches") || 300) / 12,
+        annualAverage: getGoalValue("attendanceLaunches") || 300,
+        fieldName: "atendimentosLancamentos",
+      },
+      {
+        title: "Tempo médio de venda ang X venda",
+        monthlyGoal: (getGoalValue("averageSaleTime") || 90) / 12,
+        annualAverage: getGoalValue("averageSaleTime") || 90,
+        fieldName: "tempoMedioVenda",
+      },
+      {
         title: "Despesa Geral",
-        monthlyGoal: (getGoalValue("generalExpense") || 120000) / 12,
-        annualAverage: getGoalValue("generalExpense") || 120000,
+        monthlyGoal: (getGoalValue("generalExpense") || 50000) / 12,
+        annualAverage: getGoalValue("generalExpense") || 50000,
         fieldName: "despesaGeral",
         manualField: "generalExpense",
       },
       {
-        title: "Despesa com impostos",
-        monthlyGoal: (getGoalValue("taxExpense") || 60000) / 12,
-        annualAverage: getGoalValue("taxExpense") || 60000,
+        title: "Despesa com Impostos",
+        monthlyGoal: (getGoalValue("taxExpense") || 30000) / 12,
+        annualAverage: getGoalValue("taxExpense") || 30000,
         fieldName: "despesaImpostos",
         manualField: "taxExpense",
       },
       {
         title: "Fundo Inovação",
-        monthlyGoal: (getGoalValue("innovationFund") || 24000) / 12,
-        annualAverage: getGoalValue("innovationFund") || 24000,
+        monthlyGoal: (getGoalValue("innovationFund") || 20000) / 12,
+        annualAverage: getGoalValue("innovationFund") || 20000,
         fieldName: "fundoInovacao",
         manualField: "innovationFund",
       },
       {
         title: "Resultado Sócios",
-        monthlyGoal: (getGoalValue("partnersResult") || 600000) / 12,
-        annualAverage: getGoalValue("partnersResult") || 600000,
+        monthlyGoal: (getGoalValue("partnersResult") || 100000) / 12,
+        annualAverage: getGoalValue("partnersResult") || 100000,
         fieldName: "resultadoSocios",
         manualField: "partnersResult",
       },
       {
-        title: "Fundo emergencial",
-        monthlyGoal: (getGoalValue("emergencyFund") || 120000) / 12,
-        annualAverage: getGoalValue("emergencyFund") || 120000,
+        title: "Fundo Emergencial",
+        monthlyGoal: (getGoalValue("emergencyFund") || 10000) / 12,
+        annualAverage: getGoalValue("emergencyFund") || 10000,
         fieldName: "fundoEmergencial",
         manualField: "emergencyFund",
       },
     ];
 
-    // Construir dados com meses reais
-    const CURRENT_MONTH_NUM = new Date().getMonth() + 1; // Março = 3
-    
-    indicatorsList.forEach((ind) => {
-      const months = {
-        jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0,
-        jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0,
-      };
-      const monthKeys = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-      let total = 0;
-      let selectedMonthValue = 0;
+    // Processar cada indicador
+    indicatorsList.forEach((indicator) => {
+      const monthlyValues: Record<number, number> = {};
+      let totalValue = 0;
 
-      monthKeys.forEach((monthKey, monthIndex) => {
-        const monthData = yearData?.monthlyData?.find((m: any) => m.month === monthIndex + 1);
-        const value = monthData ? (monthData as any)[ind.fieldName] || 0 : 0;
-        (months as any)[monthKey] = value;
-        total += value;
-        if (monthIndex + 1 === parseInt(selectedMonth)) {
-          selectedMonthValue = value;
+      // Buscar valores para cada mês
+      for (let month = 1; month <= 12; month++) {
+        const monthData = yearData.monthlyData.find((m: any) => m.month === month);
+        const value = monthData ? (monthData[indicator.fieldName] || 0) : 0;
+        monthlyValues[month] = typeof value === 'string' ? parseFloat(value) || 0 : value;
+        totalValue += monthlyValues[month];
+      }
+
+      // Buscar dados manuais se aplicável
+      if (indicator.manualField) {
+        for (let month = 1; month <= 12; month++) {
+          const monthKey = `${parseInt(selectedYear)}-${String(month).padStart(2, '0')}`;
+          const manualData = manualDataByMonth[monthKey];
+          if (manualData && manualData[indicator.manualField] !== undefined) {
+            monthlyValues[month] = manualData[indicator.manualField];
+            totalValue = Object.values(monthlyValues).reduce((a: number, b: number) => a + b, 0);
+          }
         }
-      });
+      }
 
-      const monthlyGoal = Number(ind.monthlyGoal) || 0;
-      const percentage = monthlyGoal > 0 && !isNaN(monthlyGoal) ? (selectedMonthValue / monthlyGoal) * 100 : 0;
+      // Calcular percentual
+      const percentage = indicator.monthlyGoal > 0 
+        ? ((totalValue / (indicator.monthlyGoal * 12)) * 100).toFixed(1)
+        : "0.0";
 
       indicators.push({
-        title: ind.title,
-        monthlyGoal: Number(ind.monthlyGoal) || 0,
-        annualAverage: Number(ind.annualAverage) || 0,
-        percentageAchieved: Number(percentage) || 0,
-        total: total,
-        months: months,
+        title: indicator.title,
+        monthlyGoal: indicator.monthlyGoal,
+        annualAverage: indicator.annualAverage,
+        percentageAchieved: percentage,
+        total: totalValue,
+        months: monthlyValues,
       });
     });
 
@@ -396,12 +401,41 @@ export default function Indicators() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Indicadores</h1>
-            <p className="text-gray-600 mt-1">Acompanhe o desempenho mensal e anual</p>
+        {/* Título */}
+        <h1 className="text-3xl font-bold">Indicadores</h1>
+
+        {/* Header com Ano, Incluir dados manuais e Sincronizar Properfy */}
+        <div className="flex items-center justify-end gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium">Ano</label>
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableYears.length > 0 ? (
+                  availableYears.map((year) => (
+                    <SelectItem key={year} value={String(year)}>
+                      {year}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value={String(CURRENT_YEAR)}>
+                    {CURRENT_YEAR}
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
+          
+          <Button 
+            onClick={() => setIsDrawerOpen(true)}
+            variant="outline"
+            className="gap-2"
+          >
+            Incluir dados manuais
+          </Button>
+          
           <Button 
             onClick={handleSyncPropertyfy} 
             disabled={isSyncing}
@@ -412,79 +446,6 @@ export default function Indicators() {
           </Button>
         </div>
 
-        {/* Filtros */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="text-sm font-medium">Mês</label>
-                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MONTH_NAMES.map((month, index) => (
-                      <SelectItem key={index} value={String(index + 1)}>
-                        {month}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex-1">
-                <label className="text-sm font-medium">Ano</label>
-                <Select value={selectedYear} onValueChange={setSelectedYear}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableYears.length > 0 ? (
-                      availableYears.map((year) => (
-                        <SelectItem key={year} value={String(year)}>
-                          {year}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value={String(CURRENT_YEAR)}>
-                        {CURRENT_YEAR}
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Edição de Dados Manuais */}
-        <ManualDataInput
-          companyId={user?.companyId || ""}
-          year={parseInt(selectedYear)}
-          selectedMonth={selectedMonth}
-          userRole={user?.role}
-          onDataSaved={() => refetch()}
-        />
-
-        {/* Indicadores em tempo real */}
-        {isLoading ? (
-          <Card>
-            <CardContent className="pt-6 flex justify-center">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </CardContent>
-          </Card>
-        ) : indicatorsData ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>Indicadores - {MONTH_NAMES[parseInt(selectedMonth) - 1]} de {selectedYear}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Indicadores renderizados aqui */}
-              </div>
-            </CardContent>
-          </Card>
-        ) : null}
-
         {/* Tabela consolidada */}
         {isLoadingYear ? (
           <Card>
@@ -493,7 +454,14 @@ export default function Indicators() {
             </CardContent>
           </Card>
         ) : (
-          <IndicatorsConsolidatedTable indicators={consolidatedData} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Tabela Consolidada de Indicadores</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <IndicatorsConsolidatedTable indicators={consolidatedData} />
+            </CardContent>
+          </Card>
         )}
 
         {/* Modais */}
@@ -505,15 +473,15 @@ export default function Indicators() {
           />
         )}
 
-        {isManualDataModalOpen && (
-          <ManualDataModal
-            isOpen={isManualDataModalOpen}
-            onClose={handleManualDataClose}
-            month={parseInt(selectedMonth)}
-            year={parseInt(selectedYear)}
-            companyId={user?.companyId || ""}
-          />
-        )}
+        {/* Drawer para edição de dados manuais */}
+        <ManualDataDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleDrawerClose}
+          month={parseInt(selectedMonth)}
+          year={parseInt(selectedYear)}
+          companyId={user?.companyId || ""}
+          onDataSaved={() => refetch()}
+        />
       </div>
     </AppLayout>
   );
