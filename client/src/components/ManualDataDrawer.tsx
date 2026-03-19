@@ -88,11 +88,11 @@ export function ManualDataDrawer({
       companyId,
       year: parseInt(selectedYear),
       month: parseInt(selectedMonth),
-      despesaGeral: formData.despesaGeral * 100,
-      despesaImpostos: formData.despesaImpostos * 100,
-      fundoInovacao: formData.fundoInovacao * 100,
-      resultadoSocios: formData.resultadoSocios * 100,
-      fundoEmergencial: formData.fundoEmergencial * 100,
+      despesaGeral: formData.despesaGeral,
+      despesaImpostos: formData.despesaImpostos,
+      fundoInovacao: formData.fundoInovacao,
+      resultadoSocios: formData.resultadoSocios,
+      fundoEmergencial: formData.fundoEmergencial,
     });
   };
 
@@ -119,7 +119,7 @@ export function ManualDataDrawer({
       currency: 'BRL',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(value / 100);
+    }).format(value);
   };
 
   // Verificar se usuário pode editar

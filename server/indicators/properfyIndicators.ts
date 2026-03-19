@@ -21,7 +21,9 @@ export async function calculateActivePropertiesCount(
   ];
   
   if (companyId) {
-    conditions.push(eq(properfyProperties.companyId, companyId));
+    // Converter para número se for string numérica
+    const numericCompanyId = isNaN(Number(companyId)) ? companyId : String(Number(companyId));
+    conditions.push(eq(properfyProperties.companyId, numericCompanyId));
   }
 
   const result = await db
@@ -52,7 +54,9 @@ export async function calculateAngariationsCount(
   ];
   
   if (companyId) {
-    conditions.push(eq(properfyProperties.companyId, companyId));
+    // Converter para número se for string numérica
+    const numericCompanyId = isNaN(Number(companyId)) ? companyId : String(Number(companyId));
+    conditions.push(eq(properfyProperties.companyId, numericCompanyId));
   }
 
   const result = await db
@@ -83,7 +87,9 @@ export async function calculateRemovedPropertiesCount(
   ];
   
   if (companyId) {
-    conditions.push(eq(properfyProperties.companyId, companyId));
+    // Converter para número se for string numérica
+    const numericCompanyId = isNaN(Number(companyId)) ? companyId : String(Number(companyId));
+    conditions.push(eq(properfyProperties.companyId, numericCompanyId));
   }
 
   const result = await db

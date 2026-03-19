@@ -1,0 +1,38 @@
+{
+  "query": "SELECT COUNT(*) as total, companyId FROM properfyProperties GROUP BY companyId LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total, companyId FROM properfyProperties GROUP BY companyId LIMIT 10;",
+  "rows": [
+    {
+      "total": "125",
+      "companyId": "6"
+    },
+    {
+      "total": "17",
+      "companyId": "3"
+    },
+    {
+      "total": "51",
+      "companyId": "9"
+    },
+    {
+      "total": "109",
+      "companyId": "5"
+    },
+    {
+      "total": "4657",
+      "companyId": "1"
+    },
+    {
+      "total": "74",
+      "companyId": "8"
+    },
+    {
+      "total": "48",
+      "companyId": "4"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tcompanyId\n125\t6\n17\t3\n51\t9\n109\t5\n4657\t1\n74\t8\n48\t4\n",
+  "stderr": "",
+  "execution_time_ms": 444
+}
