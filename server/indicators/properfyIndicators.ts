@@ -15,9 +15,14 @@ export async function calculateActivePropertiesCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  // Imóveis ativos no período: angariados antes ou durante o período E (não baixados OU baixados após o período)
   const conditions = [
     eq(properfyProperties.chrStatus, "LISTED"),
-    eq(properfyProperties.isActive, 1)
+    eq(properfyProperties.isActive, 1),
+    // Angariado antes ou durante o período
+    lte(properfyProperties.dteNewListing, endDate),
+    // Não baixado OU baixado após o período
+    sql`(${properfyProperties.dteTermination} IS NULL OR ${properfyProperties.dteTermination} > ${endDate})`
   ];
   
   // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
