@@ -100,9 +100,9 @@ export function ManualDataDrawer({
     // Remove caracteres não numéricos
     let numericValue = value.replace(/[^0-9]/g, '');
     
-    // Limita a 8 dígitos
-    if (numericValue.length > 8) {
-      numericValue = numericValue.slice(0, 8);
+    // Limita a 9 dígitos
+    if (numericValue.length > 9) {
+      numericValue = numericValue.slice(0, 9);
     }
     
     const numValue = numericValue === '' ? 0 : parseInt(numericValue) || 0;
@@ -186,82 +186,62 @@ export function ManualDataDrawer({
           <div className="space-y-4 border-t border-gray-200 pt-4">
             <div>
               <label className="text-sm font-medium block mb-2">Despesa Geral</label>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={formatCurrencyDisplay(formData.despesaGeral)}
-                  onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
-                  disabled={!canEdit}
-                  className="pl-8"
-                  placeholder="R$ 0,00"
-                />
-              </div>
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={formatCurrencyDisplay(formData.despesaGeral)}
+                onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
+                disabled={!canEdit}
+                placeholder="R$ 0,00"
+              />
             </div>
 
             <div>
               <label className="text-sm font-medium block mb-2">Despesa com Impostos</label>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={formatCurrencyDisplay(formData.despesaImpostos)}
-                  onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
-                  disabled={!canEdit}
-                  className="pl-8"
-                  placeholder="R$ 0,00"
-                />
-              </div>
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={formatCurrencyDisplay(formData.despesaImpostos)}
+                onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
+                disabled={!canEdit}
+                placeholder="R$ 0,00"
+              />
             </div>
 
             <div>
               <label className="text-sm font-medium block mb-2">Fundo Inovação</label>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={formatCurrencyDisplay(formData.fundoInovacao)}
-                  onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
-                  disabled={!canEdit}
-                  className="pl-8"
-                  placeholder="R$ 0,00"
-                />
-              </div>
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={formatCurrencyDisplay(formData.fundoInovacao)}
+                onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
+                disabled={!canEdit}
+                placeholder="R$ 0,00"
+              />
             </div>
 
             <div>
               <label className="text-sm font-medium block mb-2">Resultado Sócios</label>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={formatCurrencyDisplay(formData.resultadoSocios)}
-                  onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
-                  disabled={!canEdit}
-                  className="pl-8"
-                  placeholder="R$ 0,00"
-                />
-              </div>
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={formatCurrencyDisplay(formData.resultadoSocios)}
+                onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
+                disabled={!canEdit}
+                placeholder="R$ 0,00"
+              />
             </div>
 
             <div>
               <label className="text-sm font-medium block mb-2">Fundo Emergencial</label>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={formatCurrencyDisplay(formData.fundoEmergencial)}
-                  onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
-                  disabled={!canEdit}
-                  className="pl-8"
-                  placeholder="R$ 0,00"
-                />
-              </div>
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={formatCurrencyDisplay(formData.fundoEmergencial)}
+                onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
+                disabled={!canEdit}
+                placeholder="R$ 0,00"
+              />
             </div>
           </div>
 
