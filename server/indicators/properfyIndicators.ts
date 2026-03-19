@@ -64,9 +64,9 @@ export async function calculateAngariationsCount(
 
 /**
  * Baixas no mês (em quantidade)
- * Contagem de imóveis que saíram da carteira (status REMOVED, RENTED, etc.)
- * Campo: chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')
- * NOTA: dteTermination está vazio, então usamos status em vez de data
+ * Contagem de imóveis que saíram da carteira durante o período
+ * Filtra por: chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION') E dteTermination entre startDate e endDate
+ * NOTA: Se dteTermination estiver vazio, usa updatedAt como fallback
  */
 export async function calculateRemovedPropertiesCount(
   startDate: Date,
@@ -76,9 +76,15 @@ export async function calculateRemovedPropertiesCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  // Contar imóveis que saíram da carteira
+  // Contar imóveis que saíram da carteira no período específico
   const conditions = [
-    sql`${properfyProperties.chrStatus} IN ('REMOVED', 'RENTED', 'IN_TERMINATION')`
+    sql`${properfyProperties.chrStatus} IN ('REMOVED', 'RENTED', 'IN_TERMINATION')`,
+    // Filtrar por período: se dteTermination existe, usar; senão usar updatedAt
+    sql`(
+      (${properfyProperties.dteTermination} IS NOT NULL AND ${properfyProperties.dteTermination} >= ${startDate} AND ${properfyProperties.dteTermination} <= ${endDate})
+      OR
+      (${properfyProperties.dteTermination} IS NULL AND ${properfyProperties.updatedAt} >= ${startDate} AND ${properfyProperties.updatedAt} <= ${endDate})
+    )`
   ];
   
   // Sem filtro de companyId - Properfy puxa dados apenas da Baggio

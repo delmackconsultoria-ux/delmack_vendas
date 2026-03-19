@@ -324,45 +324,65 @@ export const indicatorsRouter = router({
             endDate
           );
 
-          // Indicadores do Properfy
-          const activeProperties = await properfyIndicators.calculateActivePropertiesCount(
-            startDate,
-            endDate,
-            companyId
-          );
-          const angariations = await properfyIndicators.calculateAngariationsCount(
-            startDate,
-            endDate,
-            companyId
-          );
-          const removedProperties = await properfyIndicators.calculateRemovedPropertiesCount(
-            startDate,
-            endDate,
-            companyId
-          );
-          const prevMonthActiveProperties = await properfyIndicators.calculateActivePropertiesCount(
-            prevMonthStart,
-            prevMonthEnd,
-            companyId
-          );
-          // VSO só é calculado a partir de março (mês 3)
-          const vso = month >= 3 ? await properfyIndicators.calculateVSO(
-            salesCount,
-            prevMonthActiveProperties
-          ) : 0;
-          const readyAttendances = await properfyIndicators.calculateReadyAttendances(
-            startDate,
-            endDate
-          );
-          const launchAttendances = await properfyIndicators.calculateLaunchAttendances(
-            startDate,
-            endDate
-          );
-          const averageSaleTime = await properfyIndicators.calculateAverageSaleTime(
-            startDate,
-            endDate,
-            companyId
-          );
+          // Indicadores do Properfy - APENAS para o mês corrente
+          const today = new Date();
+          const currentYear = today.getFullYear();
+          const currentMonth = today.getMonth() + 1;
+          const isCurrentMonth = year === currentYear && month === currentMonth;
+          
+          let activeProperties = 0;
+          let angariations = 0;
+          let removedProperties = 0;
+          let prevMonthActiveProperties = 0;
+          let vso = 0;
+          let readyAttendances = 0;
+          let launchAttendances = 0;
+          let averageSaleTime = 0;
+          
+          // Se for o mês corrente, puxar dados do Properfy
+          if (isCurrentMonth) {
+            activeProperties = await properfyIndicators.calculateActivePropertiesCount(
+              startDate,
+              endDate,
+              companyId
+            );
+            angariations = await properfyIndicators.calculateAngariationsCount(
+              startDate,
+              endDate,
+              companyId
+            );
+            removedProperties = await properfyIndicators.calculateRemovedPropertiesCount(
+              startDate,
+              endDate,
+              companyId
+            );
+            prevMonthActiveProperties = await properfyIndicators.calculateActivePropertiesCount(
+              prevMonthStart,
+              prevMonthEnd,
+              companyId
+            );
+            // VSO só é calculado a partir de março (mês 3)
+            if (month >= 3) {
+              vso = await properfyIndicators.calculateVSO(
+                salesCount,
+                prevMonthActiveProperties
+              );
+            }
+            readyAttendances = await properfyIndicators.calculateReadyAttendances(
+              startDate,
+              endDate
+            );
+            launchAttendances = await properfyIndicators.calculateLaunchAttendances(
+              startDate,
+              endDate
+            );
+            averageSaleTime = await properfyIndicators.calculateAverageSaleTime(
+              startDate,
+              endDate,
+              companyId
+            );
+          }
+          // Se não for o mês corrente, todos os indicadores Properfy = 0
 
           // Buscar dados manuais salvos para este mês
           const manualData = await manualDataHelper.getManualData(
