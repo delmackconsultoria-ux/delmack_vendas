@@ -212,7 +212,7 @@ export function ManualDataDrawer({
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formData.despesaGeral > 0 ? formData.despesaGeral.toString() : ''}
+                value={formatCurrencyDisplay(formData.despesaGeral)}
                 onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
                 disabled={!canEdit}
               />
@@ -224,7 +224,7 @@ export function ManualDataDrawer({
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formData.despesaImpostos > 0 ? formData.despesaImpostos.toString() : ''}
+                value={formatCurrencyDisplay(formData.despesaImpostos)}
                 onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
                 disabled={!canEdit}
               />
@@ -236,7 +236,7 @@ export function ManualDataDrawer({
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formData.fundoInovacao > 0 ? formData.fundoInovacao.toString() : ''}
+                value={formatCurrencyDisplay(formData.fundoInovacao)}
                 onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
                 disabled={!canEdit}
               />
@@ -248,7 +248,7 @@ export function ManualDataDrawer({
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formData.resultadoSocios > 0 ? formData.resultadoSocios.toString() : ''}
+                value={formatCurrencyDisplay(formData.resultadoSocios)}
                 onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
                 disabled={!canEdit}
               />
@@ -260,7 +260,7 @@ export function ManualDataDrawer({
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formData.fundoEmergencial > 0 ? formData.fundoEmergencial.toString() : ''}
+                value={formatCurrencyDisplay(formData.fundoEmergencial)}
                 onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
                 disabled={!canEdit}
               />
