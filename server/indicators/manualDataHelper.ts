@@ -2,6 +2,7 @@ import { getDb } from "../db";
 import { sql, eq, and } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { indicatorManualData } from "../../drizzle/schema";
+import { saveAuditLog } from "./auditLogHelper";
 
 /**
  * Estrutura de dados manuais
@@ -64,7 +65,8 @@ export async function saveManualData(
   year: number,
   month: number,
   data: ManualIndicatorData,
-  updatedBy: string
+  updatedBy: string,
+  updatedByName: string
 ): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -81,7 +83,35 @@ export async function saveManualData(
       )
     );
 
+  const fieldNames = [
+    "despesaGeral",
+    "despesaImpostos",
+    "fundoInovacao",
+    "resultadoSocios",
+    "fundoEmergencial",
+  ] as const;
+
   if (existing && existing.length > 0) {
+    // Registrar auditoria para cada campo alterado
+    const oldData = existing[0] as any;
+    for (const field of fieldNames) {
+      const oldValue = parseFloat(String(oldData[field] || "0"));
+      const newValue = data[field];
+
+      if (oldValue !== newValue) {
+        await saveAuditLog({
+          companyId,
+          year,
+          month,
+          fieldName: field,
+          previousValue: oldValue,
+          newValue,
+          editedBy: updatedBy,
+          editedByName: updatedByName,
+        });
+      }
+    }
+
     // Atualizar usando SQL raw
     await db.execute(
       sql`UPDATE indicatorManualData 
@@ -95,6 +125,20 @@ export async function saveManualData(
           WHERE companyId = ${companyId} AND year = ${year} AND month = ${month}`
     );
   } else {
+    // Registrar auditoria para cada novo valor
+    for (const field of fieldNames) {
+      await saveAuditLog({
+        companyId,
+        year,
+        month,
+        fieldName: field,
+        previousValue: null,
+        newValue: data[field],
+        editedBy: updatedBy,
+        editedByName: updatedByName,
+      });
+    }
+
     // Inserir
     await db.insert(indicatorManualData).values({
       id: uuid(),
@@ -107,6 +151,6 @@ export async function saveManualData(
       resultadoSocios: String(data.resultadoSocios),
       fundoEmergencial: String(data.fundoEmergencial),
       updatedBy,
-    });
+    } as any);
   }
 }

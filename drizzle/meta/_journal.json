@@ -267,6 +267,13 @@
       "when": 1773881034526,
       "tag": "0037_wooden_wallow",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "5",
+      "when": 1773883820457,
+      "tag": "0038_mean_ricochet",
+      "breakpoints": true
     }
   ]
 }

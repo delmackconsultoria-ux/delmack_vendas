@@ -1010,3 +1010,36 @@ export const indicatorManualData = mysqlTable("indicatorManualData", {
 
 export type IndicatorManualData = typeof indicatorManualData.$inferSelect;
 export type InsertIndicatorManualData = typeof indicatorManualData.$inferInsert;
+
+
+/**
+ * Auditoria de Dados Manuais de Indicadores
+ * Rastreia todas as edições realizadas nos dados manuais
+ * Permite visualizar histórico completo de alterações
+ */
+export const indicatorAuditLog = mysqlTable("indicatorAuditLog", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  year: int("year").notNull(),
+  month: int("month").notNull(),
+  
+  // Campo que foi alterado
+  fieldName: varchar("fieldName", { length: 64 }).notNull(), // Ex: "despesaGeral", "despesaImpostos", etc
+  
+  // Valores antes e depois
+  previousValue: decimal("previousValue", { precision: 15, scale: 2 }), // Valor anterior (null se nova criação)
+  newValue: decimal("newValue", { precision: 15, scale: 2 }).notNull(), // Novo valor
+  
+  // Quem fez a alteração
+  editedBy: varchar("editedBy", { length: 64 }).notNull(), // ID do usuário que fez a edição
+  editedByName: varchar("editedByName", { length: 255 }), // Nome do usuário para referência rápida
+  
+  // Quando foi alterado
+  editedAt: timestamp("editedAt").defaultNow(),
+  
+  // Observações opcionais
+  notes: text("notes"), // Motivo da alteração (opcional)
+});
+
+export type IndicatorAuditLog = typeof indicatorAuditLog.$inferSelect;
+export type InsertIndicatorAuditLog = typeof indicatorAuditLog.$inferInsert;

@@ -5,6 +5,7 @@ import * as properfyIndicators from "../indicators/properfyIndicators";
 import * as properfyLeadsSync from "../indicators/properfyLeadsSync";
 import * as goalsHelper from "../indicators/goalsHelper";
 import * as manualDataHelper from "../indicators/manualDataHelper";
+import * as auditLogHelper from "../indicators/auditLogHelper";
 import { getDb } from "../db";
 import { indicatorGoals } from "../../drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -670,7 +671,8 @@ export const indicatorsRouter = router({
             resultadoSocios: input.resultadoSocios,
             fundoEmergencial: input.fundoEmergencial,
           },
-          ctx.user.id
+          ctx.user.id,
+          ctx.user.name || 'Unknown'
         );
 
         return {
@@ -753,5 +755,27 @@ export const indicatorsRouter = router({
         console.error('[Indicators] Erro ao buscar anos disponiveis:', error);
         return [new Date().getFullYear()];
       }
+    }),
+
+  /**
+   * Obter histórico de edições de dados manuais
+   */
+  getAuditHistory: protectedProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+        year: z.number(),
+        month: z.number(),
+        fieldName: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const history = await auditLogHelper.getAuditHistory(
+        input.companyId,
+        input.year,
+        input.month,
+        input.fieldName
+      );
+      return history;
     }),
 });

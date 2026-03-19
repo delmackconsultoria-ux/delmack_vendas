@@ -2276,3 +2276,16 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Testar todas as funcionalidades
 
 - [ ] Salvar checkpoint final
+
+
+---
+
+## 🔍 NOVA FASE: Sistema de Auditoria para Dados Manuais
+
+- [ ] Criar tabela indicatorAuditLog no schema.ts
+- [ ] Criar tabela no banco de dados via SQL
+- [ ] Criar helper auditLogHelper.ts para salvar logs
+- [ ] Integrar auditoria ao endpoint saveManualData
+- [ ] Criar endpoint tRPC para buscar histórico
+- [ ] Criar componente HistoryModal para visualizar edições
+- [ ] Testar sistema completo
