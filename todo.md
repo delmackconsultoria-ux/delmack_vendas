@@ -2170,3 +2170,46 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 
 ### FASE 7: Salvar Checkpoint Final
 - [ ] Criar checkpoint com todas as correções implementadas
+
+
+---
+
+## 📊 NOVA FASE: Melhoria Visual e Funcional da Página de Indicadores (19/03/2026)
+
+### FASE 1: Header Sticky
+- [ ] Implementar header sticky (Título, Meta Mensal, Média Anual, %, Total)
+- [ ] Implementar meses sticky ao rolar horizontalmente
+- [ ] Testar scroll vertical e horizontal
+
+### FASE 2: Dados do Properfy em Tempo Real
+- [ ] Atualizar 7 indicadores do Properfy com dados do mês atual
+  - [ ] Carteira de Divulgação (propriedades ativas)
+  - [ ] Angariações mês (novas propriedades listadas)
+  - [ ] Baixas no mês (propriedades removidas)
+  - [ ] VSO - venda/oferta
+  - [ ] Número de atendimentos Prontos
+  - [ ] Número de atendimentos Lançamentos
+  - [ ] Tempo médio de venda ang X venda
+
+### FASE 3: Rotina de Atualização Automática
+- [ ] Usar mesma rotina da página "Nova Venda"
+- [ ] Atualizar dados do Properfy automaticamente
+
+### FASE 4: Sincronização Properfy
+- [ ] Forçar atualização ao clicar em "Sincronizar Properfy"
+- [ ] Atualizar todos os indicadores do Properfy imediatamente
+
+### FASE 5: Filtro de Anos com Histórico
+- [ ] Implementar filtro de anos (somente com histórico salvo)
+- [ ] Ano atual como padrão
+- [ ] Detectar ano atual dinamicamente (2026, 2027, etc)
+
+### FASE 6: Testes e Validação
+- [ ] Testar header sticky
+- [ ] Testar dados do Properfy
+- [ ] Testar rotina de atualização
+- [ ] Testar sincronização
+- [ ] Testar filtro de anos
+
+### FASE 7: Checkpoint Final
+- [ ] Salvar checkpoint com todas as mudanças

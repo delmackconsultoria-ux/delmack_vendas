@@ -79,6 +79,17 @@ export default function Indicators() {
     }
   );
 
+  // Buscar anos disponíveis com histórico
+  const { data: availableYears = [] } = trpc.indicators.getAvailableYears.useQuery(
+    {
+      companyId: user?.companyId || "",
+    },
+    {
+      enabled: !!user?.companyId,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   // Mutation para sincronização Properfy
   // Buscar dados manuais para o mês selecionado
   const { data: currentMonthManualData } = trpc.indicators.getMonthlyManualData.useQuery(
@@ -426,11 +437,17 @@ export default function Indicators() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[2024, 2025, 2026, 2027].map((year) => (
-                      <SelectItem key={year} value={String(year)}>
-                        {year}
+                    {availableYears.length > 0 ? (
+                      availableYears.map((year) => (
+                        <SelectItem key={year} value={String(year)}>
+                          {year}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value={String(CURRENT_YEAR)}>
+                        {CURRENT_YEAR}
                       </SelectItem>
-                    ))}
+                    )}
                   </SelectContent>
                 </Select>
               </div>

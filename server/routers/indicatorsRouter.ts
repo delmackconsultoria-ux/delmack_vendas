@@ -7,7 +7,7 @@ import * as goalsHelper from "../indicators/goalsHelper";
 import * as manualDataHelper from "../indicators/manualDataHelper";
 import { getDb } from "../db";
 import { indicatorGoals } from "../../drizzle/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { TRPCError } from "@trpc/server";
 
@@ -719,6 +719,39 @@ export const indicatorsRouter = router({
             fundoEmergencial: 0,
           },
         };
+      }
+    }),
+
+  /**
+   * Obter anos com historico salvo
+   */
+  getAvailableYears: publicProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      try {
+        // Buscar anos com dados na tabela monthlyIndicators
+        const result = await db.execute(
+          sql`SELECT DISTINCT YEAR(createdAt) as year FROM monthlyIndicators WHERE companyId = ${input.companyId} ORDER BY year DESC`
+        );
+
+        const years = (result as any[]).map((r: any) => r.year).filter((y: any) => y !== null);
+        
+        // Se nao houver dados, retornar ano atual
+        if (years.length === 0) {
+          return [new Date().getFullYear()];
+        }
+
+        return years;
+      } catch (error) {
+        console.error('[Indicators] Erro ao buscar anos disponiveis:', error);
+        return [new Date().getFullYear()];
       }
     }),
 });

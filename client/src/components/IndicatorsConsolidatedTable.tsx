@@ -124,15 +124,15 @@ export function IndicatorsConsolidatedTable({
       <CardContent>
         <div className="overflow-x-auto">
           <Table className="text-sm">
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-20">
               <TableRow className="bg-muted/50">
-                <TableHead className="sticky left-0 bg-muted/50 z-10 min-w-[200px]">Título</TableHead>
-                <TableHead className="text-right min-w-[100px]">Meta Mensal</TableHead>
-                <TableHead className="text-right min-w-[100px]">Média Anual</TableHead>
-                <TableHead className="text-right min-w-[80px]">%</TableHead>
-                <TableHead className="text-right min-w-[100px]">Total</TableHead>
+                <TableHead className="sticky left-0 top-0 bg-muted/50 z-30 min-w-[200px]">Título</TableHead>
+                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Meta Mensal</TableHead>
+                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Média Anual</TableHead>
+                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[80px]">%</TableHead>
+                <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Total</TableHead>
                 {MONTH_ABBREVIATIONS.map((month) => (
-                  <TableHead key={month} className="text-right min-w-[70px]">
+                  <TableHead key={month} className="sticky top-0 bg-muted/50 z-20 text-right min-w-[70px]">
                     {month}
                   </TableHead>
                 ))}
