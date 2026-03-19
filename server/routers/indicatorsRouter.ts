@@ -174,6 +174,13 @@ export const indicatorsRouter = router({
           companyId
         );
 
+        // Buscar dados manuais salvos para este mês
+        const manualData = await manualDataHelper.getManualData(
+          companyId,
+          year,
+          month
+        );
+
         return {
           isHistorical: false,
           period: `${MONTH_NAMES[month - 1]}/${year}`,
@@ -203,12 +210,12 @@ export const indicatorsRouter = router({
           atendimentosLancamentos: launchAttendances,
           tempoMedioVendaAngVenda: averageSaleTime,
 
-          // Manuais (valores padrão - devem ser preenchidos manualmente)
-          despesaGeral: 0,
-          despesaImpostos: 0,
-          fundoInovacao: 0,
-          resultadoSocios: 0,
-          fundoEmergencial: 0,
+          // Manuais
+          despesaGeral: manualData.despesaGeral,
+          despesaImpostos: manualData.despesaImpostos,
+          fundoInovacao: manualData.fundoInovacao,
+          resultadoSocios: manualData.resultadoSocios,
+          fundoEmergencial: manualData.fundoEmergencial,
         };
       } catch (error) {
         console.error("[Indicators] Erro ao calcular indicadores:", error);
@@ -357,6 +364,13 @@ export const indicatorsRouter = router({
             companyId
           );
 
+          // Buscar dados manuais salvos para este mês
+          const manualData = await manualDataHelper.getManualData(
+            companyId,
+            year,
+            month
+          );
+
           monthlyData.push({
             month,
             // Sistema de Vendas
@@ -387,11 +401,11 @@ export const indicatorsRouter = router({
             tempoMedioVendaAngVenda: averageSaleTime,
 
             // Manuais
-            despesaGeral: 0,
-            despesaImpostos: 0,
-            fundoInovacao: 0,
-            resultadoSocios: 0,
-            fundoEmergencial: 0,
+            despesaGeral: manualData.despesaGeral,
+            despesaImpostos: manualData.despesaImpostos,
+            fundoInovacao: manualData.fundoInovacao,
+            resultadoSocios: manualData.resultadoSocios,
+            fundoEmergencial: manualData.fundoEmergencial,
           });
         } catch (error) {
           console.error(`[Indicators] Erro ao calcular indicadores para ${month}/${year}:`, error);
