@@ -146,8 +146,8 @@ export function IndicatorsConsolidatedTable({
                   </TableCell>
                   <TableCell className="text-right">{formatValue(indicator.monthlyGoal)}</TableCell>
                   <TableCell className="text-right">{formatValue(indicator.annualAverage)}</TableCell>
-                  <TableCell className={`text-right ${getPercentageColor(indicator.percentageAchieved)}`}>
-                    {indicator.percentageAchieved.toFixed(1)}%
+                  <TableCell className={`text-right ${getPercentageColor(parseFloat(String(indicator.percentageAchieved)))}`}>
+                    {parseFloat(String(indicator.percentageAchieved)).toFixed(1)}%
                   </TableCell>
                   <TableCell className="text-right font-semibold">{formatValue(indicator.total)}</TableCell>
                   <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan)}</TableCell>
