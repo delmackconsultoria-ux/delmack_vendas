@@ -26,6 +26,7 @@ const CURRENT_MONTH = new Date().getMonth() + 1;
 export default function Indicators() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const utils = trpc.useUtils();
   const [selectedMonth, setSelectedMonth] = useState<string>(String(CURRENT_MONTH));
   const [selectedYear, setSelectedYear] = useState<string>(String(CURRENT_YEAR));
   const [isSyncing, setIsSyncing] = useState(false);
@@ -354,16 +355,19 @@ export default function Indicators() {
     ];
 
     // Processar cada indicador
+    const MONTH_KEYS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
     indicatorsList.forEach((indicator) => {
-      const monthlyValues: Record<number, number> = {};
+      const monthlyValues: Record<string, number> = {};
       let totalValue = 0;
 
       // Buscar valores para cada mês
       for (let month = 1; month <= 12; month++) {
         const monthData = yearData.monthlyData.find((m: any) => m.month === month);
         const value = monthData ? (monthData[indicator.fieldName] || 0) : 0;
-        monthlyValues[month] = typeof value === 'string' ? parseFloat(value) || 0 : value;
-        totalValue += monthlyValues[month];
+        const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
+        monthlyValues[MONTH_KEYS[month - 1]] = numValue;
+        totalValue += numValue;
       }
 
       // Buscar dados manuais se aplicável
@@ -372,7 +376,7 @@ export default function Indicators() {
           const monthKey = `${parseInt(selectedYear)}-${String(month).padStart(2, '0')}`;
           const manualData = manualDataByMonth[monthKey];
           if (manualData && manualData[indicator.manualField] !== undefined) {
-            monthlyValues[month] = manualData[indicator.manualField];
+            monthlyValues[MONTH_KEYS[month - 1]] = manualData[indicator.manualField];
             totalValue = Object.values(monthlyValues).reduce((a: number, b: number) => a + b, 0);
           }
         }
@@ -389,7 +393,7 @@ export default function Indicators() {
         annualAverage: indicator.annualAverage,
         percentageAchieved: percentage,
         total: totalValue,
-        months: monthlyValues,
+        months: monthlyValues as any,
       });
     });
 
@@ -480,7 +484,10 @@ export default function Indicators() {
           month={parseInt(selectedMonth)}
           year={parseInt(selectedYear)}
           companyId={user?.companyId || ""}
-          onDataSaved={() => refetch()}
+          onDataSaved={() => {
+            refetch();
+            utils.indicators.getYearIndicators.invalidate();
+          }}
         />
       </div>
     </AppLayout>
