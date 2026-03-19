@@ -114,12 +114,14 @@ export function ManualDataDrawer({
 
   const formatCurrencyDisplay = (value: number): string => {
     if (value === 0) return '';
+    // Converter de centavos para reais (333 centavos = 3.33 reais)
+    const reais = value / 100;
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(value);
+    }).format(reais);
   };
 
   // Verificar se usuário pode editar

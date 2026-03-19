@@ -20,11 +20,7 @@ export async function calculateActivePropertiesCount(
     eq(properfyProperties.isActive, 1)
   ];
   
-  if (companyId) {
-    // Converter para número se for string numérica
-    const numericCompanyId = isNaN(Number(companyId)) ? companyId : String(Number(companyId));
-    conditions.push(eq(properfyProperties.companyId, numericCompanyId));
-  }
+  // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
 
   const result = await db
     .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
@@ -53,11 +49,7 @@ export async function calculateAngariationsCount(
     lte(properfyProperties.dteNewListing, endDate)
   ];
   
-  if (companyId) {
-    // Converter para número se for string numérica
-    const numericCompanyId = isNaN(Number(companyId)) ? companyId : String(Number(companyId));
-    conditions.push(eq(properfyProperties.companyId, numericCompanyId));
-  }
+  // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
 
   const result = await db
     .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
@@ -86,11 +78,7 @@ export async function calculateRemovedPropertiesCount(
     lte(properfyProperties.dteTermination, endDate)
   ];
   
-  if (companyId) {
-    // Converter para número se for string numérica
-    const numericCompanyId = isNaN(Number(companyId)) ? companyId : String(Number(companyId));
-    conditions.push(eq(properfyProperties.companyId, numericCompanyId));
-  }
+  // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
 
   const result = await db
     .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
