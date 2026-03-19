@@ -3,8 +3,8 @@ import { properfyProperties } from "../../drizzle/schema";
 import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
 
 /**
- * Carteira de Divulgacao (em numero)
- * Contagem de imoveis ativos para venda
+ * Carteira de Divulgação (em número)
+ * Contagem de imóveis ativos para venda
  * Filtro: chrStatus = 'LISTED' AND isActive = 1
  */
 export async function calculateActivePropertiesCount(
@@ -29,8 +29,8 @@ export async function calculateActivePropertiesCount(
 }
 
 /**
- * Angariaces mes
- * Contagem de imoveis com data de angariacao no mes
+ * Angariações mês
+ * Contagem de imóveis com data de angariação no mês
  * Campo: dteNewListing
  */
 export async function calculateAngariationsCount(
@@ -56,11 +56,11 @@ export async function calculateAngariationsCount(
 }
 
 /**
- * Baixas no mes
- * Contagem de imoveis removidos (chrStatus != 'LISTED') no mes
- * Campo: dteTermination (data de remocao)
+ * Baixas no mês (em quantidade)
+ * Contagem de imóveis que saíram da carteira no mês
+ * Campo: dteTermination (Data de Baixa)
  */
-export async function calculateRemovalsCount(
+export async function calculateRemovedPropertiesCount(
   startDate: Date,
   endDate: Date,
   companyId?: string
@@ -83,110 +83,65 @@ export async function calculateRemovalsCount(
 }
 
 /**
- * VSO - Venda/Oferta
- * Percentual de vendas em relacao a carteira anterior
- * Calculo: (vendas no mes / carteira anterior) * 100
+ * VSO — venda / oferta
+ * Vendas do mês (unidades) ÷ carteira de imóveis ativos do mês anterior
+ * Retorna como decimal (ex: 0.034 para 3,4%)
+ * Requer dados do Sistema de Vendas + Properfy
  */
-export async function calculateVSORatio(
-  startDate: Date,
-  endDate: Date,
-  companyId?: string
+export async function calculateVSO(
+  salesCountMonth: number,
+  previousMonthActiveProperties: number
 ): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  // Obter carteira anterior (imoveis ativos antes do mes)
-  const portfolioBefore = await db
-    .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
-    .from(properfyProperties)
-    .where(
-      and(
-        eq(properfyProperties.chrStatus, "LISTED"),
-        eq(properfyProperties.isActive, 1),
-        lte(properfyProperties.dteNewListing, startDate)
-      )
-    );
-
-  const portfolioCount = portfolioBefore[0]?.count || 1; // Evita divisao por zero
-
-  // Obter vendas no mes
-  const sales = await db.query.raw(
-    sql`SELECT COUNT(*) as count FROM sales WHERE saleDate BETWEEN ${startDate} AND ${endDate} AND status = 'sold'`
-  );
-
-  const salesCount = (sales[0] as any)?.count || 0;
-
-  // Calcular VSO
-  const vso = (salesCount / portfolioCount) * 100;
-  return Math.round(vso * 100) / 100; // Arredondar para 2 casas decimais
+  if (previousMonthActiveProperties === 0) return 0;
+  return salesCountMonth / previousMonthActiveProperties;
 }
 
 /**
- * Numero de atendimentos Prontos
- * Leads em imoveis prontos (ready)
+ * Número de atendimentos Prontos
+ * Contagem de leads vinculados a imóveis prontos no mês
+ * Importado de properfyLeadsSync.ts
  */
-export async function calculateReadyCalls(
+export async function calculateReadyAttendances(
   startDate: Date,
-  endDate: Date,
-  companyId?: string
+  endDate: Date
 ): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.query.raw(
-    sql`SELECT COUNT(*) as count FROM properfyLeads WHERE leadType = 'ready' AND createdAt BETWEEN ${startDate} AND ${endDate}`
+  const { calculateReadyAttendances: calculateReady } = await import(
+    "./properfyLeadsSync"
   );
-
-  return (result[0] as any)?.count || 0;
+  return calculateReady(startDate, endDate);
 }
 
 /**
- * Numero de atendimentos Lancamentos
- * Leads em imoveis lancamentos (launch)
+ * Número de atendimentos Lançamentos
+ * Contagem de leads vinculados a lançamentos no mês
+ * Importado de properfyLeadsSync.ts
  */
-export async function calculateLaunchCalls(
+export async function calculateLaunchAttendances(
   startDate: Date,
-  endDate: Date,
-  companyId?: string
+  endDate: Date
 ): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.query.raw(
-    sql`SELECT COUNT(*) as count FROM properfyLeads WHERE leadType = 'launch' AND createdAt BETWEEN ${startDate} AND ${endDate}`
+  const { calculateLaunchAttendances: calculateLaunch } = await import(
+    "./properfyLeadsSync"
   );
-
-  return (result[0] as any)?.count || 0;
+  return calculateLaunch(startDate, endDate);
 }
 
+
 /**
- * Tempo medio de venda angariada X venda
- * Calcula dias entre data de angariacao (dteNewListing do Properfy) e data de venda (saleDate do Delmack)
- * Usa propertiesCache para conectar as duas tabelas
+ * Tempo médio de venda ang X venda
+ * Calcula o tempo médio em dias entre:
+ * - Data de Angariação (dteNewListing) do Properfy
+ * - Data de Registro da Venda (saleDate) do Sistema Delmack
+ * 
+ * TODO: Implementar JOIN correto entre properfyProperties e sales
+ * Atualmente retorna 0 pois não há campo de conexão direto entre as tabelas
  */
 export async function calculateAverageSaleTime(
   startDate: Date,
   endDate: Date,
   companyId: string
 ): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  // Calcular tempo medio entre data de angariacao (dteNewListing) e data de venda (saleDate)
-  const result = await db.query.raw(
-    sql`
-      SELECT AVG(DATEDIFF(s.saleDate, pp.dteNewListing)) as avgDays
-      FROM properfyProperties pp
-      INNER JOIN propertiesCache pc ON pp.chrReference = pc.properfyId
-      INNER JOIN sales s ON pc.delmackPropertyId = s.propertyId
-      WHERE s.saleDate BETWEEN ${startDate} AND ${endDate}
-        AND pp.dteNewListing IS NOT NULL
-        AND s.status = 'sold'
-    `
-  );
-
-  if (!result || result.length === 0) return 0;
-
-  const avgDays = (result[0] as any)?.avgDays;
-  return avgDays ? Math.round(avgDays) : 0;
+  // TODO: Implementar lógica de cálculo quando houver campo de conexão entre properfyProperties e sales
+  // Por enquanto, retorna 0
+  return 0;
 }
