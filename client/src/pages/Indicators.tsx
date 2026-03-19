@@ -232,12 +232,14 @@ export default function Indicators() {
         monthlyGoal: (getGoalValue("portfolioDisclosure") || 4800) / 12,
         annualAverage: getGoalValue("portfolioDisclosure") || 4800,
         fieldName: "carteiraAtiva",
+        isCurrency: false,
       },
       {
         title: "Angariações mês",
         monthlyGoal: (getGoalValue("prospectingMonth") || 600) / 12,
         annualAverage: getGoalValue("prospectingMonth") || 600,
         fieldName: "angariacesMes",
+        isCurrency: false,
       },
       {
         title: "Baixas no mês (em quantidade)",
@@ -257,12 +259,14 @@ export default function Indicators() {
         monthlyGoal: (getGoalValue("businessAboveOneMillion") || 60) / 12,
         annualAverage: getGoalValue("businessAboveOneMillion") || 60,
         fieldName: "negociosAcimaMilhao",
+        isCurrency: false,
       },
       {
         title: "Prazo médio recebimento de venda",
         monthlyGoal: (getGoalValue("averageReceiptTime") || 90) / 12,
         annualAverage: getGoalValue("averageReceiptTime") || 90,
         fieldName: "prazoMedioRecebimento",
+        isCurrency: false,
       },
       {
         title: "% Com cancelada / com pendente",
@@ -305,18 +309,21 @@ export default function Indicators() {
         monthlyGoal: (getGoalValue("attendanceReady") || 300) / 12,
         annualAverage: getGoalValue("attendanceReady") || 300,
         fieldName: "atendimentosProntos",
+        isCurrency: false,
       },
       {
         title: "Número de atendimentos Lançamentos",
         monthlyGoal: (getGoalValue("attendanceLaunches") || 300) / 12,
         annualAverage: getGoalValue("attendanceLaunches") || 300,
         fieldName: "atendimentosLancamentos",
+        isCurrency: false,
       },
       {
         title: "Tempo médio de venda ang X venda",
         monthlyGoal: (getGoalValue("averageSaleTime") || 90) / 12,
         annualAverage: getGoalValue("averageSaleTime") || 90,
         fieldName: "tempoMedioVenda",
+        isCurrency: false,
       },
       {
         title: "Despesa Geral",
