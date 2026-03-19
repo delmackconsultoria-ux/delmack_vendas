@@ -98,4 +98,12 @@ describe("ManualDataDrawer - parseMonetaryValue", () => {
     expect(parsed).toBe(700000);
     expect(parsed).not.toBe(70000000);
   });
+
+  it("Caso de uso real: 0,80 deve ser 0.8", () => {
+    expect(parseMonetaryValue("0,80")).toBe(0.8);
+  });
+
+  it("Caso de uso real: 100,00 deve ser 100", () => {
+    expect(parseMonetaryValue("100,00")).toBe(100);
+  });
 });
