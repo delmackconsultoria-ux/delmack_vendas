@@ -1,0 +1,14 @@
+{
+  "query": "SELECT \n  COUNT(*) as total_com_dteTermination,\n  SUM(CASE WHEN dteTermination IS NULL THEN 1 ELSE 0 END) as total_sem_dteTermination\nFROM properfyProperties \nWHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  COUNT(*) as total_com_dteTermination,\n  SUM(CASE WHEN dteTermination IS NULL THEN 1 ELSE 0 END) as total_sem_dteTermination\nFROM properfyProperties \nWHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION');",
+  "rows": [
+    {
+      "total_com_dteTermination": "4129",
+      "total_sem_dteTermination": "4129"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_com_dteTermination\ttotal_sem_dteTermination\n4129\t4129\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

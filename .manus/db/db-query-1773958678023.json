@@ -1,0 +1,34 @@
+{
+  "query": "SELECT chrStatus, COUNT(*) as total, \n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN dteTermination IS NULL THEN 1 ELSE 0 END) as sem_dteTermination,\n  MIN(updatedAt) as min_updatedAt,\n  MAX(updatedAt) as max_updatedAt\nFROM properfyProperties \nWHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')\nGROUP BY chrStatus;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT chrStatus, COUNT(*) as total, \n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN dteTermination IS NULL THEN 1 ELSE 0 END) as sem_dteTermination,\n  MIN(updatedAt) as min_updatedAt,\n  MAX(updatedAt) as max_updatedAt\nFROM properfyProperties \nWHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')\nGROUP BY chrStatus;",
+  "rows": [
+    {
+      "chrStatus": "IN_TERMINATION",
+      "total": "55",
+      "com_dteTermination": "0",
+      "sem_dteTermination": "55",
+      "min_updatedAt": "2026-03-19 18:57:23",
+      "max_updatedAt": "2026-03-19 19:02:32"
+    },
+    {
+      "chrStatus": "REMOVED",
+      "total": "2425",
+      "com_dteTermination": "0",
+      "sem_dteTermination": "2425",
+      "min_updatedAt": "2026-03-19 18:52:50",
+      "max_updatedAt": "2026-03-19 19:02:34"
+    },
+    {
+      "chrStatus": "RENTED",
+      "total": "1649",
+      "com_dteTermination": "0",
+      "sem_dteTermination": "1649",
+      "min_updatedAt": "2026-03-19 18:57:14",
+      "max_updatedAt": "2026-03-19 19:02:33"
+    }
+  ],
+  "messages": [],
+  "stdout": "chrStatus\ttotal\tcom_dteTermination\tsem_dteTermination\tmin_updatedAt\tmax_updatedAt\nIN_TERMINATION\t55\t0\t55\t2026-03-19 18:57:23\t2026-03-19 19:02:32\nREMOVED\t2425\t0\t2425\t2026-03-19 18:52:50\t2026-03-19 19:02:34\nRENTED\t1649\t0\t1649\t2026-03-19 18:57:14\t2026-03-19 19:02:33\n",
+  "stderr": "",
+  "execution_time_ms": 65
+}

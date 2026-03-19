@@ -1,0 +1,34 @@
+{
+  "query": "SELECT \n  DATE(createdAt) as data,\n  COUNT(*) as total\nFROM properfyProperties \nWHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')\nGROUP BY DATE(createdAt)\nORDER BY DATE(createdAt) ASC\nLIMIT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  DATE(createdAt) as data,\n  COUNT(*) as total\nFROM properfyProperties \nWHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')\nGROUP BY DATE(createdAt)\nORDER BY DATE(createdAt) ASC\nLIMIT 50;",
+  "rows": [
+    {
+      "data": "2026-02-09",
+      "total": "4122"
+    },
+    {
+      "data": "2026-02-12",
+      "total": "1"
+    },
+    {
+      "data": "2026-02-18",
+      "total": "1"
+    },
+    {
+      "data": "2026-02-23",
+      "total": "1"
+    },
+    {
+      "data": "2026-02-24",
+      "total": "1"
+    },
+    {
+      "data": "2026-02-26",
+      "total": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "data\ttotal\n2026-02-09\t4122\n2026-02-12\t1\n2026-02-18\t1\n2026-02-23\t1\n2026-02-24\t1\n2026-02-26\t3\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

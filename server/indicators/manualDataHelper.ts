@@ -16,6 +16,40 @@ export interface ManualIndicatorData {
 }
 
 /**
+ * Converter valor com locale brasileiro (vírgula) para número
+ * Exemplo: "0,10" -> 0.10, "1.234,56" -> 1234.56
+ */
+function parseMonetaryValue(value: any): number {
+  if (value === null || value === undefined || value === "") {
+    return 0;
+  }
+
+  const str = String(value).trim();
+  
+  // Se já é um número, retornar como é
+  if (!isNaN(Number(str)) && str !== "") {
+    return Number(str);
+  }
+
+  // Converter locale brasileiro (1.234,56) para número
+  // Remover pontos (separador de milhares) e substituir vírgula por ponto
+  const normalized = str
+    .replace(/\./g, "") // Remove pontos (1.234 -> 1234)
+    .replace(/,/g, "."); // Substitui vírgula por ponto (1234,56 -> 1234.56)
+
+  const parsed = parseFloat(normalized);
+  return !isNaN(parsed) ? parsed : 0;
+}
+
+/**
+ * Validar se valor é um número válido
+ */
+function isValidMonetaryValue(value: any): boolean {
+  const parsed = parseMonetaryValue(value);
+  return !isNaN(parsed) && parsed >= 0;
+}
+
+/**
  * Buscar dados manuais de um mês específico
  */
 export async function getManualData(
@@ -49,11 +83,11 @@ export async function getManualData(
 
   const row = result[0];
   return {
-    despesaGeral: parseFloat(String(row.despesaGeral || "0")),
-    despesaImpostos: parseFloat(String(row.despesaImpostos || "0")),
-    fundoInovacao: parseFloat(String(row.fundoInovacao || "0")),
-    resultadoSocios: parseFloat(String(row.resultadoSocios || "0")),
-    fundoEmergencial: parseFloat(String(row.fundoEmergencial || "0")),
+    despesaGeral: parseMonetaryValue(row.despesaGeral),
+    despesaImpostos: parseMonetaryValue(row.despesaImpostos),
+    fundoInovacao: parseMonetaryValue(row.fundoInovacao),
+    resultadoSocios: parseMonetaryValue(row.resultadoSocios),
+    fundoEmergencial: parseMonetaryValue(row.fundoEmergencial),
   };
 }
 
@@ -71,6 +105,21 @@ export async function saveManualData(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  // Validar todos os valores
+  const fieldNames = [
+    "despesaGeral",
+    "despesaImpostos",
+    "fundoInovacao",
+    "resultadoSocios",
+    "fundoEmergencial",
+  ] as const;
+
+  for (const field of fieldNames) {
+    if (!isValidMonetaryValue(data[field])) {
+      throw new Error(`Invalid monetary value for ${field}: ${data[field]}`);
+    }
+  }
+
   // Verificar se já existe registro
   const existing = await db
     .select()
@@ -83,19 +132,11 @@ export async function saveManualData(
       )
     );
 
-  const fieldNames = [
-    "despesaGeral",
-    "despesaImpostos",
-    "fundoInovacao",
-    "resultadoSocios",
-    "fundoEmergencial",
-  ] as const;
-
   if (existing && existing.length > 0) {
     // Registrar auditoria para cada campo alterado
     const oldData = existing[0] as any;
     for (const field of fieldNames) {
-      const oldValue = parseFloat(String(oldData[field] || "0"));
+      const oldValue = parseMonetaryValue(oldData[field]);
       const newValue = data[field];
 
       if (oldValue !== newValue) {
@@ -112,7 +153,7 @@ export async function saveManualData(
       }
     }
 
-    // Atualizar usando SQL raw
+    // Atualizar usando SQL raw com valores DECIMAL corretos
     await db.execute(
       sql`UPDATE indicatorManualData 
           SET despesaGeral = ${data.despesaGeral},
@@ -139,17 +180,17 @@ export async function saveManualData(
       });
     }
 
-    // Inserir
+    // Inserir com valores DECIMAL corretos (não como string)
     await db.insert(indicatorManualData).values({
       id: uuid(),
       companyId,
       year,
       month,
-      despesaGeral: String(data.despesaGeral),
-      despesaImpostos: String(data.despesaImpostos),
-      fundoInovacao: String(data.fundoInovacao),
-      resultadoSocios: String(data.resultadoSocios),
-      fundoEmergencial: String(data.fundoEmergencial),
+      despesaGeral: data.despesaGeral,
+      despesaImpostos: data.despesaImpostos,
+      fundoInovacao: data.fundoInovacao,
+      resultadoSocios: data.resultadoSocios,
+      fundoEmergencial: data.fundoEmergencial,
       updatedBy,
     } as any);
   }

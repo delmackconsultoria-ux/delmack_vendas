@@ -14,6 +14,43 @@ interface EditableIndicatorCellProps {
   isSaving?: boolean;
 }
 
+/**
+ * Converter valor com locale brasileiro (vírgula) para número
+ * Exemplo: "0,10" -> 0.10, "1.234,56" -> 1234.56
+ */
+function parseMonetaryValue(value: string): number {
+  if (!value || value.trim() === "") {
+    return 0;
+  }
+
+  const str = value.trim();
+
+  // Se já é um número com ponto, retornar como é
+  if (!isNaN(Number(str)) && !str.includes(",")) {
+    return Number(str);
+  }
+
+  // Converter locale brasileiro (1.234,56) para número
+  // Remover pontos (separador de milhares) e substituir vírgula por ponto
+  const normalized = str
+    .replace(/\./g, "") // Remove pontos (1.234 -> 1234)
+    .replace(/,/g, "."); // Substitui vírgula por ponto (1234,56 -> 1234.56)
+
+  const parsed = parseFloat(normalized);
+  return !isNaN(parsed) ? parsed : 0;
+}
+
+/**
+ * Formatar número para exibição em locale brasileiro
+ * Exemplo: 0.10 -> "0,10", 1234.56 -> "1.234,56"
+ */
+function formatMonetaryValue(value: number): string {
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
 export function EditableIndicatorCell({
   value,
   indicatorName,
@@ -24,16 +61,16 @@ export function EditableIndicatorCell({
   isSaving = false,
 }: EditableIndicatorCellProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(String(value));
+  const [editValue, setEditValue] = useState(formatMonetaryValue(value));
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      const numValue = parseFloat(editValue);
-      
-      if (isNaN(numValue)) {
-        toast.error("Valor inválido");
+      const numValue = parseMonetaryValue(editValue);
+
+      if (isNaN(numValue) || numValue < 0) {
+        toast.error("Valor inválido. Use ponto ou vírgula como separador decimal.");
         return;
       }
 
@@ -49,24 +86,35 @@ export function EditableIndicatorCell({
   };
 
   const handleCancel = () => {
-    setEditValue(String(value));
+    setEditValue(formatMonetaryValue(value));
     setIsEditing(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSave();
+    } else if (e.key === "Escape") {
+      handleCancel();
+    }
+  };
+
   if (!isEditable) {
-    return <span>{value.toFixed(2)}</span>;
+    return <span>{formatMonetaryValue(value)}</span>;
   }
 
   if (isEditing) {
     return (
       <div className="flex items-center gap-1">
         <Input
-          type="number"
+          type="text"
+          inputMode="decimal"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="h-8 w-20 text-sm"
-          placeholder="0"
+          placeholder="0,00"
           disabled={isLoading}
+          autoFocus
         />
         <Button
           size="sm"
@@ -74,6 +122,7 @@ export function EditableIndicatorCell({
           className="h-8 w-8 p-0"
           onClick={handleSave}
           disabled={isLoading}
+          title="Salvar (Enter)"
         >
           <Check className="h-4 w-4" />
         </Button>
@@ -83,6 +132,7 @@ export function EditableIndicatorCell({
           className="h-8 w-8 p-0"
           onClick={handleCancel}
           disabled={isLoading}
+          title="Cancelar (Esc)"
         >
           <X className="h-4 w-4" />
         </Button>
@@ -92,13 +142,14 @@ export function EditableIndicatorCell({
 
   return (
     <div className="flex items-center gap-2">
-      <span>{value.toFixed(2)}</span>
+      <span>{formatMonetaryValue(value)}</span>
       <Button
         size="sm"
         variant="ghost"
         className="h-6 w-6 p-0"
         onClick={() => setIsEditing(true)}
         disabled={isSaving}
+        title="Editar"
       >
         <Edit2 className="h-3 w-3" />
       </Button>

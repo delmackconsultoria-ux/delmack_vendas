@@ -1,0 +1,22 @@
+{
+  "query": "SELECT chrStatus, COUNT(*) as count FROM properfyProperties WHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION') GROUP BY chrStatus;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT chrStatus, COUNT(*) as count FROM properfyProperties WHERE chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION') GROUP BY chrStatus;",
+  "rows": [
+    {
+      "chrStatus": "RENTED",
+      "count": "1649"
+    },
+    {
+      "chrStatus": "IN_TERMINATION",
+      "count": "55"
+    },
+    {
+      "chrStatus": "REMOVED",
+      "count": "2425"
+    }
+  ],
+  "messages": [],
+  "stdout": "chrStatus\tcount\nRENTED\t1649\nIN_TERMINATION\t55\nREMOVED\t2425\n",
+  "stderr": "",
+  "execution_time_ms": 110
+}
