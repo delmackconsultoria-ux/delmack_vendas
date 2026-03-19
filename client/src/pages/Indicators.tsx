@@ -402,6 +402,7 @@ export default function Indicators() {
         percentageAchieved: percentage,
         total: totalValue,
         months: monthlyValues as any,
+        isCurrency: indicator.isCurrency,
       });
     });
 
