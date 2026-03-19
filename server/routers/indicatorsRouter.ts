@@ -391,8 +391,7 @@ export const indicatorsRouter = router({
             negociosLancamentos: salesLaunch,
 
             // Properfy
-            // Carteira ativa só é mostrada no mês atual (março = 3)
-            carteiraAtiva: month === 3 ? activeProperties : 0,
+            carteiraAtiva: activeProperties,
             angariacesMes: angariations,
             baixasMes: removedProperties,
             vsoVendaOferta: vso,
