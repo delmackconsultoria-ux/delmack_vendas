@@ -74,7 +74,8 @@ export function IndicatorsConsolidatedTable({
   const formatValue = (value: any, isCurrency: boolean = true): string => {
     if (typeof value === "string") return value;
     if (typeof value === "number") {
-      if (isCurrency && value > 1000) {
+      // Sempre formatar como moeda se isCurrency for true
+      if (isCurrency) {
         return formatCurrency(value);
       }
       return formatNumber(value);
