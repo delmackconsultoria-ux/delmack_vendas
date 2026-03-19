@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { IndicatorsConsolidatedTable } from "@/components/IndicatorsConsolidatedTable";
 import { IndicatorHistoryModal } from "@/components/IndicatorHistoryModal";
 import { ManualDataModal } from "@/components/ManualDataModal";
+import { ManualDataInput } from "@/components/ManualDataInput";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 
@@ -454,6 +455,15 @@ export default function Indicators() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Edição de Dados Manuais */}
+        <ManualDataInput
+          companyId={user?.companyId || ""}
+          year={parseInt(selectedYear)}
+          selectedMonth={selectedMonth}
+          userRole={user?.role}
+          onDataSaved={() => refetch()}
+        />
 
         {/* Indicadores em tempo real */}
         {isLoading ? (

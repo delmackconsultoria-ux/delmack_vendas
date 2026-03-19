@@ -2213,3 +2213,39 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 
 ### FASE 7: Checkpoint Final
 - [ ] Salvar checkpoint com todas as mudanças
+
+
+---
+
+## 📝 NOVA FASE: Edição Inline de Dados Manuais e Campo de Conexão Properfy-Delmack (19/03/2026)
+
+### FASE 1: Campo de Conexão entre Properfy e Delmack
+- [ ] Adicionar campo `delmackPropertyId` em `propertiesCache`
+- [ ] Criar migration para adicionar campo
+- [ ] Atualizar schema Drizzle
+- [ ] Sincronizar campo ao fazer match entre Properfy e Delmack
+
+### FASE 2: Edição Inline de Dados Manuais
+- [ ] Identificar os 5 indicadores manuais na tabela:
+  - [ ] Despesa Geral
+  - [ ] Despesa com Impostos
+  - [ ] Fundo Inovação
+  - [ ] Resultado Sócios
+  - [ ] Fundo Emergencial
+- [ ] Adicionar componente de edição inline (input + botão salvar)
+- [ ] Implementar validação de permissão (apenas gerentes)
+- [ ] Adicionar loading state ao salvar
+- [ ] Atualizar dados após salvar com sucesso
+
+### FASE 3: Corrigir "Tempo médio de venda ang X venda"
+- [ ] Usar novo campo `delmackPropertyId` para JOIN
+- [ ] Calcular dias entre `dteNewListing` (Properfy) e `saleDate` (Delmack)
+- [ ] Testar com dados reais
+
+### FASE 4: Testes
+- [ ] Testar edição inline com gerente
+- [ ] Testar permissão (não-gerente não pode editar)
+- [ ] Testar cálculo de "Tempo médio de venda"
+
+### FASE 5: Checkpoint Final
+- [ ] Salvar checkpoint com todas as mudanças

@@ -137,7 +137,28 @@ export async function calculateAverageSaleTime(
   endDate: Date,
   companyId: string
 ): Promise<number> {
-  // TODO: Implementar JOIN correto quando houver campo de conexão entre propertiesCache e sales
-  // Atualmente retorna 0 pois não há campo delmackPropertyId em propertiesCache
-  return 0;
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  try {
+    // Calcular dias entre dteNewListing (Properfy) e saleDate (Delmack)
+    // Usa propertiesCache.delmackPropertyId para conectar com sales.propertyId
+    const { sales } = await import("../../drizzle/schema");
+    
+    const result = await db.execute(sql`
+      SELECT AVG(DATEDIFF(s.saleDate, pc.dteNewListing)) as avgDays
+      FROM sales s
+      INNER JOIN propertiesCache pc ON s.propertyId = pc.delmackPropertyId
+      WHERE pc.companyId = ${companyId}
+        AND s.saleDate >= ${startDate}
+        AND s.saleDate <= ${endDate}
+        AND s.status = 'commission_paid'
+    `);
+
+    const avgDays = (result as any)?.[0]?.avgDays || 0;
+    return Math.round(avgDays);
+  } catch (error) {
+    console.error("Erro ao calcular tempo médio de venda:", error);
+    return 0;
+  }
 }

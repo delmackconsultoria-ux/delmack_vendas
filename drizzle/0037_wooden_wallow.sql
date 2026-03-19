@@ -1,0 +1,1 @@
+ALTER TABLE `propertiesCache` ADD `delmackPropertyId` varchar(64);

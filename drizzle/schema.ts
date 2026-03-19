@@ -705,6 +705,7 @@ export const propertiesCache = mysqlTable("propertiesCache", {
   id: varchar("id", { length: 64 }).primaryKey(),
   companyId: varchar("companyId", { length: 64 }).notNull(),
   properfyId: varchar("properfyId", { length: 64 }).notNull(), // ID do imóvel no Properfy
+  delmackPropertyId: varchar("delmackPropertyId", { length: 64 }), // ID do imóvel no Sistema Delmack (para JOIN)
   chrReference: varchar("chrReference", { length: 255 }), // Referência interna
   chrDocument: varchar("chrDocument", { length: 255 }), // Código BG (ex: BG96074001.isnyv.md)
   chrStatus: varchar("chrStatus", { length: 50 }), // LISTED, REMOVED, RENTED, etc.
