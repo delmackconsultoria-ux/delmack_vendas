@@ -161,14 +161,14 @@ export async function calculateAverageSaleTime(
     const { sales } = await import("../../drizzle/schema");
     
     const result = await db.execute(sql`
-      SELECT AVG(DATEDIFF(s.saleDate, COALESCE(pc.dteNewListing, pc.dteCreatedAt))) as avgDays
+      SELECT AVG(DATEDIFF(s.saleDate, COALESCE(pc.dteNewListing, pc.createdAt))) as avgDays
       FROM sales s
       INNER JOIN propertiesCache pc ON s.propertyId = pc.delmackPropertyId
       WHERE pc.companyId = ${companyId}
         AND s.saleDate >= ${startDate}
         AND s.saleDate <= ${endDate}
         AND s.status = 'commission_paid'
-        AND COALESCE(pc.dteNewListing, pc.dteCreatedAt) IS NOT NULL
+        AND COALESCE(pc.dteNewListing, pc.createdAt) IS NOT NULL
     `);
 
     const avgDays = (result as any)?.[0]?.avgDays || 0;
