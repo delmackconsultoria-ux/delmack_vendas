@@ -15,15 +15,19 @@ export async function calculateActivePropertiesCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  const conditions = [
+    eq(properfyProperties.chrStatus, "LISTED"),
+    eq(properfyProperties.isActive, 1)
+  ];
+  
+  if (companyId) {
+    conditions.push(eq(properfyProperties.companyId, companyId));
+  }
+
   const result = await db
     .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
     .from(properfyProperties)
-    .where(
-      and(
-        eq(properfyProperties.chrStatus, "LISTED"),
-        eq(properfyProperties.isActive, 1)
-      )
-    );
+    .where(and(...conditions));
 
   return result[0]?.count || 0;
 }
@@ -41,16 +45,20 @@ export async function calculateAngariationsCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  const conditions = [
+    isNotNull(properfyProperties.dteNewListing),
+    gte(properfyProperties.dteNewListing, startDate),
+    lte(properfyProperties.dteNewListing, endDate)
+  ];
+  
+  if (companyId) {
+    conditions.push(eq(properfyProperties.companyId, companyId));
+  }
+
   const result = await db
     .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
     .from(properfyProperties)
-    .where(
-      and(
-        isNotNull(properfyProperties.dteNewListing),
-        gte(properfyProperties.dteNewListing, startDate),
-        lte(properfyProperties.dteNewListing, endDate)
-      )
-    );
+    .where(and(...conditions));
 
   return result[0]?.count || 0;
 }
@@ -68,16 +76,20 @@ export async function calculateRemovedPropertiesCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  const conditions = [
+    isNotNull(properfyProperties.dteTermination),
+    gte(properfyProperties.dteTermination, startDate),
+    lte(properfyProperties.dteTermination, endDate)
+  ];
+  
+  if (companyId) {
+    conditions.push(eq(properfyProperties.companyId, companyId));
+  }
+
   const result = await db
     .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
     .from(properfyProperties)
-    .where(
-      and(
-        isNotNull(properfyProperties.dteTermination),
-        gte(properfyProperties.dteTermination, startDate),
-        lte(properfyProperties.dteTermination, endDate)
-      )
-    );
+    .where(and(...conditions));
 
   return result[0]?.count || 0;
 }

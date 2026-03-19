@@ -59,7 +59,7 @@ export default function Indicators() {
   );
 
   // Buscar indicadores de todos os 12 meses para a tabela consolidada
-  const { data: yearData, isLoading: isLoadingYear } = trpc.indicators.getYearIndicators.useQuery(
+  const { data: yearData, isLoading: isLoadingYear, refetch: refetchYear } = trpc.indicators.getYearIndicators.useQuery(
     {
       companyId: user?.companyId || "",
       year: parseInt(selectedYear),
@@ -486,7 +486,7 @@ export default function Indicators() {
           companyId={user?.companyId || ""}
           onDataSaved={() => {
             refetch();
-            utils.indicators.getYearIndicators.invalidate();
+            refetchYear();
           }}
         />
       </div>
