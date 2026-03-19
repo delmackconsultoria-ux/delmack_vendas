@@ -98,7 +98,7 @@ export function ManualDataDrawer({
 
   const handleInputChange = (field: string, value: string) => {
     // Converter locale brasileiro (vírgula) para número
-    // Aceita: "0,10", "1.234,56", "0.10", "1234.56"
+    // Aceita: "0,10", "1.234,56", "0.10", "1234.56", "8" (centavos)
     if (!value || value.trim() === '') {
       setFormData((prev) => ({
         ...prev,
@@ -109,11 +109,13 @@ export function ManualDataDrawer({
 
     const str = value.trim();
     
-    // Se já é um número com ponto, retornar como é
-    if (!isNaN(Number(str)) && !str.includes(',')) {
+    // Se é apenas números SEM separador decimal, interpretar como centavos
+    // "8" -> 0.08, "88" -> 0.88, "888" -> 8.88
+    if (!isNaN(Number(str)) && !str.includes(',') && !str.includes('.')) {
+      const numValue = Number(str) / 100;
       setFormData((prev) => ({
         ...prev,
-        [field]: Number(str),
+        [field]: numValue,
       }));
       return;
     }
