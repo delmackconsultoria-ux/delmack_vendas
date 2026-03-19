@@ -6,6 +6,7 @@ import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
  * Carteira de Divulgação (em número)
  * Contagem de imóveis ativos para venda
  * Filtro: chrStatus = 'LISTED' AND isActive = 1
+ * NOTA: dteNewListing e dteTermination estão vazios na base, então não usamos para filtro
  */
 export async function calculateActivePropertiesCount(
   startDate: Date,
@@ -15,14 +16,11 @@ export async function calculateActivePropertiesCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  // Imóveis ativos no período: angariados antes ou durante o período E (não baixados OU baixados após o período)
+  // Contar imóveis com status LISTED e isActive = 1
+  // Não usamos datas porque dteNewListing e dteTermination estão vazios
   const conditions = [
     eq(properfyProperties.chrStatus, "LISTED"),
-    eq(properfyProperties.isActive, 1),
-    // Angariado antes ou durante o período
-    lte(properfyProperties.dteNewListing, endDate),
-    // Não baixado OU baixado após o período
-    sql`(${properfyProperties.dteTermination} IS NULL OR ${properfyProperties.dteTermination} > ${endDate})`
+    eq(properfyProperties.isActive, 1)
   ];
   
   // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
@@ -37,8 +35,9 @@ export async function calculateActivePropertiesCount(
 
 /**
  * Angariações mês
- * Contagem de imóveis com data de angariação no mês
- * Campo: dteNewListing
+ * Contagem de imóveis com status NEW_LISTING (recém angariados)
+ * Campo: chrStatus = 'NEW_LISTING'
+ * NOTA: dteNewListing está vazio, então usamos status em vez de data
  */
 export async function calculateAngariationsCount(
   startDate: Date,
@@ -48,10 +47,9 @@ export async function calculateAngariationsCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  // Contar imóveis com status NEW_LISTING (recém angariados)
   const conditions = [
-    isNotNull(properfyProperties.dteNewListing),
-    gte(properfyProperties.dteNewListing, startDate),
-    lte(properfyProperties.dteNewListing, endDate)
+    eq(properfyProperties.chrStatus, "NEW_LISTING")
   ];
   
   // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
@@ -66,8 +64,9 @@ export async function calculateAngariationsCount(
 
 /**
  * Baixas no mês (em quantidade)
- * Contagem de imóveis que saíram da carteira no mês
- * Campo: dteTermination (Data de Baixa)
+ * Contagem de imóveis que saíram da carteira (status REMOVED, RENTED, etc.)
+ * Campo: chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')
+ * NOTA: dteTermination está vazio, então usamos status em vez de data
  */
 export async function calculateRemovedPropertiesCount(
   startDate: Date,
@@ -77,10 +76,9 @@ export async function calculateRemovedPropertiesCount(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  // Contar imóveis que saíram da carteira
   const conditions = [
-    isNotNull(properfyProperties.dteTermination),
-    gte(properfyProperties.dteTermination, startDate),
-    lte(properfyProperties.dteTermination, endDate)
+    sql`${properfyProperties.chrStatus} IN ('REMOVED', 'RENTED', 'IN_TERMINATION')`
   ];
   
   // Sem filtro de companyId - Properfy puxa dados apenas da Baggio

@@ -1,0 +1,65 @@
+{
+  "query": "SELECT chrStatus, COUNT(*) as count FROM properfyProperties GROUP BY chrStatus; SELECT COUNT(*) as total, SUM(CASE WHEN chrStatus = 'LISTED' THEN 1 ELSE 0 END) as listed, SUM(CASE WHEN isActive = 1 THEN 1 ELSE 0 END) as active FROM properfyProperties;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT chrStatus, COUNT(*) as count FROM properfyProperties GROUP BY chrStatus; SELECT COUNT(*) as total, SUM(CASE WHEN chrStatus = 'LISTED' THEN 1 ELSE 0 END) as listed, SUM(CASE WHEN isActive = 1 THEN 1 ELSE 0 END) as active FROM properfyProperties;",
+  "rows": [
+    {
+      "chrStatus": "PROPOSAL",
+      "count": "2"
+    },
+    {
+      "chrStatus": "RENTED",
+      "count": "1649"
+    },
+    {
+      "chrStatus": "DOCUMENTATION",
+      "count": "13"
+    },
+    {
+      "chrStatus": "REMOVED",
+      "count": "2425"
+    },
+    {
+      "chrStatus": "LISTED",
+      "count": "575"
+    },
+    {
+      "chrStatus": "INTERNAL",
+      "count": "289"
+    },
+    {
+      "chrStatus": "IN_TERMINATION",
+      "count": "55"
+    },
+    {
+      "chrStatus": "OWN_PROPERTY",
+      "count": "35"
+    },
+    {
+      "chrStatus": "MAINTENANCE",
+      "count": "2"
+    },
+    {
+      "chrStatus": "OWNER_MAINTENANCE",
+      "count": "7"
+    },
+    {
+      "chrStatus": "INITIAL_DOC",
+      "count": "3"
+    },
+    {
+      "chrStatus": "NEW_LISTING",
+      "count": "7"
+    },
+    {
+      "chrStatus": "INITIAL_PREPARE",
+      "count": "19"
+    }
+  ],
+  "messages": [
+    "total\tlisted\tactive",
+    "5081\t575\t5081"
+  ],
+  "stdout": "chrStatus\tcount\nPROPOSAL\t2\nRENTED\t1649\nDOCUMENTATION\t13\nREMOVED\t2425\nLISTED\t575\nINTERNAL\t289\nIN_TERMINATION\t55\nOWN_PROPERTY\t35\nMAINTENANCE\t2\nOWNER_MAINTENANCE\t7\nINITIAL_DOC\t3\nNEW_LISTING\t7\nINITIAL_PREPARE\t19\ntotal\tlisted\tactive\n5081\t575\t5081\n",
+  "stderr": "",
+  "execution_time_ms": 460
+}
