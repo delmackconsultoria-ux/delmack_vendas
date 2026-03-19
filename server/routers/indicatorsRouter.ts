@@ -4,10 +4,12 @@ import * as salesIndicators from "../indicators/salesIndicators";
 import * as properfyIndicators from "../indicators/properfyIndicators";
 import * as properfyLeadsSync from "../indicators/properfyLeadsSync";
 import * as goalsHelper from "../indicators/goalsHelper";
+import * as manualDataHelper from "../indicators/manualDataHelper";
 import { getDb } from "../db";
 import { indicatorGoals } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
+import { TRPCError } from "@trpc/server";
 
 const MONTH_NAMES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -630,5 +632,93 @@ export const indicatorsRouter = router({
         success: true,
         message: "Dados salvos com sucesso",
       };
+    }),
+
+  /**
+   * Salvar dados manuais de indicadores (apenas gerentes)
+   */
+  saveManualData: protectedProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+        year: z.number(),
+        month: z.number(),
+        despesaGeral: z.number().default(0),
+        despesaImpostos: z.number().default(0),
+        fundoInovacao: z.number().default(0),
+        resultadoSocios: z.number().default(0),
+        fundoEmergencial: z.number().default(0),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (ctx.user.role !== 'manager') {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Apenas gerentes podem editar dados manuais',
+        });
+      }
+
+      try {
+        await manualDataHelper.saveManualData(
+          input.companyId,
+          input.year,
+          input.month,
+          {
+            despesaGeral: input.despesaGeral,
+            despesaImpostos: input.despesaImpostos,
+            fundoInovacao: input.fundoInovacao,
+            resultadoSocios: input.resultadoSocios,
+            fundoEmergencial: input.fundoEmergencial,
+          },
+          ctx.user.id
+        );
+
+        return {
+          success: true,
+          message: 'Dados manuais salvos com sucesso',
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Erro ao salvar dados manuais',
+        });
+      }
+    }),
+
+  /**
+   * Obter dados manuais de um mes
+   */
+  getManualData: publicProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+        year: z.number(),
+        month: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const data = await manualDataHelper.getManualData(
+          input.companyId,
+          input.year,
+          input.month
+        );
+
+        return {
+          success: true,
+          data,
+        };
+      } catch (error) {
+        return {
+          success: false,
+          data: {
+            despesaGeral: 0,
+            despesaImpostos: 0,
+            fundoInovacao: 0,
+            resultadoSocios: 0,
+            fundoEmergencial: 0,
+          },
+        };
+      }
     }),
 });

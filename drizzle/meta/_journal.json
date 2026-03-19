@@ -239,6 +239,13 @@
       "when": 1773864513107,
       "tag": "0033_equal_magma",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "5",
+      "when": 1773878622682,
+      "tag": "0034_nappy_marten_broadcloak",
+      "breakpoints": true
     }
   ]
 }
