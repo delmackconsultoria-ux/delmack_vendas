@@ -14,11 +14,22 @@ export function formatCurrencyInput(value: string): string {
  * Ex: "5000,50" → 5000.50
  */
 export function parseCurrencyInput(value: string): number {
-  // Remove tudo exceto números e vírgula
-  const cleaned = value.replace(/[^\d,]/g, '');
-  // Substitui vírgula por ponto para parsing
-  const normalized = cleaned.replace(',', '.');
-  return parseFloat(normalized) || 0;
+  if (!value) return 0;
+  // Remove tudo exceto números, vírgula e ponto
+  let cleaned = value.replace(/[^\d,\.]/g, '');
+  // Encontra a última vírgula (separador decimal)
+  const lastCommaIndex = cleaned.lastIndexOf(',');
+  if (lastCommaIndex > -1) {
+    // Tem vírgula - substitui por ponto para parsing
+    const integerPart = cleaned.substring(0, lastCommaIndex).replace(/\./g, '');
+    const decimalPart = cleaned.substring(lastCommaIndex + 1);
+    const normalized = `${integerPart}.${decimalPart}`;
+    return parseFloat(normalized) || 0;
+  } else {
+    // Sem vírgula - remove pontos de milhar
+    cleaned = cleaned.replace(/\./g, '');
+    return parseFloat(cleaned) || 0;
+  }
 }
 
 /**
@@ -66,8 +77,9 @@ export function formatWhileTyping(value: string | number): string {
   
   // Retorna formatado
   if (decimalPart) {
-    // Limita decimal a 2 dígitos
-    return `${integerPart},${decimalPart.substring(0, 2)}`;
+    // Limita decimal a 2 dígitos e adiciona vírgula
+    const limitedDecimal = decimalPart.substring(0, 2);
+    return `${integerPart},${limitedDecimal}`;
   }
   
   // Se não tem vírgula digitada, não adiciona (permite digitação livre)

@@ -10,7 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,13 @@ export default function ManualDataDrawer({
     resultadoSocios: "",
     fundoEmergencial: "",
   });
+
+  // Refs para inputs não controlados
+  const despesaGeralRef = useRef<HTMLInputElement>(null);
+  const despesaImpostosRef = useRef<HTMLInputElement>(null);
+  const fundoInovacaoRef = useRef<HTMLInputElement>(null);
+  const resultadoSociosRef = useRef<HTMLInputElement>(null);
+  const fundoEmergencialRef = useRef<HTMLInputElement>(null);
 
   const [isSaving, setIsSaving] = useState(false);
   const utils = trpc.useUtils();
@@ -93,6 +100,7 @@ export default function ManualDataDrawer({
   });
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
+    // Apenas atualiza o estado para exibição (não é usado para o input controlado)
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -116,11 +124,11 @@ export default function ManualDataDrawer({
         companyId,
         month: selectedMonth,
         year: selectedYear,
-        despesaGeral: parseValue(formData.despesaGeral),
-        despesaImpostos: parseValue(formData.despesaImpostos),
-        fundoInovacao: parseValue(formData.fundoInovacao),
-        resultadoSocios: parseValue(formData.resultadoSocios),
-        fundoEmergencial: parseValue(formData.fundoEmergencial),
+        despesaGeral: parseValue(despesaGeralRef.current?.value || ""),
+        despesaImpostos: parseValue(despesaImpostosRef.current?.value || ""),
+        fundoInovacao: parseValue(fundoInovacaoRef.current?.value || ""),
+        resultadoSocios: parseValue(resultadoSociosRef.current?.value || ""),
+        fundoEmergencial: parseValue(fundoEmergencialRef.current?.value || ""),
       });
     } finally {
       setIsSaving(false);
@@ -128,7 +136,7 @@ export default function ManualDataDrawer({
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={onClose}>
+    <Drawer open={isOpen} onOpenChange={onClose} direction="right">
       <DrawerContent className="w-full sm:w-[700px] lg:w-[800px] flex flex-col">
         <DrawerHeader>
           <DrawerTitle>Incluir Dados Manuais</DrawerTitle>
@@ -183,13 +191,14 @@ export default function ManualDataDrawer({
             <div>
               <Label htmlFor="despesaGeral" className="text-sm font-medium">Despesa Geral</Label>
               <Input
+                ref={despesaGeralRef}
                 id="despesaGeral"
                 type="text"
                 placeholder="0,00"
-                value={formData.despesaGeral}
-                onChange={(e) => {
+                defaultValue={formData.despesaGeral}
+                onBlur={(e) => {
                   const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("despesaGeral", formatted);
+                  e.target.value = formatted;
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -199,13 +208,14 @@ export default function ManualDataDrawer({
             <div>
               <Label htmlFor="despesaImpostos" className="text-sm font-medium">Despesa com Impostos</Label>
               <Input
+                ref={despesaImpostosRef}
                 id="despesaImpostos"
                 type="text"
                 placeholder="0,00"
-                value={formData.despesaImpostos}
-                onChange={(e) => {
+                defaultValue={formData.despesaImpostos}
+                onBlur={(e) => {
                   const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("despesaImpostos", formatted);
+                  e.target.value = formatted;
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -215,13 +225,14 @@ export default function ManualDataDrawer({
             <div>
               <Label htmlFor="fundoInovacao" className="text-sm font-medium">Fundo Inovação</Label>
               <Input
+                ref={fundoInovacaoRef}
                 id="fundoInovacao"
                 type="text"
                 placeholder="0,00"
-                value={formData.fundoInovacao}
-                onChange={(e) => {
+                defaultValue={formData.fundoInovacao}
+                onBlur={(e) => {
                   const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("fundoInovacao", formatted);
+                  e.target.value = formatted;
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -231,13 +242,14 @@ export default function ManualDataDrawer({
             <div>
               <Label htmlFor="resultadoSocios" className="text-sm font-medium">Resultado Sócios</Label>
               <Input
+                ref={resultadoSociosRef}
                 id="resultadoSocios"
                 type="text"
                 placeholder="0,00"
-                value={formData.resultadoSocios}
-                onChange={(e) => {
+                defaultValue={formData.resultadoSocios}
+                onBlur={(e) => {
                   const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("resultadoSocios", formatted);
+                  e.target.value = formatted;
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -247,13 +259,14 @@ export default function ManualDataDrawer({
             <div>
               <Label htmlFor="fundoEmergencial" className="text-sm font-medium">Fundo Emergencial</Label>
               <Input
+                ref={fundoEmergencialRef}
                 id="fundoEmergencial"
                 type="text"
                 placeholder="0,00"
-                value={formData.fundoEmergencial}
-                onChange={(e) => {
+                defaultValue={formData.fundoEmergencial}
+                onBlur={(e) => {
                   const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("fundoEmergencial", formatted);
+                  e.target.value = formatted;
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
