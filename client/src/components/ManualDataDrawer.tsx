@@ -121,8 +121,11 @@ export function ManualDataDrawer({
     }
 
     // Converter locale brasileiro (1.234,56) para número
+    // Remover "R$" e espaços primeiro
+    let cleanStr = str.replace(/R\$/g, '').trim();
+    
     // Remover pontos (separador de milhares) e substituir vírgula por ponto
-    const normalized = str
+    const normalized = cleanStr
       .replace(/\./g, '') // Remove pontos (1.234 -> 1234)
       .replace(/,/g, '.'); // Substitui vírgula por ponto (1234,56 -> 1234.56)
 
