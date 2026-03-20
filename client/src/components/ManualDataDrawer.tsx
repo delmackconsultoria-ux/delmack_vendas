@@ -12,9 +12,10 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { NumericFormat } from "react-number-format";
+import { formatWhileTyping, parseCurrencyInput } from "@/lib/currencyFormatter";
 
 interface ManualDataDrawerProps {
   isOpen: boolean;
@@ -100,16 +101,7 @@ export default function ManualDataDrawer({
 
   // Converter string com formato brasileiro para número
   const parseValue = (value: string): number => {
-    if (!value) return 0;
-    // Remove espaços
-    value = value.trim();
-    // Remove "R$" se existir
-    value = value.replace(/R\$/g, '').trim();
-    // Substitui ponto por vazio (remove separador de milhar)
-    value = value.replace(/\./g, '');
-    // Substitui vírgula por ponto (converte decimal)
-    value = value.replace(',', '.');
-    return parseFloat(value) || 0;
+    return parseCurrencyInput(value);
   };
 
   const handleSave = async () => {
@@ -137,7 +129,7 @@ export default function ManualDataDrawer({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="w-full sm:w-[700px] lg:w-[800px] h-screen flex flex-col">
+      <DrawerContent className="w-full sm:w-[700px] lg:w-[800px] flex flex-col">
         <DrawerHeader>
           <DrawerTitle>Incluir Dados Manuais</DrawerTitle>
           <DrawerDescription>
@@ -190,20 +182,14 @@ export default function ManualDataDrawer({
             {/* Despesa Geral */}
             <div>
               <Label htmlFor="despesaGeral" className="text-sm font-medium">Despesa Geral</Label>
-              <NumericFormat
+              <Input
                 id="despesaGeral"
                 type="text"
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix=""
-                suffix=""
-                decimalScale={2}
-                fixedDecimalScale={true}
-                allowNegative={false}
                 placeholder="0,00"
                 value={formData.despesaGeral}
-                onValueChange={(values) => {
-                  handleInputChange("despesaGeral", values.formattedValue);
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("despesaGeral", formatted);
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -212,20 +198,14 @@ export default function ManualDataDrawer({
             {/* Despesa com Impostos */}
             <div>
               <Label htmlFor="despesaImpostos" className="text-sm font-medium">Despesa com Impostos</Label>
-              <NumericFormat
+              <Input
                 id="despesaImpostos"
                 type="text"
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix=""
-                suffix=""
-                decimalScale={2}
-                fixedDecimalScale={true}
-                allowNegative={false}
                 placeholder="0,00"
                 value={formData.despesaImpostos}
-                onValueChange={(values) => {
-                  handleInputChange("despesaImpostos", values.formattedValue);
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("despesaImpostos", formatted);
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -234,20 +214,14 @@ export default function ManualDataDrawer({
             {/* Fundo Inovação */}
             <div>
               <Label htmlFor="fundoInovacao" className="text-sm font-medium">Fundo Inovação</Label>
-              <NumericFormat
+              <Input
                 id="fundoInovacao"
                 type="text"
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix=""
-                suffix=""
-                decimalScale={2}
-                fixedDecimalScale={true}
-                allowNegative={false}
                 placeholder="0,00"
                 value={formData.fundoInovacao}
-                onValueChange={(values) => {
-                  handleInputChange("fundoInovacao", values.formattedValue);
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("fundoInovacao", formatted);
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -256,20 +230,14 @@ export default function ManualDataDrawer({
             {/* Resultado Sócios */}
             <div>
               <Label htmlFor="resultadoSocios" className="text-sm font-medium">Resultado Sócios</Label>
-              <NumericFormat
+              <Input
                 id="resultadoSocios"
                 type="text"
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix=""
-                suffix=""
-                decimalScale={2}
-                fixedDecimalScale={true}
-                allowNegative={false}
                 placeholder="0,00"
                 value={formData.resultadoSocios}
-                onValueChange={(values) => {
-                  handleInputChange("resultadoSocios", values.formattedValue);
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("resultadoSocios", formatted);
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
@@ -278,20 +246,14 @@ export default function ManualDataDrawer({
             {/* Fundo Emergencial */}
             <div>
               <Label htmlFor="fundoEmergencial" className="text-sm font-medium">Fundo Emergencial</Label>
-              <NumericFormat
+              <Input
                 id="fundoEmergencial"
                 type="text"
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix=""
-                suffix=""
-                decimalScale={2}
-                fixedDecimalScale={true}
-                allowNegative={false}
                 placeholder="0,00"
                 value={formData.fundoEmergencial}
-                onValueChange={(values) => {
-                  handleInputChange("fundoEmergencial", values.formattedValue);
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("fundoEmergencial", formatted);
                 }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />

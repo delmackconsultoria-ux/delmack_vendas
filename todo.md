@@ -330,14 +330,19 @@
 - [ ] Dados errados: Área Total 234,12 (correto: 121,95), Quartos 0 (correto: 3)
 - [ ] Endereço errado: Rua Professor Assis Gonçalves (não é o imóvel BG96925001)
 - [ ] Verificar lógica de busca por referência (chrDocument vs chrReference)
-- [ ] Corrigir mapeamento de campos da API para formulário
-## 🚨 CRÍTICO: Busca Properfy preenchendo dados errados (08/02/2026 - 15:30)
+- [ ] Corrigir mapeamento de campos da API para formulário## 🚨 CRÍTICO: Busca Properfy preenchendo dados errados (08/02/2026 - 15:30)
 
 - [x] Verificar qual campo usar: chrDocument vs chrReference - RESOLVIDO: chrDocument está vazio, usar chrReference
 - [x] Corrigir busca para NUNCA preencher dados se imóvel não for encontrado - Implementado match EXATO (sem busca parcial)
 - [x] Implementar busca paginada rápida e eficiente - Já existe (50 páginas, lotes de 5 paralelos)
 - [x] Retornar apenas mensagem de erro quando não encontrar - Já implementado
-- [ ] Testar com BG969250...
+- [ ] Testar com BG969250....
+
+## 🔧 CORREÇÕES SOLICITADAS (20/03/2026)
+
+### Página de Indicadores - Ajustes Finais
+- [ ] Remover restrição de centavos (fixedDecimalScale) - permitir digitar centavos normalmente
+- [ ] Mover drawer para lateral esquerda (em vez de direita)
 
 ## 🆕 AJUSTES SOLICITADOS (16/03/2026)
 
