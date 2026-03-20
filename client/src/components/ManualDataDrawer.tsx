@@ -98,7 +98,7 @@ export function ManualDataDrawer({
 
   const handleInputChange = (field: string, value: string) => {
     // Converter locale brasileiro (vírgula) para número
-    // Aceita: "0,10", "1.234,56", "0.10", "1234.56"
+    // Aceita: "0,10", "1.234,56", "0.10", "1234.56", "R$ 1.234,56"
     if (!value || value.trim() === '') {
       setFormData((prev) => ({
         ...prev,
@@ -107,10 +107,19 @@ export function ManualDataDrawer({
       return;
     }
 
-    const str = value.trim();
+    // PRIMEIRO: Remover "R$" e espaços
+    let str = value.trim().replace(/R\$/g, '').trim();
     
-    // Se já é um número com ponto, retornar como é
-    if (!isNaN(Number(str)) && !str.includes(',')) {
+    if (!str) {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: 0,
+      }));
+      return;
+    }
+    
+    // Se já é um número com ponto (sem separador de milhares), retornar como é
+    if (!isNaN(Number(str)) && !str.includes(',') && !str.includes('.')) {
       setFormData((prev) => ({
         ...prev,
         [field]: Number(str),
