@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { NumericFormat } from "react-number-format";
@@ -26,12 +27,15 @@ interface ManualDataDrawerProps {
 export default function ManualDataDrawer({
   isOpen,
   onClose,
-  month,
-  year,
+  month: initialMonth,
+  year: initialYear,
   onSaveSuccess,
 }: ManualDataDrawerProps) {
   const { user } = useAuth();
   const companyId = user?.companyId;
+
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  const [selectedYear, setSelectedYear] = useState(initialYear);
 
   const [formData, setFormData] = useState({
     despesaGeral: "",
@@ -48,8 +52,8 @@ export default function ManualDataDrawer({
   const { data: existingData } = trpc.indicators.getManualData.useQuery(
     {
       companyId: companyId || "",
-      month: month,
-      year: year,
+      month: selectedMonth,
+      year: selectedYear,
     },
     {
       enabled: !!companyId && isOpen,
@@ -118,8 +122,8 @@ export default function ManualDataDrawer({
     try {
       await saveManualDataMutation.mutateAsync({
         companyId,
-        month: month,
-        year: year,
+        month: selectedMonth,
+        year: selectedYear,
         despesaGeral: parseValue(formData.despesaGeral),
         despesaImpostos: parseValue(formData.despesaImpostos),
         fundoInovacao: parseValue(formData.fundoInovacao),
@@ -133,17 +137,56 @@ export default function ManualDataDrawer({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="w-full sm:w-[700px] lg:w-[800px] max-h-[95vh] overflow-y-auto">
+      <DrawerContent className="w-full sm:w-[700px] lg:w-[800px] h-screen flex flex-col">
         <DrawerHeader>
           <DrawerTitle>Incluir Dados Manuais</DrawerTitle>
           <DrawerDescription>
-            Preencha os dados manuais para {month}/{year}
+            Preencha os dados manuais para {selectedMonth}/{selectedYear}
           </DrawerDescription>
         </DrawerHeader>
 
-        <div className="px-6 py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+          {/* Seletor de Mês e Ano */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="month" className="text-sm font-medium">Mês</Label>
+              <select
+                id="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              >
+                <option value={1}>Janeiro</option>
+                <option value={2}>Fevereiro</option>
+                <option value={3}>Março</option>
+                <option value={4}>Abril</option>
+                <option value={5}>Maio</option>
+                <option value={6}>Junho</option>
+                <option value={7}>Julho</option>
+                <option value={8}>Agosto</option>
+                <option value={9}>Setembro</option>
+                <option value={10}>Outubro</option>
+                <option value={11}>Novembro</option>
+                <option value={12}>Dezembro</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="year" className="text-sm font-medium">Ano</Label>
+              <select
+                id="year"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              >
+                <option value={2024}>2024</option>
+                <option value={2025}>2025</option>
+                <option value={2026}>2026</option>
+                <option value={2027}>2027</option>
+              </select>
+            </div>
+          </div>
           {/* Campos de Entrada */}
-          <div className="space-y-5">
+          <div className="space-y-5 pt-4 border-t">
             {/* Despesa Geral */}
             <div>
               <Label htmlFor="despesaGeral" className="text-sm font-medium">Despesa Geral</Label>
@@ -256,7 +299,7 @@ export default function ManualDataDrawer({
           </div>
         </div>
 
-        <DrawerFooter className="border-t pt-4">
+        <DrawerFooter className="border-t pt-4 mt-auto pb-6">
           <DrawerClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DrawerClose>
