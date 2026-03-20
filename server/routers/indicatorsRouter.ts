@@ -796,16 +796,16 @@ export const indicatorsRouter = router({
         );
 
         const years = (result as any[]).map((r: any) => r.year).filter((y: any) => y !== null);
+        const currentYear = new Date().getFullYear();
         
-        // Se nao houver dados, retornar ano atual
-        if (years.length === 0) {
-          return [new Date().getFullYear()];
-        }
-
-        return years;
+        // Sempre incluir o ano atual
+        const allYears = Array.from(new Set([currentYear, ...years]));
+        
+        return allYears.sort((a, b) => b - a);
       } catch (error) {
         console.error('[Indicators] Erro ao buscar anos disponiveis:', error);
-        return [new Date().getFullYear()];
+        const currentYear = new Date().getFullYear();
+        return [currentYear];
       }
     }),
 

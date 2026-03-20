@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { IndicatorsConsolidatedTable } from "@/components/IndicatorsConsolidatedTable";
 import { IndicatorHistoryModal } from "@/components/IndicatorHistoryModal";
 import { ManualDataModal } from "@/components/ManualDataModal";
-import { ManualDataDrawer } from "@/components/ManualDataDrawer";
+import ManualDataDrawer from "@/components/ManualDataDrawer";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 

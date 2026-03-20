@@ -1,16 +1,19 @@
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X } from "lucide-react";
-import { useState, useEffect } from "react";
-import { trpc } from "@/lib/trpc";
-import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
-
-const MONTH_NAMES = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-];
+import { trpc } from "@/lib/trpc";
+import { useEffect, useState } from "react";
+import { NumericFormat } from "react-number-format";
 
 interface ManualDataDrawerProps {
   isOpen: boolean;
@@ -21,7 +24,7 @@ interface ManualDataDrawerProps {
   onDataSaved?: () => void;
 }
 
-export function ManualDataDrawer({
+export default function ManualDataDrawer({
   isOpen,
   onClose,
   month: initialMonth,
@@ -42,6 +45,8 @@ export function ManualDataDrawer({
     resultadoSocios: 0,
     fundoEmergencial: 0,
   });
+
+
 
   // Buscar dados manuais existentes
   const { data: existingData } = trpc.indicators.getMonthlyManualData.useQuery(
@@ -69,239 +74,204 @@ export function ManualDataDrawer({
     }
   }, [existingData]);
 
-  // Mutation para salvar dados manuais
-  const saveMutation = trpc.indicators.saveManualData.useMutation({
-    onSuccess: () => {
-      toast.success("Dados salvos com sucesso!");
-      setIsSaving(false);
+  // Mutation para salvar dados
+  const saveManualDataMutation = trpc.indicators.saveManualData.useMutation();
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await saveManualDataMutation.mutateAsync({
+        companyId,
+        year: parseInt(selectedYear),
+        month: parseInt(selectedMonth),
+        despesaGeral: formData.despesaGeral,
+        despesaImpostos: formData.despesaImpostos,
+        fundoInovacao: formData.fundoInovacao,
+        resultadoSocios: formData.resultadoSocios,
+        fundoEmergencial: formData.fundoEmergencial,
+      });
+
       onDataSaved?.();
       onClose();
-    },
-    onError: (error) => {
-      toast.error(`Erro ao salvar: ${error.message}`);
+    } catch (error) {
+      console.error("Erro ao salvar dados manuais:", error);
+    } finally {
       setIsSaving(false);
-    },
-  });
-
-  const handleSave = () => {
-    setIsSaving(true);
-    saveMutation.mutate({
-      companyId,
-      year: parseInt(selectedYear),
-      month: parseInt(selectedMonth),
-      despesaGeral: formData.despesaGeral,
-      despesaImpostos: formData.despesaImpostos,
-      fundoInovacao: formData.fundoInovacao,
-      resultadoSocios: formData.resultadoSocios,
-      fundoEmergencial: formData.fundoEmergencial,
-    });
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    // Converter locale brasileiro (vírgula) para número
-    // Aceita: "0,10", "1.234,56", "0.10", "1234.56", "R$ 1.234,56"
-    if (!value || value.trim() === '') {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: 0,
-      }));
-      return;
     }
-
-    // PRIMEIRO: Remover "R$" e espaços
-    let str = value.trim().replace(/R\$/g, '').trim();
-    
-    if (!str) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: 0,
-      }));
-      return;
-    }
-    
-    // Se já é um número com ponto (sem separador de milhares), retornar como é
-    if (!isNaN(Number(str)) && !str.includes(',') && !str.includes('.')) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: Number(str),
-      }));
-      return;
-    }
-
-    // Converter locale brasileiro (1.234,56) para número
-    // Remover pontos (separador de milhares) e substituir vírgula por ponto
-    const normalized = str
-      .replace(/\./g, '') // Remove pontos (1.234 -> 1234)
-      .replace(/,/g, '.'); // Substitui vírgula por ponto (1234,56 -> 1234.56)
-
-    const parsed = parseFloat(normalized);
-    const numValue = !isNaN(parsed) ? parsed : 0;
-    
-    setFormData((prev) => ({
-      ...prev,
-      [field]: numValue,
-    }));
   };
-
-  const formatCurrencyDisplay = (value: number): string => {
-    if (value === 0) return '';
-    // Formatar diretamente o valor (não dividir por 100)
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
-
-  // Verificar se usuário pode editar
-  const canEdit = ["manager", "admin", "superadmin"].includes(user?.role || "");
-
-  if (!isOpen) return null;
 
   return (
-    <>
-      {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-lg z-50 overflow-y-auto transition-transform">
-        {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold">Editar Dados Manuais</h2>
-            <p className="text-sm text-gray-600 mt-1">Preencha os valores para o mês e ano selecionados</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Incluir Dados Manuais</DrawerTitle>
+          <DrawerDescription>
+            Preencha os dados manuais para {selectedMonth}/{selectedYear}
+          </DrawerDescription>
+        </DrawerHeader>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Seletores de Ano e Mês */}
+        <div className="space-y-6 px-4 py-4">
+          {/* Seletor de Mês e Ano */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="month">Mês</Label>
+              <select
+                id="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => (
+                  <option key={m} value={String(m)}>
+                    {String(m).padStart(2, "0")}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="year">Ano</Label>
+              <select
+                id="year"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                {[2024, 2025, 2026, 2027, 2028].map((y) => (
+                  <option key={y} value={String(y)}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Campos de Entrada com react-number-format */}
           <div className="space-y-4">
+            {/* Despesa Geral */}
             <div>
-              <label className="text-sm font-medium block mb-2">Ano</label>
-              <Select value={selectedYear} onValueChange={setSelectedYear}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[2024, 2025, 2026, 2027, 2028].map((year) => (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="despesaGeral">Despesa Geral</Label>
+              <NumericFormat
+                value={formData.despesaGeral}
+                onValueChange={(values) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    despesaGeral: values.floatValue || 0,
+                  }));
+                }}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                decimalScale={2}
+                fixedDecimalScale
+                allowNegative={false}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="R$ 0,00"
+              />
             </div>
 
+            {/* Despesa com Impostos */}
             <div>
-              <label className="text-sm font-medium block mb-2">Mês</label>
-              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MONTH_NAMES.map((month, index) => (
-                    <SelectItem key={index} value={String(index + 1)}>
-                      {month}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="despesaImpostos">Despesa com Impostos</Label>
+              <NumericFormat
+                value={formData.despesaImpostos}
+                onValueChange={(values) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    despesaImpostos: values.floatValue || 0,
+                  }));
+                }}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                decimalScale={2}
+                fixedDecimalScale
+                allowNegative={false}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="R$ 0,00"
+              />
+            </div>
+
+            {/* Fundo Inovação */}
+            <div>
+              <Label htmlFor="fundoInovacao">Fundo Inovação</Label>
+              <NumericFormat
+                value={formData.fundoInovacao}
+                onValueChange={(values) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    fundoInovacao: values.floatValue || 0,
+                  }));
+                }}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                decimalScale={2}
+                fixedDecimalScale
+                allowNegative={false}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="R$ 0,00"
+              />
+            </div>
+
+            {/* Resultado Sócios */}
+            <div>
+              <Label htmlFor="resultadoSocios">Resultado Sócios</Label>
+              <NumericFormat
+                value={formData.resultadoSocios}
+                onValueChange={(values) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    resultadoSocios: values.floatValue || 0,
+                  }));
+                }}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                decimalScale={2}
+                fixedDecimalScale
+                allowNegative={false}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="R$ 0,00"
+              />
+            </div>
+
+            {/* Fundo Emergencial */}
+            <div>
+              <Label htmlFor="fundoEmergencial">Fundo Emergencial</Label>
+              <NumericFormat
+                value={formData.fundoEmergencial}
+                onValueChange={(values) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    fundoEmergencial: values.floatValue || 0,
+                  }));
+                }}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                decimalScale={2}
+                fixedDecimalScale
+                allowNegative={false}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                placeholder="R$ 0,00"
+              />
             </div>
           </div>
-
-          {/* Campos de Dados Manuais */}
-          <div className="space-y-4 border-t border-gray-200 pt-4">
-            <div>
-              <label className="text-sm font-medium block mb-2">Despesa Geral</label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                placeholder="R$ 0,00"
-                value={formatCurrencyDisplay(formData.despesaGeral)}
-                onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
-                disabled={!canEdit}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium block mb-2">Despesa com Impostos</label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                placeholder="R$ 0,00"
-                value={formatCurrencyDisplay(formData.despesaImpostos)}
-                onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
-                disabled={!canEdit}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium block mb-2">Fundo Inovação</label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                placeholder="R$ 0,00"
-                value={formatCurrencyDisplay(formData.fundoInovacao)}
-                onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
-                disabled={!canEdit}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium block mb-2">Resultado Sócios</label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                placeholder="R$ 0,00"
-                value={formatCurrencyDisplay(formData.resultadoSocios)}
-                onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
-                disabled={!canEdit}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium block mb-2">Fundo Emergencial</label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                placeholder="R$ 0,00"
-                value={formatCurrencyDisplay(formData.fundoEmergencial)}
-                onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
-                disabled={!canEdit}
-              />
-            </div>
-          </div>
-
-          {!canEdit && (
-            <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-700">
-              Você não tem permissão para editar dados manuais. Apenas gerentes podem fazer alterações.
-            </div>
-          )}
         </div>
 
-        {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 flex gap-3">
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className="flex-1"
-          >
-            Cancelar
-          </Button>
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button variant="outline">Cancelar</Button>
+          </DrawerClose>
           <Button
             onClick={handleSave}
-            disabled={isSaving || !canEdit}
-            className="flex-1"
+            disabled={isSaving}
+            className="bg-blue-600 hover:bg-blue-700"
           >
             {isSaving ? "Salvando..." : "Salvar"}
           </Button>
-        </div>
-      </div>
-    </>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }
