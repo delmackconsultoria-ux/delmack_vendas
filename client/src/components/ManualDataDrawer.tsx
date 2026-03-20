@@ -7,19 +7,20 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { NumericFormat } from "react-number-format";
 
 interface ManualDataDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   month: number;
   year: number;
+  onSaveSuccess?: () => void;
 }
 
 export default function ManualDataDrawer({
@@ -27,9 +28,10 @@ export default function ManualDataDrawer({
   onClose,
   month,
   year,
+  onSaveSuccess,
 }: ManualDataDrawerProps) {
   const { user } = useAuth();
-  const companyId = user?.id;
+  const companyId = user?.companyId;
 
   const [formData, setFormData] = useState({
     despesaGeral: "",
@@ -40,6 +42,7 @@ export default function ManualDataDrawer({
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const utils = trpc.useUtils();
 
   // Query para buscar dados existentes
   const { data: existingData } = trpc.indicators.getManualData.useQuery(
@@ -68,7 +71,21 @@ export default function ManualDataDrawer({
   }, [existingData]);
 
   // Mutation para salvar dados
-  const saveManualDataMutation = trpc.indicators.saveManualData.useMutation();
+  const saveManualDataMutation = trpc.indicators.saveManualData.useMutation({
+    onSuccess: async () => {
+      toast.success("Dados salvos com sucesso!");
+      // Invalidar caches para recarregar tabela
+      await utils.indicators.getYearIndicators.invalidate();
+      await utils.indicators.getRealtimeIndicators.invalidate();
+      await utils.indicators.getMonthlyManualData.invalidate();
+      onSaveSuccess?.();
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Erro ao salvar dados:", error);
+      toast.error("Erro ao salvar dados");
+    }
+  });
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({
@@ -109,12 +126,6 @@ export default function ManualDataDrawer({
         resultadoSocios: parseValue(formData.resultadoSocios),
         fundoEmergencial: parseValue(formData.fundoEmergencial),
       });
-
-      toast.success("Dados salvos com sucesso!");
-      onClose();
-    } catch (error) {
-      console.error("Erro ao salvar dados:", error);
-      toast.error("Erro ao salvar dados");
     } finally {
       setIsSaving(false);
     }
@@ -122,7 +133,7 @@ export default function ManualDataDrawer({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="w-full sm:w-[600px] max-h-[90vh] overflow-y-auto">
+      <DrawerContent className="w-full sm:w-[700px] lg:w-[800px] max-h-[95vh] overflow-y-auto">
         <DrawerHeader>
           <DrawerTitle>Incluir Dados Manuais</DrawerTitle>
           <DrawerDescription>
@@ -130,82 +141,122 @@ export default function ManualDataDrawer({
           </DrawerDescription>
         </DrawerHeader>
 
-        <div className="px-4 py-4 space-y-6">
+        <div className="px-6 py-6 space-y-6">
           {/* Campos de Entrada */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Despesa Geral */}
             <div>
-              <Label htmlFor="despesaGeral">Despesa Geral</Label>
-              <Input
+              <Label htmlFor="despesaGeral" className="text-sm font-medium">Despesa Geral</Label>
+              <NumericFormat
                 id="despesaGeral"
                 type="text"
-                placeholder="Ex: 1.041,44"
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix=""
+                suffix=""
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                placeholder="0,00"
                 value={formData.despesaGeral}
-                onChange={(e) => {
-                  handleInputChange("despesaGeral", e.target.value);
+                onValueChange={(values) => {
+                  handleInputChange("despesaGeral", values.formattedValue);
                 }}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Despesa com Impostos */}
             <div>
-              <Label htmlFor="despesaImpostos">Despesa com Impostos</Label>
-              <Input
+              <Label htmlFor="despesaImpostos" className="text-sm font-medium">Despesa com Impostos</Label>
+              <NumericFormat
                 id="despesaImpostos"
                 type="text"
-                placeholder="Ex: 1.041,44"
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix=""
+                suffix=""
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                placeholder="0,00"
                 value={formData.despesaImpostos}
-                onChange={(e) => {
-                  handleInputChange("despesaImpostos", e.target.value);
+                onValueChange={(values) => {
+                  handleInputChange("despesaImpostos", values.formattedValue);
                 }}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Fundo Inovação */}
             <div>
-              <Label htmlFor="fundoInovacao">Fundo Inovação</Label>
-              <Input
+              <Label htmlFor="fundoInovacao" className="text-sm font-medium">Fundo Inovação</Label>
+              <NumericFormat
                 id="fundoInovacao"
                 type="text"
-                placeholder="Ex: 1.041,44"
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix=""
+                suffix=""
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                placeholder="0,00"
                 value={formData.fundoInovacao}
-                onChange={(e) => {
-                  handleInputChange("fundoInovacao", e.target.value);
+                onValueChange={(values) => {
+                  handleInputChange("fundoInovacao", values.formattedValue);
                 }}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Resultado Sócios */}
             <div>
-              <Label htmlFor="resultadoSocios">Resultado Sócios</Label>
-              <Input
+              <Label htmlFor="resultadoSocios" className="text-sm font-medium">Resultado Sócios</Label>
+              <NumericFormat
                 id="resultadoSocios"
                 type="text"
-                placeholder="Ex: 1.041,44"
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix=""
+                suffix=""
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                placeholder="0,00"
                 value={formData.resultadoSocios}
-                onChange={(e) => {
-                  handleInputChange("resultadoSocios", e.target.value);
+                onValueChange={(values) => {
+                  handleInputChange("resultadoSocios", values.formattedValue);
                 }}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Fundo Emergencial */}
             <div>
-              <Label htmlFor="fundoEmergencial">Fundo Emergencial</Label>
-              <Input
+              <Label htmlFor="fundoEmergencial" className="text-sm font-medium">Fundo Emergencial</Label>
+              <NumericFormat
                 id="fundoEmergencial"
                 type="text"
-                placeholder="Ex: 1.041,44"
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix=""
+                suffix=""
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                placeholder="0,00"
                 value={formData.fundoEmergencial}
-                onChange={(e) => {
-                  handleInputChange("fundoEmergencial", e.target.value);
+                onValueChange={(values) => {
+                  handleInputChange("fundoEmergencial", values.formattedValue);
                 }}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
           </div>
         </div>
 
-        <DrawerFooter>
+        <DrawerFooter className="border-t pt-4">
           <DrawerClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DrawerClose>

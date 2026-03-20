@@ -94,7 +94,7 @@ export default function Indicators() {
 
   // Mutation para sincronização Properfy
   // Buscar dados manuais para o mês selecionado
-  const { data: currentMonthManualData } = trpc.indicators.getMonthlyManualData.useQuery(
+  const { data: currentMonthManualData, refetch: refetchMonthlyManualData } = trpc.indicators.getMonthlyManualData.useQuery(
     {
       companyId: user?.companyId || "",
       year: parseInt(selectedYear),
@@ -492,6 +492,11 @@ export default function Indicators() {
           onClose={handleDrawerClose}
           month={parseInt(selectedMonth)}
           year={parseInt(selectedYear)}
+          onSaveSuccess={() => {
+            refetchYear();
+            refetch();
+            refetchMonthlyManualData();
+          }}
         />
       </div>
     </AppLayout>

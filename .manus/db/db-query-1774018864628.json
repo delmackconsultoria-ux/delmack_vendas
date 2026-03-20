@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, name, email, role FROM users LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role FROM users LIMIT 5;",
+  "rows": [
+    {
+      "id": "broker_company_1766331506068_001",
+      "name": "Adriana Simões Barbosa Karter",
+      "email": "adriana.simoes@baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_002",
+      "name": "Allan Sobiech",
+      "email": "allan.sobiech@baggioimoveis.com.br",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_003",
+      "name": "Alu Corretora",
+      "email": "aluguese2025@gmail.com",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_004",
+      "name": "Angellica testes ",
+      "email": "angellicadelle@gmail.com",
+      "role": "broker"
+    },
+    {
+      "id": "broker_company_1766331506068_007",
+      "name": "Carolina Cardoso ",
+      "email": "carolina.cardoso@baggioimoveis.com.br",
+      "role": "broker"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\nbroker_company_1766331506068_001\tAdriana Simões Barbosa Karter\tadriana.simoes@baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_002\tAllan Sobiech\tallan.sobiech@baggioimoveis.com.br\tbroker\nbroker_company_1766331506068_003\tAlu Corretora\taluguese2025@gmail.com\tbroker\nbroker_company_1766331506068_004\tAngellica testes \tangellicadelle@gmail.com\tbroker\nbroker_company_1766331506068_007\tCarolina Cardoso \tcarolina.cardoso@baggioimoveis.com.br\tbroker\n",
+  "stderr": "",
+  "execution_time_ms": 505
+}

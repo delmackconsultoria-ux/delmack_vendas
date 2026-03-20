@@ -1,0 +1,46 @@
+{
+  "query": "SELECT id, name, email, role FROM users WHERE role = 'manager';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, name, email, role FROM users WHERE role = 'manager';",
+  "rows": [
+    {
+      "id": "broker_company_1766331506068_023",
+      "name": "Odair Amancio",
+      "email": "odair@baggioimoveis.com.br",
+      "role": "manager"
+    },
+    {
+      "id": "user_1766351453637_typa30p2q",
+      "name": "Lucas ",
+      "email": "Lucas@baggioimoveis.com.br",
+      "role": "manager"
+    },
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "name": "Camila Pires",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "role": "manager"
+    },
+    {
+      "id": "user_1770950171305_j1ap3gfaz",
+      "name": "Angéllica Gerente Teste UP",
+      "email": "angellicapassosup@gmail.com",
+      "role": "manager"
+    },
+    {
+      "id": "user_manager_001",
+      "name": "Gerente Teste",
+      "email": "gerente@delmack.com",
+      "role": "manager"
+    },
+    {
+      "id": "user-gerente-testes",
+      "name": "Gerente Testes",
+      "email": "gerente@testes.com.br",
+      "role": "manager"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\nbroker_company_1766331506068_023\tOdair Amancio\todair@baggioimoveis.com.br\tmanager\nuser_1766351453637_typa30p2q\tLucas \tLucas@baggioimoveis.com.br\tmanager\nuser_1766355292097_jsj9336kf\tCamila Pires\tcamila.pires@baggioimoveis.com.br\tmanager\nuser_1770950171305_j1ap3gfaz\tAngéllica Gerente Teste UP\tangellicapassosup@gmail.com\tmanager\nuser_manager_001\tGerente Teste\tgerente@delmack.com\tmanager\nuser-gerente-testes\tGerente Testes\tgerente@testes.com.br\tmanager\n",
+  "stderr": "",
+  "execution_time_ms": 424
+}
