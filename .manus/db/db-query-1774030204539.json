@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total_vendas, COUNT(DISTINCT brokerVendedor) as corretores_vendedores, COUNT(DISTINCT brokerAngariador) as corretores_angariadores FROM sales LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_vendas, COUNT(DISTINCT brokerVendedor) as corretores_vendedores, COUNT(DISTINCT brokerAngariador) as corretores_angariadores FROM sales LIMIT 1;",
+  "rows": [
+    {
+      "total_vendas": "230",
+      "corretores_vendedores": "17",
+      "corretores_angariadores": "26"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_vendas\tcorretores_vendedores\tcorretores_angariadores\n230\t17\t26\n",
+  "stderr": "",
+  "execution_time_ms": 506
+}
