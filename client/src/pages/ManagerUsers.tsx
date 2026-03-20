@@ -168,6 +168,7 @@ export default function ManagerUsers() {
                     <SelectContent>
                       <SelectItem value="broker">Corretor</SelectItem>
                       <SelectItem value="finance">Financeiro</SelectItem>
+                      <SelectItem value="manager">Gerente</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

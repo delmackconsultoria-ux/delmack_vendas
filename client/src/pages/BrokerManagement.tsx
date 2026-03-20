@@ -299,67 +299,7 @@ export default function BrokerManagementPage() {
             </Button>
           </div>
 
-          {/* Estatísticas Rápidas */}
-          <div className="grid gap-4 md:grid-cols-4 mb-8">
-            <Card className="border-0 shadow-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600">
-                  Total de Corretores
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-slate-900">{brokers.length}</p>
-                <p className="text-xs text-slate-600 mt-2">
-                  {brokers.filter((b) => b.status === "active").length} ativos
-                </p>
-              </CardContent>
-            </Card>
 
-            <Card className="border-0 shadow-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-blue-600" />
-                  Total de Vendas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-slate-900">
-                  {brokers.reduce((sum, b) => sum + b.sales, 0)}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-green-600" />
-                  Total de Comissões
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-slate-900">
-                  R$ {(brokers.reduce((sum, b) => sum + b.commissions, 0) / 1000).toFixed(0)}k
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-purple-600" />
-                  Performance Média
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-slate-900">
-                  {brokers.length > 0
-                    ? Math.round(brokers.reduce((sum, b) => sum + b.performance, 0) / brokers.length)
-                    : 0}
-                  %
-                </p>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Barra de Busca */}
           <div className="mb-6">
