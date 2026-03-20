@@ -30,8 +30,9 @@ export function ManualDataDrawer({
   onDataSaved,
 }: ManualDataDrawerProps) {
   const { user } = useAuth();
+  const currentYear = new Date().getFullYear();
   const [selectedMonth, setSelectedMonth] = useState<string>(String(initialMonth));
-  const [selectedYear, setSelectedYear] = useState<string>(String(initialYear));
+  const [selectedYear, setSelectedYear] = useState<string>(String(currentYear));
   const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
