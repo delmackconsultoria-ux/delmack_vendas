@@ -12,16 +12,8 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
-import { formatWhileTyping, parseCurrencyInput } from "@/lib/currencyFormatter";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface ManualDataDrawerProps {
   isOpen: boolean;
@@ -85,6 +77,20 @@ export default function ManualDataDrawer({
     }));
   };
 
+  // Converter string com formato brasileiro para número
+  const parseValue = (value: string): number => {
+    if (!value) return 0;
+    // Remove espaços
+    value = value.trim();
+    // Remove "R$" se existir
+    value = value.replace(/R\$/g, '').trim();
+    // Substitui ponto por vazio (remove separador de milhar)
+    value = value.replace(/\./g, '');
+    // Substitui vírgula por ponto (converte decimal)
+    value = value.replace(',', '.');
+    return parseFloat(value) || 0;
+  };
+
   const handleSave = async () => {
     if (!companyId) {
       toast.error("Erro: Empresa não identificada");
@@ -97,11 +103,11 @@ export default function ManualDataDrawer({
         companyId,
         month: month,
         year: year,
-        despesaGeral: parseCurrencyInput(formData.despesaGeral),
-        despesaImpostos: parseCurrencyInput(formData.despesaImpostos),
-        fundoInovacao: parseCurrencyInput(formData.fundoInovacao),
-        resultadoSocios: parseCurrencyInput(formData.resultadoSocios),
-        fundoEmergencial: parseCurrencyInput(formData.fundoEmergencial),
+        despesaGeral: parseValue(formData.despesaGeral),
+        despesaImpostos: parseValue(formData.despesaImpostos),
+        fundoInovacao: parseValue(formData.fundoInovacao),
+        resultadoSocios: parseValue(formData.resultadoSocios),
+        fundoEmergencial: parseValue(formData.fundoEmergencial),
       });
 
       toast.success("Dados salvos com sucesso!");
@@ -125,7 +131,7 @@ export default function ManualDataDrawer({
         </DrawerHeader>
 
         <div className="px-4 py-4 space-y-6">
-          {/* Campos de Entrada com formatação de moeda */}
+          {/* Campos de Entrada */}
           <div className="space-y-4">
             {/* Despesa Geral */}
             <div>
@@ -133,11 +139,10 @@ export default function ManualDataDrawer({
               <Input
                 id="despesaGeral"
                 type="text"
-                placeholder="0,00"
+                placeholder="Ex: 1.041,44"
                 value={formData.despesaGeral}
                 onChange={(e) => {
-                  const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("despesaGeral", formatted);
+                  handleInputChange("despesaGeral", e.target.value);
                 }}
               />
             </div>
@@ -148,11 +153,10 @@ export default function ManualDataDrawer({
               <Input
                 id="despesaImpostos"
                 type="text"
-                placeholder="0,00"
+                placeholder="Ex: 1.041,44"
                 value={formData.despesaImpostos}
                 onChange={(e) => {
-                  const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("despesaImpostos", formatted);
+                  handleInputChange("despesaImpostos", e.target.value);
                 }}
               />
             </div>
@@ -163,11 +167,10 @@ export default function ManualDataDrawer({
               <Input
                 id="fundoInovacao"
                 type="text"
-                placeholder="0,00"
+                placeholder="Ex: 1.041,44"
                 value={formData.fundoInovacao}
                 onChange={(e) => {
-                  const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("fundoInovacao", formatted);
+                  handleInputChange("fundoInovacao", e.target.value);
                 }}
               />
             </div>
@@ -178,11 +181,10 @@ export default function ManualDataDrawer({
               <Input
                 id="resultadoSocios"
                 type="text"
-                placeholder="0,00"
+                placeholder="Ex: 1.041,44"
                 value={formData.resultadoSocios}
                 onChange={(e) => {
-                  const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("resultadoSocios", formatted);
+                  handleInputChange("resultadoSocios", e.target.value);
                 }}
               />
             </div>
@@ -193,11 +195,10 @@ export default function ManualDataDrawer({
               <Input
                 id="fundoEmergencial"
                 type="text"
-                placeholder="0,00"
+                placeholder="Ex: 1.041,44"
                 value={formData.fundoEmergencial}
                 onChange={(e) => {
-                  const formatted = formatWhileTyping(e.target.value);
-                  handleInputChange("fundoEmergencial", formatted);
+                  handleInputChange("fundoEmergencial", e.target.value);
                 }}
               />
             </div>
