@@ -1,13 +1,14 @@
 import { AppHeader } from "@/components/AppHeader";
 import { trpc } from "@/lib/trpc";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Edit2, Trash2, TrendingUp, DollarSign, FileText, X } from "lucide-react";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Plus, Edit2, Trash2, TrendingUp, DollarSign, FileText, X, Key } from "lucide-react";
+import { toast } from "sonner";
 
 interface TeamMember {
   id: string;
@@ -22,6 +23,7 @@ interface Broker {
   email: string;
   phone: string;
   status: "active" | "inactive";
+  role: "broker" | "finance" | "manager";
   sales: number;
   commissions: number;
   performance: number;
@@ -35,6 +37,7 @@ const mockBrokersTest: Broker[] = [
     email: "joao@testes.com.br",
     phone: "(11) 98765-4321",
     status: "active",
+    role: "broker",
     sales: 15,
     commissions: 45000,
     performance: 85,
@@ -46,6 +49,7 @@ const mockBrokersTest: Broker[] = [
     email: "maria@testes.com.br",
     phone: "(11) 91234-5678",
     status: "active",
+    role: "broker",
     sales: 18,
     commissions: 54000,
     performance: 92,
@@ -57,6 +61,7 @@ const mockBrokersTest: Broker[] = [
     email: "pedro@testes.com.br",
     phone: "(11) 99876-5432",
     status: "active",
+    role: "broker",
     sales: 12,
     commissions: 36000,
     performance: 78,
@@ -82,32 +87,15 @@ interface TeamFormData {
 export default function BrokerManagementPage() {
   const { user } = useAuth();
   
-  // Buscar corretores reais do banco via tRPC
-  const { data: brokersData, isLoading, refetch } = trpc.brokers.list.useQuery();
+  // Buscar usuários da equipe do gerente
+  const { data: teamUsers = [], isLoading, refetch } = trpc.managerUsers.listTeamUsers.useQuery();
   
   const [brokers, setBrokers] = useState<Broker[]>([]);
-  
-  // Atualizar lista de corretores quando os dados chegarem
-  useEffect(() => {
-    if (brokersData) {
-      // Converter dados do backend para o formato Broker
-      const formattedBrokers: Broker[] = brokersData.map((b: any) => ({
-        id: b.id,
-        name: b.name,
-        email: b.email,
-        phone: "", // Campo phone não existe no schema
-        status: b.isActive ? "active" : "inactive",
-        sales: 0,
-        commissions: 0,
-        performance: 0,
-        teamMembers: [],
-      }));
-      setBrokers(formattedBrokers);
-    }
-  }, [brokersData]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [editingBroker, setEditingBroker] = useState<Broker | null>(null);
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -121,6 +109,39 @@ export default function BrokerManagementPage() {
     email: "",
     role: "",
   });
+
+  // Mutations
+  const resetPasswordMutation = trpc.managerUsers.resetUserPassword.useMutation({
+    onSuccess: (data: any) => {
+      toast.success(data.message);
+      setShowPasswordDialog(false);
+      setSelectedUserId(null);
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao redefinir senha");
+    },
+  });
+  
+  // Atualizar lista de corretores quando os dados chegarem
+  useEffect(() => {
+    if (teamUsers) {
+      // Converter dados do backend para o formato Broker
+      const formattedBrokers: Broker[] = teamUsers.map((u: any) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        phone: "", // Campo phone não existe no schema
+        status: "active",
+        role: u.role,
+        sales: 0,
+        commissions: 0,
+        performance: 0,
+        teamMembers: [],
+      }));
+      setBrokers(formattedBrokers);
+    }
+  }, [teamUsers]);
 
   const filteredBrokers = brokers.filter(
     (broker) =>
@@ -193,6 +214,7 @@ export default function BrokerManagementPage() {
                 email: formData.email,
                 phone: formData.phone,
                 status: formData.status,
+                role: b.role,
                 teamMembers: formData.teamMembers || [],
               }
             : b
@@ -207,6 +229,7 @@ export default function BrokerManagementPage() {
         email: formData.email,
         phone: formData.phone,
         status: formData.status,
+        role: "broker",
         sales: 0,
         commissions: 0,
         performance: 0,
@@ -234,6 +257,23 @@ export default function BrokerManagementPage() {
 
   const getStatusLabel = (status: string) => {
     return status === "active" ? "Ativo" : "Inativo";
+  };
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "broker":
+        return "Corretor";
+      case "finance":
+        return "Financeiro";
+      case "manager":
+        return "Gerente";
+      default:
+        return role;
+    }
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    await resetPasswordMutation.mutateAsync({ userId });
   };
 
   return (
@@ -348,7 +388,7 @@ export default function BrokerManagementPage() {
                         Telefone
                       </th>
                       <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
-                        Status
+                        Perfil
                       </th>
                       <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
                         Vendas
@@ -381,12 +421,8 @@ export default function BrokerManagementPage() {
                           <td className="py-4 px-4 text-sm text-slate-600">{broker.email}</td>
                           <td className="py-4 px-4 text-sm text-slate-600">{broker.phone}</td>
                           <td className="py-4 px-4">
-                            <span
-                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                                broker.status
-                              )}`}
-                            >
-                              {getStatusLabel(broker.status)}
+                            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {getRoleLabel(broker.role)}
                             </span>
                           </td>
                           <td className="py-4 px-4 text-sm font-medium text-slate-900">
@@ -410,6 +446,16 @@ export default function BrokerManagementPage() {
                           </td>
                           <td className="py-4 px-4">
                             <div className="flex justify-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedUserId(broker.id);
+                                  setShowPasswordDialog(true);
+                                }}
+                                className="p-2 hover:bg-green-100 rounded-lg transition-colors"
+                                title="Gerar nova senha"
+                              >
+                                <Key className="h-4 w-4 text-green-600" />
+                              </button>
                               <button
                                 onClick={() => handleOpenEditModal(broker)}
                                 className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
@@ -442,6 +488,45 @@ export default function BrokerManagementPage() {
           </Card>
         </div>
       </div>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Redefinir Senha</DialogTitle>
+            <DialogDescription>
+              Uma nova senha forte será gerada e enviada por email ao usuário
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Tem certeza que deseja redefinir a senha deste usuário? Uma nova senha será gerada e enviada automaticamente.
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowPasswordDialog(false);
+                  setSelectedUserId(null);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="bg-blue-600 hover:bg-blue-700"
+                onClick={() => {
+                  if (selectedUserId) {
+                    handleResetPassword(selectedUserId);
+                  }
+                }}
+                disabled={resetPasswordMutation.isPending}
+              >
+                {resetPasswordMutation.isPending ? "Redefinindo..." : "Redefinir Senha"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal de Adicionar Membro da Equipe */}
       {showTeamModal && (
