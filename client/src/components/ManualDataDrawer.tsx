@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -20,41 +20,6 @@ interface ManualDataDrawerProps {
   companyId: string;
   onDataSaved?: () => void;
 }
-
-// Função para converter locale brasileiro para número
-const parseMonetaryValue = (value: string): number => {
-  if (!value || value.trim() === '') return 0;
-  
-  const str = value.trim();
-  
-  // Se é apenas números SEM separador decimal, interpretar como centavos
-  // "8" -> 0.08, "88" -> 0.88, "888" -> 8.88
-  if (!isNaN(Number(str)) && !str.includes(',') && !str.includes('.')) {
-    return Number(str) / 100;
-  }
-  
-  // Remover "R$" e espaços
-  let cleanStr = str.replace(/R\$/g, '').trim();
-  
-  // Remover pontos (separador de milhares) e substituir vírgula por ponto
-  const normalized = cleanStr
-    .replace(/\./g, '') // Remove pontos (1.234 -> 1234)
-    .replace(/,/g, '.'); // Substitui vírgula por ponto (1234,56 -> 1234.56)
-  
-  const parsed = parseFloat(normalized);
-  return !isNaN(parsed) ? parsed : 0;
-};
-
-// Função para formatar número como moeda
-const formatCurrencyDisplay = (value: number): string => {
-  if (value === 0) return '';
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-};
 
 export function ManualDataDrawer({
   isOpen,
@@ -75,15 +40,6 @@ export function ManualDataDrawer({
     fundoInovacao: 0,
     resultadoSocios: 0,
     fundoEmergencial: 0,
-  });
-
-  // Refs para os inputs (para controlar manualmente)
-  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({
-    despesaGeral: null,
-    despesaImpostos: null,
-    fundoInovacao: null,
-    resultadoSocios: null,
-    fundoEmergencial: null,
   });
 
   // Buscar dados manuais existentes
@@ -109,21 +65,8 @@ export function ManualDataDrawer({
         resultadoSocios: Number(data.resultadoSocios) || 0,
         fundoEmergencial: Number(data.fundoEmergencial) || 0,
       });
-      
-      // Atualizar os inputs com os valores formatados
-      updateInputDisplays();
     }
   }, [existingData]);
-
-  // Função para atualizar a exibição dos inputs
-  const updateInputDisplays = () => {
-    Object.entries(inputRefs.current).forEach(([field, input]) => {
-      if (input) {
-        const value = formData[field as keyof typeof formData];
-        input.value = formatCurrencyDisplay(value);
-      }
-    });
-  };
 
   // Mutation para salvar dados manuais
   const saveMutation = trpc.indicators.saveManualData.useMutation({
@@ -154,20 +97,51 @@ export function ManualDataDrawer({
   };
 
   const handleInputChange = (field: string, value: string) => {
-    // Converter o valor para número
-    const numValue = parseMonetaryValue(value);
+    // Converter locale brasileiro (vírgula) para número
+    // Aceita: "0,10", "1.234,56", "0.10", "1234.56"
+    if (!value || value.trim() === '') {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: 0,
+      }));
+      return;
+    }
+
+    const str = value.trim();
     
-    // Atualizar formData
+    // Se já é um número com ponto, retornar como é
+    if (!isNaN(Number(str)) && !str.includes(',')) {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: Number(str),
+      }));
+      return;
+    }
+
+    // Converter locale brasileiro (1.234,56) para número
+    // Remover pontos (separador de milhares) e substituir vírgula por ponto
+    const normalized = str
+      .replace(/\./g, '') // Remove pontos (1.234 -> 1234)
+      .replace(/,/g, '.'); // Substitui vírgula por ponto (1234,56 -> 1234.56)
+
+    const parsed = parseFloat(normalized);
+    const numValue = !isNaN(parsed) ? parsed : 0;
+    
     setFormData((prev) => ({
       ...prev,
       [field]: numValue,
     }));
-    
-    // Atualizar o display do input (sem causar re-render do React)
-    const input = inputRefs.current[field];
-    if (input) {
-      input.value = formatCurrencyDisplay(numValue);
-    }
+  };
+
+  const formatCurrencyDisplay = (value: number): string => {
+    if (value === 0) return '';
+    // Formatar diretamente o valor (não dividir por 100)
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
   };
 
   // Verificar se usuário pode editar
@@ -235,11 +209,10 @@ export function ManualDataDrawer({
             <div>
               <label className="text-sm font-medium block mb-2">Despesa Geral</label>
               <Input
-                ref={(el) => { inputRefs.current.despesaGeral = el; }}
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formatCurrencyDisplay(formData.despesaGeral)}
+                value={formatCurrencyDisplay(formData.despesaGeral)}
                 onChange={(e) => handleInputChange("despesaGeral", e.target.value)}
                 disabled={!canEdit}
               />
@@ -248,11 +221,10 @@ export function ManualDataDrawer({
             <div>
               <label className="text-sm font-medium block mb-2">Despesa com Impostos</label>
               <Input
-                ref={(el) => { inputRefs.current.despesaImpostos = el; }}
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formatCurrencyDisplay(formData.despesaImpostos)}
+                value={formatCurrencyDisplay(formData.despesaImpostos)}
                 onChange={(e) => handleInputChange("despesaImpostos", e.target.value)}
                 disabled={!canEdit}
               />
@@ -261,11 +233,10 @@ export function ManualDataDrawer({
             <div>
               <label className="text-sm font-medium block mb-2">Fundo Inovação</label>
               <Input
-                ref={(el) => { inputRefs.current.fundoInovacao = el; }}
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formatCurrencyDisplay(formData.fundoInovacao)}
+                value={formatCurrencyDisplay(formData.fundoInovacao)}
                 onChange={(e) => handleInputChange("fundoInovacao", e.target.value)}
                 disabled={!canEdit}
               />
@@ -274,11 +245,10 @@ export function ManualDataDrawer({
             <div>
               <label className="text-sm font-medium block mb-2">Resultado Sócios</label>
               <Input
-                ref={(el) => { inputRefs.current.resultadoSocios = el; }}
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formatCurrencyDisplay(formData.resultadoSocios)}
+                value={formatCurrencyDisplay(formData.resultadoSocios)}
                 onChange={(e) => handleInputChange("resultadoSocios", e.target.value)}
                 disabled={!canEdit}
               />
@@ -287,11 +257,10 @@ export function ManualDataDrawer({
             <div>
               <label className="text-sm font-medium block mb-2">Fundo Emergencial</label>
               <Input
-                ref={(el) => { inputRefs.current.fundoEmergencial = el; }}
                 type="text"
                 inputMode="numeric"
                 placeholder="R$ 0,00"
-                defaultValue={formatCurrencyDisplay(formData.fundoEmergencial)}
+                value={formatCurrencyDisplay(formData.fundoEmergencial)}
                 onChange={(e) => handleInputChange("fundoEmergencial", e.target.value)}
                 disabled={!canEdit}
               />
