@@ -492,11 +492,6 @@ export default function Indicators() {
           onClose={handleDrawerClose}
           month={parseInt(selectedMonth)}
           year={parseInt(selectedYear)}
-          companyId={user?.companyId || ""}
-          onDataSaved={() => {
-            refetch();
-            refetchYear();
-          }}
         />
       </div>
     </AppLayout>

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -13,47 +12,49 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
-import { NumericFormat } from "react-number-format";
+import { formatWhileTyping, parseCurrencyInput } from "@/lib/currencyFormatter";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ManualDataDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   month: number;
   year: number;
-  companyId: string;
-  onDataSaved?: () => void;
 }
 
 export default function ManualDataDrawer({
   isOpen,
   onClose,
-  month: initialMonth,
-  year: initialYear,
-  companyId,
-  onDataSaved,
+  month,
+  year,
 }: ManualDataDrawerProps) {
   const { user } = useAuth();
-  const currentYear = new Date().getFullYear();
-  const [selectedMonth, setSelectedMonth] = useState<string>(String(initialMonth));
-  const [selectedYear, setSelectedYear] = useState<string>(String(currentYear));
-  const [isSaving, setIsSaving] = useState(false);
+  const companyId = user?.id;
 
   const [formData, setFormData] = useState({
-    despesaGeral: 0,
-    despesaImpostos: 0,
-    fundoInovacao: 0,
-    resultadoSocios: 0,
-    fundoEmergencial: 0,
+    despesaGeral: "",
+    despesaImpostos: "",
+    fundoInovacao: "",
+    resultadoSocios: "",
+    fundoEmergencial: "",
   });
 
+  const [isSaving, setIsSaving] = useState(false);
 
-
-  // Buscar dados manuais existentes
-  const { data: existingData } = trpc.indicators.getMonthlyManualData.useQuery(
+  // Query para buscar dados existentes
+  const { data: existingData } = trpc.indicators.getManualData.useQuery(
     {
-      companyId,
-      year: parseInt(selectedYear),
-      month: parseInt(selectedMonth),
+      companyId: companyId || "",
+      month: month,
+      year: year,
     },
     {
       enabled: !!companyId && isOpen,
@@ -65,11 +66,11 @@ export default function ManualDataDrawer({
     if (existingData) {
       const data = existingData as any;
       setFormData({
-        despesaGeral: Number(data.despesaGeral) || 0,
-        despesaImpostos: Number(data.despesaImpostos) || 0,
-        fundoInovacao: Number(data.fundoInovacao) || 0,
-        resultadoSocios: Number(data.resultadoSocios) || 0,
-        fundoEmergencial: Number(data.fundoEmergencial) || 0,
+        despesaGeral: data.despesaGeral ? data.despesaGeral.toString() : "",
+        despesaImpostos: data.despesaImpostos ? data.despesaImpostos.toString() : "",
+        fundoInovacao: data.fundoInovacao ? data.fundoInovacao.toString() : "",
+        resultadoSocios: data.resultadoSocios ? data.resultadoSocios.toString() : "",
+        fundoEmergencial: data.fundoEmergencial ? data.fundoEmergencial.toString() : "",
       });
     }
   }, [existingData]);
@@ -77,24 +78,37 @@ export default function ManualDataDrawer({
   // Mutation para salvar dados
   const saveManualDataMutation = trpc.indicators.saveManualData.useMutation();
 
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   const handleSave = async () => {
+    if (!companyId) {
+      toast.error("Erro: Empresa não identificada");
+      return;
+    }
+
     setIsSaving(true);
     try {
       await saveManualDataMutation.mutateAsync({
         companyId,
-        year: parseInt(selectedYear),
-        month: parseInt(selectedMonth),
-        despesaGeral: formData.despesaGeral,
-        despesaImpostos: formData.despesaImpostos,
-        fundoInovacao: formData.fundoInovacao,
-        resultadoSocios: formData.resultadoSocios,
-        fundoEmergencial: formData.fundoEmergencial,
+        month: month,
+        year: year,
+        despesaGeral: parseCurrencyInput(formData.despesaGeral),
+        despesaImpostos: parseCurrencyInput(formData.despesaImpostos),
+        fundoInovacao: parseCurrencyInput(formData.fundoInovacao),
+        resultadoSocios: parseCurrencyInput(formData.resultadoSocios),
+        fundoEmergencial: parseCurrencyInput(formData.fundoEmergencial),
       });
 
-      onDataSaved?.();
+      toast.success("Dados salvos com sucesso!");
       onClose();
     } catch (error) {
-      console.error("Erro ao salvar dados manuais:", error);
+      console.error("Erro ao salvar dados:", error);
+      toast.error("Erro ao salvar dados");
     } finally {
       setIsSaving(false);
     }
@@ -102,158 +116,89 @@ export default function ManualDataDrawer({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent>
+      <DrawerContent className="w-full sm:w-[600px] max-h-[90vh] overflow-y-auto">
         <DrawerHeader>
           <DrawerTitle>Incluir Dados Manuais</DrawerTitle>
           <DrawerDescription>
-            Preencha os dados manuais para {selectedMonth}/{selectedYear}
+            Preencha os dados manuais para {month}/{year}
           </DrawerDescription>
         </DrawerHeader>
 
-        <div className="space-y-6 px-4 py-4">
-          {/* Seletor de Mês e Ano */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="month">Mês</Label>
-              <select
-                id="month"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => (
-                  <option key={m} value={String(m)}>
-                    {String(m).padStart(2, "0")}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="year">Ano</Label>
-              <select
-                id="year"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                {[2024, 2025, 2026, 2027, 2028].map((y) => (
-                  <option key={y} value={String(y)}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Campos de Entrada com react-number-format */}
+        <div className="px-4 py-4 space-y-6">
+          {/* Campos de Entrada com formatação de moeda */}
           <div className="space-y-4">
             {/* Despesa Geral */}
             <div>
               <Label htmlFor="despesaGeral">Despesa Geral</Label>
-              <NumericFormat
+              <Input
+                id="despesaGeral"
+                type="text"
+                placeholder="0,00"
                 value={formData.despesaGeral}
-                onValueChange={(values) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    despesaGeral: values.floatValue || 0,
-                  }));
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("despesaGeral", formatted);
                 }}
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                decimalScale={2}
-                fixedDecimalScale
-                allowNegative={false}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="R$ 0,00"
               />
             </div>
 
             {/* Despesa com Impostos */}
             <div>
               <Label htmlFor="despesaImpostos">Despesa com Impostos</Label>
-              <NumericFormat
+              <Input
+                id="despesaImpostos"
+                type="text"
+                placeholder="0,00"
                 value={formData.despesaImpostos}
-                onValueChange={(values) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    despesaImpostos: values.floatValue || 0,
-                  }));
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("despesaImpostos", formatted);
                 }}
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                decimalScale={2}
-                fixedDecimalScale
-                allowNegative={false}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="R$ 0,00"
               />
             </div>
 
             {/* Fundo Inovação */}
             <div>
               <Label htmlFor="fundoInovacao">Fundo Inovação</Label>
-              <NumericFormat
+              <Input
+                id="fundoInovacao"
+                type="text"
+                placeholder="0,00"
                 value={formData.fundoInovacao}
-                onValueChange={(values) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    fundoInovacao: values.floatValue || 0,
-                  }));
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("fundoInovacao", formatted);
                 }}
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                decimalScale={2}
-                fixedDecimalScale
-                allowNegative={false}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="R$ 0,00"
               />
             </div>
 
             {/* Resultado Sócios */}
             <div>
               <Label htmlFor="resultadoSocios">Resultado Sócios</Label>
-              <NumericFormat
+              <Input
+                id="resultadoSocios"
+                type="text"
+                placeholder="0,00"
                 value={formData.resultadoSocios}
-                onValueChange={(values) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    resultadoSocios: values.floatValue || 0,
-                  }));
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("resultadoSocios", formatted);
                 }}
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                decimalScale={2}
-                fixedDecimalScale
-                allowNegative={false}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="R$ 0,00"
               />
             </div>
 
             {/* Fundo Emergencial */}
             <div>
               <Label htmlFor="fundoEmergencial">Fundo Emergencial</Label>
-              <NumericFormat
+              <Input
+                id="fundoEmergencial"
+                type="text"
+                placeholder="0,00"
                 value={formData.fundoEmergencial}
-                onValueChange={(values) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    fundoEmergencial: values.floatValue || 0,
-                  }));
+                onChange={(e) => {
+                  const formatted = formatWhileTyping(e.target.value);
+                  handleInputChange("fundoEmergencial", formatted);
                 }}
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                decimalScale={2}
-                fixedDecimalScale
-                allowNegative={false}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="R$ 0,00"
               />
             </div>
           </div>

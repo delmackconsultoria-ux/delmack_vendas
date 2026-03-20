@@ -36,18 +36,27 @@ export function formatWhileTyping(value: string | number): string {
   }
   
   // Remove tudo exceto números, vírgula e ponto
-  let cleaned = value.toString().replace(/[^\d.,]/g, '');
+  let cleaned = value.toString().replace(/[^\d,\.]/g, '');
   
   // Se estiver vazio, retorna vazio
   if (!cleaned) return '';
   
-  // Remove pontos de milhar anteriores (mantém apenas vírgula decimal)
-  cleaned = cleaned.replace(/\./g, '');
+  // Encontra a última vírgula (separador decimal)
+  const lastCommaIndex = cleaned.lastIndexOf(',');
+  let integerPart = '';
+  let decimalPart = '';
   
-  // Separa parte inteira e decimal
-  const parts = cleaned.split(',');
-  let integerPart = parts[0];
-  const decimalPart = parts[1] || '';
+  if (lastCommaIndex > -1) {
+    // Tem vírgula - separa em parte inteira e decimal
+    integerPart = cleaned.substring(0, lastCommaIndex);
+    decimalPart = cleaned.substring(lastCommaIndex + 1);
+  } else {
+    // Sem vírgula - tudo é parte inteira
+    integerPart = cleaned;
+  }
+
+  // Remove todos os pontos da parte inteira (são pontos de milhar antigos)
+  integerPart = integerPart.replace(/\./g, '');
   
   // Se não tem parte inteira, retorna vazio
   if (!integerPart) return '';
