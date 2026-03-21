@@ -34,7 +34,7 @@ export function parseCurrencyInput(value: string): number {
 
 /**
  * Formata valor durante digitação (permite vírgula)
- * Ex: "5000,5" → "5.000,50" (formato brasileiro completo)
+ * Ex: "123456" → "1.234,56" (com pontos de milhar E vírgula decimal)
  * Permite digitação livre de valores grandes (milhões)
  */
 export function formatWhileTyping(value: string | number): string {
