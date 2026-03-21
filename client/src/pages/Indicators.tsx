@@ -331,6 +331,7 @@ export default function Indicators() {
         annualAverage: getGoalValue("generalExpense") || 50000,
         fieldName: "despesaGeral",
         manualField: "despesaGeral",
+        isManualData: true,
       },
       {
         title: "Despesa com Impostos",
@@ -338,6 +339,7 @@ export default function Indicators() {
         annualAverage: getGoalValue("taxExpense") || 30000,
         fieldName: "despesaImpostos",
         manualField: "despesaImpostos",
+        isManualData: true,
       },
       {
         title: "Fundo Inovação",
@@ -345,6 +347,7 @@ export default function Indicators() {
         annualAverage: getGoalValue("innovationFund") || 20000,
         fieldName: "fundoInovacao",
         manualField: "fundoInovacao",
+        isManualData: true,
       },
       {
         title: "Resultado Sócios",
@@ -352,6 +355,7 @@ export default function Indicators() {
         annualAverage: getGoalValue("partnersResult") || 100000,
         fieldName: "resultadoSocios",
         manualField: "resultadoSocios",
+        isManualData: true,
       },
       {
         title: "Fundo Emergencial",
@@ -359,6 +363,7 @@ export default function Indicators() {
         annualAverage: getGoalValue("emergencyFund") || 10000,
         fieldName: "fundoEmergencial",
         manualField: "fundoEmergencial",
+        isManualData: true,
       },
     ];
 

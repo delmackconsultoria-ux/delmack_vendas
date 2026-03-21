@@ -29,6 +29,7 @@ interface IndicatorData {
     dez: number;
   };
   isCurrency?: boolean;
+  isManualData?: boolean;
 }
 
 interface IndicatorsConsolidatedTableProps {
@@ -119,8 +120,8 @@ export function IndicatorsConsolidatedTable({
         </TableHeader>
         <TableBody>
           {indicators.map((indicator, idx) => (
-            <TableRow key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-muted/30"}>
-              <TableCell className="sticky left-0 bg-inherit z-10 font-medium">
+            <TableRow key={idx} className={indicator.isManualData ? "bg-blue-50" : idx % 2 === 0 ? "bg-white" : "bg-muted/30"}>
+              <TableCell className={`sticky left-0 z-10 font-medium ${indicator.isManualData ? "bg-blue-50" : "bg-inherit"}`}>
                 {indicator.title}
               </TableCell>
               <TableCell className="text-right">{formatValue(indicator.monthlyGoal, indicator.isCurrency !== false)}</TableCell>
