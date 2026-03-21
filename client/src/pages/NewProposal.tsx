@@ -1520,9 +1520,10 @@ export default function NewProposal() {
                     <Input
                       type="text"
                       placeholder="R$ 0,00"
-                      value={formData.saleValue}
-                      onChange={(e) => {
+                      defaultValue={formData.saleValue}
+                      onBlur={(e) => {
                         const formatted = formatWhileTyping(e.target.value);
+                        e.target.value = formatted;
                         handleInputChange("saleValue", formatted);
                       }}
                       className={completionStatus.saleValue ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.saleValue ? "bg-red-50 border-red-400" : ""}
@@ -1569,9 +1570,10 @@ export default function NewProposal() {
                     <Input
                       type="text"
                       placeholder="R$ 0,00"
-                      value={formData.financedValue}
-                      onChange={(e) => {
+                      defaultValue={formData.financedValue}
+                      onBlur={(e) => {
                         const formatted = formatWhileTyping(e.target.value);
+                        e.target.value = formatted;
                         handleInputChange("financedValue", formatted);
                       }}
                     />
@@ -1670,9 +1672,10 @@ export default function NewProposal() {
                       <Input
                         type="text"
                         placeholder="R$ 0,00"
-                        value={formData.sinalNegocioValor}
-                        onChange={(e) => {
+                        defaultValue={formData.sinalNegocioValor}
+                        onBlur={(e) => {
                           const formatted = formatWhileTyping(e.target.value);
+                          e.target.value = formatted;
                           handleInputChange("sinalNegocioValor", formatted);
                         }}
                         className={completionStatus.sinalNegocioValor ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sinalNegocioValor ? "bg-red-50 border-red-400" : ""}

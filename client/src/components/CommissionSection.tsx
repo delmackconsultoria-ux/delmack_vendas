@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HelpCircle, Calculator } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { parseCurrencyInput } from "@/lib/currencyFormatter";
+import { parseCurrencyInput, formatWhileTyping } from "@/lib/currencyFormatter";
 
 // Tipos de Comissão conforme manual Baggio Imóveis
 const COMMISSION_TYPES = [
@@ -378,11 +378,14 @@ export function CommissionSection({ formData, handleInputChange }: CommissionSec
                 <div>
                   <Label>Valor da Bonificação (R$)</Label>
                   <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Ex: 1000.00"
-                    value={formData.valorBonificacao}
-                    onChange={(e) => handleBonusChange(e.target.value)}
+                    type="text"
+                    placeholder="R$ 0,00"
+                    defaultValue={formData.valorBonificacao}
+                    onBlur={(e) => {
+                      const formatted = formatWhileTyping(e.target.value);
+                      e.target.value = formatted;
+                      handleBonusChange(formatted);
+                    }}
                     disabled={!formData.tipoBonificacao}
                   />
                 </div>
