@@ -78,6 +78,13 @@ interface Broker {
   role?: string;
 }
 
+interface ClientData {
+  name: string;
+  cpfCnpj: string;
+  phone: string;
+  origin?: string; // Apenas para compradores
+}
+
 interface FormData {
   // Property Info
   propertyType: "baggio" | "external";
@@ -109,18 +116,20 @@ interface FormData {
   responsible: string; // Lucas ou Camila (automático)
   invoiceNumber: string; // Número da NF
 
-  // Buyer Info
-  buyerName: string;
-  buyerCpfCnpj: string;
-  buyerPhone: string;
-  clientOrigin: string;
+  // Buyer Info (múltiplos compradores)
+  buyers: ClientData[];
+  buyerName: string; // Mantido para compatibilidade
+  buyerCpfCnpj: string; // Mantido para compatibilidade
+  buyerPhone: string; // Mantido para compatibilidade
+  clientOrigin: string; // Mantido para compatibilidade
   paymentMethod: string;
   financedValue: string;
 
-  // Seller Info
-  sellerName: string;
-  sellerCpfCnpj: string;
-  sellerPhone: string;
+  // Seller Info (múltiplos vendedores)
+  sellers: ClientData[];
+  sellerName: string; // Mantido para compatibilidade
+  sellerCpfCnpj: string; // Mantido para compatibilidade
+  sellerPhone: string; // Mantido para compatibilidade
 
   // Additional Info
   cartoryBank: string;
@@ -233,6 +242,7 @@ export default function NewProposal() {
     responsible: "",
     invoiceNumber: "",
 
+    buyers: [{ name: "", cpfCnpj: "", phone: "", origin: "" }],
     buyerName: "",
     buyerCpfCnpj: "",
     buyerPhone: "",
@@ -240,6 +250,7 @@ export default function NewProposal() {
     paymentMethod: "",
     financedValue: "",
 
+    sellers: [{ name: "", cpfCnpj: "", phone: "" }],
     sellerName: "",
     sellerCpfCnpj: "",
     sellerPhone: "",
@@ -1385,110 +1396,169 @@ export default function NewProposal() {
               </CardContent>
             </Card>
 
-            {/* Buyer Section */}
+            {/* Buyer Section - Multiple Buyers */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Dados do Cliente Comprador</CardTitle>
-                <CardDescription>Dados utilizados na Nota Fiscal</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex justify-between items-center">
                   <div>
-                    <Label>Nome *</Label>
-                    <Input
-                      placeholder="Nome completo"
-                      value={formData.buyerName}
-                      onChange={(e) => handleInputChange("buyerName", e.target.value)}
-                      className={completionStatus.buyerName ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.buyerName ? "bg-red-50 border-red-400" : ""}
-                    />
+                    <CardTitle className="text-lg">Dados do Cliente Comprador</CardTitle>
+                    <CardDescription>Dados utilizados na Nota Fiscal (Mínimo 1 obrigatório)</CardDescription>
                   </div>
-                  <div>
-                    <Label>CPF/CNPJ *</Label>
-                    <div className="relative">
-                      <Input
-                        placeholder="000.000.000-00"
-                        value={formData.buyerCpfCnpj}
-                        onChange={(e) => handleCpfCnpjChange(e.target.value, "buyer")}
-                        className={`pr-10 ${cpfValidation.buyer === "valid" ? "bg-green-50 border-green-400" : cpfValidation.buyer === "invalid" ? "bg-red-50 border-red-400" : completionStatus.buyerCpfCnpj ? "bg-green-50 border-green-300" : ""}`}
-                      />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <ValidationIcon status={cpfValidation.buyer} />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      buyers: [...prev.buyers, { name: "", cpfCnpj: "", phone: "", origin: "" }]
+                    }))}
+                  >
+                    + Adicionar Comprador
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {formData.buyers.map((buyer, index) => (
+                  <div key={index} className="border rounded-lg p-4 space-y-4 relative">
+                    {formData.buyers.length > 1 && (
+                      <button
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          buyers: prev.buyers.filter((_, i) => i !== index)
+                        }))}
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                      >
+                        <XCircle size={20} />
+                      </button>
+                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Nome *</Label>
+                        <Input
+                          placeholder="Nome completo"
+                          value={buyer.name}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            buyers: prev.buyers.map((b, i) => i === index ? { ...b, name: e.target.value } : b)
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>CPF/CNPJ *</Label>
+                        <Input
+                          placeholder="000.000.000-00"
+                          value={buyer.cpfCnpj}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            buyers: prev.buyers.map((b, i) => i === index ? { ...b, cpfCnpj: maskCPFOrCNPJ(e.target.value) } : b)
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Telefone</Label>
+                        <Input
+                          placeholder="(00) 00000-0000"
+                          value={buyer.phone}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            buyers: prev.buyers.map((b, i) => i === index ? { ...b, phone: maskPhone(e.target.value) } : b)
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Origem do Cliente</Label>
+                        <Select value={buyer.origin || ""} onValueChange={(value) => setFormData(prev => ({
+                          ...prev,
+                          buyers: prev.buyers.map((b, i) => i === index ? { ...b, origin: value } : b)
+                        }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {CLIENT_ORIGINS.map((origin) => (
+                              <SelectItem key={origin.value} value={origin.value}>
+                                {origin.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
-                    <p className={`text-xs mt-1 ${cpfValidation.buyer === "invalid" ? "text-red-500" : "text-slate-500"}`}>
-                      {cpfValidation.buyer === "invalid" ? "CPF/CNPJ inválido" : "Formatação e validação automática"}
-                    </p>
                   </div>
-                  <div>
-                    <Label>Telefone</Label>
-                    <Input
-                      placeholder="(00) 00000-0000"
-                      value={formData.buyerPhone}
-                      onChange={(e) => handlePhoneChange("buyerPhone", e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label>Origem do Cliente</Label>
-                    <Select value={formData.clientOrigin} onValueChange={(value) => handleInputChange("clientOrigin", value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CLIENT_ORIGINS.map((origin) => (
-                          <SelectItem key={origin.value} value={origin.value}>
-                            {origin.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                ))}
               </CardContent>
             </Card>
 
-            {/* Seller Section */}
+            {/* Seller Section - Multiple Sellers */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Dados do Cliente Vendedor</CardTitle>
-                <CardDescription>Dados utilizados na Nota Fiscal</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex justify-between items-center">
                   <div>
-                    <Label>Nome *</Label>
-                    <Input
-                      placeholder="Nome completo"
-                      value={formData.sellerName}
-                      onChange={(e) => handleInputChange("sellerName", e.target.value)}
-                      className={completionStatus.sellerName ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.sellerName ? "bg-red-50 border-red-400" : ""}
-                    />
+                    <CardTitle className="text-lg">Dados do Cliente Vendedor</CardTitle>
+                    <CardDescription>Dados utilizados na Nota Fiscal (Mínimo 1 obrigatório)</CardDescription>
                   </div>
-                  <div>
-                    <Label>CPF/CNPJ *</Label>
-                    <div className="relative">
-                      <Input
-                        placeholder="000.000.000-00"
-                        value={formData.sellerCpfCnpj}
-                        onChange={(e) => handleCpfCnpjChange(e.target.value, "seller")}
-                        className={`pr-10 ${cpfValidation.seller === "valid" ? "bg-green-50 border-green-400" : cpfValidation.seller === "invalid" ? "bg-red-50 border-red-400" : completionStatus.sellerCpfCnpj ? "bg-green-50 border-green-300" : ""}`}
-                      />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <ValidationIcon status={cpfValidation.seller} />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      sellers: [...prev.sellers, { name: "", cpfCnpj: "", phone: "" }]
+                    }))}
+                  >
+                    + Adicionar Vendedor
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {formData.sellers.map((seller, index) => (
+                  <div key={index} className="border rounded-lg p-4 space-y-4 relative">
+                    {formData.sellers.length > 1 && (
+                      <button
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          sellers: prev.sellers.filter((_, i) => i !== index)
+                        }))}
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                      >
+                        <XCircle size={20} />
+                      </button>
+                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Nome *</Label>
+                        <Input
+                          placeholder="Nome completo"
+                          value={seller.name}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            sellers: prev.sellers.map((s, i) => i === index ? { ...s, name: e.target.value } : s)
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>CPF/CNPJ *</Label>
+                        <Input
+                          placeholder="000.000.000-00"
+                          value={seller.cpfCnpj}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            sellers: prev.sellers.map((s, i) => i === index ? { ...s, cpfCnpj: maskCPFOrCNPJ(e.target.value) } : s)
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Telefone</Label>
+                        <Input
+                          placeholder="(00) 00000-0000"
+                          value={seller.phone}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            sellers: prev.sellers.map((s, i) => i === index ? { ...s, phone: maskPhone(e.target.value) } : s)
+                          }))}
+                        />
                       </div>
                     </div>
-                    <p className={`text-xs mt-1 ${cpfValidation.seller === "invalid" ? "text-red-500" : "text-slate-500"}`}>
-                      {cpfValidation.seller === "invalid" ? "CPF/CNPJ inválido" : "Formatação e validação automática"}
-                    </p>
                   </div>
-                  <div>
-                    <Label>Telefone</Label>
-                    <Input
-                      placeholder="(00) 00000-0000"
-                      value={formData.sellerPhone}
-                      onChange={(e) => handlePhoneChange("sellerPhone", e.target.value)}
-                    />
-                  </div>
-                </div>
+                ))}
               </CardContent>
             </Card>
 
