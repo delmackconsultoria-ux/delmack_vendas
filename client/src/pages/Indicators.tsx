@@ -408,6 +408,7 @@ export default function Indicators() {
         total: totalValue,
         months: monthlyValues as any,
         isCurrency: indicator.isCurrency,
+        isManualData: indicator.isManualData,
       });
     });
 
