@@ -9,14 +9,15 @@ import { ArrowLeft, Save, Search, CheckCircle, Loader, CheckCircle2, AlertCircle
 import { useState, useMemo, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
-import { CommissionSection } from "@/components/CommissionSection";
+import CommissionSection from "@/components/CommissionSection";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import ErrorModal from "@/components/ErrorModal";
 import { validateCPFOrCNPJ, formatCPF, formatCNPJ, validateCEP, fetchAddressFromCEP, formatPhone, BRAZILIAN_STATES, maskCPFOrCNPJ, maskCEP, maskPhone } from "@/lib/validators";
 import { calculateCommissions, formatCurrency, BusinessType } from "@/lib/commissionCalculator";
 import { getProperfyFieldClassName } from "@/lib/properfyFieldHelper";
-import { formatWhileTyping, parseCurrencyInput } from "@/lib/currencyFormatter";
+import { formatWhileTyping, parseCurrencyInput, formatArea, parseAreaInput } from "@/lib/currencyFormatter";
+import ReactInputMask from 'react-input-mask';
 
 // Tipos de Comissão conforme manual de comissionamento Baggio Imóveis (12/02/2026)
 const COMMISSION_TYPES = [
@@ -1249,36 +1250,54 @@ export default function NewProposal() {
                   </div>
                   <div>
                     <Label>Área Privativa (m²) *</Label>
-                    <Input
-                      type="number"
-                      placeholder="Ex: 120.50"
+                    <ReactInputMask
+                      mask="#.##0,00"
                       value={formData.privateArea}
                       onChange={(e) => handleInputChange("privateArea", e.target.value)}
-                      className={getProperfyFieldClassName("privateArea", formData.privateArea, completionStatus.privateArea, attemptedSave, true)}
-                    />
+                      placeholder="Ex: 120,50"
+                    >
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          type="text"
+                          className={getProperfyFieldClassName("privateArea", formData.privateArea, completionStatus.privateArea, attemptedSave, true)}
+                        />
+                      )}
+                    </ReactInputMask>
                   </div>
                   <div>
                     <Label>Área Total (m²) *</Label>
-                    <Input
-                      type="number"
-                      placeholder="Ex: 150.00"
+                    <ReactInputMask
+                      mask="#.##0,00"
                       value={formData.totalArea}
                       onChange={(e) => handleInputChange("totalArea", e.target.value)}
-                      className={getProperfyFieldClassName("totalArea", formData.totalArea, completionStatus.totalArea, attemptedSave, true)}
-                    />
+                      placeholder="Ex: 150,00"
+                    >
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          type="text"
+                          className={getProperfyFieldClassName("totalArea", formData.totalArea, completionStatus.totalArea, attemptedSave, true)}
+                        />
+                      )}
+                    </ReactInputMask>
                   </div>
                   <div>
                     <Label>Custo por m² (Área Privativa)</Label>
-                    <Input
-                      type="text"
-                      placeholder="Ex: 5000,00"
+                    <ReactInputMask
+                      mask="#.##0,00"
                       value={formData.costPerM2}
-                      onChange={(e) => {
-                        const formatted = formatWhileTyping(e.target.value);
-                        handleInputChange("costPerM2", formatted);
-                      }}
-                      className={getProperfyFieldClassName("costPerM2", formData.costPerM2)}
-                    />
+                      onChange={(e) => handleInputChange("costPerM2", e.target.value)}
+                      placeholder="Ex: 5.000,00"
+                    >
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          type="text"
+                          className={getProperfyFieldClassName("costPerM2", formData.costPerM2)}
+                        />
+                      )}
+                    </ReactInputMask>
                   </div>
                   <div>
                     <Label>Idade do Imóvel (anos)</Label>
@@ -1517,30 +1536,37 @@ export default function NewProposal() {
                   </div>
                   <div>
                     <Label>Valor da Venda *</Label>
-                    <Input
-                      type="text"
+                    <ReactInputMask
+                      mask="#.##0,00"
+                      value={formData.saleValue}
+                      onChange={(e) => handleInputChange("saleValue", e.target.value)}
                       placeholder="R$ 0,00"
-                      defaultValue={formData.saleValue}
-                      onBlur={(e) => {
-                        const formatted = formatWhileTyping(e.target.value);
-                        e.target.value = formatted;
-                        handleInputChange("saleValue", formatted);
-                      }}
-                      className={completionStatus.saleValue ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.saleValue ? "bg-red-50 border-red-400" : ""}
-                    />
+                    >
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          type="text"
+                          className={completionStatus.saleValue ? "bg-green-50 border-green-300" : attemptedSave && !completionStatus.saleValue ? "bg-red-50 border-red-400" : ""}
+                        />
+                      )}
+                    </ReactInputMask>
                   </div>
                   <div>
                     <Label>Valor de Divulgação</Label>
-                    <Input
-                      type="text"
-                      placeholder="0,00"
+                    <ReactInputMask
+                      mask="#.##0,00"
                       value={formData.advertisementValue}
-                      onChange={(e) => {
-                        const formatted = formatWhileTyping(e.target.value);
-                        handleInputChange("advertisementValue", formatted);
-                      }}
-                      className={getProperfyFieldClassName("advertisementValue", formData.advertisementValue)}
-                    />
+                      onChange={(e) => handleInputChange("advertisementValue", e.target.value)}
+                      placeholder="0,00"
+                    >
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          type="text"
+                          className={getProperfyFieldClassName("advertisementValue", formData.advertisementValue)}
+                        />
+                      )}
+                    </ReactInputMask>
                   </div>
                   <div>
                     <Label>Previsão de Recebimento</Label>
@@ -1567,16 +1593,19 @@ export default function NewProposal() {
                   </div>
                   <div>
                     <Label>Valor Financiado</Label>
-                    <Input
-                      type="text"
+                    <ReactInputMask
+                      mask="#.##0,00"
+                      value={formData.financedValue}
+                      onChange={(e) => handleInputChange("financedValue", e.target.value)}
                       placeholder="R$ 0,00"
-                      defaultValue={formData.financedValue}
-                      onBlur={(e) => {
-                        const formatted = formatWhileTyping(e.target.value);
-                        e.target.value = formatted;
-                        handleInputChange("financedValue", formatted);
-                      }}
-                    />
+                    >
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          type="text"
+                        />
+                      )}
+                    </ReactInputMask>
                   </div>
                   <div>
                     <Label>Comprou para Investimento ou Moradia?</Label>

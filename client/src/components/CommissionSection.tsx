@@ -148,9 +148,11 @@ function calculateCommission(
 interface CommissionSectionProps {
   formData: any;
   handleInputChange: (field: any, value: any) => void;
+  attemptedSave?: boolean;
+  completionStatus?: any;
 }
 
-export function CommissionSection({ formData, handleInputChange }: CommissionSectionProps) {
+export default function CommissionSection({ formData, handleInputChange }: CommissionSectionProps) {
   
   // Função para recalcular comissões quando tipo ou valor muda
   const handleCommissionTypeChange = (tipo: string) => {
