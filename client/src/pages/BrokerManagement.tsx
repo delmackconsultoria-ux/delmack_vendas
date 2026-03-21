@@ -75,6 +75,7 @@ interface FormData {
   email: string;
   phone: string;
   status: "active" | "inactive";
+  role: "broker" | "finance" | "manager";
   teamMembers?: TeamMember[];
 }
 
@@ -102,6 +103,7 @@ export default function BrokerManagementPage() {
     email: "",
     phone: "",
     status: "active",
+    role: "broker",
     teamMembers: [],
   });
   const [teamFormData, setTeamFormData] = useState<TeamFormData>({
@@ -151,7 +153,7 @@ export default function BrokerManagementPage() {
 
   const handleOpenAddModal = () => {
     setEditingBroker(null);
-    setFormData({ name: "", email: "", phone: "", status: "active", teamMembers: [] });
+    setFormData({ name: "", email: "", phone: "", status: "active", role: "broker", teamMembers: [] });
     setShowModal(true);
   };
 
@@ -163,6 +165,7 @@ export default function BrokerManagementPage() {
       email: broker.email,
       phone: broker.phone,
       status: broker.status,
+      role: broker.role,
       teamMembers: broker.teamMembers || [],
     });
     setShowModal(true);
@@ -575,19 +578,20 @@ export default function BrokerManagementPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700">Status</label>
+                <label className="text-sm font-medium text-slate-700">Perfil</label>
                 <select
-                  value={formData.status}
+                  value={formData.role}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      status: e.target.value as "active" | "inactive",
+                      role: e.target.value as "broker" | "finance" | "manager",
                     })
                   }
                   className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-md"
                 >
-                  <option value="active">Ativo</option>
-                  <option value="inactive">Inativo</option>
+                  <option value="broker">Corretor</option>
+                  <option value="finance">Financeiro</option>
+                  <option value="manager">Gerente</option>
                 </select>
               </div>
 
