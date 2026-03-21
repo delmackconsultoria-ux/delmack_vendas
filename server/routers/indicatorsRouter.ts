@@ -157,8 +157,9 @@ export const indicatorsRouter = router({
           companyId
         );
         const vso = await properfyIndicators.calculateVSO(
-          salesCount,
-          prevMonthActiveProperties
+          startDate,
+          endDate,
+          companyId
         );
         const readyAttendances = await properfyIndicators.calculateReadyAttendances(
           startDate,
@@ -364,8 +365,9 @@ export const indicatorsRouter = router({
             // VSO só é calculado a partir de março (mês 3)
             if (month >= 3) {
               vso = await properfyIndicators.calculateVSO(
-                salesCount,
-                prevMonthActiveProperties
+                startDate,
+                endDate,
+                companyId
               );
             }
             readyAttendances = await properfyIndicators.calculateReadyAttendances(

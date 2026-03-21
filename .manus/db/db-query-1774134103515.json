@@ -1,0 +1,18 @@
+{
+  "query": "SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as com_dteNewListing,\n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN chrTransactionType = 'sale' THEN 1 ELSE 0 END) as tipo_venda,\n  SUM(CASE WHEN chrTransactionType = 'sale' AND dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as venda_com_dteNewListing,\n  SUM(CASE WHEN chrTransactionType = 'sale' AND dteTermination IS NOT NULL THEN 1 ELSE 0 END) as venda_com_dteTermination\nFROM properfyProperties",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as com_dteNewListing,\n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN chrTransactionType = 'sale' THEN 1 ELSE 0 END) as tipo_venda,\n  SUM(CASE WHEN chrTransactionType = 'sale' AND dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as venda_com_dteNewListing,\n  SUM(CASE WHEN chrTransactionType = 'sale' AND dteTermination IS NOT NULL THEN 1 ELSE 0 END) as venda_com_dteTermination\nFROM properfyProperties",
+  "rows": [
+    {
+      "total": "5084",
+      "com_dteNewListing": "0",
+      "com_dteTermination": "0",
+      "tipo_venda": "2257",
+      "venda_com_dteNewListing": "0",
+      "venda_com_dteTermination": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tcom_dteNewListing\tcom_dteTermination\ttipo_venda\tvenda_com_dteNewListing\tvenda_com_dteTermination\n5084\t0\t0\t2257\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 412
+}

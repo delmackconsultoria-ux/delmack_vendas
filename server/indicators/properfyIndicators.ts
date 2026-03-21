@@ -1,10 +1,13 @@
 import { getDb } from "../db";
-import { properfyProperties } from "../../drizzle/schema";
+import { properfyLeads } from "../../drizzle/schema";
 import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
+
+const PROPERFY_API_URL = (process.env.PROPERFY_API_URL || 'https://sandbox.properfy.com.br/api').replace('/auth/token', '').replace(/\/$/, '');
+const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN || '';
 
 /**
  * Carteira de Divulgação (em número)
- * Contagem de imóveis ativos para venda
+ * Busca DIRETO DA API: Contagem de imóveis ativos para venda
  * Filtro: chrTransactionType = 'sale' AND chrStatus = 'LISTED' AND isActive = 1
  * NOTA: Apenas imóveis para VENDA, nunca locação
  */
@@ -14,34 +17,30 @@ export async function calculateActivePropertiesCount(
   companyId?: string
 ): Promise<number> {
   try {
-    const db = await getDb();
-    if (!db) {
-      console.warn("[calculateActivePropertiesCount] Database not available");
+    const response = await fetch(`${PROPERFY_API_URL}/imovel/listar`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PROPERFY_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.warn("[calculateActivePropertiesCount] API Error:", response.status);
       return 0;
     }
 
-    // Validar datas
-    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
-      console.warn("[calculateActivePropertiesCount] Invalid dates", { startDate, endDate });
-      return 0;
-    }
+    const data = await response.json();
+    const properties = data.data || [];
 
-    // Contar imóveis para VENDA com status LISTED e isActive = 1
-    const conditions = [
-      eq(properfyProperties.chrTransactionType, "sale"),
-      eq(properfyProperties.chrStatus, "LISTED"),
-      eq(properfyProperties.isActive, 1)
-    ];
-    
-    // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
+    // Filtrar: chrTransactionType = 'sale' AND chrStatus = 'LISTED' AND isActive = 1
+    const filtered = properties.filter((p: any) =>
+      p.chrTransactionType === "sale" &&
+      p.chrStatus === "LISTED" &&
+      p.isActive === 1
+    );
 
-    const result = await db
-      .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
-      .from(properfyProperties)
-      .where(and(...conditions));
-
-    const count = result[0]?.count || 0;
-    return typeof count === 'number' ? count : parseInt(String(count), 10) || 0;
+    return filtered.length;
   } catch (error) {
     console.error("[calculateActivePropertiesCount] Error:", error);
     return 0;
@@ -50,7 +49,7 @@ export async function calculateActivePropertiesCount(
 
 /**
  * Angariações mês
- * Contagem de imóveis para VENDA com dteNewListing dentro do mês corrente
+ * Busca DIRETO DA API: Contagem de imóveis para VENDA com dteNewListing dentro do mês corrente
  * Filtro: chrTransactionType = 'sale' AND dteNewListing >= startDate AND dteNewListing <= endDate
  * NOTA: Apenas imóveis para VENDA, nunca locação. Usa dteNewListing para data real de angariação
  */
@@ -60,34 +59,32 @@ export async function calculateAngariationsCount(
   companyId?: string
 ): Promise<number> {
   try {
-    const db = await getDb();
-    if (!db) {
-      console.warn("[calculateAngariationsCount] Database not available");
+    const response = await fetch(`${PROPERFY_API_URL}/imovel/listar`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PROPERFY_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.warn("[calculateAngariationsCount] API Error:", response.status);
       return 0;
     }
 
-    // Validar datas
-    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
-      console.warn("[calculateAngariationsCount] Invalid dates", { startDate, endDate });
-      return 0;
-    }
+    const data = await response.json();
+    const properties = data.data || [];
 
-    // Contar imóveis para VENDA com dteNewListing dentro do período
-    const conditions = [
-      eq(properfyProperties.chrTransactionType, "sale"),
-      sql`${properfyProperties.dteNewListing} IS NOT NULL`,
-      sql`${properfyProperties.dteNewListing} >= ${startDate} AND ${properfyProperties.dteNewListing} <= ${endDate}`
-    ];
-    
-    // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
+    // Filtrar: chrTransactionType = 'sale' AND dteNewListing dentro do período
+    const filtered = properties.filter((p: any) => {
+      if (p.chrTransactionType !== "sale") return false;
+      if (!p.dteNewListing) return false;
 
-    const result = await db
-      .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
-      .from(properfyProperties)
-      .where(and(...conditions));
+      const dteNewListing = new Date(p.dteNewListing);
+      return dteNewListing >= startDate && dteNewListing <= endDate;
+    });
 
-    const count = result[0]?.count || 0;
-    return typeof count === 'number' ? count : parseInt(String(count), 10) || 0;
+    return filtered.length;
   } catch (error) {
     console.error("[calculateAngariationsCount] Error:", error);
     return 0;
@@ -95,11 +92,10 @@ export async function calculateAngariationsCount(
 }
 
 /**
- * Baixas no mês (em quantidade)
- * Contagem de imóveis anunciados para VENDA que saíram da carteira durante o período
- * Filtra por: chrTransactionType='sale' E chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')
- * E dteTermination entre startDate e endDate
- * NOTA: Se dteTermination estiver vazio, usa updatedAt como fallback
+ * Baixas no mês
+ * Busca DIRETO DA API: Contagem de imóveis para VENDA com baixa durante o mês
+ * Filtro: chrTransactionType = 'sale' AND chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')
+ * NOTA: Apenas imóveis para VENDA, nunca locação
  */
 export async function calculateRemovedPropertiesCount(
   startDate: Date,
@@ -107,39 +103,29 @@ export async function calculateRemovedPropertiesCount(
   companyId?: string
 ): Promise<number> {
   try {
-    const db = await getDb();
-    if (!db) {
-      console.warn("[calculateRemovedPropertiesCount] Database not available");
+    const response = await fetch(`${PROPERFY_API_URL}/imovel/listar`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PROPERFY_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.warn("[calculateRemovedPropertiesCount] API Error:", response.status);
       return 0;
     }
 
-    // Validar datas
-    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
-      console.warn("[calculateRemovedPropertiesCount] Invalid dates", { startDate, endDate });
-      return 0;
-    }
+    const data = await response.json();
+    const properties = data.data || [];
 
-    // Contar imóveis anunciados para VENDA que saíram da carteira no período específico
-    const conditions = [
-      eq(properfyProperties.chrTransactionType, "sale"), // Apenas imóveis para venda
-      sql`${properfyProperties.chrStatus} IN ('REMOVED', 'RENTED', 'IN_TERMINATION')`,
-      // Filtrar por período: se dteTermination existe, usar; senão usar updatedAt
-      sql`(
-        (${properfyProperties.dteTermination} IS NOT NULL AND ${properfyProperties.dteTermination} >= ${startDate} AND ${properfyProperties.dteTermination} <= ${endDate})
-        OR
-        (${properfyProperties.dteTermination} IS NULL AND ${properfyProperties.updatedAt} >= ${startDate} AND ${properfyProperties.updatedAt} <= ${endDate})
-      )`
-    ];
-    
-    // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
+    // Filtrar: chrTransactionType = 'sale' AND chrStatus em baixa
+    const filtered = properties.filter((p: any) =>
+      p.chrTransactionType === "sale" &&
+      ["REMOVED", "RENTED", "IN_TERMINATION"].includes(p.chrStatus)
+    );
 
-    const result = await db
-      .select({ count: sql<number>`COUNT(${properfyProperties.id})` })
-      .from(properfyProperties)
-      .where(and(...conditions));
-
-    const count = result[0]?.count || 0;
-    return typeof count === 'number' ? count : parseInt(String(count), 10) || 0;
+    return filtered.length;
   } catch (error) {
     console.error("[calculateRemovedPropertiesCount] Error:", error);
     return 0;
@@ -147,34 +133,46 @@ export async function calculateRemovedPropertiesCount(
 }
 
 /**
- * VSO — venda / oferta
- * Vendas do mês (unidades) ÷ carteira de imóveis ativos do mês anterior
- * Retorna como decimal (ex: 0.034 para 3,4%)
- * Requer dados do Sistema de Vendas + Properfy
+ * VSO - venda/oferta
+ * Busca DIRETO DA API: Calcula percentual de vendas vs ofertas
+ * Fórmula: (Negócios / Carteira de Divulgação) * 100
  */
 export async function calculateVSO(
-  salesCountMonth: number,
-  previousMonthActiveProperties: number
+  startDate: Date,
+  endDate: Date,
+  companyId?: string
 ): Promise<number> {
   try {
-    // Validar inputs
-    if (typeof salesCountMonth !== 'number' || typeof previousMonthActiveProperties !== 'number') {
-      console.warn("[calculateVSO] Invalid inputs", { salesCountMonth, previousMonthActiveProperties });
+    const response = await fetch(`${PROPERFY_API_URL}/imovel/listar`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PROPERFY_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.warn("[calculateVSO] API Error:", response.status);
       return 0;
     }
 
-    // Se não há carteira anterior, VSO é 0
-    if (previousMonthActiveProperties === 0) {
-      return 0;
-    }
+    const data = await response.json();
+    const properties = data.data || [];
 
-    // Se não há vendas, VSO é 0
-    if (salesCountMonth === 0) {
-      return 0;
-    }
+    // Contar vendas (chrStatus = 'REMOVED' ou similar)
+    const vendas = properties.filter((p: any) =>
+      p.chrTransactionType === "sale" &&
+      p.chrStatus === "REMOVED"
+    ).length;
 
-    const vso = salesCountMonth / previousMonthActiveProperties;
-    return typeof vso === 'number' && !isNaN(vso) ? vso : 0;
+    // Contar carteira ativa
+    const carteira = properties.filter((p: any) =>
+      p.chrTransactionType === "sale" &&
+      p.chrStatus === "LISTED"
+    ).length;
+
+    if (carteira === 0) return 0;
+    return (vendas / carteira) * 100;
   } catch (error) {
     console.error("[calculateVSO] Error:", error);
     return 0;
@@ -182,26 +180,42 @@ export async function calculateVSO(
 }
 
 /**
- * Número de atendimentos Prontos
- * Contagem de leads vinculados a imóveis prontos no mês
- * Importado de properfyLeadsSync.ts
+ * Atendimentos Prontos
+ * Busca DIRETO DA API: Contagem de leads com status 'READY' para imóveis de venda
  */
 export async function calculateReadyAttendances(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  companyId?: string
 ): Promise<number> {
   try {
-    // Validar datas
-    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
-      console.warn("[calculateReadyAttendances] Invalid dates", { startDate, endDate });
+    const db = await getDb();
+    if (!db) {
+      console.warn("[calculateReadyAttendances] Database not available");
       return 0;
     }
 
-    const { calculateReadyAttendances: calculateReady } = await import(
-      "./properfyLeadsSync"
-    );
-    const result = await calculateReady(startDate, endDate);
-    return typeof result === 'number' && !isNaN(result) ? result : 0;
+    // Buscar leads com status 'READY'
+    const response = await fetch(`${PROPERFY_API_URL}/lead/listar`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PROPERFY_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.warn("[calculateReadyAttendances] API Error:", response.status);
+      return 0;
+    }
+
+    const data = await response.json();
+    const leads = data.data || [];
+
+    // Filtrar leads com status 'READY' e que pertencem a imóveis de venda
+    const filtered = leads.filter((l: any) => l.chrStatus === "READY");
+
+    return filtered.length;
   } catch (error) {
     console.error("[calculateReadyAttendances] Error:", error);
     return 0;
@@ -209,79 +223,94 @@ export async function calculateReadyAttendances(
 }
 
 /**
- * Número de atendimentos Lançamentos
- * Contagem de leads vinculados a lançamentos no mês
- * Importado de properfyLeadsSync.ts
+ * Atendimentos Lançamentos
+ * Busca DIRETO DA API: Contagem de leads com status 'LAUNCH' para imóveis de venda
  */
 export async function calculateLaunchAttendances(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  companyId?: string
 ): Promise<number> {
   try {
-    // Validar datas
-    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
-      console.warn("[calculateLaunchAttendances] Invalid dates", { startDate, endDate });
+    const db = await getDb();
+    if (!db) {
+      console.warn("[calculateLaunchAttendances] Database not available");
       return 0;
     }
 
-    const { calculateLaunchAttendances: calculateLaunch } = await import(
-      "./properfyLeadsSync"
-    );
-    const result = await calculateLaunch(startDate, endDate);
-    return typeof result === 'number' && !isNaN(result) ? result : 0;
+    // Buscar leads com status 'LAUNCH'
+    const response = await fetch(`${PROPERFY_API_URL}/lead/listar`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PROPERFY_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.warn("[calculateLaunchAttendances] API Error:", response.status);
+      return 0;
+    }
+
+    const data = await response.json();
+    const leads = data.data || [];
+
+    // Filtrar leads com status 'LAUNCH'
+    const filtered = leads.filter((l: any) => l.chrStatus === "LAUNCH");
+
+    return filtered.length;
   } catch (error) {
     console.error("[calculateLaunchAttendances] Error:", error);
     return 0;
   }
 }
 
-
 /**
- * Tempo medio de venda angariada X venda
- * Calcula dias entre data de angariacao (dteNewListing do Properfy) e data de venda (saleDate do Delmack)
- * Usa propertiesCache para conectar as duas tabelas
+ * Tempo médio de venda (angariação X venda)
+ * Busca DIRETO DA API: Calcula tempo médio entre angariação e venda
  */
 export async function calculateAverageSaleTime(
   startDate: Date,
   endDate: Date,
-  companyId: string
+  companyId?: string
 ): Promise<number> {
   try {
-    const db = await getDb();
-    if (!db) {
-      console.warn("[calculateAverageSaleTime] Database not available");
+    const response = await fetch(`${PROPERFY_API_URL}/imovel/listar`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PROPERFY_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.warn("[calculateAverageSaleTime] API Error:", response.status);
       return 0;
     }
 
-    // Validar inputs
-    if (!startDate || !endDate || !(startDate instanceof Date) || !(endDate instanceof Date)) {
-      console.warn("[calculateAverageSaleTime] Invalid dates", { startDate, endDate });
-      return 0;
-    }
+    const data = await response.json();
+    const properties = data.data || [];
 
-    if (!companyId || typeof companyId !== 'string') {
-      console.warn("[calculateAverageSaleTime] Invalid companyId", { companyId });
-      return 0;
-    }
+    // Filtrar imóveis vendidos (chrStatus = 'REMOVED') com ambas as datas
+    const vendidos = properties.filter((p: any) =>
+      p.chrTransactionType === "sale" &&
+      p.chrStatus === "REMOVED" &&
+      p.dteNewListing &&
+      p.dteTermination
+    );
 
-    // Calcular dias entre dteNewListing (Properfy) e saleDate (Delmack)
-    // Usa propertiesCache.delmackPropertyId para conectar com sales.propertyId
-    const { sales } = await import("../../drizzle/schema");
-    
-    const result = await db.execute(sql`
-      SELECT AVG(DATEDIFF(s.saleDate, COALESCE(pc.dteNewListing, pc.createdAt))) as avgDays
-      FROM sales s
-      INNER JOIN propertiesCache pc ON s.propertyId = pc.delmackPropertyId
-      WHERE pc.companyId = ${companyId}
-        AND s.saleDate >= ${startDate}
-        AND s.saleDate <= ${endDate}
-        AND s.status = 'commission_paid'
-        AND COALESCE(pc.dteNewListing, pc.createdAt) IS NOT NULL
-    `);
+    if (vendidos.length === 0) return 0;
 
-    const avgDays = (result as any)?.[0]?.avgDays || 0;
-    const rounded = Math.round(avgDays);
-    return typeof rounded === 'number' && !isNaN(rounded) ? rounded : 0;
+    // Calcular tempo médio em dias
+    const tempos = vendidos.map((p: any) => {
+      const inicio = new Date(p.dteNewListing);
+      const fim = new Date(p.dteTermination);
+      const dias = Math.floor((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
+      return dias;
+    });
+
+    const media = tempos.reduce((a: number, b: number) => a + b, 0) / tempos.length;
+    return Math.round(media);
   } catch (error) {
     console.error("[calculateAverageSaleTime] Error:", error);
     return 0;
