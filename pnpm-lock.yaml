@@ -176,9 +176,6 @@ importers:
       react-hook-form:
         specifier: ^7.64.0
         version: 7.71.2(react@19.2.4)
-      react-input-mask:
-        specifier: ^2.0.4
-        version: 2.0.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-number-format:
         specifier: ^5.4.4
         version: 5.4.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -3056,9 +3053,6 @@ packages:
     resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
     engines: {node: '>=12'}
 
-  invariant@2.2.4:
-    resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
-
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
@@ -3367,12 +3361,6 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
-
-  react-input-mask@2.0.4:
-    resolution: {integrity: sha512-1hwzMr/aO9tXfiroiVCx5EtKohKwLk/NT8QlJXHQ4N+yJJFyUuMT+zfTpLBwX/lK3PkuMlievIffncpMZ3HGRQ==}
-    peerDependencies:
-      react: '>=0.14.0'
-      react-dom: '>=0.14.0'
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -3793,9 +3781,6 @@ packages:
         optional: true
       jsdom:
         optional: true
-
-  warning@4.0.3:
-    resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}
 
   why-is-node-running@2.3.0:
     resolution: {integrity: sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w==}
@@ -6745,10 +6730,6 @@ snapshots:
 
   internmap@2.0.3: {}
 
-  invariant@2.2.4:
-    dependencies:
-      loose-envify: 1.4.0
-
   ipaddr.js@1.9.1: {}
 
   is-property@1.0.2: {}
@@ -6980,13 +6961,6 @@ snapshots:
   react-hook-form@7.71.2(react@19.2.4):
     dependencies:
       react: 19.2.4
-
-  react-input-mask@2.0.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
-    dependencies:
-      invariant: 2.2.4
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      warning: 4.0.3
 
   react-is@16.13.1: {}
 
@@ -7440,10 +7414,6 @@ snapshots:
       - sugarss
       - supports-color
       - terser
-
-  warning@4.0.3:
-    dependencies:
-      loose-envify: 1.4.0
 
   why-is-node-running@2.3.0:
     dependencies:
