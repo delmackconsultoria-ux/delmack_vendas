@@ -1,0 +1,22 @@
+{
+  "query": "SELECT \n  'Total com dteTermination NOT NULL' as tipo, COUNT(*) as quantidade\nFROM properfyProperties \nWHERE chrTransactionType = 'sale' \nAND dteTermination IS NOT NULL\nUNION ALL\nSELECT 'Total com dteTermination NULL', COUNT(*) FROM properfyProperties \nWHERE chrTransactionType = 'sale' \nAND dteTermination IS NULL\nUNION ALL\nSELECT 'Total geral (sale)', COUNT(*) FROM properfyProperties \nWHERE chrTransactionType = 'sale'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  'Total com dteTermination NOT NULL' as tipo, COUNT(*) as quantidade\nFROM properfyProperties \nWHERE chrTransactionType = 'sale' \nAND dteTermination IS NOT NULL\nUNION ALL\nSELECT 'Total com dteTermination NULL', COUNT(*) FROM properfyProperties \nWHERE chrTransactionType = 'sale' \nAND dteTermination IS NULL\nUNION ALL\nSELECT 'Total geral (sale)', COUNT(*) FROM properfyProperties \nWHERE chrTransactionType = 'sale'",
+  "rows": [
+    {
+      "tipo": "Total com dteTermination NULL",
+      "quantidade": "2257"
+    },
+    {
+      "tipo": "Total geral (sale)",
+      "quantidade": "2257"
+    },
+    {
+      "tipo": "Total com dteTermination NOT NULL",
+      "quantidade": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipo\tquantidade\nTotal com dteTermination NULL\t2257\nTotal geral (sale)\t2257\nTotal com dteTermination NOT NULL\t0\n",
+  "stderr": "",
+  "execution_time_ms": 458
+}

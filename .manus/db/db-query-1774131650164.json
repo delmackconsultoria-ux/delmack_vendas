@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as total_baixas_marco\nFROM properfyProperties\nWHERE chrTransactionType = 'sale'\nAND chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')\nAND (\n  (dteTermination IS NOT NULL AND dteTermination >= '2026-03-01' AND dteTermination <= '2026-03-31')\n  OR\n  (dteTermination IS NULL AND updatedAt >= '2026-03-01' AND updatedAt <= '2026-03-31')\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_baixas_marco\nFROM properfyProperties\nWHERE chrTransactionType = 'sale'\nAND chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')\nAND (\n  (dteTermination IS NOT NULL AND dteTermination >= '2026-03-01' AND dteTermination <= '2026-03-31')\n  OR\n  (dteTermination IS NULL AND updatedAt >= '2026-03-01' AND updatedAt <= '2026-03-31')\n)",
+  "rows": [
+    {
+      "total_baixas_marco": "1526"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_baixas_marco\n1526\n",
+  "stderr": "",
+  "execution_time_ms": 357
+}

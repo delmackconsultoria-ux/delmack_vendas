@@ -125,7 +125,8 @@ async function fetchLeadsFromPropertyfy(): Promise<any[]> {
 
 /**
  * Calcular número de atendimentos prontos
- * Contagem de leads vinculados a imóveis prontos
+ * Contagem de leads vinculados a imóveis prontos para VENDA
+ * Filtra apenas leads de imóveis com chrTransactionType = 'sale'
  */
 export async function calculateReadyAttendances(
   startDate: Date,
@@ -135,13 +136,18 @@ export async function calculateReadyAttendances(
   if (!db) throw new Error("Database not available");
 
   try {
+    const { properfyProperties } = await import("../../drizzle/schema");
+    const { eq, and } = await import("drizzle-orm");
+    
     const result = await db
       .select({ count: sql<number>`COUNT(${properfyLeads.id})` })
       .from(properfyLeads)
+      .innerJoin(properfyProperties, eq(properfyLeads.propertyId, properfyProperties.id))
       .where(
         sql`${properfyLeads.leadType} = 'ready' 
             AND ${properfyLeads.createdAt} >= ${startDate}
-            AND ${properfyLeads.createdAt} <= ${endDate}`
+            AND ${properfyLeads.createdAt} <= ${endDate}
+            AND ${properfyProperties.chrTransactionType} = 'sale'`
       );
 
     return result[0]?.count || 0;
@@ -153,7 +159,8 @@ export async function calculateReadyAttendances(
 
 /**
  * Calcular número de atendimentos lançamentos
- * Contagem de leads vinculados a lançamentos
+ * Contagem de leads vinculados a lançamentos para VENDA
+ * Filtra apenas leads de imóveis com chrTransactionType = 'sale'
  */
 export async function calculateLaunchAttendances(
   startDate: Date,
@@ -163,13 +170,18 @@ export async function calculateLaunchAttendances(
   if (!db) throw new Error("Database not available");
 
   try {
+    const { properfyProperties } = await import("../../drizzle/schema");
+    const { eq, and } = await import("drizzle-orm");
+    
     const result = await db
       .select({ count: sql<number>`COUNT(${properfyLeads.id})` })
       .from(properfyLeads)
+      .innerJoin(properfyProperties, eq(properfyLeads.propertyId, properfyProperties.id))
       .where(
         sql`${properfyLeads.leadType} = 'launch' 
             AND ${properfyLeads.createdAt} >= ${startDate}
-            AND ${properfyLeads.createdAt} <= ${endDate}`
+            AND ${properfyLeads.createdAt} <= ${endDate}
+            AND ${properfyProperties.chrTransactionType} = 'sale'`
       );
 
     return result[0]?.count || 0;

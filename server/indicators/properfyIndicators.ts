@@ -5,8 +5,8 @@ import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
 /**
  * Carteira de Divulgação (em número)
  * Contagem de imóveis ativos para venda
- * Filtro: chrStatus = 'LISTED' AND isActive = 1
- * NOTA: dteNewListing e dteTermination estão vazios na base, então não usamos para filtro
+ * Filtro: chrTransactionType = 'sale' AND chrStatus = 'LISTED' AND isActive = 1
+ * NOTA: Apenas imóveis para VENDA, nunca locação
  */
 export async function calculateActivePropertiesCount(
   startDate: Date,
@@ -26,9 +26,9 @@ export async function calculateActivePropertiesCount(
       return 0;
     }
 
-    // Contar imóveis com status LISTED e isActive = 1
-    // Não usamos datas porque dteNewListing e dteTermination estão vazios
+    // Contar imóveis para VENDA com status LISTED e isActive = 1
     const conditions = [
+      eq(properfyProperties.chrTransactionType, "sale"),
       eq(properfyProperties.chrStatus, "LISTED"),
       eq(properfyProperties.isActive, 1)
     ];
@@ -50,9 +50,9 @@ export async function calculateActivePropertiesCount(
 
 /**
  * Angariações mês
- * Contagem de imóveis com status NEW_LISTING (recém angariados)
- * Campo: chrStatus = 'NEW_LISTING'
- * NOTA: dteNewListing está vazio, então usamos status em vez de data
+ * Contagem de imóveis para VENDA com dteNewListing dentro do mês corrente
+ * Filtro: chrTransactionType = 'sale' AND dteNewListing >= startDate AND dteNewListing <= endDate
+ * NOTA: Apenas imóveis para VENDA, nunca locação. Usa dteNewListing para data real de angariação
  */
 export async function calculateAngariationsCount(
   startDate: Date,
@@ -72,9 +72,11 @@ export async function calculateAngariationsCount(
       return 0;
     }
 
-    // Contar imóveis com status NEW_LISTING (recém angariados)
+    // Contar imóveis para VENDA com dteNewListing dentro do período
     const conditions = [
-      eq(properfyProperties.chrStatus, "NEW_LISTING")
+      eq(properfyProperties.chrTransactionType, "sale"),
+      sql`${properfyProperties.dteNewListing} IS NOT NULL`,
+      sql`${properfyProperties.dteNewListing} >= ${startDate} AND ${properfyProperties.dteNewListing} <= ${endDate}`
     ];
     
     // Sem filtro de companyId - Properfy puxa dados apenas da Baggio
