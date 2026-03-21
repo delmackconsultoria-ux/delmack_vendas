@@ -188,7 +188,7 @@ export default function ManualDataDrawer({
           {/* Campos de Entrada */}
           <div className="space-y-5 pt-4 border-t">
             {/* Despesa Geral */}
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div>
               <Label htmlFor="despesaGeral" className="text-sm font-medium">Despesa Geral</Label>
               <Input
                 ref={despesaGeralRef}
@@ -200,12 +200,12 @@ export default function ManualDataDrawer({
                   const formatted = formatWhileTyping(e.target.value);
                   e.target.value = formatted;
                 }}
-                className="flex h-10 w-full rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Despesa com Impostos */}
-            <div className="bg-blue-100 p-4 rounded-lg">
+            <div>
               <Label htmlFor="despesaImpostos" className="text-sm font-medium">Despesa com Impostos</Label>
               <Input
                 ref={despesaImpostosRef}
@@ -217,12 +217,12 @@ export default function ManualDataDrawer({
                   const formatted = formatWhileTyping(e.target.value);
                   e.target.value = formatted;
                 }}
-                className="flex h-10 w-full rounded-md border border-blue-300 bg-blue-50 px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Fundo Inovação */}
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div>
               <Label htmlFor="fundoInovacao" className="text-sm font-medium">Fundo Inovação</Label>
               <Input
                 ref={fundoInovacaoRef}
@@ -234,12 +234,12 @@ export default function ManualDataDrawer({
                   const formatted = formatWhileTyping(e.target.value);
                   e.target.value = formatted;
                 }}
-                className="flex h-10 w-full rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Resultado Sócios */}
-            <div className="bg-blue-100 p-4 rounded-lg">
+            <div>
               <Label htmlFor="resultadoSocios" className="text-sm font-medium">Resultado Sócios</Label>
               <Input
                 ref={resultadoSociosRef}
@@ -251,12 +251,12 @@ export default function ManualDataDrawer({
                   const formatted = formatWhileTyping(e.target.value);
                   e.target.value = formatted;
                 }}
-                className="flex h-10 w-full rounded-md border border-blue-300 bg-blue-50 px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
 
             {/* Fundo Emergencial */}
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div>
               <Label htmlFor="fundoEmergencial" className="text-sm font-medium">Fundo Emergencial</Label>
               <Input
                 ref={fundoEmergencialRef}
@@ -268,7 +268,7 @@ export default function ManualDataDrawer({
                   const formatted = formatWhileTyping(e.target.value);
                   e.target.value = formatted;
                 }}
-                className="flex h-10 w-full rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               />
             </div>
           </div>
