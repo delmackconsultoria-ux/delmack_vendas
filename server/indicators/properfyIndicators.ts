@@ -94,8 +94,9 @@ export async function calculateAngariationsCount(
 
 /**
  * Baixas no mês (em quantidade)
- * Contagem de imóveis que saíram da carteira durante o período
- * Filtra por: chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION') E dteTermination entre startDate e endDate
+ * Contagem de imóveis anunciados para VENDA que saíram da carteira durante o período
+ * Filtra por: chrTransactionType='sale' E chrStatus IN ('REMOVED', 'RENTED', 'IN_TERMINATION')
+ * E dteTermination entre startDate e endDate
  * NOTA: Se dteTermination estiver vazio, usa updatedAt como fallback
  */
 export async function calculateRemovedPropertiesCount(
@@ -116,8 +117,9 @@ export async function calculateRemovedPropertiesCount(
       return 0;
     }
 
-    // Contar imóveis que saíram da carteira no período específico
+    // Contar imóveis anunciados para VENDA que saíram da carteira no período específico
     const conditions = [
+      eq(properfyProperties.chrTransactionType, "sale"), // Apenas imóveis para venda
       sql`${properfyProperties.chrStatus} IN ('REMOVED', 'RENTED', 'IN_TERMINATION')`,
       // Filtrar por período: se dteTermination existe, usar; senão usar updatedAt
       sql`(
