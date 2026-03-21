@@ -44,7 +44,7 @@ const navItems: NavItem[] = [
   { label: "Corretores", path: "/brokers", roles: ["manager"] },
   { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
-  { label: "Ranking", path: "/ranking", roles: ["broker", "finance", "viewer"] },
+  { label: "Ranking", path: "/ranking", roles: ["broker", "manager", "finance", "viewer"] },
   // Calendário removido conforme solicitação (22/02/2026)
   // Analytics removido conforme solicitação (13/02/2026)
 ];

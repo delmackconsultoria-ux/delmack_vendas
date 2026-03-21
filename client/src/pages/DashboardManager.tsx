@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Users, Target, Activity, AlertCircle, Trophy } from "lucide-react";
+import { BarChart3, TrendingUp, Users, Target, Activity, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -300,26 +300,7 @@ export default function DashboardManager() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-yellow-600" />
-                  Ranking
-                </CardTitle>
-                <CardDescription>
-                  Desempenho dos corretores
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setLocation("/ranking")}
-                >
-                  Ver Ranking
-                </Button>
-              </CardContent>
-            </Card>
+
           </div>
         </div>
       </div>
