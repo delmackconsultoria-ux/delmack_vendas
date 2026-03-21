@@ -138,7 +138,6 @@ function Router() {
               <Route path="/goal-notifications" component={GoalNotifications} />
               <Route path="/tutorials" component={Tutorials} />
               <Route path="/brokers" component={BrokerManagement} />
-              <Route path="/users" component={ManagerUsers} />
               <Route path="/analytics" component={Analytics} />
               <Route path="/sales-by-responsible" component={SalesByResponsible} />
               <Route path="/listing-rejections" component={ListingRejections} />

@@ -287,10 +287,10 @@ export default function BrokerManagementPage() {
           <div className="mb-6 flex justify-between items-start">
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                Gerenciamento de Corretores
+                Gerenciamento de Usuários
               </h1>
               <p className="text-slate-600 mt-1 text-sm">
-                Gerencie os corretores da sua equipe e acompanhe seu desempenho
+                Gerencie os usuários da sua equipe (Corretores, Gerentes e Financeiro)
               </p>
             </div>
             <Button
@@ -298,7 +298,7 @@ export default function BrokerManagementPage() {
               style={{ backgroundColor: '#0b0bb5' }} className="hover:opacity-90 text-white flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              Adicionar Corretor
+              Adicionar Usuário
             </Button>
           </div>
 
@@ -539,7 +539,7 @@ export default function BrokerManagementPage() {
           <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 sticky top-0 bg-white">
               <CardTitle>
-                {editingBroker ? "Editar Corretor" : "Adicionar Novo Corretor"}
+                {editingBroker ? "Editar Usuário" : "Adicionar Novo Usuário"}
               </CardTitle>
               <button
                 onClick={() => setShowModal(false)}
