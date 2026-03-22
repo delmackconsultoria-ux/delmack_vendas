@@ -92,6 +92,8 @@ export function IndicatorsConsolidatedTable({
   const formatValue = (value: any, isCurrency: boolean = true, isPercentage: boolean = false, isInteger: boolean = false): string => {
     if (typeof value === "string") return value;
     if (typeof value === "number") {
+      // Retornar vazio se o valor for 0
+      if (value === 0) return "";
       // Formatar como percentual se isPercentage for true
       if (isPercentage) {
         return formatPercentage(value);
@@ -106,7 +108,7 @@ export function IndicatorsConsolidatedTable({
       }
       return formatNumber(value);
     }
-    return "-";
+    return "";
   };
 
   const getPercentageColor = (percentage: number): string => {
@@ -117,7 +119,8 @@ export function IndicatorsConsolidatedTable({
 
   const getMonthColor = (monthValue: number, monthlyGoal: number | string): string => {
     const goal = typeof monthlyGoal === "string" ? parseFloat(monthlyGoal) : monthlyGoal;
-    if (goal === 0) return "";
+    // Não colorir se o valor for 0 ou se a meta for 0
+    if (monthValue === 0 || goal === 0) return "";
     
     if (monthValue >= goal) {
       return "bg-green-100 text-green-900";

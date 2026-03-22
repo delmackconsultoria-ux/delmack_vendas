@@ -335,3 +335,19 @@
 - [ ] Corrigir a formatação de cada indicador de acordo com seu tipo
 - [ ] Testar na página de indicadores
 - [ ] Salvar checkpoint
+
+
+---
+
+## ✅ NOVA FASE: Correções de Formatação de Indicadores (22/03/2026)
+
+### Correção de Cálculos e Formatação
+- [x] Corrigir função calculateVSO para usar startDate e endDate corretamente
+- [x] Remover multiplicação por 100 nos cálculos de percentuais (calculatePercentCommissionSold, calculatePercentCancelledPending, calculateVSO)
+- [x] Adicionar suporte a formatação de percentuais (X,XX%) e unidades (sem decimais)
+- [x] Adicionar propriedades isPercentage e isInteger aos indicadores
+- [x] VSO agora exibe corretamente como 2,74% em vez de 321,47%
+- [x] Indicadores de unidades agora exibem sem decimais (10 em vez de 10,0)
+- [x] Remover valores "0" dos campos vazios
+- [x] Deixar campos vazios em branco sem cor vermelha
+- [x] Testar todas as mudanças na página de indicadores
