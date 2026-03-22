@@ -7,6 +7,7 @@ import * as properfySyncService from "../services/properfySyncService";
 import * as goalsHelper from "../indicators/goalsHelper";
 import * as manualDataHelper from "../indicators/manualDataHelper";
 import * as auditLogHelper from "../indicators/auditLogHelper";
+import { syncProperfyCards } from "../services/properfyCardsSyncService";
 import { getDb } from "../db";
 import { indicatorGoals } from "../../drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -614,15 +615,17 @@ export const indicatorsRouter = router({
    */
   syncProperfy: protectedProcedure.mutation(async () => {
     try {
-      // Sincronizar imóveis e leads
+      // Sincronizar imóveis, leads e cards
       const propertiesResult = await properfySyncService.syncAllProperties();
       const leadsResult = await properfyLeadsSync.syncProperfyLeads();
+      const cardsResult = await syncProperfyCards();
       
       return {
         success: true,
-        message: "Sincronização de imóveis e leads concluída",
+        message: "Sincronização de imóveis, leads e cards concluída",
         properties: propertiesResult,
         leads: leadsResult,
+        cards: cardsResult,
       };
     } catch (error) {
       console.error("[Indicators] Erro ao sincronizar Properfy:", error);

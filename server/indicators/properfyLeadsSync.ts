@@ -29,6 +29,11 @@ export async function syncProperfyLeads() {
     for (const lead of leads) {
       const leadId = lead.id || uuid();
       
+      // DEBUG: Log da estrutura do lead
+      if (leads.indexOf(lead) === 0) {
+        console.log("[ProperfyLeadsSync] DEBUG - Primeiro lead recebido:", JSON.stringify(lead, null, 2).substring(0, 500));
+      }
+      
       // Verificar se o lead já existe
       const existing = await db
         .select()

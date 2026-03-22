@@ -60,7 +60,7 @@ async function fetchCardsFromAPI(pageSize: number = 500): Promise<ProperfyCard[]
       const timeoutId = setTimeout(() => {
         console.warn(`[ProperfyCardsSync] Timeout on page ${page}`);
         controller.abort();
-      }, 30000);
+      }, 120000); // 120 segundos timeout para API lenta
 
       try {
         const response = await fetch(url, {
