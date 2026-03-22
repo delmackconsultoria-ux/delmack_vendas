@@ -311,3 +311,27 @@
 - [ ] Validar que snapshot contém todos os 27 indicadores com valores corretos
 - [ ] Implementar endpoint tRPC para visualizar histórico de snapshots
 - [ ] Criar página de auditoria para visualizar snapshots salvos
+
+
+---
+
+## 🔧 NOVA FASE: Correção de Formatação de Indicadores (22/03/2026)
+
+### Problema Identificado
+- [ ] 3 indicadores exibindo em real, mas devem ser %:
+  - [ ] VSO - venda/oferta (Vendas do mês / Carteira do mês anterior)
+  - [ ] % comissão vendida
+  - [ ] % Com cancelada / com pendente (Canceladas / Pendentes)
+- [ ] 6 indicadores exibindo em real, mas devem ser unidades:
+  - [ ] Negócios no mês (unidades)
+  - [ ] Vendas Canceladas
+  - [ ] Negócios na Rede
+  - [ ] Negócios Internos
+  - [ ] Negócios Parceria Externa
+  - [ ] Negócios Lançamentos
+
+### Solução
+- [ ] Localizar onde os indicadores são formatados (Indicators.tsx ou IndicatorsConsolidatedTable.tsx)
+- [ ] Corrigir a formatação de cada indicador de acordo com seu tipo
+- [ ] Testar na página de indicadores
+- [ ] Salvar checkpoint

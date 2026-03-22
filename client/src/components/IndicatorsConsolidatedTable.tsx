@@ -29,6 +29,8 @@ interface IndicatorData {
     dez: number;
   };
   isCurrency?: boolean;
+  isPercentage?: boolean;
+  isInteger?: boolean;
   isManualData?: boolean;
 }
 
@@ -49,6 +51,21 @@ const formatCurrency = (value: number): string => {
 
 const formatNumber = (value: number): string => {
   return new Intl.NumberFormat("pt-BR").format(value);
+};
+
+const formatInteger = (value: number): string => {
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
+const formatPercentage = (value: number): string => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "percent",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 };
 
 export function IndicatorsConsolidatedTable({
@@ -72,10 +89,18 @@ export function IndicatorsConsolidatedTable({
     );
   }
 
-  const formatValue = (value: any, isCurrency: boolean = true): string => {
+  const formatValue = (value: any, isCurrency: boolean = true, isPercentage: boolean = false, isInteger: boolean = false): string => {
     if (typeof value === "string") return value;
     if (typeof value === "number") {
-      // Sempre formatar como moeda se isCurrency for true
+      // Formatar como percentual se isPercentage for true
+      if (isPercentage) {
+        return formatPercentage(value);
+      }
+      // Formatar como inteiro se isInteger for true
+      if (isInteger) {
+        return formatInteger(value);
+      }
+      // Formatar como moeda se isCurrency for true
       if (isCurrency) {
         return formatCurrency(value);
       }
@@ -124,24 +149,24 @@ export function IndicatorsConsolidatedTable({
               <TableCell className={`sticky left-0 z-10 font-medium ${indicator.isManualData ? "bg-blue-50" : "bg-inherit"}`}>
                 {indicator.title}
               </TableCell>
-              <TableCell className="text-right">{formatValue(indicator.monthlyGoal, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className="text-right">{formatValue(indicator.annualAverage, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className="text-right">{formatValue(indicator.monthlyGoal, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right">{formatValue(indicator.annualAverage, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
               <TableCell className={`text-right ${getPercentageColor(parseFloat(String(indicator.percentageAchieved)))}`}>
                 {parseFloat(String(indicator.percentageAchieved)).toFixed(1)}%
               </TableCell>
-              <TableCell className="text-right font-semibold">{formatValue(indicator.total, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.fev, indicator.monthlyGoal)}`}>{formatValue(indicator.months.fev, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.mar, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mar, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.abr, indicator.monthlyGoal)}`}>{formatValue(indicator.months.abr, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.mai, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mai, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jun, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jun, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jul, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jul, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.ago, indicator.monthlyGoal)}`}>{formatValue(indicator.months.ago, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.set, indicator.monthlyGoal)}`}>{formatValue(indicator.months.set, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.out, indicator.monthlyGoal)}`}>{formatValue(indicator.months.out, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.nov, indicator.monthlyGoal)}`}>{formatValue(indicator.months.nov, indicator.isCurrency !== false)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.dez, indicator.monthlyGoal)}`}>{formatValue(indicator.months.dez, indicator.isCurrency !== false)}</TableCell>
+              <TableCell className="text-right font-semibold">{formatValue(indicator.total, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.fev, indicator.monthlyGoal)}`}>{formatValue(indicator.months.fev, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.mar, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mar, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.abr, indicator.monthlyGoal)}`}>{formatValue(indicator.months.abr, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.mai, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mai, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jun, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jun, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.jul, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jul, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.ago, indicator.monthlyGoal)}`}>{formatValue(indicator.months.ago, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.set, indicator.monthlyGoal)}`}>{formatValue(indicator.months.set, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.out, indicator.monthlyGoal)}`}>{formatValue(indicator.months.out, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.nov, indicator.monthlyGoal)}`}>{formatValue(indicator.months.nov, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className={`text-right ${getMonthColor(indicator.months.dez, indicator.monthlyGoal)}`}>{formatValue(indicator.months.dez, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

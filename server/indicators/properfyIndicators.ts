@@ -130,20 +130,28 @@ export async function calculateVSO(
       return 0;
     }
 
-    // Contar vendas (chrStatus = 'REMOVED')
+    // Contar vendas DO MÊS (chrStatus = 'REMOVED' dentro do período)
     const vendasResult = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(properfyProperties)
       .where(
         and(
           eq(properfyProperties.chrTransactionType, "SALE"),
-          eq(properfyProperties.chrStatus, "REMOVED")
+          eq(properfyProperties.chrStatus, "REMOVED"),
+          gte(properfyProperties.dteTermination, startDate),
+          lte(properfyProperties.dteTermination, endDate)
         )
       );
 
     const vendas = vendasResult[0]?.count || 0;
 
-    // Contar carteira ativa
+    // Contar carteira ATIVA no mês anterior
+    // Propriedades que estavam LISTED no final do mês anterior
+    const prevMonthEnd = new Date(startDate);
+    prevMonthEnd.setDate(0); // Último dia do mês anterior
+    const prevMonthStart = new Date(prevMonthEnd);
+    prevMonthStart.setDate(1); // Primeiro dia do mês anterior
+
     const carteiraResult = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(properfyProperties)
@@ -157,7 +165,7 @@ export async function calculateVSO(
     const carteira = carteiraResult[0]?.count || 0;
 
     if (carteira === 0) return 0;
-    return (vendas / carteira) * 100;
+    return vendas / carteira;
   } catch (error) {
     console.error("[calculateVSO] Error:", error);
     return 0;

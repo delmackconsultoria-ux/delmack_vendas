@@ -188,7 +188,7 @@ export async function calculatePercentCommissionSold(
   const totalCommission = await calculateCommissionSold(companyId, startDate, endDate);
 
   if (totalSales.value === 0) return 0;
-  return (totalCommission / totalSales.value) * 100;
+  return totalCommission / totalSales.value;
 }
 
 /**
@@ -281,7 +281,7 @@ export async function calculatePercentCancelledPending(
   const pending = pendingResult[0]?.count || 0;
   if (pending === 0) return 0;
 
-  return (cancelled / pending) * 100;
+  return cancelled / pending;
 }
 
 /**

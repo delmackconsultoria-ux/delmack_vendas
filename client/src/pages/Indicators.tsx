@@ -196,18 +196,24 @@ export default function Indicators() {
         monthlyGoal: (getGoalValue("businessMonth") || 120) / 12,
         annualAverage: getGoalValue("businessMonth") || 120,
         fieldName: "negociosUnidades",
+        isCurrency: false,
+        isInteger: true,
       },
       {
         title: "Vendas Canceladas",
         monthlyGoal: (getGoalValue("cancelledSales") || 24) / 12,
         annualAverage: getGoalValue("cancelledSales") || 24,
         fieldName: "vendidosCancelados",
+        isCurrency: false,
+        isInteger: true,
       },
       {
         title: "VSO - venda/oferta",
-        monthlyGoal: (getGoalValue("vsoRatio") || 0.6) / 12,
+        monthlyGoal: getGoalValue("vsoRatio") || 0.6,
         annualAverage: getGoalValue("vsoRatio") || 0.6,
         fieldName: "vsoVendaOferta",
+        isCurrency: false,
+        isPercentage: true,
       },
       {
         title: "Comissão Recebida",
@@ -250,9 +256,11 @@ export default function Indicators() {
       },
       {
         title: "% comissão vendida",
-        monthlyGoal: (getGoalValue("commissionPercentage") || 0.6) / 12,
+        monthlyGoal: getGoalValue("commissionPercentage") || 0.6,
         annualAverage: getGoalValue("commissionPercentage") || 0.6,
         fieldName: "percentualComissaoVendida",
+        isCurrency: false,
+        isPercentage: true,
       },
       {
         title: "Negócios acima de 1 milhão",
@@ -270,9 +278,11 @@ export default function Indicators() {
       },
       {
         title: "% Com cancelada / com pendente",
-        monthlyGoal: (getGoalValue("cancelledVsPending") || 0.2) / 12,
+        monthlyGoal: getGoalValue("cancelledVsPending") || 0.2,
         annualAverage: getGoalValue("cancelledVsPending") || 0.2,
         fieldName: "percentualCancelada",
+        isCurrency: false,
+        isPercentage: true,
       },
       {
         title: "Valor médio do imóvel de venda",
@@ -285,24 +295,32 @@ export default function Indicators() {
         monthlyGoal: (getGoalValue("businessNetwork") || 30) / 12,
         annualAverage: getGoalValue("businessNetwork") || 30,
         fieldName: "negociosRede",
+        isCurrency: false,
+        isInteger: true,
       },
       {
         title: "Negócios Internos",
         monthlyGoal: (getGoalValue("businessInternal") || 30) / 12,
         annualAverage: getGoalValue("businessInternal") || 30,
         fieldName: "negociosInternos",
+        isCurrency: false,
+        isInteger: true,
       },
       {
         title: "Negócios Parceria Externa",
         monthlyGoal: (getGoalValue("businessExternalPartnership") || 30) / 12,
         annualAverage: getGoalValue("businessExternalPartnership") || 30,
         fieldName: "negociosParcerias",
+        isCurrency: false,
+        isInteger: true,
       },
       {
         title: "Negócios Lançamentos",
         monthlyGoal: (getGoalValue("businessLaunches") || 30) / 12,
         annualAverage: getGoalValue("businessLaunches") || 30,
         fieldName: "negociosLancamentos",
+        isCurrency: false,
+        isInteger: true,
       },
       {
         title: "Número de atendimentos Prontos",
@@ -408,6 +426,8 @@ export default function Indicators() {
         total: totalValue,
         months: monthlyValues as any,
         isCurrency: indicator.isCurrency,
+        isPercentage: indicator.isPercentage,
+        isInteger: indicator.isInteger,
         isManualData: indicator.isManualData,
       });
     });
