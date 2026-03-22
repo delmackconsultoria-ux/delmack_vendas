@@ -1084,3 +1084,84 @@ export const indicatorAuditLog = mysqlTable("indicatorAuditLog", {
 
 export type IndicatorAuditLog = typeof indicatorAuditLog.$inferSelect;
 export type InsertIndicatorAuditLog = typeof indicatorAuditLog.$inferInsert;
+
+
+/**
+ * Properfy Sync History - Histórico de Sincronizações
+ * Rastreia todas as tentativas de sincronização de cards, leads e propriedades
+ */
+export const properfySyncHistory = mysqlTable("properfySyncHistory", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  syncType: mysqlEnum("syncType", ["cards", "properties", "leads"]).notNull(),
+  status: mysqlEnum("status", ["pending", "in_progress", "completed", "failed", "partial"]).notNull(),
+  startedAt: timestamp("startedAt").defaultNow(),
+  completedAt: timestamp("completedAt"),
+  totalRecords: int("totalRecords").default(0),
+  processedRecords: int("processedRecords").default(0),
+  failedRecords: int("failedRecords").default(0),
+  errorMessage: text("errorMessage"),
+  lastPageProcessed: int("lastPageProcessed").default(0),
+  nextPageToProcess: int("nextPageToProcess").default(1),
+  totalPages: int("totalPages").default(0),
+  durationSeconds: int("durationSeconds"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type ProperfySyncHistory = typeof properfySyncHistory.$inferSelect;
+export type InsertProperfySyncHistory = typeof properfySyncHistory.$inferInsert;
+
+/**
+ * Properfy Sync Errors - Erros de Sincronização
+ * Armazena detalhes de erros ocorridos durante sincronizações
+ */
+export const properfySyncErrors = mysqlTable("properfySyncErrors", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  syncHistoryId: varchar("syncHistoryId", { length: 64 }).notNull(),
+  recordId: varchar("recordId", { length: 64 }),
+  errorMessage: text("errorMessage").notNull(),
+  errorCode: varchar("errorCode", { length: 50 }),
+  errorStack: text("errorStack"),
+  retryCount: int("retryCount").default(0),
+  nextRetryAt: timestamp("nextRetryAt"),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type ProperfySyncError = typeof properfySyncErrors.$inferSelect;
+export type InsertProperfySyncError = typeof properfySyncErrors.$inferInsert;
+
+/**
+ * Indicator Snapshots - Snapshots Mensais de Indicadores
+ * Salva valores dos indicadores no final de cada mês para auditoria e comparação
+ */
+export const indicatorSnapshots = mysqlTable("indicatorSnapshots", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  companyId: varchar("companyId", { length: 64 }).notNull(),
+  month: varchar("month", { length: 7 }).notNull(), // Format: YYYY-MM
+  indicatorName: varchar("indicatorName", { length: 255 }).notNull(),
+  value: decimal("value", { precision: 20, scale: 2 }).notNull(),
+  unit: varchar("unit", { length: 50 }), // "units", "currency", "percentage", etc
+  metadata: text("metadata"), // JSON com dados adicionais
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type IndicatorSnapshot = typeof indicatorSnapshots.$inferSelect;
+export type InsertIndicatorSnapshot = typeof indicatorSnapshots.$inferInsert;
+
+export const properfySyncHistoryRelations = relations(properfySyncHistory, ({ many }) => ({
+  errors: many(properfySyncErrors),
+}));
+
+export const properfySyncErrorsRelations = relations(properfySyncErrors, ({ one }) => ({
+  syncHistory: one(properfySyncHistory, {
+    fields: [properfySyncErrors.syncHistoryId],
+    references: [properfySyncHistory.id],
+  }),
+}));
+
+export const indicatorSnapshotsRelations = relations(indicatorSnapshots, ({ one }) => ({
+  company: one(companies, {
+    fields: [indicatorSnapshots.companyId],
+    references: [companies.id],
+  }),
+}));
