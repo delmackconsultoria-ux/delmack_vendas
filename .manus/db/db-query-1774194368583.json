@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO companies (id, name, tradeName, isActive, createdAt, updatedAt) \nVALUES ('comp_baggio_001', 'Baggio Imóveis', 'Baggio', true, NOW(), NOW())\nON DUPLICATE KEY UPDATE updatedAt = NOW();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute INSERT INTO companies (id, name, tradeName, isActive, createdAt, updatedAt) \nVALUES ('comp_baggio_001', 'Baggio Imóveis', 'Baggio', true, NOW(), NOW())\nON DUPLICATE KEY UPDATE updatedAt = NOW();",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 65
+}

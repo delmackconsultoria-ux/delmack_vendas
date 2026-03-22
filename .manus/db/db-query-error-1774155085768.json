@@ -1,0 +1,8 @@
+{
+  "query": "INSERT INTO sales (\n    id,\n    companyId,\n    propertyId,\n    buyerName,\n    saleDate,\n    saleValue,\n    listingStore,\n    sellingStore,\n    status,\n    registeredAt,\n    month,\n    year\n) VALUES (\n    'sale_company_1766331506068_test_001',\n    'company_1766331506068',\n    'prop_company_1766331506068_test_001',\n    'Comprador Teste',\n    '2026-01-15',\n    450000.0,\n    'Baggio',\n    'Baggio',\n    'sale',\n    NOW(),\n    1,\n    2026\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute INSERT INTO sales (\n    id,\n    companyId,\n    propertyId,\n    buyerName,\n    saleDate,\n    saleValue,\n    listingStore,\n    sellingStore,\n    status,\n    registeredAt,\n    month,\n    year\n) VALUES (\n    'sale_company_1766331506068_test_001',\n    'company_1766331506068',\n    'prop_company_1766331506068_test_001',\n    'Comprador Teste',\n    '2026-01-15',\n    450000.0,\n    'Baggio',\n    'Baggio',\n    'sale',\n    NOW(),\n    1,\n    2026\n);",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'month' in 'field list'"
+  ]
+}

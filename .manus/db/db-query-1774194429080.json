@@ -1,0 +1,90 @@
+{
+  "query": "SELECT id, propertyId, buyerName, saleValue, status, saleDate \nFROM sales \nWHERE companyId = 'comp_baggio_001' \nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, propertyId, buyerName, saleValue, status, saleDate \nFROM sales \nWHERE companyId = 'comp_baggio_001' \nLIMIT 10;",
+  "rows": [
+    {
+      "id": "005358db-5850-4ae9-8b55-da0977fa994d",
+      "propertyId": "BG97311001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "0092d9b8-af02-423c-acaa-1debb68f53f7",
+      "propertyId": "BG97792001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "00f2db2b-4702-4d05-b658-36da4ff1cfe7",
+      "propertyId": "SRBG000001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "012008a5-b721-4366-b3de-776dc966dc62",
+      "propertyId": "BG97464001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "0143b534-d81b-4345-829b-cc186284b0c5",
+      "propertyId": "BG66218001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "018e8c27-f893-419c-b7bd-cbab9dce2dd5",
+      "propertyId": "BG97798001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "01c482ad-92f7-48f1-b186-b3f4165065a4",
+      "propertyId": "BG97601001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "026eee21-ed97-42a1-9c9f-689777b6cbf0",
+      "propertyId": "REFERÊNCIA",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "036d8bf3-83a9-49d9-aff5-93b197a629f2",
+      "propertyId": "BG66217001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    },
+    {
+      "id": "03e20008-fe9f-4d2d-9997-8a25cc9a56ea",
+      "propertyId": "BG97794001",
+      "buyerName": "Comprador Excel",
+      "saleValue": "0.00",
+      "status": "pending",
+      "saleDate": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tpropertyId\tbuyerName\tsaleValue\tstatus\tsaleDate\n005358db-5850-4ae9-8b55-da0977fa994d\tBG97311001\tComprador Excel\t0.00\tpending\tNULL\n0092d9b8-af02-423c-acaa-1debb68f53f7\tBG97792001\tComprador Excel\t0.00\tpending\tNULL\n00f2db2b-4702-4d05-b658-36da4ff1cfe7\tSRBG000001\tComprador Excel\t0.00\tpending\tNULL\n012008a5-b721-4366-b3de-776dc966dc62\tBG97464001\tComprador Excel\t0.00\tpending\tNULL\n0143b534-d81b-4345-829b-cc186284b0c5\tBG66218001\tComprador Excel\t0.00\tpending\tNULL\n018e8c27-f893-419c-b7bd-cbab9dce2dd5\tBG97798001\tComprador Excel\t0.00\tpending\tNULL\n01c482ad-92f7-48f1-b186-b3f4165065a4\tBG97601001\tComprador Excel\t0.00\tpending\tNULL\n026eee21-ed97-42a1-9c9f-689777b6cbf0\tREFERÊNCIA\tComprador Excel\t0.00\tpending\tNULL\n036d8bf3-83a9-49d9-aff5-93b197a629f2\tBG66217001\tComprador Excel\t0.00\tpending\tNULL\n03e20008-fe9f-4d2d-9997-8a25cc9a56ea\tBG97794001\tComprador Excel\t0.00\tpending\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

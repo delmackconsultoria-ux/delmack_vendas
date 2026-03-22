@@ -1,0 +1,15 @@
+{
+  "query": "-- Teste: Contar registros antes da inserção\nSELECT \n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_baggio_001') as properties_count,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_baggio_001') as sales_count,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_baggio_001') as commissions_count;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute -- Teste: Contar registros antes da inserção\nSELECT \n  (SELECT COUNT(*) FROM properties WHERE companyId = 'company_baggio_001') as properties_count,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'company_baggio_001') as sales_count,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'company_baggio_001') as commissions_count;",
+  "rows": [
+    {
+      "properties_count": "0",
+      "sales_count": "0",
+      "commissions_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "properties_count\tsales_count\tcommissions_count\n0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 125
+}

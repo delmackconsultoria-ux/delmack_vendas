@@ -1,0 +1,13 @@
+{
+  "query": "-- Desabilitar foreign keys\nSET FOREIGN_KEY_CHECKS = 0;\n\n-- Inserir primeira property como teste\nINSERT INTO properties (id, companyId, propertyReference, address, createdAt, updatedAt) \nVALUES ('BG97292001', 'company_baggio_001', 'BG97292001', 'REF: 97292001 Rua Jeremias Maciel Perretto', NOW(), NOW());\n\n-- Verificar se foi inserida\nSELECT COUNT(*) as total FROM properties WHERE companyId = 'company_baggio_001';\n\n-- Reabilitar foreign keys\nSET FOREIGN_KEY_CHECKS = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute -- Desabilitar foreign keys\nSET FOREIGN_KEY_CHECKS = 0;\n\n-- Inserir primeira property como teste\nINSERT INTO properties (id, companyId, propertyReference, address, createdAt, updatedAt) \nVALUES ('BG97292001', 'company_baggio_001', 'BG97292001', 'REF: 97292001 Rua Jeremias Maciel Perretto', NOW(), NOW());\n\n-- Verificar se foi inserida\nSELECT COUNT(*) as total FROM properties WHERE companyId = 'company_baggio_001';\n\n-- Reabilitar foreign keys\nSET FOREIGN_KEY_CHECKS = 1;",
+  "rows": [
+    {
+      "total": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n1\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}
