@@ -1,0 +1,17 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM sales) as total_vendas,\n  (SELECT COUNT(*) FROM proposals) as total_propostas,\n  (SELECT COUNT(*) FROM users) as total_usuarios,\n  (SELECT COUNT(*) FROM commissions) as total_comissoes,\n  (SELECT COUNT(*) FROM companies) as total_empresas;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  (SELECT COUNT(*) FROM sales) as total_vendas,\n  (SELECT COUNT(*) FROM proposals) as total_propostas,\n  (SELECT COUNT(*) FROM users) as total_usuarios,\n  (SELECT COUNT(*) FROM commissions) as total_comissoes,\n  (SELECT COUNT(*) FROM companies) as total_empresas;",
+  "rows": [
+    {
+      "total_vendas": "0",
+      "total_propostas": "0",
+      "total_usuarios": "30",
+      "total_comissoes": "0",
+      "total_empresas": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_vendas\ttotal_propostas\ttotal_usuarios\ttotal_comissoes\ttotal_empresas\n0\t0\t30\t0\t3\n",
+  "stderr": "",
+  "execution_time_ms": 65
+}

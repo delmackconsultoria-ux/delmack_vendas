@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM commissionHistory WHERE 1=1;\nDELETE FROM commissionApprovals WHERE 1=1;\nDELETE FROM proposals WHERE 1=1;\nDELETE FROM historicalSales WHERE 1=1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute DELETE FROM commissionHistory WHERE 1=1;\nDELETE FROM commissionApprovals WHERE 1=1;\nDELETE FROM proposals WHERE 1=1;\nDELETE FROM historicalSales WHERE 1=1;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 80
+}
