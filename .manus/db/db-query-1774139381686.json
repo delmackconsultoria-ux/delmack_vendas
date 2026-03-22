@@ -1,0 +1,19 @@
+{
+  "query": "SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as com_dteNewListing,\n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteNewListing) = 3 AND YEAR(dteNewListing) = 2026 THEN 1 ELSE 0 END) as angariações_março_2026,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteTermination) = 3 AND YEAR(dteTermination) = 2026 THEN 1 ELSE 0 END) as baixas_março_2026,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteNewListing) = 2 AND YEAR(dteNewListing) = 2026 THEN 1 ELSE 0 END) as angariações_fevereiro_2026,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteTermination) = 2 AND YEAR(dteTermination) = 2026 THEN 1 ELSE 0 END) as baixas_fevereiro_2026\nFROM properfyProperties;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as com_dteNewListing,\n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteNewListing) = 3 AND YEAR(dteNewListing) = 2026 THEN 1 ELSE 0 END) as angariações_março_2026,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteTermination) = 3 AND YEAR(dteTermination) = 2026 THEN 1 ELSE 0 END) as baixas_março_2026,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteNewListing) = 2 AND YEAR(dteNewListing) = 2026 THEN 1 ELSE 0 END) as angariações_fevereiro_2026,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND MONTH(dteTermination) = 2 AND YEAR(dteTermination) = 2026 THEN 1 ELSE 0 END) as baixas_fevereiro_2026\nFROM properfyProperties;",
+  "rows": [
+    {
+      "total": "5084",
+      "com_dteNewListing": "89",
+      "com_dteTermination": "15",
+      "angariações_março_2026": "23",
+      "baixas_março_2026": "4",
+      "angariações_fevereiro_2026": "48",
+      "baixas_fevereiro_2026": "4"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tcom_dteNewListing\tcom_dteTermination\tangariações_março_2026\tbaixas_março_2026\tangariações_fevereiro_2026\tbaixas_fevereiro_2026\n5084\t89\t15\t23\t4\t48\t4\n",
+  "stderr": "",
+  "execution_time_ms": 422
+}

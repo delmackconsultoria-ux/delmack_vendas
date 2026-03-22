@@ -3,6 +3,7 @@ import { z } from "zod";
 import * as salesIndicators from "../indicators/salesIndicators";
 import * as properfyIndicators from "../indicators/properfyIndicators";
 import * as properfyLeadsSync from "../indicators/properfyLeadsSync";
+import * as properfySyncService from "../services/properfySyncService";
 import * as goalsHelper from "../indicators/goalsHelper";
 import * as manualDataHelper from "../indicators/manualDataHelper";
 import * as auditLogHelper from "../indicators/auditLogHelper";
@@ -613,12 +614,15 @@ export const indicatorsRouter = router({
    */
   syncProperfy: protectedProcedure.mutation(async () => {
     try {
-      // Trigger manual sync de leads
-      const result = await properfyLeadsSync.syncProperfyLeads();
+      // Sincronizar imóveis e leads
+      const propertiesResult = await properfySyncService.syncAllProperties();
+      const leadsResult = await properfyLeadsSync.syncProperfyLeads();
+      
       return {
         success: true,
-        message: "Sincronização de leads iniciada",
-        result,
+        message: "Sincronização de imóveis e leads concluída",
+        properties: propertiesResult,
+        leads: leadsResult,
       };
     } catch (error) {
       console.error("[Indicators] Erro ao sincronizar Properfy:", error);

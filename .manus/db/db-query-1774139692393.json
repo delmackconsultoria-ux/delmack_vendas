@@ -1,0 +1,26 @@
+{
+  "query": "SELECT DISTINCT chrTransactionType, COUNT(*) as count FROM properfyProperties GROUP BY chrTransactionType;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT DISTINCT chrTransactionType, COUNT(*) as count FROM properfyProperties GROUP BY chrTransactionType;",
+  "rows": [
+    {
+      "chrTransactionType": "BOTH",
+      "count": "3"
+    },
+    {
+      "chrTransactionType": "RENT",
+      "count": "2823"
+    },
+    {
+      "chrTransactionType": "SALE",
+      "count": "2257"
+    },
+    {
+      "chrTransactionType": "NULL",
+      "count": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "chrTransactionType\tcount\nBOTH\t3\nRENT\t2823\nSALE\t2257\nNULL\t1\n",
+  "stderr": "",
+  "execution_time_ms": 370
+}

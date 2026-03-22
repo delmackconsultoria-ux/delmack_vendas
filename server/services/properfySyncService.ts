@@ -39,11 +39,15 @@ interface ProperfyPropertyRaw {
   intBuiltYear?: number;
   intFloors?: number;
   // Indicadores
-  dteNewListing?: string | Date; // Data de angariação
-  dteTermination?: string | Date; // Data de baixa/remoção
+  dteNewListing?: string | Date; // Data de angariação (pode estar em enlistment)
+  dteTermination?: string | Date; // Data de baixa/remoção (pode estar em enlistment)
   chrPurpose?: string; // Finalidade: SALE, RENT, etc
   isLaunched?: boolean; // Se é lançamento
   fkCompany?: string; // ID da imobiliária/empresa
+  enlistment?: {
+    dteNewListing?: string | Date;
+    dteTermination?: string | Date;
+  };
 }
 
 /**
@@ -142,8 +146,8 @@ export async function syncAllProperties(): Promise<{ success: boolean; message: 
 
         for (const property of data.data) {
           try {
-            // Debug: Count properties with dates
-            if (property.dteNewListing || property.dteTermination) {
+            // Debug: Count properties with dates (buscar de enlistment)
+            if (property.enlistment?.dteNewListing || property.enlistment?.dteTermination) {
               propertiesWithDates++;
             }
             await upsertProperty(db, property);
@@ -214,9 +218,9 @@ async function upsertProperty(db: any, property: ProperfyPropertyRaw): Promise<v
     fkCondo: property.fkCondo || null,
     intBuiltYear: property.intBuiltYear || null,
     intFloors: property.intFloors || null,
-    // Indicadores
-    dteNewListing: property.dteNewListing ? new Date(property.dteNewListing) : null,
-    dteTermination: property.dteTermination ? new Date(property.dteTermination) : null,
+    // Indicadores - buscar de enlistment ou do nível raiz
+    dteNewListing: property.enlistment?.dteNewListing ? new Date(property.enlistment.dteNewListing) : (property.dteNewListing ? new Date(property.dteNewListing) : null),
+    dteTermination: property.enlistment?.dteTermination ? new Date(property.enlistment.dteTermination) : (property.dteTermination ? new Date(property.dteTermination) : null),
     chrPurpose: property.chrPurpose || null,
     isActive: 1, // Padrão ativo
     companyId: property.fkCompany || null,

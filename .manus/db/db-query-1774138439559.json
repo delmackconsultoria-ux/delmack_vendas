@@ -1,0 +1,18 @@
+{
+  "query": "SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as com_dteNewListing,\n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND chrStatus = 'LISTED' THEN 1 ELSE 0 END) as carteira_ativa,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND dteNewListing >= DATE('2026-03-01') AND dteNewListing <= DATE('2026-03-31') THEN 1 ELSE 0 END) as angariações_março,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND dteTermination >= DATE('2026-03-01') AND dteTermination <= DATE('2026-03-31') THEN 1 ELSE 0 END) as baixas_março\nFROM properfyProperties;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN dteNewListing IS NOT NULL THEN 1 ELSE 0 END) as com_dteNewListing,\n  SUM(CASE WHEN dteTermination IS NOT NULL THEN 1 ELSE 0 END) as com_dteTermination,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND chrStatus = 'LISTED' THEN 1 ELSE 0 END) as carteira_ativa,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND dteNewListing >= DATE('2026-03-01') AND dteNewListing <= DATE('2026-03-31') THEN 1 ELSE 0 END) as angariações_março,\n  SUM(CASE WHEN chrTransactionType = 'SALE' AND dteTermination >= DATE('2026-03-01') AND dteTermination <= DATE('2026-03-31') THEN 1 ELSE 0 END) as baixas_março\nFROM properfyProperties;",
+  "rows": [
+    {
+      "total": "5084",
+      "com_dteNewListing": "0",
+      "com_dteTermination": "0",
+      "carteira_ativa": "476",
+      "angariações_março": "0",
+      "baixas_março": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tcom_dteNewListing\tcom_dteTermination\tcarteira_ativa\tangariações_março\tbaixas_março\n5084\t0\t0\t476\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 465
+}
