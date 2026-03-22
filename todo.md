@@ -351,3 +351,26 @@
 - [x] Remover valores "0" dos campos vazios
 - [x] Deixar campos vazios em branco sem cor vermelha
 - [x] Testar todas as mudanças na página de indicadores
+
+
+---
+
+## ✅ NOVA FASE: Limpeza do Repositório GitHub (22/03/2026)
+
+### Remoção de Arquivos Desnecessários
+- [x] Remover 5 arquivos CSV de usuários (LISTA_USUARIOS*.csv)
+- [x] Remover 9 arquivos .md de documentação de teste
+- [x] Remover 19 scripts .mjs de teste e debug
+- [x] Atualizar .gitignore para evitar futuros commits
+- [x] Testar aplicação após limpeza - ✅ 100% funcional
+- [x] Manter arquivos críticos (import_to_db.mjs, scripts SQL, seed-users.ts)
+
+### Arquivos Removidos (Total: ~193KB)
+- LISTA_USUARIOS*.csv (5 arquivos)
+- ANALISE_*.md, CHECKLIST_*.md, CONTRATO_*.md, EQUIVALENCIA_*.md, GUIA_*.md, IMPORTACAO_*.md, PRODUCTION_*.md (9 arquivos)
+- check_*.mjs, test-*.mjs, debug-*.mjs, export_*.mjs, investigate-*.mjs, send-test-*.mjs, list-*.mjs, quick-*.mjs (19 arquivos)
+
+### Impacto: ZERO
+- Nenhum arquivo removido é referenciado no código
+- Todos os dados reais estão nos arquivos SQL mantidos
+- Aplicação funciona perfeitamente após limpeza

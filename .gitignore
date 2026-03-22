@@ -105,3 +105,28 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Test and debug scripts
+check_*.mjs
+check_*.js
+test-*.mjs
+debug-*.mjs
+export_*.mjs
+investigate-*.mjs
+send-test-*.mjs
+list-*.mjs
+quick-*.mjs
+get_companies.mjs
+
+# Documentation files (test/analysis)
+ANALISE_*.md
+ANALYSIS_*.md
+CHECKLIST_*.md
+CONTRATO_*.md
+EQUIVALENCIA_*.md
+GUIA_*.md
+IMPORTACAO_*.md
+PRODUCTION_*.md
+
+# User data exports
+LISTA_USUARIOS*.csv
