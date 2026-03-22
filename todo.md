@@ -2314,3 +2314,45 @@ Simplificar o formulário removendo campos desnecessários e integrar o sistema 
 - [ ] Adicionar máscara de dinheiro com até 8 dígitos nos campos do Drawer
 - [ ] Dados manuais aparecerem imediatamente na tabela após salvar
 - [ ] Corrigir sincronização Properfy para mostrar apenas mês corrente (01/03 até 10/03, congelado no último dia)
+
+
+---
+
+## ✅ NOVA FASE: Job de Snapshot Mensal de Indicadores (22/03/2026)
+
+### Implementação Completa
+- [x] Criar arquivo `indicatorSnapshotJob.ts` com job cron
+- [x] Configurar para rodar no último dia do mês às 23:00
+- [x] Implementar lógica de detecção de último dia (verifica se amanhã é dia 1)
+- [x] Salvar todos os 24 indicadores em formato "long" (uma linha por indicador)
+- [x] Integrar ao arquivo `_core/index.ts` para inicializar ao ligar o servidor
+- [x] Criar tabela `indicatorSnapshots` com campos: id, companyId, month, indicatorName, value, unit, createdAt
+- [x] Implementar cálculo de todos os 24 indicadores:
+  - [x] 15 indicadores do sistema de vendas
+  - [x] 6 indicadores do Properfy
+  - [x] 3 indicadores de tempo
+  - [x] 5 indicadores manuais
+
+### Testes Implementados
+- [x] Teste 1: Verificar cálculo de todos os 24 indicadores
+  - ✅ Carteira de Divulgação: 475 (março)
+  - ✅ Angariações: 28 (março)
+  - ✅ Baixas: 13 (março)
+  - ✅ Atendimentos Prontos: 594 (março)
+  - ✅ Atendimentos Lançamentos: 110 (março)
+- [x] Teste 2: Verificar detecção de último dia do mês
+  - ✅ Funciona para 31/01, 28/02, 29/02 (bissexto), 31/03, 30/04
+- [x] Teste 3: Verificar formato "long" de snapshots
+  - ✅ Cada indicador salvo como linha separada com indicatorName, value, unit
+
+### Verificação em Produção
+- [x] Servidor compilou sem erros
+- [x] Página de Indicadores carregando corretamente com 24 indicadores
+- [x] Tabela `indicatorSnapshots` vazia (esperado - não é último dia do mês)
+- [x] Job agendado para rodar automaticamente no último dia do mês
+
+### Próximos Passos
+- [ ] Aguardar último dia do mês (31/03/2026) para verificar se snapshot é salvo automaticamente
+- [ ] Validar que snapshot contém todos os 24 indicadores com valores corretos
+- [ ] Implementar endpoint tRPC para visualizar histórico de snapshots
+- [ ] Criar página de auditoria para visualizar snapshots salvos

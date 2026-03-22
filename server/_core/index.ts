@@ -11,6 +11,7 @@ import { createProperfyRestRouter } from "../properfy-rest";
 import { initProperfySyncScheduler } from "../jobs/properfySyncJob";
 import { initProperfyLeadsSyncScheduler } from "../jobs/properfyLeadsSyncJob";
 import { initProperfyCardsSyncScheduler } from "../jobs/properfyCardsSyncJob";
+import { initializeIndicatorSnapshotScheduler } from "../jobs/indicatorSnapshotJob";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -85,6 +86,9 @@ async function startServer() {
     
     // Initialize Properfy cards sync scheduler (runs every hour)
     initProperfyCardsSyncScheduler();
+    
+    // Initialize indicator snapshot scheduler (runs daily at 23:00, saves on last day of month)
+    initializeIndicatorSnapshotScheduler();
   });
 }
 

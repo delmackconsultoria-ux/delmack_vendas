@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total_snapshots, COUNT(DISTINCT month) as unique_months, COUNT(DISTINCT indicatorName) as unique_indicators FROM indicatorSnapshots;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_snapshots, COUNT(DISTINCT month) as unique_months, COUNT(DISTINCT indicatorName) as unique_indicators FROM indicatorSnapshots;",
+  "rows": [
+    {
+      "total_snapshots": "0",
+      "unique_months": "0",
+      "unique_indicators": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_snapshots\tunique_months\tunique_indicators\n0\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}
