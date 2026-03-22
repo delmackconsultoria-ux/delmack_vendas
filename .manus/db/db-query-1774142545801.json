@@ -1,0 +1,14 @@
+{
+  "query": "SELECT COUNT(*) as total_cards, COUNT(DISTINCT pipelineId) as pipelines FROM properfyCards;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total_cards, COUNT(DISTINCT pipelineId) as pipelines FROM properfyCards;",
+  "rows": [
+    {
+      "total_cards": "0",
+      "pipelines": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_cards\tpipelines\n0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 355
+}

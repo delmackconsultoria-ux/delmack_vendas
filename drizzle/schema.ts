@@ -983,6 +983,47 @@ export const properfyLeads = mysqlTable("properfyLeads", {
 export type ProperfyLead = typeof properfyLeads.$inferSelect;
 export type InsertProperfyLead = typeof properfyLeads.$inferInsert;
 
+/**
+ * Properfy Cards (Leads em Pipelines)
+ * Armazena os cards/leads de cada pipeline do Properfy
+ * Sincronizado automaticamente a cada 1 hora
+ */
+export const properfyCards = mysqlTable("properfyCards", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  pipelineId: int("pipelineId").notNull(),
+  pipelineName: varchar("pipelineName", { length: 255 }).notNull(),
+  timelineId: int("timelineId").notNull(),
+  timelineName: varchar("timelineName", { length: 255 }),
+  leadId: varchar("leadId", { length: 64 }),
+  leadName: varchar("leadName", { length: 255 }),
+  userId: int("userId"),
+  propertyRef: varchar("propertyRef", { length: 64 }),
+  propertyTitle: varchar("propertyTitle", { length: 255 }),
+  cardType: varchar("cardType", { length: 64 }),
+  createdAt: timestamp("createdAt"),
+  updatedAt: timestamp("updatedAt"),
+  syncedAt: timestamp("syncedAt").defaultNow(),
+});
+
+export type ProperfyCard = typeof properfyCards.$inferSelect;
+export type InsertProperfyCard = typeof properfyCards.$inferInsert;
+
+/**
+ * Properfy Cards Sync Status
+ * Rastreia o status da última sincronização de cards
+ */
+export const properfyCardsSyncStatus = mysqlTable("properfyCardsSyncStatus", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  lastSyncAt: timestamp("lastSyncAt").defaultNow(),
+  nextSyncAt: timestamp("nextSyncAt"),
+  totalCardsSynced: int("totalCardsSynced").default(0),
+  status: mysqlEnum("status", ["pending", "syncing", "completed", "failed"]).default("pending"),
+  errorMessage: text("errorMessage"),
+});
+
+export type ProperfyCardsSyncStatus = typeof properfyCardsSyncStatus.$inferSelect;
+export type InsertProperfyCardsSyncStatus = typeof properfyCardsSyncStatus.$inferInsert;
+
 
 /**
  * Dados Manuais de Indicadores

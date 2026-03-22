@@ -1,5 +1,5 @@
 import { getDb } from "../db";
-import { properfyProperties, properfyLeads } from "../../drizzle/schema";
+import { properfyProperties, properfyLeads, properfyCards } from "../../drizzle/schema";
 import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
 
 /**
@@ -164,10 +164,11 @@ export async function calculateVSO(
   }
 }
 
+
+
 /**
  * Atendimentos Prontos
- * Contagem de leads com status 'READY' para imóveis de venda
- * Usa dados locais do banco de dados
+ * Soma dos leads nos pipelines: VENDAS PRONTOS + ANGARIACAO DE VENDAS + LEADS FOR YOU
  */
 export async function calculateReadyAttendances(
   startDate: Date,
@@ -181,11 +182,13 @@ export async function calculateReadyAttendances(
       return 0;
     }
 
-    // Buscar leads com tipo 'ready'
+    const READY_PIPELINES = [21, 24, 49];
     const result = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(properfyLeads)
-      .where(eq(properfyLeads.leadType, "ready"));
+      .select({ count: sql<number>`COUNT(DISTINCT id)` })
+      .from(properfyCards)
+      .where(
+        sql`${properfyCards.pipelineId} IN (${sql.raw(READY_PIPELINES.join(","))})`
+      );
 
     return result[0]?.count || 0;
   } catch (error) {
@@ -195,11 +198,10 @@ export async function calculateReadyAttendances(
 }
 
 /**
- * Atendimentos Lançamentos
- * Contagem de leads com status 'LAUNCH' para imóveis de venda
- * Usa dados locais do banco de dados
+ * Atendimentos Lancamentos
+ * Conta os leads no pipeline: VENDAS LANCAMENTOS
  */
-export async function calculateLaunchAttendances(
+export async function calculateLaunchAttendancesFromCards(
   startDate: Date,
   endDate: Date,
   companyId?: string
@@ -207,19 +209,19 @@ export async function calculateLaunchAttendances(
   try {
     const db = await getDb();
     if (!db) {
-      console.warn("[calculateLaunchAttendances] Database not available");
+      console.warn("[calculateLaunchAttendancesFromCards] Database not available");
       return 0;
     }
 
-    // Buscar leads com tipo 'launch'
+    const LAUNCH_PIPELINE = 20;
     const result = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(properfyLeads)
-      .where(eq(properfyLeads.leadType, "launch"));
+      .select({ count: sql<number>`COUNT(DISTINCT id)` })
+      .from(properfyCards)
+      .where(eq(properfyCards.pipelineId, LAUNCH_PIPELINE));
 
     return result[0]?.count || 0;
   } catch (error) {
-    console.error("[calculateLaunchAttendances] Error:", error);
+    console.error("[calculateLaunchAttendancesFromCards] Error:", error);
     return 0;
   }
 }

@@ -166,7 +166,7 @@ export const indicatorsRouter = router({
           startDate,
           endDate
         );
-        const launchAttendances = await properfyIndicators.calculateLaunchAttendances(
+        const launchAttendances = await properfyIndicators.calculateLaunchAttendancesFromCards(
           startDate,
           endDate
         );
@@ -375,7 +375,7 @@ export const indicatorsRouter = router({
               startDate,
               endDate
             );
-            launchAttendances = await properfyIndicators.calculateLaunchAttendances(
+            launchAttendances = await properfyIndicators.calculateLaunchAttendancesFromCards(
               startDate,
               endDate
             );

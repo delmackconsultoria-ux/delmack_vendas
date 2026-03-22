@@ -330,7 +330,16 @@
 - [ ] Dados errados: Área Total 234,12 (correto: 121,95), Quartos 0 (correto: 3)
 - [ ] Endereço errado: Rua Professor Assis Gonçalves (não é o imóvel BG96925001)
 - [ ] Verificar lógica de busca por referência (chrDocument vs chrReference)
-- [ ] Corrigir mapeamento de campos da API para formulário## 🚨 CRÍTICO: Busca Properfy preenchendo dados errados (08/02/2026 - 15:30)
+- [ ] Corrigir mapeamento de campos da API para formulário## 🆕 Indicadores de Atendimentos (Cards) - Em Desenvolvimento
+
+- [ ] Criar tabela properfyCards no schema
+- [ ] Implementar properfyCardsSyncService
+- [ ] Adicionar funções de cálculo de atendimentos (Prontos e Lançamentos)
+- [ ] Implementar job de sincronização automática a cada 1 hora
+- [ ] Adicionar UI: botão "Atualizar Agora" e indicador visual de última sincronização
+- [ ] Testar sincronização e indicadores com dados reais
+
+## 🚨 CRÍTICO: Busca Properfy preenchendo dados errados (08/02/2026 - 15:30)
 
 - [x] Verificar qual campo usar: chrDocument vs chrReference - RESOLVIDO: chrDocument está vazio, usar chrReference
 - [x] Corrigir busca para NUNCA preencher dados se imóvel não for encontrado - Implementado match EXATO (sem busca parcial)

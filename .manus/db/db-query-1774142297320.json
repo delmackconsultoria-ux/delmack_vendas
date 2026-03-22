@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS properfyCards (\n  id VARCHAR(64) PRIMARY KEY,\n  pipelineId INT NOT NULL,\n  pipelineName VARCHAR(255) NOT NULL,\n  timelineId INT NOT NULL,\n  timelineName VARCHAR(255),\n  leadId VARCHAR(64),\n  leadName VARCHAR(255),\n  userId INT,\n  propertyRef VARCHAR(64),\n  propertyTitle VARCHAR(255),\n  cardType VARCHAR(64),\n  createdAt TIMESTAMP,\n  updatedAt TIMESTAMP,\n  syncedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE TABLE IF NOT EXISTS properfyCardsSyncStatus (\n  id VARCHAR(64) PRIMARY KEY,\n  lastSyncAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  nextSyncAt TIMESTAMP,\n  totalCardsSynced INT DEFAULT 0,\n  status ENUM('pending', 'syncing', 'completed', 'failed') DEFAULT 'pending',\n  errorMessage TEXT\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute CREATE TABLE IF NOT EXISTS properfyCards (\n  id VARCHAR(64) PRIMARY KEY,\n  pipelineId INT NOT NULL,\n  pipelineName VARCHAR(255) NOT NULL,\n  timelineId INT NOT NULL,\n  timelineName VARCHAR(255),\n  leadId VARCHAR(64),\n  leadName VARCHAR(255),\n  userId INT,\n  propertyRef VARCHAR(64),\n  propertyTitle VARCHAR(255),\n  cardType VARCHAR(64),\n  createdAt TIMESTAMP,\n  updatedAt TIMESTAMP,\n  syncedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE TABLE IF NOT EXISTS properfyCardsSyncStatus (\n  id VARCHAR(64) PRIMARY KEY,\n  lastSyncAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  nextSyncAt TIMESTAMP,\n  totalCardsSynced INT DEFAULT 0,\n  status ENUM('pending', 'syncing', 'completed', 'failed') DEFAULT 'pending',\n  errorMessage TEXT\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 529
+}
