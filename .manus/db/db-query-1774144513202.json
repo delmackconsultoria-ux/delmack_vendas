@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, email, role, isActive FROM users LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, role, isActive FROM users LIMIT 10;",
+  "rows": [
+    {
+      "id": "broker_company_1766331506068_001",
+      "email": "adriana.simoes@baggioimoveis.com.br",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_002",
+      "email": "allan.sobiech@baggioimoveis.com.br",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_003",
+      "email": "aluguese2025@gmail.com",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_004",
+      "email": "angellicadelle@gmail.com",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_007",
+      "email": "carolina.cardoso@baggioimoveis.com.br",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_008",
+      "email": "charles.lucca@baggioimoveis.com.br",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_010",
+      "email": "corretor@testes.com.br",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_011",
+      "email": "diego.ferreira@baggioimoveis.com.br",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_013",
+      "email": "edmar.antunes@baggioimoveis.com.br",
+      "role": "broker",
+      "isActive": "1"
+    },
+    {
+      "id": "broker_company_1766331506068_016",
+      "email": "fabiano@baggioimoveis.com.br",
+      "role": "broker",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\trole\tisActive\nbroker_company_1766331506068_001\tadriana.simoes@baggioimoveis.com.br\tbroker\t1\nbroker_company_1766331506068_002\tallan.sobiech@baggioimoveis.com.br\tbroker\t1\nbroker_company_1766331506068_003\taluguese2025@gmail.com\tbroker\t1\nbroker_company_1766331506068_004\tangellicadelle@gmail.com\tbroker\t1\nbroker_company_1766331506068_007\tcarolina.cardoso@baggioimoveis.com.br\tbroker\t1\nbroker_company_1766331506068_008\tcharles.lucca@baggioimoveis.com.br\tbroker\t1\nbroker_company_1766331506068_010\tcorretor@testes.com.br\tbroker\t1\nbroker_company_1766331506068_011\tdiego.ferreira@baggioimoveis.com.br\tbroker\t1\nbroker_company_1766331506068_013\tedmar.antunes@baggioimoveis.com.br\tbroker\t1\nbroker_company_1766331506068_016\tfabiano@baggioimoveis.com.br\tbroker\t1\n",
+  "stderr": "",
+  "execution_time_ms": 96
+}

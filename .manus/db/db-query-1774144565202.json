@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE users SET password = '$2b$10$RsShZb1gi6XwbJ1tQweHW.lM5WVs/OTcM0SUvCpDSVc8a/Sgyrdwa' WHERE email = 'odair@baggioimoveis.com.br';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute UPDATE users SET password = '$2b$10$RsShZb1gi6XwbJ1tQweHW.lM5WVs/OTcM0SUvCpDSVc8a/Sgyrdwa' WHERE email = 'odair@baggioimoveis.com.br';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 155
+}

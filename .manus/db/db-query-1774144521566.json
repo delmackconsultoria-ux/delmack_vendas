@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, email, role, isActive FROM users WHERE role IN ('admin', 'manager', 'finance') LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT id, email, role, isActive FROM users WHERE role IN ('admin', 'manager', 'finance') LIMIT 5;",
+  "rows": [
+    {
+      "id": "broker_company_1766331506068_023",
+      "email": "odair@baggioimoveis.com.br",
+      "role": "manager",
+      "isActive": "1"
+    },
+    {
+      "id": "user_1766351453637_typa30p2q",
+      "email": "Lucas@baggioimoveis.com.br",
+      "role": "manager",
+      "isActive": "1"
+    },
+    {
+      "id": "user_1766355269539_rf51il6kt",
+      "email": "Darlan@baggioimoveis.com.br",
+      "role": "finance",
+      "isActive": "1"
+    },
+    {
+      "id": "user_1766355292097_jsj9336kf",
+      "email": "camila.pires@baggioimoveis.com.br",
+      "role": "manager",
+      "isActive": "1"
+    },
+    {
+      "id": "user_1770950171305_j1ap3gfaz",
+      "email": "angellicapassosup@gmail.com",
+      "role": "manager",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\trole\tisActive\nbroker_company_1766331506068_023\todair@baggioimoveis.com.br\tmanager\t1\nuser_1766351453637_typa30p2q\tLucas@baggioimoveis.com.br\tmanager\t1\nuser_1766355269539_rf51il6kt\tDarlan@baggioimoveis.com.br\tfinance\t1\nuser_1766355292097_jsj9336kf\tcamila.pires@baggioimoveis.com.br\tmanager\t1\nuser_1770950171305_j1ap3gfaz\tangellicapassosup@gmail.com\tmanager\t1\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

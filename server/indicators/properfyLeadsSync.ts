@@ -93,7 +93,7 @@ async function fetchLeadsFromPropertyfy(): Promise<any[]> {
     }
 
     // Buscar leads do Properfy
-    const response = await fetch(`${apiUrl}/api/crm/lead`, {
+    const response = await fetch(`${apiUrl}/crm/lead`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${apiToken}`,

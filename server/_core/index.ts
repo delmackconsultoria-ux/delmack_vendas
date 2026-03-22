@@ -10,6 +10,7 @@ import { serveStatic, setupVite } from "./vite";
 import { createProperfyRestRouter } from "../properfy-rest";
 import { initProperfySyncScheduler } from "../jobs/properfySyncJob";
 import { initProperfyLeadsSyncScheduler } from "../jobs/properfyLeadsSyncJob";
+import { initProperfyCardsSyncScheduler } from "../jobs/properfyCardsSyncJob";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -81,6 +82,9 @@ async function startServer() {
     
     // Initialize Properfy leads sync scheduler (runs every hour)
     initProperfyLeadsSyncScheduler();
+    
+    // Initialize Properfy cards sync scheduler (runs every hour)
+    initProperfyCardsSyncScheduler();
   });
 }
 
