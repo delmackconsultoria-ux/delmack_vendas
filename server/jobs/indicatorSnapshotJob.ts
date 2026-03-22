@@ -201,6 +201,7 @@ export function initializeIndicatorSnapshotScheduler() {
           { name: "Negócios Internos", value: salesInternal, unit: "units" },
           { name: "Negócios Parceria Externa", value: salesExternalPartner, unit: "units" },
           { name: "Negócios Lançamentos", value: salesLaunch, unit: "units" },
+          { name: "Valor médio do imóvel de venda", value: avgPropertyValue, unit: "currency" },
           
           // Properfy
           { name: "Carteira de Divulgação (em número)", value: activeProperties, unit: "units" },

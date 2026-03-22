@@ -8,9 +8,9 @@ import * as manualDataHelper from "../../indicators/manualDataHelper";
 
 /**
  * Teste para o job de snapshot mensal
- * Verifica se todos os 24 indicadores são salvos corretamente
+ * Verifica se todos os 27 indicadores são salvos corretamente
  */
-describe("Indicator Snapshot Job", () => {
+describe("Indicator Snapshot Job - 27 Indicadores", () => {
   const companyId = "company_1766331506068";
   let db: any;
 
@@ -29,7 +29,7 @@ describe("Indicator Snapshot Job", () => {
     await db.delete(indicatorSnapshots).where(eq(indicatorSnapshots.companyId, companyId));
   });
 
-  it("deve calcular todos os 24 indicadores corretamente", async () => {
+  it("deve calcular todos os 27 indicadores corretamente", async () => {
     // Usar data de março 2026 (último dia = 31)
     const year = 2026;
     const month = 3;
@@ -181,9 +181,10 @@ describe("Indicator Snapshot Job", () => {
     expect(averageSaleTime).toBeGreaterThanOrEqual(0);
     expect(manualData).toBeDefined();
 
-    console.log("✅ Todos os indicadores foram calculados com sucesso!");
+    console.log("✅ Todos os 27 indicadores foram calculados com sucesso!");
     console.log(`  - Negócios no mês (valor): ${salesValue.value}`);
     console.log(`  - Negócios no mês (unidades): ${salesCount}`);
+    console.log(`  - Valor médio do imóvel: ${avgPropertyValue}`);
     console.log(`  - Carteira de Divulgação: ${activeProperties}`);
     console.log(`  - Angariações: ${angariations}`);
     console.log(`  - Baixas: ${removedProperties}`);
@@ -214,31 +215,45 @@ describe("Indicator Snapshot Job", () => {
     console.log("✅ Detecção de último dia do mês funcionando corretamente!");
   });
 
-  it("deve salvar snapshots em formato long (uma linha por indicador)", async () => {
-    // Simular salvamento de snapshots
+  it("deve salvar todos os 27 indicadores em formato long (uma linha por indicador)", async () => {
+    // Simular salvamento de snapshots com todos os 27 indicadores
     const year = 2026;
     const month = 3;
     const monthStr = `${year}-${String(month).padStart(2, "0")}`;
 
     const testSnapshots = [
-      {
-        id: "test-1",
-        companyId,
-        month: monthStr,
-        indicatorName: "Negócios no mês (valor)",
-        value: "13739507",
-        unit: "currency" as const,
-        createdAt: new Date(),
-      },
-      {
-        id: "test-2",
-        companyId,
-        month: monthStr,
-        indicatorName: "Carteira de Divulgação (em número)",
-        value: "475",
-        unit: "units" as const,
-        createdAt: new Date(),
-      },
+      // Sistema de Vendas (15 indicadores)
+      { id: "test-1", companyId, month: monthStr, indicatorName: "Negócios no mês (valor)", value: "13739507", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-2", companyId, month: monthStr, indicatorName: "Negócios no mês (unidades)", value: "39", unit: "units" as const, createdAt: new Date() },
+      { id: "test-3", companyId, month: monthStr, indicatorName: "Vendas Canceladas", value: "0", unit: "units" as const, createdAt: new Date() },
+      { id: "test-4", companyId, month: monthStr, indicatorName: "VSO - venda/oferta", value: "321.47", unit: "percentage" as const, createdAt: new Date() },
+      { id: "test-5", companyId, month: monthStr, indicatorName: "Comissão Recebida", value: "0", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-6", companyId, month: monthStr, indicatorName: "Comissão Vendida", value: "0", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-7", companyId, month: monthStr, indicatorName: "Comissão Pendente Final do mês", value: "0", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-8", companyId, month: monthStr, indicatorName: "% comissão vendida", value: "0", unit: "percentage" as const, createdAt: new Date() },
+      { id: "test-9", companyId, month: monthStr, indicatorName: "Negócios acima de 1 milhão", value: "0", unit: "units" as const, createdAt: new Date() },
+      { id: "test-10", companyId, month: monthStr, indicatorName: "Prazo médio recebimento de venda", value: "0", unit: "days" as const, createdAt: new Date() },
+      { id: "test-11", companyId, month: monthStr, indicatorName: "% Com cancelada / com pendente", value: "0", unit: "percentage" as const, createdAt: new Date() },
+      { id: "test-12", companyId, month: monthStr, indicatorName: "Negócios na Rede", value: "0", unit: "units" as const, createdAt: new Date() },
+      { id: "test-13", companyId, month: monthStr, indicatorName: "Negócios Internos", value: "0", unit: "units" as const, createdAt: new Date() },
+      { id: "test-14", companyId, month: monthStr, indicatorName: "Negócios Parceria Externa", value: "0", unit: "units" as const, createdAt: new Date() },
+      { id: "test-15", companyId, month: monthStr, indicatorName: "Negócios Lançamentos", value: "0", unit: "units" as const, createdAt: new Date() },
+      { id: "test-16", companyId, month: monthStr, indicatorName: "Valor médio do imóvel de venda", value: "681874.68", unit: "currency" as const, createdAt: new Date() },
+      
+      // Properfy (6 indicadores)
+      { id: "test-17", companyId, month: monthStr, indicatorName: "Carteira de Divulgação (em número)", value: "475", unit: "units" as const, createdAt: new Date() },
+      { id: "test-18", companyId, month: monthStr, indicatorName: "Angariações mês", value: "28", unit: "units" as const, createdAt: new Date() },
+      { id: "test-19", companyId, month: monthStr, indicatorName: "Baixas no mês (em quantidade)", value: "13", unit: "units" as const, createdAt: new Date() },
+      { id: "test-20", companyId, month: monthStr, indicatorName: "Número de atendimentos Prontos", value: "594", unit: "units" as const, createdAt: new Date() },
+      { id: "test-21", companyId, month: monthStr, indicatorName: "Número de atendimentos Lançamentos", value: "110", unit: "units" as const, createdAt: new Date() },
+      { id: "test-22", companyId, month: monthStr, indicatorName: "Tempo médio de venda ang X venda", value: "0", unit: "days" as const, createdAt: new Date() },
+      
+      // Manuais (5 indicadores)
+      { id: "test-23", companyId, month: monthStr, indicatorName: "Despesa Geral", value: "0", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-24", companyId, month: monthStr, indicatorName: "Despesa com Impostos", value: "0", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-25", companyId, month: monthStr, indicatorName: "Fundo Inovação", value: "0", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-26", companyId, month: monthStr, indicatorName: "Resultado Sócios", value: "0", unit: "currency" as const, createdAt: new Date() },
+      { id: "test-27", companyId, month: monthStr, indicatorName: "Fundo Emergencial", value: "0", unit: "currency" as const, createdAt: new Date() },
     ];
 
     // Inserir snapshots de teste
@@ -249,11 +264,12 @@ describe("Indicator Snapshot Job", () => {
       eq(indicatorSnapshots.month, monthStr)
     );
 
-    expect(saved.length).toBeGreaterThanOrEqual(2);
+    expect(saved.length).toBeGreaterThanOrEqual(27);
     expect(saved[0].indicatorName).toBeDefined();
     expect(saved[0].value).toBeDefined();
     expect(saved[0].unit).toBeDefined();
 
-    console.log("✅ Snapshots salvos em formato long corretamente!");
+    console.log(`✅ Todos os 27 indicadores salvos em formato long corretamente!`);
+    console.log(`  - Total de snapshots: ${saved.length}`);
   });
 });
