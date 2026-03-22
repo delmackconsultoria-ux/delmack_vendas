@@ -1,0 +1,26 @@
+{
+  "query": "SELECT * FROM properties WHERE id = 'BG97292001';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT * FROM properties WHERE id = 'BG97292001';",
+  "rows": [
+    {
+      "id": "BG97292001",
+      "companyId": "comp_baggio_001",
+      "propertyReference": "BG97292001",
+      "isFromBaggio": "0",
+      "address": "Importado de Excel",
+      "zipCode": "NULL",
+      "neighborhood": "NULL",
+      "city": "NULL",
+      "state": "NULL",
+      "number": "NULL",
+      "complement": "NULL",
+      "advertisementValue": "NULL",
+      "createdAt": "2026-03-22 15:27:38",
+      "updatedAt": "2026-03-22 16:25:33"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcompanyId\tpropertyReference\tisFromBaggio\taddress\tzipCode\tneighborhood\tcity\tstate\tnumber\tcomplement\tadvertisementValue\tcreatedAt\tupdatedAt\nBG97292001\tcomp_baggio_001\tBG97292001\t0\tImportado de Excel\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t2026-03-22 15:27:38\t2026-03-22 16:25:33\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

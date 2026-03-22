@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO properties (id, companyId, address, createdAt, updatedAt) VALUES ('BG97292001', 'comp_baggio_001', 'Importado de Excel', NOW(), NOW()) ON DUPLICATE KEY UPDATE companyId=VALUES(companyId), address=VALUES(address), updatedAt=VALUES(updatedAt);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute INSERT INTO properties (id, companyId, address, createdAt, updatedAt) VALUES ('BG97292001', 'comp_baggio_001', 'Importado de Excel', NOW(), NOW()) ON DUPLICATE KEY UPDATE companyId=VALUES(companyId), address=VALUES(address), updatedAt=VALUES(updatedAt);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 63
+}

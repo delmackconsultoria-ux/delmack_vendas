@@ -1,0 +1,15 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM properties WHERE companyId = 'comp_baggio_001') as total_properties,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'comp_baggio_001') as total_sales,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'comp_baggio_001') as total_commissions;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT \n  (SELECT COUNT(*) FROM properties WHERE companyId = 'comp_baggio_001') as total_properties,\n  (SELECT COUNT(*) FROM sales WHERE companyId = 'comp_baggio_001') as total_sales,\n  (SELECT COUNT(*) FROM commissions WHERE companyId = 'comp_baggio_001') as total_commissions;",
+  "rows": [
+    {
+      "total_properties": "11",
+      "total_sales": "0",
+      "total_commissions": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_properties\ttotal_sales\ttotal_commissions\n11\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
