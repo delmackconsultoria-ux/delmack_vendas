@@ -44,12 +44,11 @@ async function getDb() {
 async function fetchCardsFromAPI(pageSize: number = 500): Promise<ProperfyCard[]> {
   const allCards: ProperfyCard[] = [];
   let page = 1;
-  const maxPages = 100; // Limite de segurança
+  const maxPages = 100;
 
   console.log(`[ProperfyCardsSync] ===== API FETCH START =====`);
   console.log(`[ProperfyCardsSync] API URL: ${PROPERFY_API_URL}`);
   console.log(`[ProperfyCardsSync] Token length: ${PROPERFY_API_TOKEN?.length || 0}`);
-  console.log(`[ProperfyCardsSync] Page size: ${pageSize}`);
 
   try {
     while (page <= maxPages) {
@@ -58,9 +57,9 @@ async function fetchCardsFromAPI(pageSize: number = 500): Promise<ProperfyCard[]
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
-        console.warn(`[ProperfyCardsSync] Timeout on page ${page}`);
+        console.warn(`[ProperfyCardsSync] ⏱️ Timeout on page ${page} (120s)`);
         controller.abort();
-      }, 120000); // 120 segundos timeout para API lenta
+      }, 120000);
 
       try {
         const response = await fetch(url, {
@@ -77,65 +76,47 @@ async function fetchCardsFromAPI(pageSize: number = 500): Promise<ProperfyCard[]
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`[ProperfyCardsSync] API Error ${response.status}: ${errorText.substring(0, 200)}`);
+          console.error(`[ProperfyCardsSync] ❌ API Error ${response.status}: ${errorText.substring(0, 200)}`);
           break;
         }
 
         const data = await response.json();
-        console.log(`[ProperfyCardsSync] Page ${page} - Response keys: ${Object.keys(data).join(", ")}`);
         
-        if (!data.data) {
-          console.error(`[ProperfyCardsSync] Page ${page} - No 'data' field in response`);
-          console.log(`[ProperfyCardsSync] Response structure:`, JSON.stringify(data).substring(0, 500));
+        // A API retorna um array de objetos de cards
+        if (!Array.isArray(data)) {
+          console.error(`[ProperfyCardsSync] ❌ Expected array, got ${typeof data}`);
+          console.log(`[ProperfyCardsSync] Response:`, JSON.stringify(data).substring(0, 500));
           break;
         }
 
-        if (!Array.isArray(data.data)) {
-          console.error(`[ProperfyCardsSync] Page ${page} - 'data' is not an array: ${typeof data.data}`);
+        console.log(`[ProperfyCardsSync] ✅ Page ${page} - Got ${data.length} cards`);
+
+        if (data.length === 0) {
+          console.log(`[ProperfyCardsSync] ℹ️ Page ${page} - Empty page, stopping pagination`);
           break;
         }
 
-        console.log(`[ProperfyCardsSync] Page ${page} - Got ${data.data.length} cards`);
-
-        if (data.data.length === 0) {
-          console.log(`[ProperfyCardsSync] Page ${page} - No more cards found`);
-          break;
-        }
-
-        allCards.push(...data.data);
-        
-        // Se retornou menos que pageSize, é a última página
-        if (data.data.length < pageSize) {
-          console.log(`[ProperfyCardsSync] Page ${page} - Last page (${data.data.length} < ${pageSize})`);
-          break;
-        }
-
+        allCards.push(...data);
         page++;
+
+        // Delay entre requisições
+        await new Promise(resolve => setTimeout(resolve, 500));
       } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          console.error(`[ProperfyCardsSync] Page ${page} - Request timeout`);
+        if (error instanceof Error && error.name === "AbortError") {
+          console.error(`[ProperfyCardsSync] ❌ Request timeout on page ${page}`);
         } else {
-          console.error(`[ProperfyCardsSync] Page ${page} - Error:`, error);
+          console.error(`[ProperfyCardsSync] ❌ Error fetching page ${page}:`, error);
         }
         break;
       }
     }
+
+    console.log(`[ProperfyCardsSync] ===== FETCHED ${allCards.length} CARDS =====`);
+    return allCards;
   } catch (error) {
-    console.error(`[ProperfyCardsSync] Error in fetchCardsFromAPI:`, error);
+    console.error("[ProperfyCardsSync] Fatal error in fetchCardsFromAPI:", error);
+    return [];
   }
-
-  console.log(`[ProperfyCardsSync] ===== API FETCH END: ${allCards.length} cards fetched =====`);
-  return allCards;
-}
-
-async function getPipelineName(pipelineId: number): Promise<string> {
-  const names: Record<number, string> = {
-    [PIPELINE_IDS.VENDAS_LANCAMENTOS]: "Vendas Lançamentos",
-    [PIPELINE_IDS.VENDAS_PRONTOS]: "Vendas Prontos",
-    [PIPELINE_IDS.ANGARIACAO_VENDAS]: "Angariação de Vendas",
-    [PIPELINE_IDS.LEADS_FOR_YOU]: "Leads for You",
-  };
-  return names[pipelineId] || `Pipeline ${pipelineId}`;
 }
 
 export async function syncProperfyCards() {
@@ -143,173 +124,99 @@ export async function syncProperfyCards() {
   
   const db = await getDb();
   if (!db) {
-    console.error("[ProperfyCardsSync] Database not available");
-    return;
+    console.error("[ProperfyCardsSync] ❌ Database not available");
+    return { total: 0, inserted: 0, updated: 0, errors: 0 };
   }
 
-  const startTime = Date.now();
-
   try {
-    // Atualizar status para "syncing"
-    await updateSyncStatus("syncing", null);
-    console.log("[ProperfyCardsSync] Status updated to: syncing");
+    // Buscar cards da API
+    const cards = await fetchCardsFromAPI();
 
-    console.log("[ProperfyCardsSync] Starting sync...");
-
-    // Buscar todos os cards da API
-    const allCards = await fetchCardsFromAPI();
-    console.log(`[ProperfyCardsSync] Total cards from API: ${allCards.length}`);
-
-    if (allCards.length === 0) {
+    if (!cards || cards.length === 0) {
       console.warn("[ProperfyCardsSync] ⚠️  No cards fetched from API!");
-      await updateSyncStatus("completed", "No cards found in API", 0);
       console.log("[ProperfyCardsSync] ===== SYNC END (NO DATA) =====");
-      return;
+      return { total: 0, inserted: 0, updated: 0, errors: 0 };
     }
+
+    console.log(`[ProperfyCardsSync] Processing ${cards.length} cards...`);
 
     // Filtrar apenas os pipelines que nos interessam
-    const relevantCards = allCards.filter(
-      (card) =>
-        card.fkPipeline === PIPELINE_IDS.VENDAS_LANCAMENTOS ||
-        card.fkPipeline === PIPELINE_IDS.VENDAS_PRONTOS ||
-        card.fkPipeline === PIPELINE_IDS.ANGARIACAO_VENDAS ||
-        card.fkPipeline === PIPELINE_IDS.LEADS_FOR_YOU
+    const relevantCards = cards.filter(card => 
+      Object.values(PIPELINE_IDS).includes(card.fkPipeline)
     );
 
-    console.log(`[ProperfyCardsSync] Relevant cards: ${relevantCards.length} out of ${allCards.length}`);
+    console.log(`[ProperfyCardsSync] Filtered to ${relevantCards.length} cards in relevant pipelines`);
 
-    if (relevantCards.length === 0) {
-      console.warn("[ProperfyCardsSync] ⚠️  No relevant cards found!");
-      // Mostrar distribuição de pipelines
-      const pipelineDistribution: Record<number, number> = {};
-      allCards.forEach(card => {
-        pipelineDistribution[card.fkPipeline] = (pipelineDistribution[card.fkPipeline] || 0) + 1;
-      });
-      console.log("[ProperfyCardsSync] Pipeline distribution:", JSON.stringify(pipelineDistribution));
-    }
-
-    // Inserir/atualizar cards
-    let insertedCount = 0;
-    let errorCount = 0;
-
-    console.log(`[ProperfyCardsSync] Starting to insert ${relevantCards.length} cards...`);
+    let inserted = 0;
+    let updated = 0;
+    let errors = 0;
 
     for (const card of relevantCards) {
-      const pipelineName = await getPipelineName(card.fkPipeline);
-      
-      const cardData: InsertProperfyCard = {
-        id: `card_${card.id}`,
-        pipelineId: card.fkPipeline,
-        pipelineName: pipelineName,
-        timelineId: card.fkTimeline,
-        timelineName: `Timeline ${card.fkTimeline}`,
-        leadId: `lead_${card.fkLead}`,
-        leadName: card.chrTitle || "Unknown",
-        userId: card.fkUser,
-        propertyRef: card.chrPropertyRef,
-        propertyTitle: card.chrTitle,
-        cardType: card.chrType,
-        createdAt: card.dttRegistered ? new Date(card.dttRegistered) : new Date(),
-        updatedAt: card.dttUpdated ? new Date(card.dttUpdated) : new Date(),
-        syncedAt: new Date(),
-      };
-
       try {
-        await db
-          .insert(properfyCards)
-          .values(cardData)
-          .onDuplicateKeyUpdate({
-            set: {
-              pipelineName: cardData.pipelineName,
-              timelineId: cardData.timelineId,
-              timelineName: cardData.timelineName,
-              leadName: cardData.leadName,
-              propertyTitle: cardData.propertyTitle,
-              updatedAt: cardData.updatedAt,
-              syncedAt: new Date(),
-            },
-          });
+        const cardId = `card_${card.id}`;
+        
+        // Verificar se o card já existe
+        const existing = await db
+          .select()
+          .from(properfyCards)
+          .where(eq(properfyCards.id, cardId))
+          .limit(1);
 
-        insertedCount++;
-        if (insertedCount % 10 === 0) {
-          console.log(`[ProperfyCardsSync] Inserted ${insertedCount} cards so far...`);
+        const cardData: InsertProperfyCard = {
+          id: cardId,
+          pipelineId: card.fkPipeline,
+          pipelineName: getPipelineName(card.fkPipeline),
+          timelineId: card.fkTimeline,
+          timelineName: card.chrTitle || null,
+          leadId: `lead_${card.fkLead}`,
+          leadName: card.chrTitle || null,
+          userId: card.fkUser,
+          propertyRef: card.chrPropertyRef || null,
+          propertyTitle: card.chrTitle || null,
+          cardType: card.chrType || null,
+          createdAt: card.dttRegistered ? new Date(card.dttRegistered) : new Date(),
+          updatedAt: card.dttUpdated ? new Date(card.dttUpdated) : new Date(),
+        };
+
+        if (existing.length > 0) {
+          // Atualizar card existente
+          await db
+            .update(properfyCards)
+            .set(cardData)
+            .where(eq(properfyCards.id, cardId));
+          updated++;
+        } else {
+          // Inserir novo card
+          await db.insert(properfyCards).values(cardData);
+          inserted++;
         }
       } catch (error) {
-        errorCount++;
-        console.error(`[ProperfyCardsSync] Error inserting card ${card.id}:`, error instanceof Error ? error.message : error);
+        console.error(`[ProperfyCardsSync] ❌ Error processing card ${card.id}:`, error);
+        errors++;
       }
     }
 
-    const duration = Date.now() - startTime;
-    const message = `Sync completed in ${(duration / 1000).toFixed(2)}s. Total API: ${allCards.length}, Relevant: ${relevantCards.length}, Inserted/Updated: ${insertedCount}, Errors: ${errorCount}`;
-    console.log(`[ProperfyCardsSync] ${message}`);
+    console.log(`[ProperfyCardsSync] ✅ Sync completed: Inserted=${inserted}, Updated=${updated}, Errors=${errors}`);
+    console.log("[ProperfyCardsSync] ===== SYNC END =====");
 
-    // Atualizar status para "completed"
-    await updateSyncStatus("completed", null, insertedCount);
-    console.log("[ProperfyCardsSync] Status updated to: completed");
-    console.log("[ProperfyCardsSync] ===== SYNC END (SUCCESS) =====");
+    return {
+      total: cards.length,
+      inserted,
+      updated,
+      errors,
+    };
   } catch (error) {
-    console.error("[ProperfyCardsSync] Sync failed:", error instanceof Error ? error.message : error);
-    await updateSyncStatus("failed", error instanceof Error ? error.message : "Unknown error");
-    console.log("[ProperfyCardsSync] ===== SYNC END (FAILED) =====");
+    console.error("[ProperfyCardsSync] ❌ Fatal error in syncProperfyCards:", error);
+    return { total: 0, inserted: 0, updated: 0, errors: 1 };
   }
 }
 
-async function updateSyncStatus(
-  status: "pending" | "syncing" | "completed" | "failed",
-  errorMessage: string | null,
-  totalCardsSynced?: number
-) {
-  const db = await getDb();
-  if (!db) {
-    console.error("[ProperfyCardsSync] Cannot update sync status: database not available");
-    return;
-  }
-
-  try {
-    const syncStatus = await db
-      .select()
-      .from(properfyCardsSyncStatus)
-      .limit(1);
-
-    const nextSyncAt = new Date();
-    nextSyncAt.setHours(nextSyncAt.getHours() + 1); // Próxima sincronização em 1 hora
-
-    if (syncStatus.length > 0) {
-      await db
-        .update(properfyCardsSyncStatus)
-        .set({
-          lastSyncAt: new Date(),
-          nextSyncAt: status === "completed" ? nextSyncAt : syncStatus[0].nextSyncAt,
-          totalCardsSynced: totalCardsSynced || syncStatus[0].totalCardsSynced,
-          status,
-          errorMessage,
-        })
-        .where(eq(properfyCardsSyncStatus.id, syncStatus[0].id));
-    } else {
-      await db.insert(properfyCardsSyncStatus).values({
-        id: "sync_status_1",
-        lastSyncAt: new Date(),
-        nextSyncAt: status === "completed" ? nextSyncAt : new Date(),
-        totalCardsSynced: totalCardsSynced || 0,
-        status,
-        errorMessage,
-      });
-    }
-  } catch (error) {
-    console.error("[ProperfyCardsSync] Error updating sync status:", error);
-  }
-}
-
-export async function getSyncStatus() {
-  const db = await getDb();
-  if (!db) return null;
-
-  try {
-    const status = await db.select().from(properfyCardsSyncStatus).limit(1);
-    return status.length > 0 ? status[0] : null;
-  } catch (error) {
-    console.error("[ProperfyCardsSync] Error getting sync status:", error);
-    return null;
-  }
+function getPipelineName(pipelineId: number): string {
+  const names: Record<number, string> = {
+    [PIPELINE_IDS.VENDAS_LANCAMENTOS]: "VENDAS LANÇAMENTOS",
+    [PIPELINE_IDS.VENDAS_PRONTOS]: "VENDAS PRONTOS",
+    [PIPELINE_IDS.ANGARIACAO_VENDAS]: "ANGARIAÇÃO DE VENDAS",
+    [PIPELINE_IDS.LEADS_FOR_YOU]: "LEADS FOR YOU",
+  };
+  return names[pipelineId] || `Pipeline ${pipelineId}`;
 }

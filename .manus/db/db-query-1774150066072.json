@@ -1,0 +1,30 @@
+{
+  "query": "SELECT COUNT(*) as total, pipelineId, pipelineName FROM properfyCards GROUP BY pipelineId, pipelineName ORDER BY total DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3eAQdaRY4zkjYsC.95a35ec57269 --database FWQUTMFHrecTsndnoBiUKo --execute SELECT COUNT(*) as total, pipelineId, pipelineName FROM properfyCards GROUP BY pipelineId, pipelineName ORDER BY total DESC;",
+  "rows": [
+    {
+      "total": "8199",
+      "pipelineId": "21",
+      "pipelineName": "VENDAS PRONTOS"
+    },
+    {
+      "total": "3212",
+      "pipelineId": "20",
+      "pipelineName": "VENDAS LANÇAMENTOS"
+    },
+    {
+      "total": "492",
+      "pipelineId": "49",
+      "pipelineName": "LEADS FOR YOU"
+    },
+    {
+      "total": "229",
+      "pipelineId": "24",
+      "pipelineName": "ANGARIAÇÃO DE VENDAS"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tpipelineId\tpipelineName\n8199\t21\tVENDAS PRONTOS\n3212\t20\tVENDAS LANÇAMENTOS\n492\t49\tLEADS FOR YOU\n229\t24\tANGARIAÇÃO DE VENDAS\n",
+  "stderr": "",
+  "execution_time_ms": 135
+}

@@ -163,7 +163,7 @@ export const indicatorsRouter = router({
           endDate,
           companyId
         );
-        const readyAttendances = await properfyIndicators.calculateReadyAttendances(
+        const readyAttendances = await properfyIndicators.calculateReadyAttendancesFromCards(
           startDate,
           endDate
         );
@@ -372,7 +372,7 @@ export const indicatorsRouter = router({
                 companyId
               );
             }
-            readyAttendances = await properfyIndicators.calculateReadyAttendances(
+            readyAttendances = await properfyIndicators.calculateReadyAttendancesFromCards(
               startDate,
               endDate
             );

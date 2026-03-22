@@ -170,7 +170,7 @@ export async function calculateVSO(
  * Atendimentos Prontos
  * Soma dos leads nos pipelines: VENDAS PRONTOS + ANGARIACAO DE VENDAS + LEADS FOR YOU
  */
-export async function calculateReadyAttendances(
+export async function calculateReadyAttendancesFromCards(
   startDate: Date,
   endDate: Date,
   companyId?: string
@@ -187,7 +187,11 @@ export async function calculateReadyAttendances(
       .select({ count: sql<number>`COUNT(DISTINCT id)` })
       .from(properfyCards)
       .where(
-        sql`${properfyCards.pipelineId} IN (${sql.raw(READY_PIPELINES.join(","))})`
+        and(
+          sql`${properfyCards.pipelineId} IN (${sql.raw(READY_PIPELINES.join(","))})`,
+          gte(properfyCards.createdAt, startDate),
+          lte(properfyCards.createdAt, endDate)
+        )
       );
 
     return result[0]?.count || 0;
@@ -217,7 +221,13 @@ export async function calculateLaunchAttendancesFromCards(
     const result = await db
       .select({ count: sql<number>`COUNT(DISTINCT id)` })
       .from(properfyCards)
-      .where(eq(properfyCards.pipelineId, LAUNCH_PIPELINE));
+      .where(
+        and(
+          eq(properfyCards.pipelineId, LAUNCH_PIPELINE),
+          gte(properfyCards.createdAt, startDate),
+          lte(properfyCards.createdAt, endDate)
+        )
+      );
 
     return result[0]?.count || 0;
   } catch (error) {
