@@ -2,21 +2,33 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Users, FileText } from "lucide-react";
+import { BarChart3, TrendingUp, Users, FileText, LogOut } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
 
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/login");
+    },
+  });
 
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+  };
 
   if (!user) {
     return null;
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header Padrão */}
+      <AppHeader />
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Welcome Section */}
