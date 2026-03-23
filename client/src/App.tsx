@@ -5,6 +5,7 @@ import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { useAuth } from "./_core/hooks/useAuth";
+import DashboardLayout from "./components/DashboardLayout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -69,94 +70,96 @@ function Router() {
 
       {/* Protected routes */}
       {user ? (
-        <>
-          {/* Common routes for all authenticated users */}
-          <Route path="/profile" component={Profile} />
+        <DashboardLayout>
+          <Switch>
+            {/* Common routes for all authenticated users */}
+            <Route path="/profile" component={Profile} />
 
-          {/* Super Admin routes */}
-          {user.role === "superadmin" && (
-            <>
-              <Route path="/dashboard" component={DashboardSuperAdmin} />
-              <Route path="/users" component={SuperAdminUsers} />
-              <Route path="/" component={DashboardSuperAdmin} />
-            </>
-          )}
+            {/* Super Admin routes */}
+            {user.role === "superadmin" && (
+              <>
+                <Route path="/dashboard" component={DashboardSuperAdmin} />
+                <Route path="/users" component={SuperAdminUsers} />
+                <Route path="/" component={DashboardSuperAdmin} />
+              </>
+            )}
 
-          {/* Role-based dashboards */}
-          {user.role === "broker" && (
-            <>
-              <Route path="/proposals/new" component={NewProposal} />
-              <Route path="/proposals/edit/:id" component={NewProposal} />
-              <Route path="/proposals/:id" component={ProposalDetail} />
-              <Route path="/proposals" component={ProposalManagement} />
-              <Route path="/reports" component={Reports} />
-              <Route path="/indicators" component={Indicators} />
-              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
-              <Route path="/ranking" component={Ranking} />
-              <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/" component={DashboardBroker} />
-              <Route path="/dashboard" component={DashboardBroker} />
-            </>
-          )}
-          {user.role === "finance" && (
-            <>
-              <Route path="/proposals" component={ProposalManagement} />
-              <Route path="/proposals/:id" component={ProposalDetail} />
-              <Route path="/proposals/edit/:id" component={NewProposal} />
-              <Route path="/commissions-calendar" component={CommissionsCalendar} />
-              <Route path="/paid-commissions" component={PaidCommissions} />
-              <Route path="/reports" component={Reports} />
-              <Route path="/indicators" component={Indicators} />
-              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
-              <Route path="/analytics" component={Analytics} />
-              <Route path="/ranking" component={Ranking} />
-              <Route path="/sales-approval" component={SalesApproval} />
-              <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/sales-by-responsible" component={SalesByResponsible} />
-              <Route path="/goal-notifications" component={GoalNotifications} />
-              <Route path="/tutorials" component={Tutorials} />
-              <Route path="/dashboard" component={DashboardFinance} />
-              <Route path="/" component={DashboardFinance} />
-            </>
-          )}
+            {/* Role-based dashboards */}
+            {user.role === "broker" && (
+              <>
+                <Route path="/proposals/new" component={NewProposal} />
+                <Route path="/proposals/edit/:id" component={NewProposal} />
+                <Route path="/proposals/:id" component={ProposalDetail} />
+                <Route path="/proposals" component={ProposalManagement} />
+                <Route path="/reports" component={Reports} />
+                <Route path="/indicators" component={Indicators} />
+                <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
+                <Route path="/ranking" component={Ranking} />
+                <Route path="/document-upload" component={DocumentUpload} />
+                <Route path="/" component={DashboardBroker} />
+                <Route path="/dashboard" component={DashboardBroker} />
+              </>
+            )}
+            {user.role === "finance" && (
+              <>
+                <Route path="/proposals" component={ProposalManagement} />
+                <Route path="/proposals/:id" component={ProposalDetail} />
+                <Route path="/proposals/edit/:id" component={NewProposal} />
+                <Route path="/commissions-calendar" component={CommissionsCalendar} />
+                <Route path="/paid-commissions" component={PaidCommissions} />
+                <Route path="/reports" component={Reports} />
+                <Route path="/indicators" component={Indicators} />
+                <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
+                <Route path="/analytics" component={Analytics} />
+                <Route path="/ranking" component={Ranking} />
+                <Route path="/sales-approval" component={SalesApproval} />
+                <Route path="/document-upload" component={DocumentUpload} />
+                <Route path="/sales-by-responsible" component={SalesByResponsible} />
+                <Route path="/goal-notifications" component={GoalNotifications} />
+                <Route path="/tutorials" component={Tutorials} />
+                <Route path="/dashboard" component={DashboardFinance} />
+                <Route path="/" component={DashboardFinance} />
+              </>
+            )}
 
-          {user.role === "manager" && (
-            <>
-              <Route path="/" component={DashboardManager} />
-              <Route path="/dashboard" component={DashboardManager} />
-              <Route path="/proposals/new" component={NewProposal} />
-              <Route path="/proposals/edit/:id" component={NewProposal} />
-              <Route path="/proposals/:id" component={ProposalDetail} />
-              <Route path="/proposals" component={ProposalManagement} />
-              <Route path="/reports" component={Reports} />
-              <Route path="/indicators" component={Indicators} />
-              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
-              <Route path="/ranking" component={Ranking} />
-              <Route path="/sales-approval" component={SalesApproval} />
-              <Route path="/document-upload" component={DocumentUpload} />
-              <Route path="/goals" component={GoalsManagement} />
-              <Route path="/goal-notifications" component={GoalNotifications} />
-              <Route path="/tutorials" component={Tutorials} />
-              <Route path="/brokers" component={BrokerManagement} />
-              <Route path="/analytics" component={Analytics} />
-              <Route path="/sales-by-responsible" component={SalesByResponsible} />
-              <Route path="/listing-rejections" component={ListingRejections} />
-            </>
-          )}
-          {user.role === "viewer" && (
-            <>
-              <Route path="/proposals/:id" component={ProposalDetail} />
-              <Route path="/proposals" component={ProposalManagement} />
-              <Route path="/reports" component={Reports} />
-              <Route path="/indicators" component={Indicators} />
-              <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
-              <Route path="/ranking" component={Ranking} />
-              <Route path="/analytics" component={Analytics} />
-              <Route path="/dashboard" component={Reports} />
-              <Route path="/" component={Reports} />
-            </>
-          )}
-        </>
+            {user.role === "manager" && (
+              <>
+                <Route path="/" component={DashboardManager} />
+                <Route path="/dashboard" component={DashboardManager} />
+                <Route path="/proposals/new" component={NewProposal} />
+                <Route path="/proposals/edit/:id" component={NewProposal} />
+                <Route path="/proposals/:id" component={ProposalDetail} />
+                <Route path="/proposals" component={ProposalManagement} />
+                <Route path="/reports" component={Reports} />
+                <Route path="/indicators" component={Indicators} />
+                <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
+                <Route path="/ranking" component={Ranking} />
+                <Route path="/sales-approval" component={SalesApproval} />
+                <Route path="/document-upload" component={DocumentUpload} />
+                <Route path="/goals" component={GoalsManagement} />
+                <Route path="/goal-notifications" component={GoalNotifications} />
+                <Route path="/tutorials" component={Tutorials} />
+                <Route path="/brokers" component={BrokerManagement} />
+                <Route path="/analytics" component={Analytics} />
+                <Route path="/sales-by-responsible" component={SalesByResponsible} />
+                <Route path="/listing-rejections" component={ListingRejections} />
+              </>
+            )}
+            {user.role === "viewer" && (
+              <>
+                <Route path="/proposals/:id" component={ProposalDetail} />
+                <Route path="/proposals" component={ProposalManagement} />
+                <Route path="/reports" component={Reports} />
+                <Route path="/indicators" component={Indicators} />
+                <Route path="/indicators/config" component={MonthlyIndicatorsConfig} />
+                <Route path="/ranking" component={Ranking} />
+                <Route path="/analytics" component={Analytics} />
+                <Route path="/dashboard" component={Reports} />
+                <Route path="/" component={Reports} />
+              </>
+            )}
+          </Switch>
+        </DashboardLayout>
       ) : (
         <Route path="/" component={LandingPage} />
       )}
