@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
-import { trpc } from "@/lib/trpc";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -15,25 +14,33 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: () => {
-      // Redireciona para / que vai para o dashboard correto do perfil
-      window.location.href = "/";
-    },
-    onError: () => {
-      setError("Email ou senha incorretos. Verifique seus dados e tente novamente. Para redefinir sua senha ou criar uma nova conta, entre em contato com o suporte do sistema.");
-    },
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
-      await loginMutation.mutateAsync({ email, password });
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // Include cookies
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Erro ao fazer login");
+        return;
+      }
+
+      // Redireciona para / que vai para o dashboard correto do perfil
+      window.location.href = "/";
     } catch (err) {
-      // Error is handled by onError callback
+      setError("Erro ao conectar com o servidor. Tente novamente mais tarde.");
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -140,4 +147,3 @@ export default function Login() {
     </div>
   );
 }
-
