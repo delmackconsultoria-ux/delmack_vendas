@@ -23,6 +23,13 @@ const LoginSchema = z.object({
 });
 
 export function registerRestAuthRoutes(app: Express) {
+  // Debug middleware para todas as requisições de auth
+  app.use('/api/auth', (req, res, next) => {
+    console.log(`[REST Auth Debug] ${req.method} ${req.path}`);
+    console.log(`[REST Auth Debug] Headers:`, req.headers);
+    console.log(`[REST Auth Debug] Body:`, req.body);
+    next();
+  });
   /**
    * POST /api/auth/login
    * 
