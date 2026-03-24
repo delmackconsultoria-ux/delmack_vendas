@@ -46,7 +46,7 @@ export function getSessionCookieOptions(
     path: "/",
     // sameSite: 'none' exige secure: true (HTTPS)
     // Para HTTP (servidor local), usar 'lax' que funciona sem HTTPS
-    sameSite: secure ? "none" : "lax",
+    sameSite: secure ? "none" : "strict",
     secure,
   };
 }

@@ -18,21 +18,31 @@ export async function createContext(
   try {
     // Parse cookies from request
     const cookieHeader = opts.req.headers.cookie;
+    console.log("[Context] Cookie header:", cookieHeader ? "EXISTS" : "MISSING");
+    console.log("[Context] Cookie header value:", cookieHeader);
+
     if (!cookieHeader) {
+      console.log("[Context] No cookie header, returning null user");
       return { req: opts.req, res: opts.res, user: null };
     }
 
     const cookies = parseCookieHeader(cookieHeader);
+    console.log("[Context] Parsed cookies:", Object.keys(cookies));
+    console.log("[Context] Looking for:", COOKIE_NAME);
+
     const sessionCookie = cookies[COOKIE_NAME];
+    console.log("[Context] Session cookie found:", sessionCookie ? "YES" : "NO");
 
     if (!sessionCookie) {
+      console.log("[Context] No session cookie, returning null user");
       return { req: opts.req, res: opts.res, user: null };
     }
 
     // Parse session data from cookie
     try {
       const decodedCookie = decodeURIComponent(sessionCookie);
-      
+      console.log("[Context] Decoded cookie:", decodedCookie.substring(0, 100));
+
       // Verificar se é um JWT (começa com eyJ)
       if (decodedCookie.startsWith('eyJ')) {
         // JWT token - decodificar payload
@@ -46,19 +56,21 @@ export async function createContext(
             }
           }
         } catch (jwtError) {
-          // JWT inválido, ignorar silenciosamente
+          console.log("[Context] JWT error:", jwtError);
           user = null;
         }
       } else {
         // JSON simples
         const sessionData = JSON.parse(decodedCookie);
+        console.log("[Context] Session data:", sessionData);
         if (sessionData.userId) {
           const fetchedUser = await db.getUserWithCompany(sessionData.userId);
+          console.log("[Context] User found:", fetchedUser ? "YES" : "NO");
           user = fetchedUser || null;
         }
       }
     } catch (error) {
-      // Ignorar erros de parsing silenciosamente - cookie inválido ou expirado
+      console.log("[Context] Error parsing cookie:", error);
       user = null;
     }
   } catch (error) {
@@ -66,10 +78,10 @@ export async function createContext(
     user = null;
   }
 
+  console.log("[Context] Returning user:", user ? (user as any).email : "null");
   return {
     req: opts.req,
     res: opts.res,
     user,
   };
 }
-

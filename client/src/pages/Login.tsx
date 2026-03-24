@@ -20,6 +20,11 @@ export default function Login() {
     setIsLoading(true);
 
     try {
+      console.log("[Login] Iniciando login...");
+      console.log("[Login] Email:", email);
+      console.log("[Login] Senha:", password.substring(0, 3) + "***");
+      console.log("[Login] Enviando requisição para /api/auth/login");
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -29,18 +34,26 @@ export default function Login() {
         credentials: "include", // Include cookies
       });
 
+      console.log("[Login] Response status:", response.status);
+      console.log("[Login] Response ok:", response.ok);
+
       const data = await response.json();
+      console.log("[Login] Response data:", data);
 
       if (!response.ok) {
+        console.log("[Login] Erro na resposta:", data.error);
         setError(data.error || "Erro ao fazer login");
         return;
       }
 
+      console.log("[Login] Login bem-sucedido!");
+      console.log("[Login] User:", data.user);
+      console.log("[Login] Redirecionando para /");
       // Redireciona para / que vai para o dashboard correto do perfil
       window.location.href = "/";
     } catch (err) {
+      console.error("[Login] Erro:", err);
       setError("Erro ao conectar com o servidor. Tente novamente mais tarde.");
-      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }
