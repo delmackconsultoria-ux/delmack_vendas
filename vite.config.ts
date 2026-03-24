@@ -26,10 +26,10 @@ export default defineConfig({
     emptyOutDir: true,
   },
   define: {
-    '%VITE_ANALYTICS_ENDPOINT%': JSON.stringify(process.env.VITE_ANALYTICS_ENDPOINT || 'https://manus-analytics.com'),
-    '%VITE_ANALYTICS_WEBSITE_ID%': JSON.stringify(process.env.VITE_ANALYTICS_WEBSITE_ID || ''),
-    '%VITE_APP_TITLE%': JSON.stringify(process.env.VITE_APP_TITLE || 'Delmack'),
-    '%VITE_APP_LOGO%': JSON.stringify(process.env.VITE_APP_LOGO || ''),
+    __VITE_ANALYTICS_ENDPOINT__: JSON.stringify(process.env.VITE_ANALYTICS_ENDPOINT || 'https://manus-analytics.com'),
+    __VITE_ANALYTICS_WEBSITE_ID__: JSON.stringify(process.env.VITE_ANALYTICS_WEBSITE_ID || ''),
+    __VITE_APP_TITLE__: JSON.stringify(process.env.VITE_APP_TITLE || 'Delmack'),
+    __VITE_APP_LOGO__: JSON.stringify(process.env.VITE_APP_LOGO || ''),
   },
   server: {
     host: true,
