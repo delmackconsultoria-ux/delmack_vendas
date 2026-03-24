@@ -124,7 +124,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={isLoading || !email || !password}
-                className="w-full h-10 bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-950"
+                className="w-full"
               >
                 {isLoading ? (
                   <>
