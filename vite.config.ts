@@ -25,12 +25,7 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
-  define: {
-    __VITE_ANALYTICS_ENDPOINT__: JSON.stringify(process.env.VITE_ANALYTICS_ENDPOINT || 'https://manus-analytics.com'),
-    __VITE_ANALYTICS_WEBSITE_ID__: JSON.stringify(process.env.VITE_ANALYTICS_WEBSITE_ID || ''),
-    __VITE_APP_TITLE__: JSON.stringify(process.env.VITE_APP_TITLE || 'Delmack'),
-    __VITE_APP_LOGO__: JSON.stringify(process.env.VITE_APP_LOGO || ''),
-  },
+
   server: {
     host: true,
     hmr: {
