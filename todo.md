@@ -400,3 +400,17 @@
 - 30 usuários
 - 3 empresas/companhias
 - Estrutura completa do sistema
+
+
+---
+
+## 🔧 MELHORIAS SOLICITADAS (18/05/2026)
+
+- [x] Item 1: Remover validação obrigatória de comissão do vendedor (parcerias não têm vendedor)
+- [x] Item 2: Investigar busca de proprietário do imóvel via Properfy - API não retorna dados pessoais (LGPD), preenchimento manual mantido
+- [x] Item 3: Corrigir bug Parceria UNA voltando para 6% ao salvar - campos de comissão agora carregados no modo de edição
+- [x] Item 4: Identificação no histórico por endereço/referência - listMySales enriquecido com join em properties
+- [x] Item 5: Cálculo automático de custo por m² - campo somente leitura calculado automaticamente
+- [x] Item 6: Campo de imobiliária parceira no corretor vendedor externo
+- [x] Item 7: Opções pré-cadastradas de despachante com campo "Outro" expansível
+- [x] Item 9: Opção de reverter "comissão paga" para gerentes - gerente pode reverter commission_paid → finance_review

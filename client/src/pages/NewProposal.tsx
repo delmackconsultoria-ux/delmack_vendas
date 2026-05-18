@@ -147,6 +147,9 @@ interface FormData {
   brokerVendedorName: string;
   brokerVendedorCreci: string;
   brokerVendedorEmail: string;
+  brokerVendedorImobiliaria: string; // Imobiliária do corretor vendedor externo
+  despachangeNomeEmpresa: string; // Nome da empresa quando despachante = "Outro"
+  despachangeTelefone: string; // Telefone quando despachante = "Outro"
   businessType: string;
 
   // Commission Info (Sistema Automático 12/02/2026)
@@ -272,6 +275,9 @@ export default function NewProposal() {
     brokerVendedorName: "",
     brokerVendedorCreci: "",
     brokerVendedorEmail: "",
+    brokerVendedorImobiliaria: "",
+    despachangeNomeEmpresa: "",
+    despachangeTelefone: "",
     businessType: "",
     // Sistema de Comissionamento Automático (12/02/2026)
     tipoComissao: "",
@@ -461,6 +467,22 @@ export default function NewProposal() {
         brokerAngariador: existingSale.brokerAngariador || "",
         brokerVendedor: existingSale.brokerVendedor || "",
         observations: existingSale.observation || "",
+        // Campos de comissionamento - carregados no modo de edição para evitar reset
+        tipoComissao: (existingSale as any).tipoComissao || "",
+        porcentagemComissao: (existingSale as any).porcentagemComissao?.toString() || "",
+        comissaoTotal: (existingSale as any).comissaoTotal?.toString() || "",
+        comissaoAngariador: (existingSale as any).comissaoAngariador?.toString() || "",
+        comissaoCoordenador: (existingSale as any).comissaoCoordenador?.toString() || "",
+        comissaoVendedor: (existingSale as any).comissaoVendedor?.toString() || "",
+        comissaoImobiliaria: (existingSale as any).comissaoImobiliaria?.toString() || "",
+        comissaoParceira: (existingSale as any).comissaoParceira?.toString() || "",
+        comissaoAutonomo: (existingSale as any).comissaoAutonomo?.toString() || "",
+        // Campos de despachante
+        despachante: (existingSale as any).despachante || "",
+        despachangeNomeEmpresa: (existingSale as any).despachangeNomeEmpresa || "",
+        despachangeTelefone: (existingSale as any).despachangeTelefone || "",
+        // Imobiliária do vendedor externo
+        brokerVendedorImobiliaria: (existingSale as any).brokerVendedorImobiliaria || "",
       }));
     }
   }, [isEditMode, existingSale]);
@@ -502,10 +524,20 @@ export default function NewProposal() {
   ]);
 
   const handleInputChange = (field: keyof FormData, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      
+      // Calcular custo por m² automaticamente quando saleValue ou privateArea mudar
+      if (field === "saleValue" || field === "privateArea") {
+        const saleVal = field === "saleValue" ? parseCurrencyInput(value) : parseCurrencyInput(prev.saleValue);
+        const area = field === "privateArea" ? parseAreaInput(value) : parseAreaInput(prev.privateArea);
+        if (saleVal > 0 && area > 0) {
+          updated.costPerM2 = formatWhileTyping((saleVal / area).toFixed(2));
+        }
+      }
+      
+      return updated;
+    });
     
     setCompletionStatus((prev) => ({
       ...prev,
@@ -751,10 +783,7 @@ export default function NewProposal() {
       return;
     }
     
-    if (!formData.comissaoVendedor || parseFloat(formData.comissaoVendedor) <= 0) {
-      toast.error("⚠️ Comissão do vendedor é obrigatória");
-      return;
-    }
+    // Comissão do vendedor não é obrigatória (parcerias não têm vendedor separado)
     
     if (!formData.comissaoImobiliaria || parseFloat(formData.comissaoImobiliaria) <= 0) {
       toast.error("⚠️ Comissão da imobiliária é obrigatória");
@@ -829,6 +858,9 @@ export default function NewProposal() {
         brokerVendedorName: formData.brokerVendedorType === "external" ? formData.brokerVendedorName : undefined,
         brokerVendedorCreci: formData.brokerVendedorType === "external" ? formData.brokerVendedorCreci : undefined,
         brokerVendedorEmail: formData.brokerVendedorType === "external" ? formData.brokerVendedorEmail : undefined,
+        brokerVendedorImobiliaria: formData.brokerVendedorType === "external" ? formData.brokerVendedorImobiliaria : undefined,
+        despachangeNomeEmpresa: formData.despachante === "Outro" ? formData.despachangeNomeEmpresa : undefined,
+        despachangeTelefone: formData.despachante === "Outro" ? formData.despachangeTelefone : undefined,
         businessType: formData.businessType,
         // Comissões
         totalCommission: formData.totalCommissionValue ? parseFloat(formData.totalCommissionValue) : commissionCalc?.totalCommissionValue,
@@ -1282,15 +1314,15 @@ export default function NewProposal() {
                     />
                   </div>
                   <div>
-                    <Label>Custo por m² (Área Privativa)</Label>
+                    <Label>Custo por m² (calculado automaticamente)</Label>
                     <Input
                       type="text"
                       value={formData.costPerM2}
-                      onChange={(e) => handleInputChange("costPerM2", formatWhileTyping(e.target.value))}
-                      onBlur={(e) => handleInputChange("costPerM2", formatWhileTyping(e.target.value))}
-                      placeholder="Ex: 5.000,00"
-                      className={getProperfyFieldClassName("costPerM2", formData.costPerM2)}
+                      readOnly
+                      placeholder="Preenchido ao informar valor e área privativa"
+                      className="bg-slate-50 cursor-not-allowed"
                     />
+                    <p className="text-xs text-slate-400 mt-1">Valor da venda ÷ área privativa</p>
                   </div>
                   <div>
                     <Label>Idade do Imóvel (anos)</Label>
@@ -1776,11 +1808,32 @@ export default function NewProposal() {
                   </div>
                   <div>
                     <Label>Quem é o Despachante?</Label>
-                    <Input
-                      placeholder="Nome do despachante"
-                      value={formData.despachante}
-                      onChange={(e) => handleInputChange("despachante", e.target.value)}
-                    />
+                    <Select value={formData.despachante} onValueChange={(value) => handleInputChange("despachante", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o despachante" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Molina Despachante Imobiliário (Caio)">Molina Despachante Imobiliário (Caio)</SelectItem>
+                        <SelectItem value="Rigonato Consultoria de Crédito (Dana)">Rigonato Consultoria de Crédito (Dana)</SelectItem>
+                        <SelectItem value="Credbuhrer (Andreara)">Credbuhrer (Andreara)</SelectItem>
+                        <SelectItem value="Sem despachante">Sem despachante</SelectItem>
+                        <SelectItem value="Outro">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {formData.despachante === "Outro" && (
+                      <div className="mt-3 space-y-2">
+                        <Input
+                          placeholder="Nome da empresa"
+                          value={formData.despachangeNomeEmpresa}
+                          onChange={(e) => handleInputChange("despachangeNomeEmpresa", e.target.value)}
+                        />
+                        <Input
+                          placeholder="Telefone de contato"
+                          value={formData.despachangeTelefone}
+                          onChange={(e) => handleInputChange("despachangeTelefone", maskPhone(e.target.value))}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -1921,6 +1974,14 @@ export default function NewProposal() {
                             placeholder="email@exemplo.com"
                             value={formData.brokerVendedorEmail}
                             onChange={(e) => handleInputChange("brokerVendedorEmail", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Imobiliária Parceira do Vendedor</Label>
+                          <Input
+                            placeholder="Nome da imobiliária"
+                            value={formData.brokerVendedorImobiliaria}
+                            onChange={(e) => handleInputChange("brokerVendedorImobiliaria", e.target.value)}
                           />
                         </div>
                       </>

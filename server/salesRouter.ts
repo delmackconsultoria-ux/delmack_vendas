@@ -95,6 +95,9 @@ const createSaleSchema = z.object({
   brokerVendedorName: z.string().optional(),
   brokerVendedorCreci: z.string().optional(),
   brokerVendedorEmail: z.string().optional(),
+  brokerVendedorImobiliaria: z.string().optional(), // Imobiliária do corretor vendedor externo
+  despachangeNomeEmpresa: z.string().optional(), // Nome da empresa quando despachante = "Outro"
+  despachangeTelefone: z.string().optional(), // Telefone quando despachante = "Outro"
   businessType: z.string().min(1, "Tipo de negócio é obrigatório"),
   
   // Commissions (Sistema Antigo - manter para compatibilidade)
@@ -337,6 +340,9 @@ export const salesRouter = router({
           brokerVendedorName: input.brokerVendedorName || null,
           brokerVendedorCreci: input.brokerVendedorCreci || null,
           brokerVendedorEmail: input.brokerVendedorEmail || null,
+          brokerVendedorImobiliaria: input.brokerVendedorImobiliaria || null,
+          despachangeNomeEmpresa: input.despachangeNomeEmpresa || null,
+          despachangeTelefone: input.despachangeTelefone || null,
           realEstateCommission: input.realEstateCommission?.toString() || null,
           // Campos adicionais
           propertyType: input.typeOfProperty || null,
@@ -715,7 +721,19 @@ export const salesRouter = router({
       }
 
       console.log('[DEBUG listMySales] Retornando', result.length, 'vendas');
-      return { sales: result };
+      
+      // Enriquecer com endereço e referência do imóvel para exibição no histórico
+      const enriched = await Promise.all(result.map(async (sale) => {
+        if (sale.propertyId) {
+          const prop = await db!.select().from(properties).where(eq(properties.id, sale.propertyId)).limit(1);
+          if (prop[0]) {
+            return { ...sale, propertyAddress: prop[0].address, propertyReference: prop[0].propertyReference };
+          }
+        }
+        return { ...sale, propertyAddress: null, propertyReference: null };
+      }));
+      
+      return { sales: enriched };
     } catch (error) {
       console.error("[Sales Router] Erro ao listar vendas:", error);
       return { sales: [] }; // Retornar array vazio em caso de erro
@@ -779,11 +797,12 @@ export const salesRouter = router({
                           (currentStatus === "sale" && input.status === "cancelled");
           if (!allowed) throw new Error("Permissão negada");
         }
-        // Gerente pode: draft/pending->sale, sale->manager_review, manager_review->finance_review, *->cancelled
+        // Gerente pode: draft/pending->sale, sale->manager_review, manager_review->finance_review, *->cancelled, commission_paid->finance_review (reverter)
         else if (ctx.user.role === "manager") {
           const allowed = (["draft", "pending"].includes(currentStatus || "") && ["sale", "cancelled"].includes(input.status)) ||
                           (currentStatus === "sale" && ["manager_review", "cancelled"].includes(input.status)) ||
                           (currentStatus === "manager_review" && ["finance_review", "cancelled"].includes(input.status)) ||
+                          (currentStatus === "commission_paid" && input.status === "finance_review") || // Reverter comissão paga
                           input.status === "cancelled";
           if (!allowed) throw new Error("Permissão negada");
         }
@@ -805,6 +824,18 @@ export const salesRouter = router({
           })
           .where(eq(sales.id, input.saleId));
 
+        // Reverter comissões para pending quando commission_paid for revertido
+        if (currentStatus === "commission_paid" && input.status === "finance_review") {
+          await db
+            .update(commissions)
+            .set({
+              status: "pending",
+              paymentDate: null,
+              updatedAt: new Date(),
+            })
+            .where(eq(commissions.saleId, input.saleId));
+        }
+        
         // Atualizar comissões associadas
         if (input.status === "commission_paid") {
           // Validar se há comprovante de pagamento

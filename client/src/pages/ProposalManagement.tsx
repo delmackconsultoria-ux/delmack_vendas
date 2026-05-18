@@ -177,6 +177,7 @@ export default function ProposalManagement() {
       if (currentStatus === "pending") return ["sale", "cancelled"];
       if (currentStatus === "sale") return ["manager_review", "cancelled"];
       if (currentStatus === "manager_review") return ["finance_review", "cancelled"];
+      if (currentStatus === "commission_paid") return ["finance_review"]; // Reverter pagamento
       return [];
     }
     if (user?.role === "finance") {
@@ -362,7 +363,12 @@ export default function ProposalManagement() {
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-slate-900">{sale.buyerName}</h3>
+                            <h3 className="font-semibold text-slate-900">
+                              {sale.propertyAddress || sale.propertyReference || sale.buyerName || "-"}
+                            </h3>
+                            {sale.propertyReference && (
+                              <span className="text-xs text-slate-400 font-mono">Ref: {sale.propertyReference}</span>
+                            )}
                             <Badge className={`${statusConfig.bgColor} ${statusConfig.color} border-0`}>
                               {statusConfig.label}
                             </Badge>
@@ -372,7 +378,7 @@ export default function ProposalManagement() {
                               <span className="text-slate-400">Valor:</span> {formatCurrency(sale.saleValue)}
                             </div>
                             <div>
-                              <span className="text-slate-400">Ref:</span> {sale.propertyId?.slice(0, 8) || "-"}
+                              <span className="text-slate-400">Comprador:</span> {sale.buyerName || "-"}
                             </div>
                             <div>
                               <span className="text-slate-400">Data:</span> {sale.createdAt ? new Date(sale.createdAt).toLocaleDateString("pt-BR") : "-"}

@@ -1,0 +1,50 @@
+{
+  "build_command": "pnpm run build",
+  "capabilities": [
+    "db",
+    "server",
+    "user"
+  ],
+  "dev_command": "pnpm run dev",
+  "env_vars": {
+    "DATABASE_URL": "mysql://3eAQdaRY4zkjYsC.95a35ec57269:rbhcy2E5S9hZpJvv592B@gateway02.us-east-1.prod.aws.tidbcloud.com:4000/FWQUTMFHrecTsndnoBiUKo?ssl={\"rejectUnauthorized\":true}"
+  },
+  "experiments": null,
+  "git_remote": {
+    "repo_url": "s3://vida-prod-gitrepo/webdev-git/310519663070619105/FWQUTMFHrecTsndnoBiUKo",
+    "access_key_id": "ASIAZV3A2ECZNZHPL63X",
+    "secret_access_key": "1dkkLmMa8+yOGgb8TERrSoRmhkR4z0RDLAUcUhKE",
+    "session_token": "IQoJb3JpZ2luX2VjEP///////////wEaCXVzLWVhc3QtMSJGMEQCICARq5vbB2XMB7VVNj5iH2Gv776J50aAWJ/b1I7t1EuPAiByCge0i0dYcLlkXCUxF4nhyDbMx32n0k8DOEiO1wNu+ir+AwjI//////////8BEAQaDDY2NTM4NjA5ODg2NiIMUh7SrAMzFYNQsObkKtID9OdboyViA/xNcxee35+k+KeAIZ2nRFuL1F7pBk1aHmho+yYyPjF23D9qKDuFhmDG7n+lf2sWgfQpbQOdoSDglpjX2rGcC8IrOLTqVIY7N5UOctSBf9XO40eqIs3RGF7UJXJBw1XYqRGBJKYBYGmYeblTKdvBvYXLXgBOWLQx4o56aFVLFNAN45GhuE10ggC8N6WxFMlAcpLIufX/KkVvFX6b2SvdgR2kfeC0GDYYGygYXL/2hjKK9To+zoegQ0dS2Vm2rEVRAPn80YDjGjwJPrLKshBgF2y+5xkpl/0PaJQIDJMVbhEccsZ/akkqK5dod77bR9XhlwaLl/+rOqdITpoXCZK1WyBTGp7lv6kWP8p1+ileo2X7ITVhl4Dzfo1hrgDNwQ9xBZLuGD3QHKSxeq1gj8w25SanumBH1T3NVP8qbaVsAOL38EPedGR4giEBdzysPdVE3ADN+wfkY9QxdE1BudL+9iHJ67gU71RPhmFb52AeuQdmA0GSSAg7DQxfxVaE0uYbnsDFTMU4hBU75j8ohFlGBNSdCNiPTITgVHrMD1SsXjf566dIQObsdml2ZazDj/IkQVv91k74EoJQw3qCHBuL2JOkYVXGOFIeS2w2YzDnpa7QBjqeASrHEX3uoU0EppgP/Fsbc4SZ7dmsppXlxy6iY3Su+G+Z89Xpw+7GDH0ps5ZGUV3tGIy7dNY0/hUfYxpZUUY5ojI6FX1auPneqm95mCQn65pIQh+P7IetI3WCOGAOKWo6EN+0ueg1/9+2MAAp6kULwht3V73gYyrQi10/C2aR1MRGxNJR3iGjtGyXDrOes9NDhBv1gc5emCyiqByliOsb",
+    "expiration": "2026-05-19T10:29:59.000Z"
+  },
+  "name": "delmack_real_estate",
+  "path": "/home/ubuntu/delmack_real_estate",
+  "port": 3000,
+  "secrets": {
+    "BUILT_IN_FORGE_API_KEY": "DvwEVRk3bAxeG4h3mQaRJs",
+    "BUILT_IN_FORGE_API_URL": "https://forge.manus.ai",
+    "JWT_SECRET": "LfsJaJYfCDZrwFR98uYrur",
+    "OAUTH_SERVER_URL": "https://api.manus.im",
+    "OWNER_NAME": "Àgora Intermediações",
+    "OWNER_OPEN_ID": "WGxQeeqMJJfugkqAYm7pZC",
+    "PROPERFY_API_TOKEN": "1d50451e-89cb-4ad6-8216-0033c1082ec5",
+    "PROPERFY_API_URL": "https://adm.baggioimoveis.com.br/api",
+    "PROPERFY_EMAIL": "victor.macioski@hotmail.com",
+    "PROPERFY_PASSWORD": "1d50451e-89cb-4ad6-8216-0033c1082ec5",
+    "SMTP_FROM_NAME": "Delmack - Sistema de Vendas",
+    "SMTP_HOST": "email-ssl.com.br",
+    "SMTP_PASS": "No.Bg2026**#",
+    "SMTP_PORT": "465",
+    "SMTP_USER": "noreply@baggioimoveis.com.br",
+    "VITE_ANALYTICS_ENDPOINT": "https://manus-analytics.com",
+    "VITE_ANALYTICS_WEBSITE_ID": "f8f5d204-75ca-47d2-bbf7-13ef6745ddf6",
+    "VITE_APP_ID": "FWQUTMFHrecTsndnoBiUKo",
+    "VITE_APP_LOGO": "https://files.manuscdn.com/user_upload_by_module/web_dev_logo/310519663070619105/OrzSWaFvnCiQeErk.png",
+    "VITE_APP_TITLE": "Delmack - Vendas",
+    "VITE_FRONTEND_FORGE_API_KEY": "",
+    "VITE_FRONTEND_FORGE_API_URL": "https://forge.manus.ai",
+    "VITE_OAUTH_PORTAL_URL": "https://manus.im"
+  },
+  "template_id": "web-db-user",
+  "test_command": "pnpm test"
+}
