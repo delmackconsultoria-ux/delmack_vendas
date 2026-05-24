@@ -12,8 +12,9 @@ import { AppHeader } from "@/components/AppHeader";
 import { toast } from "sonner";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
+  draft: { label: "Rascunho", color: "text-muted-foreground", bgColor: "bg-muted" },
   sale: { label: "Venda", color: "text-blue-600", bgColor: "bg-blue-100" },
-  manager_review: { label: "Em análise (Gerente)", color: "text-purple-600", bgColor: "bg-purple-100" },
+  manager_review: { label: "Em análise (Gerente)", color: "text-yellow-700", bgColor: "bg-yellow-100" },
   finance_review: { label: "Em análise (Financeiro)", color: "text-indigo-600", bgColor: "bg-indigo-100" },
   commission_paid: { label: "Comissão Paga", color: "text-green-600", bgColor: "bg-green-100" },
   cancelled: { label: "Cancelada", color: "text-red-600", bgColor: "bg-red-100" },
@@ -56,7 +57,7 @@ export default function SalesApproval() {
     const saleDate = s.saleDate ? new Date(s.saleDate) : new Date(s.createdAt);
     const isCurrentMonth = saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear;
     if (user?.role === "manager") return isCurrentMonth && (s.status === "sale" || s.status === "manager_review");
-    if (user?.role === "finance") return isCurrentMonth && s.status === "finance_review";
+    if (user?.role === "finance") return s.status === "finance_review";
     return false;
   }) || [];
   
@@ -70,10 +71,10 @@ export default function SalesApproval() {
 
   const approvedCount = approvedThisMonth.length;
   const approvedVGV = approvedThisMonth.reduce((sum: number, s: any) => sum + (parseFloat(s.saleValue) || 0), 0);
-  const approvedCommission = approvedThisMonth.reduce((sum: number, s: any) => sum + (parseFloat(s.commissionValue) || 0), 0);
+  const approvedCommission = approvedThisMonth.reduce((sum: number, s: any) => sum + (parseFloat(s.comissaoTotal) || 0), 0);
 
   const pendingVGV = pendingSales.reduce((sum: number, s: any) => sum + (parseFloat(s.saleValue) || 0), 0);
-  const pendingCommission = pendingSales.reduce((sum: number, s: any) => sum + (parseFloat(s.commissionValue) || 0), 0);
+  const pendingCommission = pendingSales.reduce((sum: number, s: any) => sum + (parseFloat(s.comissaoTotal) || 0), 0);
 
   const formatCurrency = (value: string | number | null) => {
     if (!value) return "R$ 0,00";
@@ -92,30 +93,39 @@ export default function SalesApproval() {
     let newStatus: string;
     if (actionType === "reject") {
       newStatus = "cancelled";
-    } else if (user?.role === "manager") {
-      newStatus = selectedSale.status === "sale" ? "manager_review" : "finance_review";
+    } else if (user?.role === "manager" && selectedSale?.status === "sale") {
+      newStatus = "manager_review";
+    } else if (user?.role === "manager" && selectedSale?.status === "manager_review") {
+      newStatus = "finance_review";
+    } else if (user?.role === "finance") {
+      newStatus = "commission_paid";
     } else {
       newStatus = "commission_paid";
     }
-    
-    // Atualizar status da venda
-    updateStatusMutation.mutate({ saleId: selectedSale.id, status: newStatus as any, observation });
-    
-    // Se for financeiro aprovando e tiver arquivo de NF, fazer upload
+
+    // Se for financeiro aprovando e tiver arquivo de NF, fazer upload ANTES de mudar status
     if (actionType === "approve" && user?.role === "finance" && newStatus === "commission_paid" && invoiceFile) {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const fileData = (e.target?.result as string).split(",")[1]; // Remove data:image/png;base64, prefix
-        uploadInvoiceMutation.mutate({
+      try {
+        const fileData = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve((e.target?.result as string).split(",")[1] || "");
+          reader.onerror = reject;
+          reader.readAsDataURL(invoiceFile);
+        });
+        await uploadInvoiceMutation.mutateAsync({
           saleId: selectedSale.id,
           fileName: invoiceFile.name,
-          fileData: fileData || "",
+          fileData,
           mimeType: invoiceFile.type,
         });
-      };
-      reader.readAsDataURL(invoiceFile);
+      } catch (err) {
+        toast.error("Erro ao enviar NF. Tente novamente.");
+        return;
+      }
     }
-    
+
+    // Atualizar status da venda
+    updateStatusMutation.mutate({ saleId: selectedSale.id, status: newStatus as any, observation });
     setInvoiceFile(null);
   };
 
@@ -252,7 +262,7 @@ export default function SalesApproval() {
             <p className="mb-2">
               {actionType === "approve" 
                 ? (user?.role === "manager" 
-                    ? (selectedSale?.status === "sale" ? "Enviar para análise do gerente?" : "Enviar para o financeiro?")
+                    ? (selectedSale?.status === "sale" ? "Aprovar venda e enviar para revisão?" : "Enviar para análise do financeiro?")
                     : "Confirmar pagamento da comissão?")
                 : "Tem certeza que deseja cancelar esta venda?"}
             </p>
@@ -285,4 +295,13 @@ export default function SalesApproval() {
             <Button 
               variant={actionType === "approve" ? "default" : "destructive"} 
               onClick={confirmAction}
-              disable
+              disabled={updateStatusMutation.isPending || uploadInvoiceMutation.isPending || (actionType === "approve" && user?.role === "finance" && !invoiceFile)}
+            >
+              {updateStatusMutation.isPending || uploadInvoiceMutation.isPending ? "Processando..." : "Confirmar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

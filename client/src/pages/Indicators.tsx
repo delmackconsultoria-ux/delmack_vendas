@@ -476,9 +476,6 @@ export default function Indicators() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        {/* Título */}
-        <h1 className="text-3xl font-bold">Indicadores</h1>
-
         {/* Header com Ano, Incluir dados manuais e Sincronizar Properfy */}
         <div className="flex items-center justify-end gap-4">
           <div className="flex items-center gap-2">
@@ -529,5 +526,43 @@ export default function Indicators() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-         
+          <div style={{marginLeft:'calc(-50vw + 50% + 32px)', marginRight:'calc(-50vw + 50% + 32px)'}}>
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <h1 className="text-2xl font-bold text-foreground">Indicadores</h1>
+                  <CardTitle className="text-base text-muted-foreground">Tabela Consolidada de Indicadores</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="px-2 py-4">
+                <IndicatorsConsolidatedTable indicators={consolidatedData} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Modais */}
+        {selectedIndicator && (
+          <IndicatorHistoryModal
+            isOpen={isModalOpen}
+            onClose={closeIndicatorModal}
+            indicatorName={selectedIndicator}
+          />
+        )}
+
+        {/* Drawer para edição de dados manuais */}
+        <ManualDataDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleDrawerClose}
+          month={parseInt(selectedMonth)}
+          year={parseInt(selectedYear)}
+          onSaveSuccess={() => {
+            refetchYear();
+            refetch();
+            refetchMonthlyManualData();
+          }}
+        />
+      </div>
+    </AppLayout>
+  );
+}

@@ -29,10 +29,27 @@ export default function DashboardManager() {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [selectedYear] = useState(now.getFullYear());
   // Buscar KPIs do dashboard
-  const { data: kpis, isLoading: isLoadingKPIs } = trpc.dashboard.getKPIs.useQuery({
-    month: periodMode === "anual" ? 0 : selectedMonth,
-    year: selectedYear,
-  });
+  const companyId = user?.companyId || user?.id || "";
+  const { data: monthlyData, isLoading: isLoadingMonthly } = trpc.indicators.getRealtimeIndicators.useQuery(
+    { companyId, month: selectedMonth, year: selectedYear },
+    { enabled: periodMode === "mensal" && !!companyId }
+  );
+  const { data: yearlyData, isLoading: isLoadingYearly } = trpc.indicators.getYearIndicators.useQuery(
+    { companyId, year: selectedYear },
+    { enabled: periodMode === "anual" && !!companyId }
+  );
+  const isLoadingKPIs = periodMode === "mensal" ? isLoadingMonthly : isLoadingYearly;
+  const kpiVgv = periodMode === "mensal"
+    ? (monthlyData?.negociosValor || 0)
+    : (yearlyData?.monthlyData?.reduce((s: number, m: any) => s + (m.negociosValor || 0), 0) || 0);
+  const kpiCount = periodMode === "mensal"
+    ? (monthlyData?.negociosUnidades || 0)
+    : (yearlyData?.monthlyData?.reduce((s: number, m: any) => s + (m.negociosUnidades || 0), 0) || 0);
+  const kpiTicket = kpiCount > 0 ? kpiVgv / kpiCount : 0;
+  const kpiCommission = periodMode === "mensal"
+    ? (monthlyData?.comissaoRecebida || 0)
+    : (yearlyData?.monthlyData?.reduce((s: number, m: any) => s + (m.comissaoRecebida || 0), 0) || 0);
+  const kpiLabel = periodMode === "anual" ? `Acumulado ${selectedYear}` : `${String(selectedMonth).padStart(2,'0')}/${selectedYear}`;
 
   if (!user) {
     return null;
@@ -122,11 +139,11 @@ export default function DashboardManager() {
                       currency: "BRL",
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
-                    }).format(kpis?.vgv || 0)}
+                    }).format(kpiVgv)}
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground mt-2">
-                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                  {kpiLabel}
                 </p>
               </CardContent>
             </Card>
@@ -143,10 +160,10 @@ export default function DashboardManager() {
                 {isLoadingKPIs ? (
                   <p className="text-3xl font-bold text-slate-400">...</p>
                 ) : (
-                  <p className="text-3xl font-bold text-foreground">{kpis?.salesCount || 0}</p>
+                  <p className="text-3xl font-bold text-foreground">{kpiCount}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-2">
-                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                  {kpiLabel}
                 </p>
               </CardContent>
             </Card>
@@ -169,11 +186,11 @@ export default function DashboardManager() {
                       currency: "BRL",
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
-                    }).format(kpis?.averageTicket || 0)}
+                    }).format(kpiTicket)}
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground mt-2">
-                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                  {kpiLabel}
                 </p>
               </CardContent>
             </Card>
@@ -196,11 +213,11 @@ export default function DashboardManager() {
                       currency: "BRL",
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
-                    }).format(kpis?.receivedCommissions || 0)}
+                    }).format(kpiCommission)}
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground mt-2">
-                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                  {kpiLabel}
                 </p>
               </CardContent>
             </Card>
@@ -269,3 +286,88 @@ export default function DashboardManager() {
                         strokeWidth={2}
                       />
                       <Line
+                        type="monotone"
+                        dataKey="canceladas"
+                        stroke="#dc2626"
+                        name="Canceladas"
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-purple-600" />
+                  Gerenciar Equipe
+                </CardTitle>
+                <CardDescription>
+                  Visualize e gerencie seus corretores
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setLocation("/brokers")}
+                >
+                  Ir para Equipe
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-blue-600" />
+                  Relatórios
+                </CardTitle>
+                <CardDescription>
+                  Análise detalhada de vendas
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setLocation("/reports")}
+                >
+                  Ver Relatórios
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-green-600" />
+                  Indicadores
+                </CardTitle>
+                <CardDescription>
+                  KPIs e métricas da equipe
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setLocation("/indicators")}
+                >
+                  Ver Indicadores
+                </Button>
+              </CardContent>
+            </Card>
+
+
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

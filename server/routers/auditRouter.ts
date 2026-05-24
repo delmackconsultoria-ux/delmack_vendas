@@ -19,6 +19,7 @@ export const auditRouter = router({
         userId: z.string().optional(),
         action: z.enum(["create", "update", "delete", "status_change", "approval", "rejection"]).optional(),
         saleId: z.string().optional(),
+        searchTerm: z.string().optional(),
         limit: z.number().min(1).max(100).default(50),
         offset: z.number().min(0).default(0),
       })
@@ -27,7 +28,7 @@ export const auditRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
-      const { startDate, endDate, userId, action, saleId, limit, offset } = input;
+      const { startDate, endDate, userId, action, saleId, searchTerm, limit, offset } = input;
 
       // Buscar todos os logs da empresa usando SQL raw
       const allLogs = await db
@@ -38,6 +39,11 @@ export const auditRouter = router({
 
       // Aplicar filtros manualmente
       let filteredLogs = allLogs;
+
+      // Ocultar login/logout para manager e finance
+      if (ctx.user.role !== "admin" && ctx.user.role !== "super_admin") {
+        filteredLogs = filteredLogs.filter(log => log.fieldName !== "login" && log.fieldName !== "logout");
+      }
 
       if (startDate) {
         const startDateObj = new Date(startDate);
@@ -59,6 +65,17 @@ export const auditRouter = router({
 
       if (saleId) {
         filteredLogs = filteredLogs.filter(log => log.saleId === saleId);
+      }
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filteredLogs = filteredLogs.filter(log =>
+          (log.changedByName && log.changedByName.toLowerCase().includes(term)) ||
+          (log.saleId && log.saleId.toLowerCase().includes(term)) ||
+          (log.fieldName && log.fieldName.toLowerCase().includes(term)) ||
+          (log.previousValue && log.previousValue.toLowerCase().includes(term)) ||
+          (log.newValue && log.newValue.toLowerCase().includes(term)) ||
+          (log.changeReason && log.changeReason.toLowerCase().includes(term))
+        );
       }
 
       const total = filteredLogs.length;

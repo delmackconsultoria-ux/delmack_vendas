@@ -176,3 +176,10 @@ export function IndicatorsConsolidatedTable({
               <TableCell className="text-right" style={getMonthColorStyle(indicator.months.out, indicator.monthlyGoal)}>{formatValue(indicator.months.out, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
               <TableCell className="text-right" style={getMonthColorStyle(indicator.months.nov, indicator.monthlyGoal)}>{formatValue(indicator.months.nov, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
               <TableCell className="text-right" style={getMonthColorStyle(indicator.months.dez, indicator.monthlyGoal)}>{formatValue(indicator.months.dez, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}

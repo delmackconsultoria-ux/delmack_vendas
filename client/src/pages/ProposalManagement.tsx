@@ -9,7 +9,8 @@ import CommissionsReceived from "@/components/CommissionsReceived";
 import AuditLogTable from "@/components/AuditLogTable";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Search, Eye, Edit, FileText, Filter, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare, History } from "lucide-react";
+import { ArrowLeft, Plus, Search, Eye, Edit, FileText, Filter, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare, History, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
@@ -18,9 +19,8 @@ import { useLocation } from "wouter";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
   draft: { label: "Rascunho", color: "text-muted-foreground", bgColor: "bg-muted" },
-  pending: { label: "Pendente", color: "text-amber-600", bgColor: "bg-amber-100" },
   sale: { label: "Venda", color: "text-blue-600", bgColor: "bg-blue-100" },
-  manager_review: { label: "Em análise (Gerente)", color: "text-purple-600", bgColor: "bg-purple-100" },
+  manager_review: { label: "Em análise (Gerente)", color: "text-yellow-700", bgColor: "bg-yellow-100" },
   finance_review: { label: "Em análise (Financeiro)", color: "text-indigo-600", bgColor: "bg-indigo-100" },
   commission_paid: { label: "Comissão Paga", color: "text-green-600", bgColor: "bg-green-100" },
   cancelled: { label: "Cancelada", color: "text-red-600", bgColor: "bg-red-100" },
@@ -48,6 +48,11 @@ export default function ProposalManagement() {
     enabled: user?.role === "manager",
   });
 
+  const [showDeleteSaleModal, setShowDeleteSaleModal] = useState(false);
+  const [deleteSaleRef, setDeleteSaleRef] = useState("");
+  const [deleteSaleConfirm, setDeleteSaleConfirm] = useState("");
+  const deleteSaleByRefMutation = trpc.sales.deleteSaleByReference.useMutation();
+
   const updateStatusMutation = trpc.sales.updateSaleStatus.useMutation({
     onSuccess: () => {
       refetch();
@@ -74,16 +79,22 @@ export default function ProposalManagement() {
     });
     
     if (baseSales.length === 0) {
-      return { total: 0, sales: 0, approved: 0, cancelled: 0, pending: 0 };
+      return { total: 0, sales: 0, approved: 0, cancelled: 0, pending: 0, totalValue: 0, approvedValue: 0, cancelledValue: 0, pendingValue: 0 };
     }
     
-    const total = baseSales.filter((s: any) => s.status !== 'draft').length;
-    const salesCount = baseSales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length;
-    const approved = baseSales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length;
-    const cancelled = baseSales.filter((s: any) => s.status === "cancelled").length;
-    const pending = baseSales.filter((s: any) => ["draft", "pending", "sale", "manager_review", "finance_review"].includes(s.status)).length;
+    const totalSales = baseSales.filter((s: any) => s.status !== 'draft');
+    const salesCount = baseSales.filter((s: any) => ["sale", "finance_review", "commission_paid"].includes(s.status)).length;
+    const approvedSales = baseSales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status));
+    const cancelledSales = baseSales.filter((s: any) => s.status === "cancelled");
+    const pendingSales = baseSales.filter((s: any) => ["draft", "sale", "finance_review"].includes(s.status));
+    const sumValue = (arr: any[]) => arr.reduce((s: number, x: any) => s + (parseFloat(x.saleValue) || 0), 0);
     
-    return { total, sales: salesCount, approved, cancelled, pending };
+    return {
+      total: totalSales.length, sales: salesCount,
+      approved: approvedSales.length, cancelled: cancelledSales.length, pending: pendingSales.length,
+      totalValue: sumValue(totalSales), approvedValue: sumValue(approvedSales),
+      cancelledValue: sumValue(cancelledSales), pendingValue: sumValue(pendingSales),
+    };
   }, [salesData, selectedMonth, selectedYear]);
 
   const filteredSales = useMemo(() => {
@@ -167,18 +178,15 @@ export default function ProposalManagement() {
   };
 
   const getNextStatuses = (currentStatus: string): string[] => {
-    // Fluxo: draft -> sale -> manager_review -> finance_review -> commission_paid
+    // Fluxo: draft -> sale -> finance_review -> commission_paid
     if (user?.role === "broker") {
       if (currentStatus === "draft") return ["sale", "cancelled"];
-      if (currentStatus === "pending") return ["sale", "cancelled"];
       if (currentStatus === "sale") return ["cancelled"];
       return [];
     }
     if (user?.role === "manager") {
       if (currentStatus === "draft") return ["sale", "cancelled"];
-      if (currentStatus === "pending") return ["sale", "cancelled"];
-      if (currentStatus === "sale") return ["manager_review", "cancelled"];
-      if (currentStatus === "manager_review") return ["finance_review", "cancelled"];
+      if (currentStatus === "sale") return ["finance_review", "cancelled"];
       return [];
     }
     if (user?.role === "finance") {
@@ -195,7 +203,7 @@ export default function ProposalManagement() {
       
       {/* Título da Página */}
       <div className="bg-background">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Comissões</h1>
@@ -203,19 +211,29 @@ export default function ProposalManagement() {
                 {user?.role === "broker" ? "Suas comissões a receber" : "Gerenciamento de comissões"}
               </p>
             </div>
-            <Button onClick={() => setLocation("/proposals/new")} className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Nova Venda
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={() => setLocation("/proposals/new")} className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Venda
+              </Button>
+              {user?.role === "manager" && (
+                <Button onClick={() => { setShowDeleteSaleModal(true); setDeleteSaleRef(""); setDeleteSaleConfirm(""); }} variant="outline" className="border-red-500 text-red-500 hover:bg-red-50 gap-2">
+                  <Trash2 className="h-4 w-4" />
+                  Excluir Venda
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="commissions" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-2 mb-6">
+          <TabsList className={`grid w-full max-w-2xl mb-6 ${["manager", "finance", "super_admin"].includes(user?.role || "") ? "grid-cols-2" : "grid-cols-1"}`}>
             <TabsTrigger value="commissions">{user?.role === "broker" ? "Recebidas" : "Histórico"}</TabsTrigger>
-            <TabsTrigger value="audit">Alterações</TabsTrigger>
+            {["manager", "finance", "super_admin"].includes(user?.role || "") && (
+              <TabsTrigger value="audit">Alterações</TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="commissions" className="space-y-6">
@@ -228,6 +246,7 @@ export default function ProposalManagement() {
                     <div className="flex-1">
                       <p className="text-2xl font-bold">{metrics.total}</p>
                       <p className="text-xs text-muted-foreground">Total de Vendas</p>
+                      <p className="text-xs text-muted-foreground">{formatCurrency(metrics.totalValue)}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -239,6 +258,7 @@ export default function ProposalManagement() {
                     <div className="flex-1">
                       <p className="text-2xl font-bold text-green-600">{metrics.approved}</p>
                       <p className="text-xs text-muted-foreground">Aprovadas</p>
+                      <p className="text-xs text-muted-foreground">{formatCurrency(metrics.approvedValue)}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -250,6 +270,7 @@ export default function ProposalManagement() {
                     <div className="flex-1">
                       <p className="text-2xl font-bold text-red-600">{metrics.cancelled}</p>
                       <p className="text-xs text-muted-foreground">Canceladas</p>
+                      <p className="text-xs text-muted-foreground">{formatCurrency(metrics.cancelledValue)}</p>
                 </div>
               </div>
             </CardContent>
@@ -261,6 +282,7 @@ export default function ProposalManagement() {
                 <div>
                   <p className="text-2xl font-bold text-amber-600">{metrics.pending}</p>
                   <p className="text-xs text-muted-foreground">Pendentes</p>
+                  <p className="text-xs text-muted-foreground">{formatCurrency(metrics.pendingValue)}</p>
                 </div>
               </div>
             </CardContent>
@@ -358,23 +380,36 @@ export default function ProposalManagement() {
             ) : (
               <div className="space-y-3">
                 {filteredSales.map((sale: any) => {
-                  const statusConfig = STATUS_CONFIG[sale.status] || STATUS_CONFIG.pending;
+                  const statusConfig = STATUS_CONFIG[sale.status] || STATUS_CONFIG.draft;
                   return (
                     <div key={sale.id} className={`border rounded-lg p-4 hover:bg-background transition-colors ${sale.isHistorical ? 'bg-amber-50/30 border-amber-200' : ''}`}>
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-foreground">{sale.buyerName}</h3>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h3 className="font-semibold text-foreground">
+                              {(() => {
+                                const addr = sale.propertyAddressFromDb || sale.propertyAddress;
+                                const ref = sale.propertyReferenceFromDb;
+                                if (addr && ref) return `${addr} — ${ref}`;
+                                if (addr) return addr;
+                                if (ref) return ref;
+                                return "";
+                              })()}
+                            </h3>
                             <Badge className={`${statusConfig.bgColor} ${statusConfig.color} border-0`}>
                               {statusConfig.label}
                             </Badge>
                           </div>
+                          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mb-2">
+
+                            <span><span className="text-slate-400">Ref. Sistema:</span> {sale.id?.slice(0, 8) || "-"}</span>
+                            <span className="text-slate-500">Comprador: {sale.buyerName || "-"}</span>
+                            {sale.brokerAngariadorName && <span><span className="text-slate-400">Angariador:</span> {sale.brokerAngariadorName}</span>}
+                            {sale.brokerVendedorName && <span><span className="text-slate-400">Vendedor:</span> {sale.brokerVendedorName}</span>}
+                          </div>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground">
                             <div>
                               <span className="text-slate-400">Valor:</span> {formatCurrency(sale.saleValue)}
-                            </div>
-                            <div>
-                              <span className="text-slate-400">Ref:</span> {sale.propertyId?.slice(0, 8) || "-"}
                             </div>
                             <div>
                               <span className="text-slate-400">Data:</span> {sale.createdAt ? new Date(sale.createdAt).toLocaleDateString("pt-BR") : "-"}
@@ -391,7 +426,7 @@ export default function ProposalManagement() {
                             <Eye className="h-4 w-4 mr-1" />
                             Ver
                           </Button>
-                          {(["draft", "pending"].includes(sale.status) || (user?.role === "manager" && ["draft", "pending", "sale"].includes(sale.status))) && (
+                          {(sale.status === "draft" || (user?.role === "manager" && ["draft", "sale"].includes(sale.status))) && (
                             <Button variant="outline" size="sm" onClick={() => setLocation(`/proposals/edit/${sale.id}`)}>
                               <Edit className="h-4 w-4 mr-1" />
                               Editar
@@ -475,4 +510,71 @@ export default function ProposalManagement() {
               Cancelar
             </Button>
             <Button onClick={handleStatusChange} disabled={!newStatus || updateStatusMutation.isPending}>
-              {u
+              {updateStatusMutation.isPending ? "Salvando..." : "Confirmar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Modal Excluir Venda por Referência */}
+      {showDeleteSaleModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-900">Excluir Venda</h2>
+              <button onClick={() => setShowDeleteSaleModal(false)} className="text-gray-400 hover:text-gray-700">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="text-gray-500 text-sm mb-4">Informe a referência, ID da venda ou parte do endereço para localizar e excluir permanentemente.</p>
+            <div className="space-y-3">
+              <div>
+                <label className="text-gray-700 text-sm font-medium">Referência / ID da Venda</label>
+                <input
+                  type="text"
+                  value={deleteSaleRef}
+                  onChange={(e) => setDeleteSaleRef(e.target.value)}
+                  placeholder="Ex: 97567001, sale_abc123..."
+                  className="mt-1 w-full border border-gray-300 text-gray-900 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-red-500"
+                />
+              </div>
+              <div>
+                <label className="text-gray-700 text-sm font-medium">Confirmação</label>
+                <p className="text-gray-400 text-xs mb-1">Digite <span className="text-red-500 font-bold">EXCLUIR</span> para confirmar</p>
+                <input
+                  type="text"
+                  value={deleteSaleConfirm}
+                  onChange={(e) => setDeleteSaleConfirm(e.target.value)}
+                  placeholder="EXCLUIR"
+                  className="w-full border border-gray-300 text-gray-900 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-red-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <Button variant="outline" onClick={() => setShowDeleteSaleModal(false)}>
+                Cancelar
+              </Button>
+              <Button
+                disabled={deleteSaleConfirm !== "EXCLUIR" || !deleteSaleRef.trim() || deleteSaleByRefMutation.isPending}
+                onClick={async () => {
+                  try {
+                    const result = await deleteSaleByRefMutation.mutateAsync({ reference: deleteSaleRef.trim() });
+                    toast.success(result.message || "Venda excluída com sucesso");
+                    setShowDeleteSaleModal(false);
+                    setDeleteSaleRef("");
+                    setDeleteSaleConfirm("");
+                    refetch();
+                  } catch (err: any) {
+                    toast.error(err.message || "Erro ao excluir venda");
+                  }
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {deleteSaleByRefMutation.isPending ? "Excluindo..." : "Excluir Permanentemente"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

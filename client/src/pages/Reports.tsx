@@ -710,4 +710,138 @@ export default function ReportsPage() {
                           <Tooltip formatter={(value: any) => formatCurrency(value)} />
                           <Legend verticalAlign="top" />
                           <Bar dataKey="vendas" fill="#0b0bb5" name="Vendas" />
-                          <Bar dataKey="angariações" f
+                          <Bar dataKey="angariações" fill="#2563eb" name="Angariações" />
+                        </BarChart>
+                      ) : reportType === "engagement-value" || reportType === "cancellations-value" ? (
+                        <BarChart data={chartDataAbbrev} margin={{ bottom: 70 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" {...brokerXAxisProps} />
+                          <YAxis tickFormatter={(v: any) => formatCurrency(v)} width={75} />
+                          <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                          <Legend verticalAlign="top" />
+                          <Bar dataKey="valor" fill="#0b0bb5" name="Valor" />
+                        </BarChart>
+                      ) : reportType === "engagement-qty" || reportType === "cancellations-qty" ? (
+                        <BarChart data={chartDataAbbrev} margin={{ bottom: 70 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" {...brokerXAxisProps} />
+                          <YAxis allowDecimals={false} />
+                          <Tooltip />
+                          <Legend verticalAlign="top" />
+                          <Bar dataKey="quantidade" fill="#0b0bb5" name="Quantidade" />
+                        </BarChart>
+                      ) : reportType === "sales-by-region" ? (
+                        <PieChart>
+                          <Pie
+                            data={chartDataAbbrev}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={true}
+                            label={({ name, percent }: any) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={110}
+                            dataKey="quantidade"
+                          >
+                            {chartDataAbbrev.map((_: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={REGION_COLORS[index % REGION_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(value: any, name: string) => [value, 'Vendas']} />
+                          <Legend />
+                        </PieChart>
+                      ) : reportType === "avg-sale-time" ? (
+                        <LineChart data={chartDataAbbrev} margin={{ bottom: 30 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                          <YAxis />
+                          <Tooltip formatter={(value: any) => `${value} dias`} />
+                          <Legend verticalAlign="top" />
+                          <Line type="monotone" dataKey="dias" stroke="#f59e0b" strokeWidth={2} name="Dias" />
+                        </LineChart>
+                      ) : reportType === "goal-achievement" ? (
+                        <BarChart data={chartDataAbbrev} margin={{ bottom: 70 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" {...brokerXAxisProps} />
+                          <YAxis tickFormatter={(v: any) => formatCurrency(v)} width={75} />
+                          <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                          <Legend verticalAlign="top" />
+                          <Bar dataKey="meta" fill="#94a3b8" name="Meta" />
+                          <Bar dataKey="realizado" fill="#3b82f6" name="Realizado" />
+                        </BarChart>
+                      ) : reportType === "partnership-analysis" ? (
+                        <BarChart data={chartDataAbbrev} margin={{ bottom: 30 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                          <YAxis tickFormatter={(v: any) => formatCurrency(v)} width={75} />
+                          <Tooltip formatter={(value: any, name: string) => name === "valor" ? formatCurrency(value) : value} />
+                          <Legend verticalAlign="top" />
+                          <Bar dataKey="quantidade" fill="#2563eb" name="Quantidade" />
+                          <Bar dataKey="valor" fill="#0b0bb5" name="Valor" />
+                        </BarChart>
+                      ) : reportType === "sinal-negocio" ? (
+                        <BarChart data={chartData} margin={{ bottom: 30 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                          <YAxis tickFormatter={(v: any) => formatCurrency(v)} width={80} />
+                          <Tooltip formatter={(value: any, name: string) => ["valor","pago","pendente"].includes(name) ? formatCurrency(value) : value} />
+                          <Legend verticalAlign="top" />
+                          <Bar dataKey="quantidade" fill="#2563eb" name="Quantidade" />
+                          <Bar dataKey="pago" fill="#16a34a" name="Pago" />
+                          <Bar dataKey="pendente" fill="#f59e0b" name="Pendente" />
+                        </BarChart>
+                      ) : (
+                        <BarChart data={chartDataAbbrev} margin={{ bottom: 70 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" {...brokerXAxisProps} />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend verticalAlign="top" />
+                          <Bar dataKey="quantidade" fill="#0b0bb5" name="Quantidade" />
+                        </BarChart>
+                      )}
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-64 flex items-center justify-center text-muted-foreground">
+                      Nenhum dado para exibir
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {/* Segundo gráfico: Sinal de Negócio Comparativo Mensal */}
+          {reportType === "sinal-negocio" && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Sinal de Negócio Comparativo Mensal</CardTitle>
+                <CardDescription>Valor do sinal por tipo, mês a mês</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {sinalNegocioMensalData.some((d: any) => Object.keys(d).filter(k => k !== "mes").some(k => d[k] > 0)) ? (
+                  <ResponsiveContainer width="100%" height={320}>
+                    <BarChart data={sinalNegocioMensalData} margin={{ bottom: 10 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
+                      <YAxis tickFormatter={(v: any) => formatCurrency(v)} width={80} />
+                      <Tooltip formatter={(value: any) => formatCurrency(Number(value))} />
+                      <Legend verticalAlign="top" />
+                      <Bar dataKey="Sem sinal" stackId="a" fill="#94a3b8" name="Sem sinal" />
+                      <Bar dataKey="Baggio" stackId="a" fill="#2563eb" name="Baggio" />
+                      <Bar dataKey="Outra" stackId="a" fill="#f59e0b" name="Outra" />
+                      <Bar dataKey="Imobiliária Parceira" stackId="a" fill="#10b981" name="Imobiliária Parceira" />
+                      <Bar dataKey="Nota Promissória" stackId="a" fill="#8b5cf6" name="Nota Promissória" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-64 flex items-center justify-center text-muted-foreground">
+                    Nenhum dado para exibir
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
