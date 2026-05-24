@@ -1,7 +1,8 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Edit, Download, Paperclip, History, ExternalLink, Check, X, Trash2, Ban } from "lucide-react";
+import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Edit, Download, Paperclip, History, ExternalLink, Check, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -10,12 +11,9 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { DocumentsModal } from "@/components/DocumentsModal";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { validateFile, FILE_VALIDATION_CONFIG, formatFileSize } from "@/lib/fileValidationHelper";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-  draft: { label: "Rascunho", color: "text-muted-foreground", bgColor: "bg-muted" },
+  draft: { label: "Rascunho", color: "text-slate-600", bgColor: "bg-slate-100" },
   pending: { label: "Pendente", color: "text-amber-600", bgColor: "bg-amber-100" },
   sale: { label: "Venda", color: "text-blue-600", bgColor: "bg-blue-100" },
   manager_review: { label: "Em anÃ¡lise (Gerente)", color: "text-purple-600", bgColor: "bg-purple-100" },
@@ -36,9 +34,6 @@ export default function ProposalDetail() {
   const [newPaymentDate, setNewPaymentDate] = useState("");
   const [documentsModalOpen, setDocumentsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [cancelReason, setCancelReason] = useState("");
   const [editForm, setEditForm] = useState({
     buyerName: "",
     buyerCpfCnpj: "",
@@ -48,7 +43,7 @@ export default function ProposalDetail() {
     sellerPhone: "",
     saleValue: "",
     businessType: "",
-    observations: "",
+    observation: "",
     changeReason: "",
   });
   
@@ -75,15 +70,6 @@ export default function ProposalDetail() {
   });
   
   const handleUploadDocument = async (documentType: string, file: File) => {
-    // Validar arquivo
-    const validation = validateFile(file, FILE_VALIDATION_CONFIG.MODAL_DOCUMENTS);
-    if (!validation.isValid) {
-      toast.error("Arquivo invÃ¡lido", {
-        description: validation.error,
-      });
-      return;
-    }
-
     const reader = new FileReader();
     reader.onload = async (e) => {
       const base64 = e.target?.result?.toString().split(",")[1];
@@ -114,33 +100,9 @@ export default function ProposalDetail() {
       toast.error(error.message || "Erro ao atualizar previsÃ£o de recebimento");
     },
   });
-  
-  const deleteSaleMutation = trpc.sales.deleteSale.useMutation({
-    onSuccess: () => {
-      toast.success("Rascunho deletado com sucesso");
-      setDeleteDialogOpen(false);
-      setLocation("/proposals");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Erro ao deletar rascunho");
-    },
-  });
-  
-  const cancelSaleMutation = trpc.sales.cancelSale.useMutation({
-    onSuccess: () => {
-      toast.success("Venda cancelada com sucesso");
-      setCancelDialogOpen(false);
-      setCancelReason("");
-      refetch();
-      refetchHistory();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Erro ao cancelar venda");
-    },
-  });
 
-  if (isLoading) return <div className="min-h-screen bg-background flex items-center justify-center">Carregando...</div>;
-  if (!sale) return <div className="min-h-screen bg-background flex items-center justify-center">Venda nÃ£o encontrada</div>;
+  if (isLoading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Carregando...</div>;
+  if (!sale) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Venda nÃ£o encontrada</div>;
 
   const formatCurrency = (value: string | number | null | undefined) => {
     if (!value) return "R$ 0,00";
@@ -155,7 +117,7 @@ export default function ProposalDetail() {
 
   const formatDateTime = (date: string | Date | null | undefined) => {
     if (!date) return "-";
-    return new Date(date).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+    return new Date(date).toLocaleString("pt-BR");
   };
 
   // ValidaÃ§Ã£o de ediÃ§Ã£o: Broker sÃ³ pode editar em rascunho, Gerente pode editar sempre, Financeiro nÃ£o pode editar
@@ -165,10 +127,67 @@ export default function ProposalDetail() {
   const isCommissionPaid = sale.status === "commission_paid";
   const canEditAfterPayment = user?.role === "manager" && isCommissionPaid;
 
-  // FunÃ§Ã£o removida - exportar nÃ£o Ã© mais suportado
+  const handleExportPDF = () => {
+    const content = `
+PROPOSTA DE VENDA - ${sale.property?.propertyReference || "S/R"}
+===============================================
+
+STATUS: ${STATUS_CONFIG[sale.status]?.label || sale.status}
+DATA: ${formatDate(sale.createdAt)}
+
+IMÃ“VEL
+------
+EndereÃ§o: ${sale.property?.address || "-"}, ${sale.property?.number || "S/N"}
+Bairro: ${sale.property?.neighborhood || "-"}
+Cidade/Estado: ${sale.property?.city || "-"}/${sale.property?.state || "-"}
+CEP: ${sale.property?.zipCode || "-"}
+CondomÃ­nio: ${sale.condominiumName || "-"}
+
+COMPRADOR
+---------
+Nome: ${sale.buyerName || "-"}
+CPF/CNPJ: ${sale.buyerCpfCnpj || "-"}
+Telefone: ${sale.buyerPhone || "-"}
+Origem: ${sale.clientOrigin || "-"}
+
+VENDEDOR
+--------
+Nome: ${sale.sellerName || "-"}
+CPF/CNPJ: ${sale.sellerCpfCnpj || "-"}
+Telefone: ${sale.sellerPhone || "-"}
+
+VALORES
+-------
+Valor da Venda: ${formatCurrency(sale.saleValue)}
+Valor DivulgaÃ§Ã£o: ${formatCurrency(sale.advertisementValue)}
+Forma Pagamento: ${sale.paymentMethod || "-"}
+ComissÃ£o Total: ${formatCurrency(sale.totalCommission)} (${sale.totalCommissionPercent || 0}%)
+ComissÃ£o Angariador: ${formatCurrency(sale.angariadorCommission)}
+ComissÃ£o Vendedor: ${formatCurrency(sale.vendedorCommission)}
+
+DATAS
+-----
+Data da Venda: ${formatDate(sale.saleDate)}
+Data AngariaÃ§Ã£o: ${formatDate(sale.angariationDate)}
+PrevisÃ£o Recebimento: ${formatDate(sale.expectedPaymentDate)}
+
+OBSERVAÃ‡Ã•ES
+-----------
+${sale.observation || "Nenhuma observaÃ§Ã£o"}
+    `.trim();
+
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `venda-${sale.property?.propertyReference || params.id}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Proposta exportada com sucesso!");
+  };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <AppHeader />
       <main className="max-w-5xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-4">
@@ -185,57 +204,64 @@ export default function ProposalDetail() {
                     toast.error("Esta venda jÃ¡ foi paga. Apenas gerentes podem editar.");
                     return;
                   }
-                  // Ir para pÃ¡gina de ediÃ§Ã£o completa ao invÃ©s de abrir modal
-                  setLocation(`/proposals/edit/${params.id}`);
+                  setEditForm({
+                    buyerName: sale.buyerName || "",
+                    buyerCpfCnpj: sale.buyerCpfCnpj || "",
+                    buyerPhone: sale.buyerPhone || "",
+                    sellerName: sale.sellerName || "",
+                    sellerCpfCnpj: sale.sellerCpfCnpj || "",
+                    sellerPhone: sale.sellerPhone || "",
+                    saleValue: sale.saleValue || "",
+                    businessType: sale.businessType || "",
+                    observation: sale.observation || "",
+                    changeReason: "",
+                  });
+                  setEditModalOpen(true);
                 }}
                 title={isCommissionPaid && !canEditAfterPayment ? "Esta venda jÃ¡ foi paga. Apenas gerentes podem editar." : ""}
               >
                 <Edit className="h-4 w-4 mr-2" /> Editar
               </Button>
             )}
-
+            <Button variant="outline" onClick={handleExportPDF}>
+              <Download className="h-4 w-4 mr-2" /> Exportar
+            </Button>
             <Button variant="outline" onClick={() => setDocumentsModalOpen(true)}>
               <Paperclip className="h-4 w-4 mr-2" /> Documentos
             </Button>
-            {sale.status === "draft" && (
-              <Button 
-                variant="outline" 
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4 mr-2" /> Deletar
-              </Button>
-            )}
-            {sale.status !== "draft" && sale.status !== "cancelled" && (
-              <Button 
-                variant="outline" 
-                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-                onClick={() => setCancelDialogOpen(true)}
-              >
-                <Ban className="h-4 w-4 mr-2" /> Cancelar
-              </Button>
-            )}
           </div>
         </div>
 
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Detalhes da Proposta</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Detalhes da Proposta</h1>
           <Badge className={`${STATUS_CONFIG[sale.status]?.bgColor} ${STATUS_CONFIG[sale.status]?.color} border-0`}>
             {STATUS_CONFIG[sale.status]?.label || sale.status}
           </Badge>
         </div>
 
         <div className="grid gap-6">
+          {/* Anexo */}
+          {(sale.proposalDocumentUrl || docUrl?.url) && (
+            <Card className="border-blue-200 bg-blue-50">
+              <CardHeader><CardTitle className="flex items-center gap-2"><Paperclip className="h-5 w-5" /> Anexo da Proposta</CardTitle></CardHeader>
+              <CardContent>
+                <Button variant="outline" onClick={() => window.open(docUrl?.url || sale.proposalDocumentUrl || "", "_blank")}>
+                  <ExternalLink className="h-4 w-4 mr-2" /> Visualizar Anexo
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* ImÃ³vel */}
           <Card>
             <CardHeader><CardTitle className="flex items-center gap-2"><Home className="h-5 w-5" /> ImÃ³vel</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
-              <div><p className="text-sm text-muted-foreground">EndereÃ§o</p><p className="font-medium">{sale.property?.address || "-"}, {sale.property?.number || "S/N"}</p></div>
-              <div><p className="text-sm text-muted-foreground">Bairro</p><p className="font-medium">{sale.property?.neighborhood || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">Cidade/Estado</p><p className="font-medium">{sale.property?.city || "-"}/{sale.property?.state || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">CEP</p><p className="font-medium">{sale.property?.zipCode || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">ReferÃªncia</p><p className="font-medium">{sale.property?.propertyReference || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">CondomÃ­nio</p><p className="font-medium">{sale.condominiumName || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">EndereÃ§o</p><p className="font-medium">{sale.property?.address || "-"}, {sale.property?.number || "S/N"}</p></div>
+              <div><p className="text-sm text-slate-500">Bairro</p><p className="font-medium">{sale.property?.neighborhood || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">Cidade/Estado</p><p className="font-medium">{sale.property?.city || "-"}/{sale.property?.state || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">CEP</p><p className="font-medium">{sale.property?.zipCode || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">ReferÃªncia</p><p className="font-medium">{sale.property?.propertyReference || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">CondomÃ­nio</p><p className="font-medium">{sale.condominiumName || "-"}</p></div>
             </CardContent>
           </Card>
 
@@ -243,10 +269,10 @@ export default function ProposalDetail() {
           <Card>
             <CardHeader><CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Comprador</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
-              <div><p className="text-sm text-muted-foreground">Nome</p><p className="font-medium">{sale.buyerName || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">CPF/CNPJ</p><p className="font-medium">{sale.buyerCpfCnpj || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">Telefone</p><p className="font-medium">{sale.buyerPhone || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">Origem</p><p className="font-medium">{sale.clientOrigin || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">Nome</p><p className="font-medium">{sale.buyerName || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">CPF/CNPJ</p><p className="font-medium">{sale.buyerCpfCnpj || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">Telefone</p><p className="font-medium">{sale.buyerPhone || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">Origem</p><p className="font-medium">{sale.clientOrigin || "-"}</p></div>
             </CardContent>
           </Card>
 
@@ -254,9 +280,9 @@ export default function ProposalDetail() {
           <Card>
             <CardHeader><CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Vendedor</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
-              <div><p className="text-sm text-muted-foreground">Nome</p><p className="font-medium">{sale.sellerName || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">CPF/CNPJ</p><p className="font-medium">{sale.sellerCpfCnpj || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">Telefone</p><p className="font-medium">{sale.sellerPhone || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">Nome</p><p className="font-medium">{sale.sellerName || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">CPF/CNPJ</p><p className="font-medium">{sale.sellerCpfCnpj || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">Telefone</p><p className="font-medium">{sale.sellerPhone || "-"}</p></div>
             </CardContent>
           </Card>
 
@@ -264,12 +290,12 @@ export default function ProposalDetail() {
           <Card>
             <CardHeader><CardTitle className="flex items-center gap-2"><DollarSign className="h-5 w-5" /> Valores e ComissÃµes</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-4">
-              <div><p className="text-sm text-muted-foreground">Valor da Venda</p><p className="font-bold text-lg text-green-600">{formatCurrency(sale.saleValue)}</p></div>
-              <div><p className="text-sm text-muted-foreground">Valor DivulgaÃ§Ã£o</p><p className="font-medium">{formatCurrency(sale.advertisementValue)}</p></div>
-              <div><p className="text-sm text-muted-foreground">Forma Pagamento</p><p className="font-medium">{sale.paymentMethod || "-"}</p></div>
-              <div><p className="text-sm text-muted-foreground">ComissÃ£o Total</p><p className="font-medium">{formatCurrency(sale.totalCommission)} ({sale.totalCommissionPercent || 0}%)</p></div>
-              <div><p className="text-sm text-muted-foreground">ComissÃ£o Angariador</p><p className="font-medium">{formatCurrency(sale.angariadorCommission)}</p></div>
-              <div><p className="text-sm text-muted-foreground">ComissÃ£o Vendedor</p><p className="font-medium">{formatCurrency(sale.vendedorCommission)}</p></div>
+              <div><p className="text-sm text-slate-500">Valor da Venda</p><p className="font-bold text-lg text-green-600">{formatCurrency(sale.saleValue)}</p></div>
+              <div><p className="text-sm text-slate-500">Valor DivulgaÃ§Ã£o</p><p className="font-medium">{formatCurrency(sale.advertisementValue)}</p></div>
+              <div><p className="text-sm text-slate-500">Forma Pagamento</p><p className="font-medium">{sale.paymentMethod || "-"}</p></div>
+              <div><p className="text-sm text-slate-500">ComissÃ£o Total</p><p className="font-medium">{formatCurrency(sale.totalCommission)} ({sale.totalCommissionPercent || 0}%)</p></div>
+              <div><p className="text-sm text-slate-500">ComissÃ£o Angariador</p><p className="font-medium">{formatCurrency(sale.angariadorCommission)}</p></div>
+              <div><p className="text-sm text-slate-500">ComissÃ£o Vendedor</p><p className="font-medium">{formatCurrency(sale.vendedorCommission)}</p></div>
             </CardContent>
           </Card>
 
@@ -277,10 +303,10 @@ export default function ProposalDetail() {
           <Card>
             <CardHeader><CardTitle className="flex items-center gap-2"><Calendar className="h-5 w-5" /> Datas</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-4">
-              <div><p className="text-sm text-muted-foreground">Data da Venda</p><p className="font-medium">{formatDate(sale.saleDate)}</p></div>
-              <div><p className="text-sm text-muted-foreground">Data AngariaÃ§Ã£o</p><p className="font-medium">{formatDate(sale.angariationDate)}</p></div>
+              <div><p className="text-sm text-slate-500">Data da Venda</p><p className="font-medium">{formatDate(sale.saleDate)}</p></div>
+              <div><p className="text-sm text-slate-500">Data AngariaÃ§Ã£o</p><p className="font-medium">{formatDate(sale.angariationDate)}</p></div>
               <div>
-                <p className="text-sm text-muted-foreground">PrevisÃ£o Recebimento</p>
+                <p className="text-sm text-slate-500">PrevisÃ£o Recebimento</p>
                 {editingPaymentDate ? (
                   <div className="flex items-center gap-2 mt-1">
                     <Input
@@ -317,7 +343,7 @@ export default function ProposalDetail() {
                         setNewPaymentDate("");
                       }}
                     >
-                      <X className="h-4 w-4 text-muted-foreground" />
+                      <X className="h-4 w-4 text-slate-600" />
                     </Button>
                   </div>
                 ) : (
@@ -336,29 +362,30 @@ export default function ProposalDetail() {
                           setEditingPaymentDate(true);
                         }}
                       >
-                        <Edit className="h-3 w-3 text-muted-foreground" />
+                        <Edit className="h-3 w-3 text-slate-500" />
                       </Button>
                     )}
                   </div>
                 )}
               </div>
-              <div><p className="text-sm text-muted-foreground">Criado em</p><p className="font-medium">{formatDate(sale.createdAt)}</p></div>
+              <div><p className="text-sm text-slate-500">Criado em</p><p className="font-medium">{formatDate(sale.createdAt)}</p></div>
             </CardContent>
           </Card>
+
+          {/* ObservaÃ§Ãµes */}
+          {sale.observation && (
+            <Card>
+              <CardHeader><CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" /> ObservaÃ§Ãµes</CardTitle></CardHeader>
+              <CardContent><p className="text-slate-700 whitespace-pre-wrap">{sale.observation}</p></CardContent>
+            </Card>
+          )}
 
           {/* ObservaÃ§Ãµes e HistÃ³rico */}
           <Card id="observations">
             <CardHeader><CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> ObservaÃ§Ãµes e histÃ³rico de alteraÃ§Ãµes</CardTitle></CardHeader>
             <CardContent>
-              {/* ObservaÃ§Ãµes gerais salvas */}
-              {sale?.observations && (
-                <div className="mb-4 p-3 bg-slate-50 rounded-lg border-l-4 border-slate-400">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">ObservaÃ§Ãµes gerais</p>
-                  <p className="text-sm whitespace-pre-wrap">{sale.observations}</p>
-                </div>
-              )}
               {!history || history.length === 0 ? (
-                <p className="text-muted-foreground">Nenhuma alteraÃ§Ã£o registrada</p>
+                <p className="text-slate-500">Nenhuma alteraÃ§Ã£o registrada</p>
               ) : (
                 <div className="space-y-3">
                   {history.map((item: any, idx: number) => {
@@ -379,14 +406,14 @@ export default function ProposalDetail() {
                       approval: "bg-emerald-50 border-l-4 border-emerald-500",
                       rejection: "bg-orange-50 border-l-4 border-orange-500",
                     };
-                    const colorClass = actionColors[item.action] || "bg-background border-l-4 border-slate-500";
+                    const colorClass = actionColors[item.action] || "bg-slate-50 border-l-4 border-slate-500";
                     
                     return (
                       <div key={idx} className={`flex items-start gap-3 p-3 rounded-lg ${colorClass}`}>
                         <div className="flex-1">
                           <p className="font-medium text-sm">{actionLabel}</p>
-                          <p className="text-xs text-muted-foreground">{item.userName || "Sistema"} - {formatDateTime(item.createdAt)}</p>
-                          {item.details && <p className="text-sm text-muted-foreground mt-1">{item.details}</p>}
+                          <p className="text-xs text-slate-500">{item.userName || "Sistema"} - {formatDateTime(item.createdAt)}</p>
+                          {item.details && <p className="text-sm text-slate-600 mt-1">{item.details}</p>}
                         </div>
                       </div>
                     );
@@ -406,18 +433,17 @@ export default function ProposalDetail() {
         saleId={sale.id}
         canUpload={['manager', 'finance'].includes(user?.role || '')}
         onUpload={handleUploadDocument}
-        proposalDocumentUrl={docUrl?.url || sale.proposalDocumentUrl || null}
       />
       
       {/* Modal de EdiÃ§Ã£o */}
       {editModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-background border-b px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-foreground">Editar Venda</h2>
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-900">Editar Venda</h2>
               <button
                 onClick={() => setEditModalOpen(false)}
-                className="p-2 hover:bg-muted rounded-lg"
+                className="p-2 hover:bg-slate-100 rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -426,9 +452,9 @@ export default function ProposalDetail() {
             <div className="p-6 space-y-4">
               {/* Comprador */}
               <div className="space-y-3">
-                <h3 className="font-semibold text-foreground">InformaÃ§Ãµes do Comprador</h3>
+                <h3 className="font-semibold text-slate-900">InformaÃ§Ãµes do Comprador</h3>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Nome do Comprador</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Nome do Comprador</label>
                   <Input
                     value={editForm.buyerName}
                     onChange={(e) => setEditForm({ ...editForm, buyerName: e.target.value })}
@@ -436,7 +462,7 @@ export default function ProposalDetail() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">CPF/CNPJ do Comprador</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">CPF/CNPJ do Comprador</label>
                   <Input
                     value={editForm.buyerCpfCnpj}
                     onChange={(e) => setEditForm({ ...editForm, buyerCpfCnpj: e.target.value })}
@@ -444,7 +470,7 @@ export default function ProposalDetail() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Telefone do Comprador</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Telefone do Comprador</label>
                   <Input
                     value={editForm.buyerPhone}
                     onChange={(e) => setEditForm({ ...editForm, buyerPhone: e.target.value })}
@@ -455,9 +481,9 @@ export default function ProposalDetail() {
               
               {/* Vendedor */}
               <div className="space-y-3">
-                <h3 className="font-semibold text-foreground">InformaÃ§Ãµes do Vendedor</h3>
+                <h3 className="font-semibold text-slate-900">InformaÃ§Ãµes do Vendedor</h3>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Nome do Vendedor</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Nome do Vendedor</label>
                   <Input
                     value={editForm.sellerName}
                     onChange={(e) => setEditForm({ ...editForm, sellerName: e.target.value })}
@@ -465,7 +491,7 @@ export default function ProposalDetail() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">CPF/CNPJ do Vendedor</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">CPF/CNPJ do Vendedor</label>
                   <Input
                     value={editForm.sellerCpfCnpj}
                     onChange={(e) => setEditForm({ ...editForm, sellerCpfCnpj: e.target.value })}
@@ -473,7 +499,7 @@ export default function ProposalDetail() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Telefone do Vendedor</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Telefone do Vendedor</label>
                   <Input
                     value={editForm.sellerPhone}
                     onChange={(e) => setEditForm({ ...editForm, sellerPhone: e.target.value })}
@@ -484,9 +510,9 @@ export default function ProposalDetail() {
               
               {/* Valor e Tipo */}
               <div className="space-y-3">
-                <h3 className="font-semibold text-foreground">InformaÃ§Ãµes da Venda</h3>
+                <h3 className="font-semibold text-slate-900">InformaÃ§Ãµes da Venda</h3>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Valor da Venda</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Valor da Venda</label>
                   <Input
                     value={editForm.saleValue}
                     onChange={(e) => setEditForm({ ...editForm, saleValue: e.target.value })}
@@ -494,7 +520,7 @@ export default function ProposalDetail() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Tipo de NegÃ³cio</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Tipo de NegÃ³cio</label>
                   <Input
                     value={editForm.businessType}
                     onChange={(e) => setEditForm({ ...editForm, businessType: e.target.value })}
@@ -503,52 +529,13 @@ export default function ProposalDetail() {
                 </div>
               </div>
               
-              {/* Comprovante/Arquivo */}
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">Comprovante/Arquivo</label>
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-
-                    // Validar arquivo
-                    const validation = validateFile(file, FILE_VALIDATION_CONFIG.SINAL_COMPROVANTE);
-                    if (!validation.isValid) {
-                      toast.error("Arquivo invÃ¡lido", {
-                        description: validation.error,
-                      });
-                      e.target.value = ""; // Limpar input
-                      return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                      const base64 = event.target?.result as string;
-                      setEditForm({ ...editForm, sinalNegocioComprovanteUrl: base64 });
-                      toast.success("Comprovante carregado", {
-                        description: `${file.name} (${formatFileSize(file.size)})`,
-                      });
-                    };
-                    reader.readAsDataURL(file);
-                  }}
-                  className="w-full px-3 py-2 border border-border rounded-lg"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                />
-                {editForm.sinalNegocioComprovanteUrl && (
-                  <div className="mt-2 text-sm text-green-600">
-                    âœ“ Arquivo carregado
-                  </div>
-                )}
-              </div>
-              
               {/* ObservaÃ§Ãµes */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">ObservaÃ§Ãµes</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">ObservaÃ§Ãµes</label>
                 <textarea
-                  value={editForm.observations}
-                  onChange={(e) => setEditForm({ ...editForm, observations: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  value={editForm.observation}
+                  onChange={(e) => setEditForm({ ...editForm, observation: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   rows={3}
                   placeholder="ObservaÃ§Ãµes adicionais"
                 />
@@ -556,24 +543,24 @@ export default function ProposalDetail() {
               
               {/* Motivo da AlteraÃ§Ã£o */}
               <div className="border-t pt-4">
-                <label className="block text-sm font-medium text-foreground mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Motivo da AlteraÃ§Ã£o <span className="text-orange-500">*</span>
                 </label>
                 <textarea
                   value={editForm.changeReason}
                   onChange={(e) => setEditForm({ ...editForm, changeReason: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   rows={2}
                   placeholder="Descreva o motivo desta alteraÃ§Ã£o para auditoria"
                   required
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-slate-500 mt-1">
                   Este campo Ã© obrigatÃ³rio e serÃ¡ registrado no histÃ³rico de alteraÃ§Ãµes.
                 </p>
               </div>
             </div>
             
-            <div className="sticky bottom-0 bg-background border-t px-6 py-4 flex justify-end gap-3">
+            <div className="sticky bottom-0 bg-slate-50 border-t px-6 py-4 flex justify-end gap-3">
               <Button
                 variant="outline"
                 onClick={() => setEditModalOpen(false)}
@@ -586,10 +573,19 @@ export default function ProposalDetail() {
                     toast.error("Por favor, informe o motivo da alteraÃ§Ã£o");
                     return;
                   }
-       óúHƒìH‹±¿ H…ÀtÿĞHƒÄÃ     ÿ5â¿ ÿ%ä¿ @ ÿ%â¿ h    éàÿÿÿÿ%Ú¿ h   éĞÿÿÿÿ%Ò¿ h   éÀÿÿÿÿ%Ê¿ h   é°ÿÿÿÿ%Â¿ h   é ÿÿÿÿ%º¿ h   éÿÿÿÿ%²¿ h   é€ÿÿÿÿ%ª¿ h   épÿÿÿÿ%¢¿ h   é`ÿÿÿÿ%š¿ h	   éPÿÿÿÿ%’¿ h
-   é@ÿÿÿÿ%Š¿ h   é0ÿÿÿÿ%‚¿ h   é ÿÿÿÿ%z¿ h   éÿÿÿÿ%r¿ h   é ÿÿÿÿ%j¿ h   éğşÿÿÿ%b¿ h   éàşÿÿÿ%Z¿ h   éĞşÿÿÿ%R¿ h   éÀşÿÿÿ%J¿ h   é°şÿÿÿ%B¿ h   é şÿÿÿ%:¿ h   éşÿÿÿ%2¿ h   é€şÿÿÿ%*¿ h   épşÿÿÿ%"¿ h   é`şÿÿÿ%¿ h   éPşÿÿÿ%¿ h   é@şÿÿÿ%
-¿ h   é0şÿÿÿ%¿ h   é şÿÿÿ%ú¾ h   éşÿÿÿ%ò¾ h   é şÿÿÿ%ê¾ h   éğıÿÿÿ%â¾ h    éàıÿÿÿ%Ú¾ h!   éĞıÿÿÿ%Ò¾ h"   éÀıÿÿÿ%Ê¾ h#   é°ıÿÿÿ%Â¾ h$   é ıÿÿÿ%º¾ h%   éıÿÿÿ%²¾ h&   é€ıÿÿÿ%ª¾ h'   épıÿÿÿ%¢¾ h(   é`ıÿÿÿ%š¾ h)   éPıÿÿÿ%’¾ h*   é@ıÿÿÿ%Š¾ h+   é0ıÿÿÿ%‚¾ h,   é ıÿÿÿ%z¾ h-   éıÿÿÿ%r¾ h.   é ıÿÿÿ%j¾ h/   éğüÿÿÿ%b¾ h0   éàüÿÿÿ%Z¾ h1   éĞüÿÿÿ%R¾ h2   éÀüÿÿÿ%J¾ h3   é°üÿÿÿ%B¾ h4   é üÿÿÿ%:¾ h5   éüÿÿÿ%2¾ h6   é€üÿÿÿ%*¾ h7   épüÿÿÿ%"¾ h8   é`üÿÿÿ%¾ h9   éPüÿÿÿ%¾ h:   é@üÿÿÿ%
-¾ h;   é0üÿÿÿ%¾ h<   é üÿÿÿ%ú½ h=   éüÿÿÿ%ò½ h>   é üÿÿÿ%ê½ h?   éğûÿÿÿ%â½ h@   éàûÿÿÿ%Ú½ hA   éĞûÿÿÿ%Ò½ hB   éÀûÿÿÿ%Ê½ hC   é°ûÿÿÿ%Â½ hD   é ûÿÿÿ%º½ hE   éûÿÿÿ%²½ hF   é€ûÿÿÿ%ª½ hG   épûÿÿÿ%¢½ hH   é`ûÿÿÿ%š½ hI   éPûÿÿÿ%’½ hJ   é@ûÿÿÿ%Š½ hK   é0ûÿÿÿ%‚½ hL   é ûÿÿÿ%z½ hM   éûÿÿÿ%r½ hN   é ûÿÿÿ%j½ hO   éğúÿÿÿ%b½ hP   éàúÿÿÿ%Z½ hQ   éĞúÿÿÿ%R½ hR   éÀúÿÿÿ%J½ hS   é°úÿÿÿ%B½ hT   é úÿÿÿ%:½ hU   éúÿÿÿ%2½ hV   é€úÿÿÿ%*½ hW   épúÿÿÿ%"½ hX   é`úÿÿÿ%½ hY   éPúÿÿÿ%½ hZ   é@úÿÿÿ%
-½ h[   é0úÿÿÿ%½ h\   é úÿÿÿ%ú¼ h]   éúÿÿÿ%ò¼ h^   é úÿÿÿ%ê¼ h_   éğùÿÿÿ%â¼ h`   éàùÿÿÿ%Ú¼ ha   éĞùÿÿÿ%Ò¼ hb   éÀùÿÿÿ%Ê¼ hc   é°ùÿÿÿ%Â¼ hd   é ùÿÿÿ%º¼ he   éùÿÿÿ%²¼ hf   é€ùÿÿÿ%ª¼ hg   épùÿÿÿ%¢¼ hh   é`ùÿÿÿ%š¼ hi   éPùÿÿÿ%’¼ hj   é@ùÿÿÿ%Š¼ hk   é0ùÿÿÿ%‚¼ hl   é ùÿÿÿ%z¼ hm   éùÿÿÿ%r¼ hn   é ùÿÿÿ%j¼ ho   éğøÿÿÿ%b¼ hp   éàøÿÿÿ%Z¼ hq   éĞøÿÿÿ%R¼ hr   éÀøÿÿÿ%J¼ hs   é°øÿÿÿ%B¼ ht   é øÿÿÿ%:¼ hu   éøÿÿÿ%2¼ hv   é€øÿÿÿ%*¼ hw   épøÿÿÿ%"¼ hx   é`øÿÿÿ%¼ hy   éPøÿÿÿ%¼ hz   é@øÿÿÿ%
-¼ h{   é0øÿÿÿ%¼ h|   é øÿÿÿ%ú» h}   éøÿÿÿ%ò» h~   é øÿÿÿ%ê» h   éğ÷ÿÿÿ%â» h€   éà÷ÿÿÿ%Ú» h   éĞ÷ÿÿÿ%Ò» h‚   éÀ÷ÿÿÿ%Ê» hƒ   é°÷ÿÿÿ%Â» h„   é ÷ÿÿÿ%º» h…   é÷ÿÿÿ%²» h†   é€÷ÿÿÿ%ª» h‡   ép÷ÿÿÿ%¢» hˆ   é`÷ÿÿÿ%š» h‰   éP÷ÿÿÿ%’» hŠ   é@÷ÿÿÿ%Š» h‹   é0÷ÿÿÿ%‚» hŒ   é ÷ÿÿÿ%z» h   é÷ÿÿÿ%r» h   é ÷ÿÿÿ%j» h   éğöÿÿÿ%b» h   éàöÿÿÿ%Z» h‘   éĞöÿÿÿ%R» h’   éÀöÿÿÿ%J» h“   é°öÿÿÿ%B» h”   é öÿÿÿ%:» h•   éöÿÿÿ%2» h–   é€öÿÿÿ%*» h—   épöÿÿÿ%"» h˜   é`öÿÿÿ%» h™   éPöÿÿÿ%» hš   é@öÿÿÿ%
-» h›   é0öÿÿÿ%» hœ   é öÿÿÿ%úº h   éöÿÿÿ%òº h   é öÿÿÿ%êº hŸ   éğõÿÿÿ%âº h    éàõÿÿÿ%Úº h¡   éĞõÿÿÿ%Òº h¢ 
+                  updateSaleMutation.mutate({
+                    saleId: sale.id,
+                    ...editForm,
+                  });
+                }}
+                disabled={updateSaleMutation.isPending}
+              >
+                {updateSaleMutation.isPending ? "Salvando..." : "Salvar AlteraÃ§Ãµes"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

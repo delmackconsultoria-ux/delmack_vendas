@@ -1,154 +1,276 @@
-import "dotenv/config";
-import express from "express";
-import { createServer } from "http";
-import net from "net";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
-import { registerRestAuthRoutes } from "./restAuthRouter";
-import { appRouter } from "../routers";
-import { createContext } from "./context";
-import { serveStatic, setupVite } from "./vite";
-import { createProperfyRestRouter } from "../properfy-rest";
-import { initProperfySyncScheduler } from "../jobs/properfySyncJob";
-import { initProperfyLeadsSyncScheduler } from "../jobs/properfyLeadsSyncJob";
-import { initProperfyCardsSyncScheduler } from "../jobs/properfyCardsSyncJob";
-import { initializeIndicatorSnapshotScheduler } from "../jobs/indicatorSnapshotJob";
-import { parse as parseCookieHeader } from "cookie";
-import { COOKIE_NAME } from "@shared/const";
-import * as db from "../db";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { useLocation, Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, TrendingUp, Home, LogOut, Plus, Eye, Trophy } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-function isPortAvailable(port: number): Promise<boolean> {
-  return new Promise(resolve => {
-    const server = net.createServer();
-    server.listen(port, '0.0.0.0', () => {
-      server.close(() => resolve(true));
-    });
-    server.on("error", () => resolve(false));
+export default function DashboardBroker() {
+  const { user, logout } = useAuth();
+  const [, setLocation] = useLocation();
+
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/login");
+    },
   });
-}
 
-async function findAvailablePort(startPort: number = 3000): Promise<number> {
-  for (let port = startPort; port < startPort + 20; port++) {
-    if (await isPortAvailable(port)) {
-      return port;
-    }
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+  };
+
+  if (!user) {
+    return null;
   }
-  throw new Error(`No available port found starting from ${startPort}`);
-}
 
-/**
- * Middleware de autenticação para a rota de uploads.
- * Verifica se o usuário possui um cookie de sessão válido antes de servir os arquivos.
- */
-async function uploadsAuthMiddleware(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  try {
-    const cookieHeader = req.headers.cookie;
-    if (!cookieHeader) {
-      return res.status(401).json({ error: "Acesso não autorizado" });
-    }
+  const salesByType = [
+    { name: "Angariação", value: 0, fill: "#60a5fa" },
+    { name: "Venda", value: 0, fill: "#10b981" },
+    { name: "Parceria", value: 0, fill: "#f59e0b" },
+  ];
 
-    const cookies = parseCookieHeader(cookieHeader);
-    const sessionCookie = cookies[COOKIE_NAME];
+  const commissionByType = [
+    { tipo: "Angariação", valor: 0 },
+    { tipo: "Venda", valor: 0 },
+    { tipo: "Parceria", valor: 0 },
+  ];
 
-    if (!sessionCookie) {
-      return res.status(401).json({ error: "Acesso não autorizado" });
-    }
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header Padrão */}
+      <AppHeader />
 
-    const decodedCookie = decodeURIComponent(sessionCookie);
-    let userId: string | null = null;
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-slate-900">Bem-vindo, {user.name?.split(' ')[0]}!</h2>
+          <p className="text-slate-600 mt-2">
+            Gerencie suas vendas e acompanhe suas comissões em tempo real
+          </p>
+        </div>
 
-    if (decodedCookie.startsWith('eyJ')) {
-      // JWT token
-      const parts = decodedCookie.split('.');
-      if (parts.length === 3) {
-        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-        userId = payload.userId || null;
-      }
-    } else {
-      // JSON simples
-      const sessionData = JSON.parse(decodedCookie);
-      userId = sessionData.userId || null;
-    }
+        {/* Primary CTA - New Sale */}
+        <div className="mb-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold mb-2">Registre uma Nova Venda</h3>
+              <p className="text-blue-100">Comece agora a registrar suas vendas</p>
+            </div>
+            <Button
+              onClick={() => setLocation("/proposals/new")}
+              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold gap-2"
+              size="lg"
+            >
+              <Plus className="h-5 w-5" />
+              Nova Venda
+            </Button>
+          </div>
+        </div>
 
-    if (!userId) {
-      return res.status(401).json({ error: "Acesso não autorizado" });
-    }
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Sales */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <Home className="h-4 w-4 text-blue-600" />
+                Vendas Este Mês
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">0</p>
+              <p className="text-xs text-slate-600 mt-2">Vendas registradas</p>
+            </CardContent>
+          </Card>
 
-    const user = await db.getUserWithCompany(userId);
-    if (!user) {
-      return res.status(401).json({ error: "Acesso não autorizado" });
-    }
+          {/* Total Commission */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                Comissões Ganhas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">R$ 0,00</p>
+              <p className="text-xs text-slate-600 mt-2">Este mês</p>
+            </CardContent>
+          </Card>
 
-    // Usuário autenticado — prosseguir
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: "Acesso não autorizado" });
-  }
-}
+          {/* Pending Approvals */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-amber-600" />
+                Pendentes de Aprovação
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-slate-900">0</p>
+              <p className="text-xs text-slate-600 mt-2">Aguardando financeiro</p>
+            </CardContent>
+          </Card>
+        </div>
 
-async function startServer() {
-  const app = express();
-  const server = createServer(app);
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
-  // REST Authentication endpoints
-  registerRestAuthRoutes(app);
-  // REST API para Properfy
-  app.use("/api/rest/properfy", createProperfyRestRouter());
-  // Servir arquivos de upload locais (com autenticação obrigatória)
-  const uploadsDir = process.env.UPLOADS_DIR || "/home/delmack/uploads";
-  app.use("/api/uploads", uploadsAuthMiddleware, express.static(uploadsDir));
-  // Middleware de log ANTES do tRPC para debug
-  app.use("/api/trpc", (req, res, next) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] [tRPC Middleware] ${req.method} ${req.url}`);
-    if (req.method === 'POST' || req.method === 'GET') {
-      console.log(`[${timestamp}] [tRPC Middleware] Body:`, JSON.stringify(req.body || {}).substring(0, 200));
-      console.log(`[${timestamp}] [tRPC Middleware] Query:`, JSON.stringify(req.query || {}).substring(0, 200));
-    }
-    next();
-  });
-  
-  // tRPC API
-  app.use(
-    "/api/trpc",
-    createExpressMiddleware({
-      router: appRouter,
-      createContext,
-    })
+        {/* Sales Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Minhas Vendas por Tipo
+              </CardTitle>
+              <CardDescription>
+                Distribuição das suas vendas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={salesByType}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {salesByType.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Comissões por Tipo
+              </CardTitle>
+              <CardDescription>
+                Ganhos por tipo de negócio
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={commissionByType}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="tipo" />
+                  <YAxis />
+                  <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(1)}k`} />
+                  <Bar dataKey="valor" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Sales Section */}
+        <Card className="border-0 shadow-md mb-8">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Minhas Vendas Recentes</CardTitle>
+                <CardDescription>
+                  Acompanhe o status de suas propostas
+                </CardDescription>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setLocation("/sales")}
+                className="gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                Ver Todas
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-12">
+              <Home className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-600 font-medium">Nenhuma venda registrada ainda</p>
+              <p className="text-slate-500 text-sm mt-1">
+                Comece registrando sua primeira venda
+              </p>
+              <Button
+                onClick={() => setLocation("/proposals/new")}
+                className="mt-4 bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Venda
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-green-600" />
+                Minhas Comissões
+              </CardTitle>
+              <CardDescription>
+                Visualize todas as suas comissões
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                onClick={() => setLocation("/reports")}
+                className="w-full"
+              >
+                Ver Comissões
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                Meu Desempenho
+              </CardTitle>
+              <CardDescription>
+                Acompanhe suas estatísticas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                onClick={() => setLocation("/indicators")}
+                className="w-full"
+              >
+                Ver Desempenho
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
   );
-  // development mode uses Vite, production mode uses static files
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-  const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = await findAvailablePort(preferredPort);
-  if (port !== preferredPort) {
-    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
-  }
-  server.listen(port, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${port}/`);
-    
-    // Initialize Properfy sync scheduler (runs daily at 2 AM)
-    initProperfySyncScheduler();
-    
-    // Initialize Properfy leads sync scheduler (runs every hour)
-    initProperfyLeadsSyncScheduler();
-    
-    // Initialize Properfy cards sync scheduler (runs every hour)
-    initProperfyCardsSyncScheduler();
-    
-    // Initialize indicator snapshot scheduler (runs daily at 23:00, saves on last day of month)
-    initializeIndicatorSnapshotScheduler();
-  });
 }
-startServer().catch(console.error);
+

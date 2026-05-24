@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Target, Save, AlertCircle, TrendingUp } from "lucide-react";
@@ -10,119 +11,57 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 
-// Máscara monetária tipo caixa registradora: digita 525000 → R$ 5.250,00
-const applyMoneyMask = (rawDigits: string): string => {
-  const digits = rawDigits.replace(/\D/g, "");
-  if (!digits || digits === "0" || digits === "00") return "";
-  const cents = parseInt(digits, 10);
-  const value = cents / 100;
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-};
-
-// Converte string mascarada de volta para número (centavos → reais)
-const parseMaskedMoney = (masked: string): number => {
-  const digits = masked.replace(/\D/g, "");
-  if (!digits) return 0;
-  return parseInt(digits, 10) / 100;
-};
-
-// Formata número para exibição na meta mensal calculada
-const formatCurrencyDisplay = (value: number): string => {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-};
-
-const formatPercentageDisplay = (value: number): string => {
-  return `${value.toFixed(2)}%`;
-};
-
 const INDICATORS = [
-  { id: "businessValue", label: "Negócios no mês (valor)", type: "currency" },
   { id: "businessMonth", label: "Negócios no mês (unidades)", type: "number" },
-  { id: "cancelledSales", label: "Vendas canceladas", type: "number" },
+  { id: "cancelledSales", label: "Vendas Canceladas", type: "currency" },
   { id: "vsoRatio", label: "VSO - venda/oferta", type: "percentage" },
-  { id: "commissionReceived", label: "Comissão recebida", type: "currency" },
-  { id: "commissionSold", label: "Comissão vendida", type: "currency" },
-  { id: "commissionPending", label: "Comissão pendentes final do mês", type: "currency" },
-  { id: "portfolioDisclosure", label: "Carteira de divulgação (em número)", type: "number" },
+  { id: "commissionReceived", label: "Comissão Recebida", type: "currency" },
+  { id: "commissionSold", label: "Comissão Vendida", type: "currency" },
+  { id: "commissionPending", label: "Comissão Pendentes Final do mês", type: "currency" },
+  { id: "portfolioDisclosure", label: "Carteira de Divulgação (em número)", type: "number" },
   { id: "prospectingMonth", label: "Angariações mês", type: "number" },
   { id: "removalsMonth", label: "Baixas no mês (em quantidade)", type: "number" },
   { id: "commissionPercentage", label: "% comissão vendida", type: "percentage" },
-  { id: "businessOver1m", label: "Negócios acima de 1 milhão", type: "number" },
-  { id: "readyCalls", label: "Número de atendimentos prontos", type: "number" },
-  { id: "launchCalls", label: "Número de atendimentos lançamentos", type: "number" },
+  { id: "businessOver1m", label: "Negócios acima de 1 milhão", type: "currency" },
+  { id: "readyCalls", label: "Número de atendimentos Prontos", type: "number" },
+  { id: "launchCalls", label: "Número de atendimentos Lançamentos", type: "number" },
   { id: "avgReceiptTime", label: "Prazo médio recebimento de venda", type: "number" },
   { id: "cancelledPendingRatio", label: "% Com cancelada/com pendente", type: "percentage" },
   { id: "avgSaleTime", label: "Tempo médio de venda ang X venda", type: "number" },
   { id: "avgPropertyValue", label: "Valor médio do imóvel de venda", type: "currency" },
-  { id: "networkBusiness", label: "Negócios na rede", type: "number" },
-  { id: "internalBusiness", label: "Negócios internos", type: "number" },
-  { id: "externalPartnership", label: "Negócios parceria externa", type: "number" },
-  { id: "launchBusiness", label: "Negócios lançamentos", type: "number" },
-  { id: "generalExpense", label: "Despesa geral", type: "currency" },
+  { id: "networkBusiness", label: "Negócios na Rede", type: "number" },
+  { id: "internalBusiness", label: "Negócios Internos", type: "number" },
+  { id: "externalPartnership", label: "Negócios Parceria Externa", type: "number" },
+  { id: "launchBusiness", label: "Negócios Lançamentos", type: "number" },
+  { id: "generalExpense", label: "Despesa Geral", type: "currency" },
   { id: "taxExpense", label: "Despesa com impostos", type: "currency" },
-  { id: "innovationFund", label: "Fundo inovação", type: "currency" },
-  { id: "partnersResult", label: "Resultado sócios", type: "currency" },
+  { id: "innovationFund", label: "Fundo Inovação", type: "currency" },
+  { id: "partnersResult", label: "Resultado Sócios", type: "currency" },
   { id: "emergencyFund", label: "Fundo emergencial", type: "currency" },
 ];
 
 interface GoalData {
-  [key: string]: number | string | null;
-}
-
-// Estado interno dos inputs: string para currency (mascarada), string para outros
-interface InputState {
-  [key: string]: string;
+  [key: string]: number | string;
 }
 
 export default function GoalsManagement() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  // Valores reais (numéricos) vindos do banco
   const [goals, setGoals] = useState<GoalData>({});
-  // Strings exibidas nos inputs (mascaradas para currency, raw para outros)
-  const [inputValues, setInputValues] = useState<InputState>({});
   const [isSaving, setIsSaving] = useState(false);
 
+  // Verificar se é gerente
   const isManager = user?.role === "manager" || user?.role === "admin" || user?.role === "superadmin";
 
+  // Buscar metas do servidor
   const { data: goalsData, isLoading, refetch } = trpc.goals.getOrCreateGoals.useQuery(
     { year: new Date().getFullYear() }
   );
 
-  // Carregar dados do banco e inicializar inputs
+  // Carregar dados das metas quando disponíveis
   useEffect(() => {
     if (goalsData?.indicators) {
-      const rawGoals = goalsData.indicators as GoalData;
-      setGoals(rawGoals);
-
-      // Inicializar inputValues com os valores formatados
-      const initialInputs: InputState = {};
-      for (const indicator of INDICATORS) {
-        const val = rawGoals[indicator.id];
-        const num = val !== null && val !== undefined ? Number(val) : 0;
-        if (indicator.type === "currency") {
-          // Converter número para string de dígitos (centavos) para a máscara
-          if (num > 0) {
-            const centavos = Math.round(num * 100).toString();
-            initialInputs[indicator.id] = applyMoneyMask(centavos);
-          } else {
-            initialInputs[indicator.id] = "";
-          }
-        } else {
-          initialInputs[indicator.id] = num > 0 ? String(num) : "";
-        }
-      }
-      setInputValues(initialInputs);
+      setGoals(goalsData.indicators as GoalData);
     }
   }, [goalsData?.indicators]);
 
@@ -136,20 +75,19 @@ export default function GoalsManagement() {
     },
   });
 
-  // Handler para campos de moeda (máscara tipo caixa registradora)
-  const handleCurrencyChange = (indicatorId: string, rawInput: string) => {
-    const digits = rawInput.replace(/\D/g, "");
-    const masked = applyMoneyMask(digits);
-    const numericValue = parseMaskedMoney(masked);
-    setInputValues(prev => ({ ...prev, [indicatorId]: masked }));
-    setGoals(prev => ({ ...prev, [indicatorId]: numericValue }));
+  // Calcular meta mensal
+  const calculateMonthlyGoal = (annualGoal: number | string): string => {
+    const annual = typeof annualGoal === "string" ? parseFloat(annualGoal) : annualGoal;
+    if (isNaN(annual)) return "0";
+    const monthly = annual / 12;
+    return monthly.toFixed(2);
   };
 
-  // Handler para campos de número e percentual
-  const handleNumberChange = (indicatorId: string, value: string) => {
-    setInputValues(prev => ({ ...prev, [indicatorId]: value }));
-    const num = parseFloat(value);
-    setGoals(prev => ({ ...prev, [indicatorId]: isNaN(num) ? null : num }));
+  const handleGoalChange = (indicatorId: string, value: string) => {
+    setGoals(prev => ({
+      ...prev,
+      [indicatorId]: value
+    }));
   };
 
   const handleSave = async () => {
@@ -157,6 +95,7 @@ export default function GoalsManagement() {
       toast.error("Apenas gerentes podem editar metas");
       return;
     }
+
     if (!goalsData?.goalId) {
       toast.error("Meta não encontrada");
       return;
@@ -164,15 +103,11 @@ export default function GoalsManagement() {
 
     setIsSaving(true);
     try {
+      // Converter valores para números
       const indicatorsToSave: Record<string, number | null> = {};
-      for (const indicator of INDICATORS) {
-        const val = goals[indicator.id];
-        if (val === null || val === undefined || val === "") {
-          indicatorsToSave[indicator.id] = null;
-        } else {
-          const num = Number(val);
-          indicatorsToSave[indicator.id] = isNaN(num) ? null : num;
-        }
+      for (const [key, value] of Object.entries(goals)) {
+        const numValue = value ? parseFloat(value.toString()) : null;
+        indicatorsToSave[key] = isNaN(numValue as number) ? null : numValue;
       }
 
       await saveIndicatorsMutation.mutateAsync({
@@ -186,22 +121,23 @@ export default function GoalsManagement() {
     }
   };
 
-  // Calcula e formata a meta mensal para exibição
-  const getMonthlyGoalDisplay = (indicator: typeof INDICATORS[0]): string => {
-    const val = goals[indicator.id];
-    const annual = val !== null && val !== undefined ? Number(val) : 0;
-    if (!annual || isNaN(annual)) return "—";
-    const monthly = annual / 12;
-    if (indicator.type === "currency") return formatCurrencyDisplay(monthly);
-    if (indicator.type === "percentage") return formatPercentageDisplay(monthly);
-    return monthly.toFixed(2);
+  const formatCurrency = (value: string): string => {
+    const num = parseFloat(value) || 0;
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
   };
 
-  if (!user) return null;
+  const formatPercentage = (value: string): string => {
+    const num = parseFloat(value) || 0;
+    return `${num.toFixed(2)}%`;
+  };
+
+  if (!user) {
+    return null;
+  }
 
   if (!isManager) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-slate-50">
         <AppHeader />
         <div className="container mx-auto px-4 py-6">
           <Card className="border-amber-200 bg-amber-50">
@@ -209,7 +145,7 @@ export default function GoalsManagement() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-6 w-6 text-amber-600" />
                 <div>
-                  <p className="font-semibold text-amber-900">Acesso restrito</p>
+                  <p className="font-semibold text-amber-900">Acesso Restrito</p>
                   <p className="text-sm text-amber-800">Apenas gerentes podem acessar a página de metas.</p>
                 </div>
               </div>
@@ -221,21 +157,21 @@ export default function GoalsManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50">
       <AppHeader />
 
-      <div className="bg-background border-b">
+      <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Metas anuais</h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h1 className="text-2xl font-bold text-slate-900">Metas Anuais</h1>
+              <p className="text-sm text-slate-500 mt-1">
                 Gerencie as metas anuais e visualize a previsão mensal
               </p>
             </div>
             <Button onClick={handleSave} disabled={isSaving} className="bg-primary hover:bg-primary/90">
               <Save className="h-4 w-4 mr-2" />
-              {isSaving ? "Salvando..." : "Salvar metas"}
+              {isSaving ? "Salvando..." : "Salvar Metas"}
             </Button>
           </div>
         </div>
@@ -243,6 +179,7 @@ export default function GoalsManagement() {
 
       <main className="container mx-auto px-4 py-6">
         <div className="grid gap-6">
+          {/* Informações */}
           <Card className="bg-blue-50 border-blue-200">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
@@ -250,4 +187,68 @@ export default function GoalsManagement() {
                 <div className="text-sm text-blue-900">
                   <p className="font-semibold mb-1">Como funciona:</p>
                   <p>Insira a meta anual para cada indicador. A meta mensal será calculada automaticamente dividindo o valor anual por 12.</p>
-     
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Grid de Indicadores */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {INDICATORS.map((indicator) => (
+              <Card key={indicator.id} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">{indicator.label}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {/* Meta Anual */}
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-600 mb-1 block">Meta Anual</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={goals[indicator.id] || ""}
+                      onChange={(e) => handleGoalChange(indicator.id, e.target.value)}
+                      className="text-sm"
+                      disabled={!isManager}
+                    />
+                  </div>
+
+                  {/* Meta Mensal (Calculada) */}
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-600 mb-1 block">Meta Mensal (Calculada)</Label>
+                    <div className="p-2 bg-slate-100 rounded border border-slate-200 text-sm font-semibold text-slate-700">
+                      {(() => {
+                        const annual = goals[indicator.id];
+                        if (!annual || annual === "") return "0";
+                        const monthly = calculateMonthlyGoal(annual);
+                        
+                        if (indicator.type === "currency") {
+                          return formatCurrency(monthly);
+                        } else if (indicator.type === "percentage") {
+                          return formatPercentage(monthly);
+                        } else {
+                          return monthly;
+                        }
+                      })()}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Botão de Salvar Fixo */}
+          <div className="sticky bottom-4 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setGoals({})}>
+              Limpar
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving} className="bg-primary hover:bg-primary/90">
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? "Salvando..." : "Salvar Metas"}
+            </Button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

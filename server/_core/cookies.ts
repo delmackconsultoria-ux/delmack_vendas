@@ -10,11 +10,14 @@ function isIpAddress(host: string) {
 
 function isSecureRequest(req: Request) {
   if (req.protocol === "https") return true;
+
   const forwardedProto = req.headers["x-forwarded-proto"];
   if (!forwardedProto) return false;
+
   const protoList = Array.isArray(forwardedProto)
     ? forwardedProto
     : forwardedProto.split(",");
+
   return protoList.some(proto => proto.trim().toLowerCase() === "https");
 }
 
@@ -28,6 +31,7 @@ export function getSessionCookieOptions(
   //   !isIpAddress(hostname) &&
   //   hostname !== "127.0.0.1" &&
   //   hostname !== "::1";
+
   // const domain =
   //   shouldSetDomain && !hostname.startsWith(".")
   //     ? `.${hostname}`
@@ -35,14 +39,14 @@ export function getSessionCookieOptions(
   //       ? hostname
   //       : undefined;
 
-  const isSecure = isSecureRequest(req);
+  const secure = isSecureRequest(req);
 
   return {
     httpOnly: true,
     path: "/",
-    // Se for HTTPS, usar 'none' (requer secure: true)
-    // Se for HTTP, usar 'lax' (funciona com secure: false)
-    sameSite: isSecure ? "none" : "lax",
-    secure: isSecure,
+    // sameSite: 'none' exige secure: true (HTTPS)
+    // Para HTTP (servidor local), usar 'lax' que funciona sem HTTPS
+    sameSite: secure ? "none" : "strict",
+    secure,
   };
 }
