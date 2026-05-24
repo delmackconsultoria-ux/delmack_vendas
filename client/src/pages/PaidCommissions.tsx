@@ -160,7 +160,7 @@ export default function PaidCommissions() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <AppHeader />
         <div className="flex items-center justify-center h-96">
           <Loader className="h-8 w-8 animate-spin text-blue-600" />
@@ -170,17 +170,17 @@ export default function PaidCommissions() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
 
       <main className="container mx-auto px-4 py-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <TrendingUp className="h-6 w-6" />
               Comissões Pagas
             </h1>
-            <p className="text-slate-600 mt-1">Histórico e análise de comissões pagas</p>
+            <p className="text-muted-foreground mt-1">Histórico e análise de comissões pagas</p>
           </div>
           <Button onClick={handleExportExcel} className="bg-green-600 hover:bg-green-700">
             <Download className="h-4 w-4 mr-2" />
@@ -192,37 +192,37 @@ export default function PaidCommissions() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Total Pago</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pago</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-bold text-foreground">
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.total)}
               </div>
-              <p className="text-xs text-slate-500 mt-1">em comissões pagas</p>
+              <p className="text-xs text-muted-foreground mt-1">em comissões pagas</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Quantidade</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Quantidade</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-bold text-foreground">
                 {stats.count}
               </div>
-              <p className="text-xs text-slate-500 mt-1">pagamentos realizados</p>
+              <p className="text-xs text-muted-foreground mt-1">pagamentos realizados</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Média por Pagamento</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Média por Pagamento</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-bold text-foreground">
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.average)}
               </div>
-              <p className="text-xs text-slate-500 mt-1">valor médio</p>
+              <p className="text-xs text-muted-foreground mt-1">valor médio</p>
             </CardContent>
           </Card>
         </div>
@@ -305,7 +305,7 @@ export default function PaidCommissions() {
                     }
                   />
                   <Legend />
-                  <Bar dataKey="total" fill="#3b82f6" name="Comissões Pagas" />
+                  <Bar dataKey="total" fill="#0b0bb5" name="Comissões Pagas" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -330,7 +330,7 @@ export default function PaidCommissions() {
                     }
                   />
                   <Legend />
-                  <Bar dataKey="total" fill="#10b981" name="Total Pago" />
+                  <Bar dataKey="total" fill="#3b82f6" name="Total Pago" />
                 </BarChart>
               </ResponsiveContainer>
               
@@ -346,7 +346,7 @@ export default function PaidCommissions() {
                   </thead>
                   <tbody>
                     {commissionTypeData.map((item) => (
-                      <tr key={item.type} className="border-b hover:bg-slate-50">
+                      <tr key={item.type} className="border-b hover:bg-background">
                         <td className="py-2 px-4">{item.type}</td>
                         <td className="text-right py-2 px-4">{item.count}</td>
                         <td className="text-right py-2 px-4">
@@ -368,32 +368,32 @@ export default function PaidCommissions() {
           </CardHeader>
           <CardContent>
             {filteredCommissions.length === 0 ? (
-              <div className="text-center py-12 text-slate-500">
+              <div className="text-center py-12 text-muted-foreground">
                 Nenhuma comissão paga encontrada com os filtros selecionados
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Data</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Corretor</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Comprador</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Ref.</th>
-                      <th className="text-right py-3 px-4 text-sm font-semibold text-slate-700">Venda</th>
-                      <th className="text-right py-3 px-4 text-sm font-semibold text-slate-700">Comissão</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Método</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Banco</th>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Data</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Corretor</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Comprador</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Ref.</th>
+                      <th className="text-right py-3 px-4 text-sm font-semibold text-foreground">Venda</th>
+                      <th className="text-right py-3 px-4 text-sm font-semibold text-foreground">Comissão</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Método</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Banco</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredCommissions.map((commission) => (
-                      <tr key={commission.saleId} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 text-sm text-slate-900">
+                      <tr key={commission.saleId} className="border-b border-slate-100 hover:bg-background">
+                        <td className="py-3 px-4 text-sm text-foreground">
                           {new Date(commission.commissionPaymentDate).toLocaleDateString('pt-BR')}
                         </td>
-                        <td className="py-3 px-4 text-sm text-slate-900">{commission.brokerName}</td>
-                        <td className="py-3 px-4 text-sm text-slate-900">{commission.buyerName}</td>
+                        <td className="py-3 px-4 text-sm text-foreground">{commission.brokerName}</td>
+                        <td className="py-3 px-4 text-sm text-foreground">{commission.buyerName}</td>
                         <td className="py-3 px-4 text-sm">
                           {commission.propertyReference && (
                             <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
@@ -401,14 +401,14 @@ export default function PaidCommissions() {
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-sm text-right text-slate-900">
+                        <td className="py-3 px-4 text-sm text-right text-foreground">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.saleValue)}
                         </td>
                         <td className="py-3 px-4 text-sm text-right font-semibold text-green-600">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.commissionAmount)}
                         </td>
-                        <td className="py-3 px-4 text-sm text-slate-600 capitalize">{commission.commissionPaymentMethod}</td>
-                        <td className="py-3 px-4 text-sm text-slate-600">{commission.commissionPaymentBank}</td>
+                        <td className="py-3 px-4 text-sm text-muted-foreground capitalize">{commission.commissionPaymentMethod}</td>
+                        <td className="py-3 px-4 text-sm text-muted-foreground">{commission.commissionPaymentBank}</td>
                       </tr>
                     ))}
                   </tbody>

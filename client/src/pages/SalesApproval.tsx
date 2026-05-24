@@ -47,19 +47,22 @@ export default function SalesApproval() {
     onError: (err) => toast.error(err.message),
   });
 
-  // Filtrar vendas por role
-  const pendingSales = salesData?.sales?.filter((s: any) => {
-    if (user?.role === "manager") return s.status === "sale" || s.status === "manager_review";
-    if (user?.role === "finance") return s.status === "finance_review";
-    return false;
-  }) || [];
-
-  // Calcular KPIs
+  // Calcular KPIs - filtrar por mês atual
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
+
+  // Filtrar vendas pendentes por role E pelo mês atual
+  const pendingSales = salesData?.sales?.filter((s: any) => {
+    const saleDate = s.saleDate ? new Date(s.saleDate) : new Date(s.createdAt);
+    const isCurrentMonth = saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear;
+    if (user?.role === "manager") return isCurrentMonth && (s.status === "sale" || s.status === "manager_review");
+    if (user?.role === "finance") return isCurrentMonth && s.status === "finance_review";
+    return false;
+  }) || [];
   
   const approvedThisMonth = salesData?.sales?.filter((s: any) => {
-    const saleDate = new Date(s.createdAt);
+    // Usar saleDate (data da venda) para filtrar pelo mês atual
+    const saleDate = s.saleDate ? new Date(s.saleDate) : new Date(s.createdAt);
     return saleDate.getMonth() === currentMonth && 
            saleDate.getFullYear() === currentYear &&
            (s.status === "finance_review" || s.status === "commission_paid");
@@ -133,11 +136,11 @@ export default function SalesApproval() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
       <main className="max-w-6xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-slate-900 mb-1">Aprovação de Vendas</h1>
-        <p className="text-slate-500 text-sm mb-6">
+        <h1 className="text-2xl font-bold text-foreground mb-1">Aprovação de Vendas</h1>
+        <p className="text-muted-foreground text-sm mb-6">
           {user?.role === "manager" ? "Aprovar vendas para enviar ao financeiro" : "Aprovar pagamento de comissões"}
         </p>
 
@@ -145,48 +148,48 @@ export default function SalesApproval() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 Aprovadas no Mês
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-slate-900">{approvedCount}</p>
-                <p className="text-sm text-slate-600">VGV: {formatCurrency(approvedVGV)}</p>
-                <p className="text-sm text-slate-600">Comissões: {formatCurrency(approvedCommission)}</p>
+                <p className="text-2xl font-bold text-foreground">{approvedCount}</p>
+                <p className="text-sm text-muted-foreground">VGV: {formatCurrency(approvedVGV)}</p>
+                <p className="text-sm text-muted-foreground">Comissões: {formatCurrency(approvedCommission)}</p>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4 text-orange-600" />
                 Pendentes de Aprovação
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-slate-900">{pendingSales.length}</p>
-                <p className="text-sm text-slate-600">VGV Potencial: {formatCurrency(pendingVGV)}</p>
-                <p className="text-sm text-slate-600">Comissões Potenciais: {formatCurrency(pendingCommission)}</p>
+                <p className="text-2xl font-bold text-foreground">{pendingSales.length}</p>
+                <p className="text-sm text-muted-foreground">VGV Potencial: {formatCurrency(pendingVGV)}</p>
+                <p className="text-sm text-muted-foreground">Comissões Potenciais: {formatCurrency(pendingCommission)}</p>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-blue-600" />
                 Total Geral
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-slate-900">{approvedCount + pendingSales.length}</p>
-                <p className="text-sm text-slate-600">VGV: {formatCurrency(approvedVGV + pendingVGV)}</p>
-                <p className="text-sm text-slate-600">Comissões: {formatCurrency(approvedCommission + pendingCommission)}</p>
+                <p className="text-2xl font-bold text-foreground">{approvedCount + pendingSales.length}</p>
+                <p className="text-sm text-muted-foreground">VGV: {formatCurrency(approvedVGV + pendingVGV)}</p>
+                <p className="text-sm text-muted-foreground">Comissões: {formatCurrency(approvedCommission + pendingCommission)}</p>
               </div>
             </CardContent>
           </Card>
@@ -196,7 +199,7 @@ export default function SalesApproval() {
           <div className="text-center pt-24">Carregando...</div>
         ) : pendingSales.length === 0 ? (
           <Card>
-            <CardContent className="py-12 text-center text-slate-500">
+            <CardContent className="py-12 text-center text-muted-foreground">
               Nenhuma venda pendente de aprovação
             </CardContent>
           </Card>
@@ -214,7 +217,7 @@ export default function SalesApproval() {
                         </Badge>
                       </div>
                       <p className="text-lg font-bold text-green-600">{formatCurrency(sale.saleValue)}</p>
-                      <p className="text-sm text-slate-500">Tipo: {sale.businessType || "-"}</p>
+                      <p className="text-sm text-muted-foreground">Tipo: {sale.businessType || "-"}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {sale.proposalDocumentUrl && (
@@ -260,10 +263,10 @@ export default function SalesApproval() {
               rows={3}
             />
             {actionType === "approve" && user?.role === "finance" && (
-              <div className="border-2 border-dashed border-slate-300 rounded-lg p-4">
+              <div className="border-2 border-dashed border-border rounded-lg p-4">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <FileUp className="h-4 w-4 text-slate-600" />
-                  <span className="text-sm text-slate-600">
+                  <FileUp className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
                     {invoiceFile ? invoiceFile.name : "Anexar NF (obrigatório)"}
                   </span>
                   <input
@@ -282,13 +285,4 @@ export default function SalesApproval() {
             <Button 
               variant={actionType === "approve" ? "default" : "destructive"} 
               onClick={confirmAction}
-              disabled={updateStatusMutation.isPending || uploadInvoiceMutation.isPending || (actionType === "approve" && user?.role === "finance" && !invoiceFile)}
-            >
-              {updateStatusMutation.isPending || uploadInvoiceMutation.isPending ? "Processando..." : "Confirmar"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
+              disable

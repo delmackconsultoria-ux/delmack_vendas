@@ -96,7 +96,7 @@ export default function IndicatorDetailModal({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 sticky top-0 bg-white border-b">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 sticky top-0 bg-background border-b">
           <div>
             <CardTitle>{indicatorName}</CardTitle>
             <CardDescription>Histórico e evolução do ano por mês</CardDescription>
@@ -115,7 +115,7 @@ export default function IndicatorDetailModal({
           {/* Filters */}
           <div className="flex gap-4 flex-wrap">
             <div className="flex-1 min-w-[200px]">
-              <label className="text-sm font-medium text-slate-700 block mb-2">
+              <label className="text-sm font-medium text-foreground block mb-2">
                 Tipo de Negócio
               </label>
               <Select value={selectedBusinessType} onValueChange={setSelectedBusinessType}>
@@ -135,7 +135,7 @@ export default function IndicatorDetailModal({
             {/* Filtro de Corretor - apenas para gerentes e financeiro */}
             {userRole !== "broker" && (
               <div className="flex-1 min-w-[200px]">
-                <label className="text-sm font-medium text-slate-700 block mb-2">
+                <label className="text-sm font-medium text-foreground block mb-2">
                   Corretor
                 </label>
                 <Select value={selectedBroker} onValueChange={setSelectedBroker}>
@@ -157,9 +157,9 @@ export default function IndicatorDetailModal({
 
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <p className="text-xs text-slate-600 mb-1">Total</p>
-              <p className="text-lg font-bold text-slate-900">
+            <div className="bg-background p-4 rounded-lg border border-border">
+              <p className="text-xs text-muted-foreground mb-1">Total</p>
+              <p className="text-lg font-bold text-foreground">
                 {indicatorType === "value"
                   ? `R$ ${parseFloat(stats.total.toString()).toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,
@@ -168,9 +168,9 @@ export default function IndicatorDetailModal({
               </p>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <p className="text-xs text-slate-600 mb-1">Média</p>
-              <p className="text-lg font-bold text-slate-900">
+            <div className="bg-background p-4 rounded-lg border border-border">
+              <p className="text-xs text-muted-foreground mb-1">Média</p>
+              <p className="text-lg font-bold text-foreground">
                 {indicatorType === "value"
                   ? `R$ ${parseFloat(stats.average).toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,
@@ -223,8 +223,8 @@ export default function IndicatorDetailModal({
           </div>
 
           {/* Chart */}
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4">
+          <div className="bg-background p-4 rounded-lg border border-border">
+            <h3 className="text-sm font-semibold text-foreground mb-4">
               Evolução Mensal
             </h3>
             <ResponsiveContainer width="100%" height={300}>
@@ -260,20 +260,20 @@ export default function IndicatorDetailModal({
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left py-2 px-4 font-semibold text-slate-700">
+                <tr className="border-b border-border">
+                  <th className="text-left py-2 px-4 font-semibold text-foreground">
                     Mês
                   </th>
-                  <th className="text-right py-2 px-4 font-semibold text-slate-700">
+                  <th className="text-right py-2 px-4 font-semibold text-foreground">
                     Valor
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredData.map((row, idx) => (
-                  <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="py-2 px-4 text-slate-900">{row.month}</td>
-                    <td className="text-right py-2 px-4 text-slate-900 font-semibold">
+                  <tr key={idx} className="border-b border-slate-100 hover:bg-background">
+                    <td className="py-2 px-4 text-foreground">{row.month}</td>
+                    <td className="text-right py-2 px-4 text-foreground font-semibold">
                       {indicatorType === "value"
                         ? `R$ ${row.value.toLocaleString("pt-BR", {
                             minimumFractionDigits: 2,

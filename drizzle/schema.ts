@@ -111,10 +111,6 @@ export const sales = mysqlTable("sales", {
   brokerVendedorName: varchar("brokerVendedorName", { length: 255 }),
   brokerVendedorCreci: varchar("brokerVendedorCreci", { length: 50 }),
   brokerVendedorEmail: varchar("brokerVendedorEmail", { length: 320 }),
-  brokerVendedorImobiliaria: varchar("brokerVendedorImobiliaria", { length: 255 }), // Imobiliária do corretor vendedor externo
-  // Campos de despachante expandido
-  despachangeNomeEmpresa: varchar("despachangeNomeEmpresa", { length: 255 }), // Nome da empresa quando despachante = "Outro"
-  despachangeTelefone: varchar("despachangeTelefone", { length: 20 }), // Telefone quando despachante = "Outro"
   businessType: varchar("businessType", { length: 255 }),
   // Status expandido para fluxo de proposta
   status: mysqlEnum("status", ["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]).default("draft").notNull(),

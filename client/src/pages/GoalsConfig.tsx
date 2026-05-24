@@ -38,15 +38,15 @@ export default function GoalsConfig() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
               <Target className="h-8 w-8 text-blue-600" />
               Configuração de Metas
             </h1>
-            <p className="text-slate-600 mt-2">
+            <p className="text-muted-foreground mt-2">
               Defina as metas mensais para acompanhamento de desempenho
             </p>
           </div>
@@ -71,7 +71,7 @@ export default function GoalsConfig() {
                   }}
                   className="text-2xl font-bold"
                 />
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Meta padrão: R$ 15.000.000,00 por mês
                 </p>
               </div>
@@ -114,8 +114,8 @@ export default function GoalsConfig() {
                 <p className="text-4xl font-bold mt-2">
                   {formatCurrency(monthlyGoal)}
                 </p>
-                <div className="mt-4 bg-white/20 rounded-full h-2">
-                  <div className="bg-white rounded-full h-2 w-[65%]"></div>
+                <div className="mt-4 bg-background/20 rounded-full h-2">
+                  <div className="bg-background rounded-full h-2 w-[65%]"></div>
                 </div>
                 <p className="text-sm mt-2 opacity-90">65% atingido</p>
               </div>

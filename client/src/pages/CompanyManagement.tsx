@@ -44,7 +44,7 @@ export default function CompanyManagement() {
             <CardTitle>Acesso Negado</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">Apenas administradores podem acessar esta página.</p>
+            <p className="text-muted-foreground">Apenas administradores podem acessar esta página.</p>
             <Link href="/dashboard">
               <Button className="mt-4 w-full">Voltar ao Dashboard</Button>
             </Link>
@@ -55,7 +55,7 @@ export default function CompanyManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -67,7 +67,7 @@ export default function CompanyManagement() {
             </Link>
             <div>
               <h1 className="text-3xl font-bold">Gerenciamento de Empresas</h1>
-              <p className="text-gray-600">Crie e gerencie as imobiliárias do sistema</p>
+              <p className="text-muted-foreground">Crie e gerencie as imobiliárias do sistema</p>
             </div>
           </div>
         </div>
@@ -152,26 +152,26 @@ export default function CompanyManagement() {
               <CardContent>
                 {isLoading ? (
                   <div className="text-center py-8">
-                    <p className="text-gray-600">Carregando empresas...</p>
+                    <p className="text-muted-foreground">Carregando empresas...</p>
                   </div>
                 ) : companies && companies.length > 0 ? (
                   <div className="space-y-4">
                     {companies.map((company) => (
                       <div
                         key={company.id}
-                        className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                        className="p-4 border border-border rounded-lg hover:bg-background transition"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{company.name}</h3>
+                            <h3 className="font-semibold text-foreground">{company.name}</h3>
                             {company.email && (
-                              <p className="text-sm text-gray-600">{company.email}</p>
+                              <p className="text-sm text-muted-foreground">{company.email}</p>
                             )}
                             {company.phone && (
-                              <p className="text-sm text-gray-600">{company.phone}</p>
+                              <p className="text-sm text-muted-foreground">{company.phone}</p>
                             )}
                             {company.address && (
-                              <p className="text-sm text-gray-600 mt-1">{company.address}</p>
+                              <p className="text-sm text-muted-foreground mt-1">{company.address}</p>
                             )}
                           </div>
                           <Link href={`/company/${company.id}`}>
@@ -185,7 +185,7 @@ export default function CompanyManagement() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-600">Nenhuma empresa cadastrada ainda</p>
+                    <p className="text-muted-foreground">Nenhuma empresa cadastrada ainda</p>
                   </div>
                 )}
               </CardContent>

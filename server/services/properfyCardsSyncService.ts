@@ -15,7 +15,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const PROPERFY_API_URL = process.env.PROPERFY_API_URL || "https://adm.baggioimoveis.com.br/api";
-const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN || "";
+const PROPERFY_API_TOKEN = process.env.PROPERFY_API_KEY || process.env.PROPERFY_API_TOKEN || "";
 
 // IDs dos pipelines que nos interessam
 const PIPELINE_IDS = {

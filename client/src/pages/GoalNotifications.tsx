@@ -17,10 +17,10 @@ export default function GoalNotifications() {
   // Apenas gerentes e admins podem acessar
   if (user.role !== "manager" && user.role !== "admin") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="border-0 shadow-lg">
           <CardContent className="pt-6">
-            <p className="text-slate-900 font-semibold mb-4">
+            <p className="text-foreground font-semibold mb-4">
               Acesso restrito a gerentes
             </p>
             <Button onClick={() => setLocation("/dashboard")}>Voltar</Button>
@@ -31,7 +31,7 @@ export default function GoalNotifications() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
 
       <div className="container mx-auto px-4 py-8">
@@ -39,11 +39,11 @@ export default function GoalNotifications() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Bell className="h-8 w-8 text-orange-600" />
-            <h1 className="text-3xl font-bold text-slate-900">
+            <h1 className="text-3xl font-bold text-foreground">
               Notificações de Metas
             </h1>
           </div>
-          <p className="text-slate-600">
+          <p className="text-muted-foreground">
             Sistema automático de alertas de progresso de vendas
           </p>
         </div>
@@ -54,10 +54,10 @@ export default function GoalNotifications() {
             <div className="flex items-center gap-4">
               <CheckCircle2 className="h-12 w-12 text-green-600" />
               <div>
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-foreground">
                   Sistema de Notificações Ativo
                 </h2>
-                <p className="text-slate-600 mt-1">
+                <p className="text-muted-foreground mt-1">
                   Você receberá alertas automáticos sobre o progresso das metas
                 </p>
               </div>
@@ -80,11 +80,11 @@ export default function GoalNotifications() {
               <CardDescription>Notificação de progresso intermediário</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600 text-sm mb-3">
+              <p className="text-muted-foreground text-sm mb-3">
                 Você receberá um email de parabéns quando atingir 50% da meta mensal, 
                 incluindo estatísticas de progresso e projeção de fechamento.
               </p>
-              <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
+              <div className="bg-background p-3 rounded-lg text-xs text-muted-foreground">
                 <strong>Exemplo:</strong> "🎯 Meta de Janeiro: 50% Atingido! Continue assim! 💪"
               </div>
             </CardContent>
@@ -103,11 +103,11 @@ export default function GoalNotifications() {
               <CardDescription>Notificação de reta final</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600 text-sm mb-3">
+              <p className="text-muted-foreground text-sm mb-3">
                 Alerta de motivação quando você estiver próximo de bater a meta, 
                 mostrando quanto falta e a média necessária para os dias restantes.
               </p>
-              <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
+              <div className="bg-background p-3 rounded-lg text-xs text-muted-foreground">
                 <strong>Exemplo:</strong> "🎯 Meta de Janeiro: 75% Atingido! Está quase lá! 🚀"
               </div>
             </CardContent>
@@ -126,11 +126,11 @@ export default function GoalNotifications() {
               <CardDescription>Notificação de conquista</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600 text-sm mb-3">
+              <p className="text-muted-foreground text-sm mb-3">
                 Celebração automática quando você bater a meta do mês, 
                 com resumo completo do resultado e excedente alcançado.
               </p>
-              <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
+              <div className="bg-background p-3 rounded-lg text-xs text-muted-foreground">
                 <strong>Exemplo:</strong> "🎉 Meta de Janeiro: 100% ATINGIDA! Time está de parabéns! 🏆"
               </div>
             </CardContent>
@@ -149,11 +149,11 @@ export default function GoalNotifications() {
               <CardDescription>Notificação de atenção necessária</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600 text-sm mb-3">
+              <p className="text-muted-foreground text-sm mb-3">
                 Alerta preventivo quando o progresso estiver mais de 5% abaixo do esperado 
                 para o período, com sugestões de média diária necessária.
               </p>
-              <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
+              <div className="bg-background p-3 rounded-lg text-xs text-muted-foreground">
                 <strong>Exemplo:</strong> "⚠️ Atenção: Meta de Janeiro Abaixo do Esperado. Vamos acelerar! 🚀"
               </div>
             </CardContent>
@@ -176,10 +176,10 @@ export default function GoalNotifications() {
                   1
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">
+                  <h3 className="font-semibold text-foreground mb-1">
                     Monitoramento Automático
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     O sistema verifica automaticamente o progresso de vendas após cada venda registrada
                   </p>
                 </div>
@@ -190,10 +190,10 @@ export default function GoalNotifications() {
                   2
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">
+                  <h3 className="font-semibold text-foreground mb-1">
                     Detecção de Marcos
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     Quando um marco é atingido (50%, 75%, 100%), o sistema envia notificação automaticamente
                   </p>
                 </div>
@@ -204,10 +204,10 @@ export default function GoalNotifications() {
                   3
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">
+                  <h3 className="font-semibold text-foreground mb-1">
                     Alertas Preventivos
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     Se o progresso estiver abaixo do esperado, você recebe um alerta com sugestões de ação
                   </p>
                 </div>
@@ -218,10 +218,10 @@ export default function GoalNotifications() {
                   4
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">
+                  <h3 className="font-semibold text-foreground mb-1">
                     Notificações Únicas
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     Cada notificação é enviada apenas uma vez por mês para evitar spam
                   </p>
                 </div>

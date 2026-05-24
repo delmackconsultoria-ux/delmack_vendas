@@ -287,9 +287,9 @@ export default function AuditLogTable() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-500">Carregando...</div>
+            <div className="text-center py-8 text-muted-foreground">Carregando...</div>
           ) : filteredLogs.length === 0 ? (
-            <div className="text-center py-8 text-slate-500">
+            <div className="text-center py-8 text-muted-foreground">
               Nenhuma alteração registrada
             </div>
           ) : (
@@ -307,7 +307,7 @@ export default function AuditLogTable() {
                   </TableHeader>
                   <TableBody>
                     {filteredLogs.map((log: any) => {
-                      const actionConfig = ACTION_LABELS[log.action] || { label: log.action, color: "bg-slate-100 text-slate-700" };
+                      const actionConfig = ACTION_LABELS[log.action] || { label: log.action, color: "bg-muted text-foreground" };
                       const changeMessage = formatChangeMessage(log.fieldName, log.previousValue, log.newValue);
 
                       return (
@@ -326,7 +326,7 @@ export default function AuditLogTable() {
                           <TableCell className="font-medium text-blue-600">
                             {changeMessage}
                           </TableCell>
-                          <TableCell className="text-sm text-slate-500 max-w-xs truncate">
+                          <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
                             {log.changeReason || "-"}
                           </TableCell>
                         </TableRow>
@@ -339,7 +339,7 @@ export default function AuditLogTable() {
               {/* Paginação */}
               {auditData && auditData.total > limit && (
                 <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Mostrando {currentPage * limit + 1} a {Math.min((currentPage + 1) * limit, auditData.total)} de {auditData.total}
                   </p>
                   <div className="flex gap-2">

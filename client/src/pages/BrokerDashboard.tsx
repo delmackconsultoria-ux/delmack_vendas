@@ -95,7 +95,7 @@ export default function BrokerDashboard() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600">Acesso Negado</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Apenas corretores podem acessar este dashboard.
           </p>
           <Button
@@ -112,14 +112,14 @@ export default function BrokerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Meu Dashboard</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-foreground">Meu Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
             Acompanhe suas vendas, comissões e desempenho
           </p>
         </div>
@@ -160,7 +160,7 @@ export default function BrokerDashboard() {
             className={`pb-4 px-4 font-medium ${
               activeTab === "summary"
                 ? "border-b-2 border-primary text-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Resumo
@@ -170,7 +170,7 @@ export default function BrokerDashboard() {
             className={`pb-4 px-4 font-medium ${
               activeTab === "sales"
                 ? "border-b-2 border-primary text-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Minhas Vendas
@@ -180,7 +180,7 @@ export default function BrokerDashboard() {
             className={`pb-4 px-4 font-medium ${
               activeTab === "commissions"
                 ? "border-b-2 border-primary text-primary"
-                : "text-gray-600 hover:text-gray-900"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Minhas Comissões
@@ -193,7 +193,7 @@ export default function BrokerDashboard() {
             {/* Card: Vendas como Vendedor */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-600">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   Vendas (Vendedor)
                 </CardTitle>
               </CardHeader>
@@ -201,7 +201,7 @@ export default function BrokerDashboard() {
                 <div className="text-2xl font-bold">
                   {summaryLoading ? "..." : summary?.sales.asVendedor || 0}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {summaryLoading
                     ? "..."
                     : formatCurrency(summary?.sales.valueAsVendedor || 0)}
@@ -212,7 +212,7 @@ export default function BrokerDashboard() {
             {/* Card: Vendas como Angariador */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-600">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   Vendas (Angariador)
                 </CardTitle>
               </CardHeader>
@@ -220,7 +220,7 @@ export default function BrokerDashboard() {
                 <div className="text-2xl font-bold">
                   {summaryLoading ? "..." : summary?.sales.asAngariador || 0}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {summaryLoading
                     ? "..."
                     : formatCurrency(summary?.sales.valueAsAngariador || 0)}
@@ -279,7 +279,7 @@ export default function BrokerDashboard() {
               {salesLoading ? (
                 <div className="text-center py-8">Carregando...</div>
               ) : !mySales || mySales.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   Nenhuma venda registrada neste período.
                 </div>
               ) : (
@@ -343,7 +343,7 @@ export default function BrokerDashboard() {
               {commissionsLoading ? (
                 <div className="text-center py-8">Carregando...</div>
               ) : !myCommissions || myCommissions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   Nenhuma comissão registrada neste período.
                 </div>
               ) : (

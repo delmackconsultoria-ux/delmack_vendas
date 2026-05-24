@@ -1,0 +1,243 @@
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation, Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, TrendingUp, Home, Plus, Eye, Trophy, Clock } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { AppHeader } from "@/components/AppHeader";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+
+const STATUS_LABELS: Record<string, string> = {
+  draft: "Rascunho",
+  pending: "Pendente",
+  sale: "Venda",
+  manager_review: "Revisão Gerente",
+  finance_review: "Aguardando Financeiro",
+  commission_paid: "Comissão Paga",
+  cancelled: "Cancelado",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  draft: "secondary",
+  pending: "secondary",
+  sale: "default",
+  manager_review: "secondary",
+  finance_review: "secondary",
+  commission_paid: "default",
+  cancelled: "destructive",
+};
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+
+export default function DashboardBroker() {
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const now = new Date();
+
+  // Buscar resumo anual do corretor
+  const { data: summary, isLoading } = trpc.brokerDashboard.getSummary.useQuery({
+    month: 0, // 0 = acumulado anual
+    year: now.getFullYear(),
+  });
+
+  // Buscar vendas recentes (acumulado anual)
+  const { data: recentSales = [] } = trpc.brokerDashboard.listMySales.useQuery({
+    month: 0,
+    year: now.getFullYear(),
+    role: "all",
+  });
+
+  if (!user) return null;
+
+  const salesCount = summary?.sales?.asVendedor || 0;
+  const paidCommissions = summary?.sales?.paidCommissionValue || 0;
+  const pendingApproval = summary?.sales?.pendingApproval || 0;
+  const totalValue = summary?.sales?.valueAsVendedor || 0;
+
+  // Dados para o gráfico de pizza (tipos de venda)
+  const salesByType = [
+    { name: "Como Vendedor", value: summary?.sales?.asVendedor || 0, fill: "#3b82f6" },
+    { name: "Como Angariador", value: summary?.sales?.asAngariador || 0, fill: "#10b981" },
+  ].filter(d => d.value > 0);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AppHeader />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-foreground">
+            Bem-vindo, {user.name?.split(" ")[0]}!
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            Gerencie suas vendas e acompanhe suas comissões em tempo real
+          </p>
+        </div>
+
+        {/* Primary CTA */}
+        <div className="mb-8 bg-primary rounded-lg shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold mb-2">Registre uma Nova Venda</h3>
+              <p className="text-blue-100">Comece agora a registrar suas vendas</p>
+            </div>
+            <Button
+              onClick={() => setLocation("/proposals/new")}
+              className="bg-background text-blue-600 hover:bg-blue-50 font-semibold gap-2"
+              size="lg"
+            >
+              <Plus className="h-5 w-5" />
+              Nova Venda
+            </Button>
+          </div>
+        </div>
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Vendas */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Home className="h-4 w-4 text-blue-600" />
+                Vendas Realizadas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <p className="text-3xl font-bold text-slate-400">...</p>
+              ) : (
+                <p className="text-3xl font-bold text-foreground">{salesCount}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-2">Acumulado {now.getFullYear()}</p>
+            </CardContent>
+          </Card>
+
+          {/* Comissões Recebidas */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                Comissões Recebidas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <p className="text-3xl font-bold text-slate-400">...</p>
+              ) : (
+                <p className="text-3xl font-bold text-foreground">{formatCurrency(paidCommissions)}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-2">Acumulado {now.getFullYear()}</p>
+            </CardContent>
+          </Card>
+
+          {/* Pendentes */}
+          <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Clock className="h-4 w-4 text-amber-600" />
+                Pendentes de Pagamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <p className="text-3xl font-bold text-slate-400">...</p>
+              ) : (
+                <p className="text-3xl font-bold text-foreground">{pendingApproval}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-2">Aguardando financeiro</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Distribuição de Vendas */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Minhas Vendas por Papel
+              </CardTitle>
+              <CardDescription>Distribuição como vendedor e angariador</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {salesByType.length > 0 ? (
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={salesByType}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      dataKey="value"
+                      label={({ name, value }) => `${name}: ${value}`}
+                      labelLine={true}
+                    >
+                      {salesByType.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`${value} vendas`, ""]} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-[250px] text-muted-foreground">
+                  <Home className="h-12 w-12 mb-3 opacity-30" />
+                  <p className="text-sm">Nenhuma venda registrada ainda</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* VGV Total */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Resumo Financeiro
+              </CardTitle>
+              <CardDescription>Acumulado {now.getFullYear()}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4 mt-2">
+                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                  <span className="text-sm font-medium text-blue-800">VGV como Vendedor</span>
+                  <span className="font-bold text-blue-900">{formatCurrency(summary?.sales?.valueAsVendedor || 0)}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                  <span className="text-sm font-medium text-green-800">VGV como Angariador</span>
+                  <span className="font-bold text-green-900">{formatCurrency(summary?.sales?.valueAsAngariador || 0)}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                  <span className="text-sm font-bold text-emerald-800">Comissões Recebidas</span>
+                  <span className="font-bold text-emerald-900">{formatCurrency(paidCommissions)}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
+                  <span className="text-sm font-medium text-amber-800">Pendente de Pagamento</span>
+                  <span className="font-bold text-amber-900">{pendingApproval} vendas</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Vendas Recentes */}
+        <Card className="border-0 shadow-md mb-8">
+          <CardHeader>
+            <div 

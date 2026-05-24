@@ -37,17 +37,17 @@ export default function ForgotPassword() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <Card className="shadow-lg border-0">
             <CardContent className="pt-8 pb-8 text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 E-mail enviado!
               </h2>
-              <p className="text-slate-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Se o e-mail <strong>{email}</strong> estiver cadastrado, você receberá um link para redefinir sua senha em breve.
               </p>
               <a href="/login">
@@ -64,11 +64,11 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Delmack</h1>
-          <p className="text-slate-600">Recuperação de Senha</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Delmack</h1>
+          <p className="text-muted-foreground">Recuperação de Senha</p>
         </div>
 
         <Card className="shadow-lg border-0">
@@ -88,7 +88,7 @@ export default function ForgotPassword() {
               )}
 
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-slate-700">
+                <label htmlFor="email" className="text-sm font-medium text-foreground">
                   E-mail
                 </label>
                 <Input

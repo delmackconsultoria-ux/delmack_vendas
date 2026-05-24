@@ -4,9 +4,10 @@ import { eq, and, gte, lte, sql, isNotNull } from "drizzle-orm";
 
 /**
  * Carteira de Divulgação (em número)
- * Contagem de imóveis ativos para venda
+ * Contagem de imóveis ativos para venda no momento atual.
+ * Retorna o valor real apenas para o mês corrente.
+ * Para meses anteriores, retorna 0 (dados históricos devem ser inseridos manualmente).
  * Filtro: chrTransactionType = 'SALE' AND chrStatus = 'LISTED' AND isActive = 1
- * Usa dados locais do banco de dados (sincronizados via properfySyncService)
  */
 export async function calculateActivePropertiesCount(
   startDate: Date,
@@ -14,6 +15,19 @@ export async function calculateActivePropertiesCount(
   companyId?: string
 ): Promise<number> {
   try {
+    // Verificar se o período solicitado é o mês atual
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const requestedYear = startDate.getFullYear();
+    const requestedMonth = startDate.getMonth() + 1;
+
+    // Para meses anteriores ao atual, retornar 0
+    // Os dados históricos devem ser inseridos manualmente via "Incluir dados manuais"
+    if (requestedYear < currentYear || (requestedYear === currentYear && requestedMonth < currentMonth)) {
+      return 0;
+    }
+
     const db = await getDb();
     if (!db) {
       console.warn("[calculateActivePropertiesCount] Database not available");
@@ -269,25 +283,4 @@ export async function calculateAverageSaleTime(
         and(
           eq(properfyProperties.chrTransactionType, "SALE"),
           eq(properfyProperties.chrStatus, "REMOVED"),
-          isNotNull(properfyProperties.dteNewListing),
-          isNotNull(properfyProperties.dteTermination)
-        )
-      );
-
-    if (properties.length === 0) return 0;
-
-    // Calcular tempo médio em dias
-    const tempos = properties.map((p) => {
-      const inicio = new Date(p.dteNewListing!);
-      const fim = new Date(p.dteTermination!);
-      const dias = Math.floor((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
-      return dias;
-    });
-
-    const media = tempos.reduce((a, b) => a + b, 0) / tempos.length;
-    return Math.round(media);
-  } catch (error) {
-    console.error("[calculateAverageSaleTime] Error:", error);
-    return 0;
-  }
-}
+          isNotNull(properfyProperti

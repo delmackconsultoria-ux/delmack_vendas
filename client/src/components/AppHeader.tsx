@@ -20,13 +20,13 @@ const roleLabels: Record<string, string> = {
   viewer: "Visualizador",
 };
 
-const roleColors: Record<string, string> = {
-  superadmin: "bg-purple-600",
-  admin: "bg-blue-600",
-  manager: "bg-green-600",
-  broker: "bg-orange-500",
-  finance: "bg-cyan-600",
-  viewer: "bg-gray-500",
+const roleColorHex: Record<string, string> = {
+  superadmin: "#7c3aed",
+  admin: "#2563eb",
+  manager: "#16a34a",
+  broker: "#f97316",
+  finance: "#16a34a",
+  viewer: "#6b7280",
 };
 
 interface NavItem {
@@ -39,12 +39,14 @@ const navItems: NavItem[] = [
   { label: "Nova Venda", path: "/proposals/new", roles: ["broker", "manager", "admin"] },
   { label: "Aprovação", path: "/sales-approval", roles: ["finance", "manager"] },
   { label: "Comissões Pagas", path: "/paid-commissions", roles: ["finance"] },
-  { label: "Comissões", path: "/proposals", roles: ["broker", "manager", "admin", "finance", "viewer"] },
+  { label: "Comissões Recebidas", path: "/proposals", roles: ["finance"] },
+  { label: "Comissões", path: "/proposals", roles: ["broker", "manager", "admin", "viewer"] },
   { label: "Metas", path: "/goals", roles: ["manager"] },
   { label: "Corretores", path: "/brokers", roles: ["manager"] },
   { label: "Indicadores", path: "/indicators", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Relatórios", path: "/reports", roles: ["broker", "manager", "finance", "admin", "viewer"] },
   { label: "Ranking", path: "/ranking", roles: ["broker", "manager", "finance", "viewer"] },
+  { label: "Backup", path: "/backup", roles: ["superadmin"] },
   // Calendário removido conforme solicitação (22/02/2026)
   // Analytics removido conforme solicitação (13/02/2026)
 ];
@@ -59,7 +61,7 @@ export function AppHeader() {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b bg-white">
       <div className="flex h-16 items-center justify-between px-4 max-w-full">
         {/* Logo - Clicável para Home */}
         <button
@@ -101,7 +103,7 @@ export function AppHeader() {
               <Button variant="ghost" size="sm" className="text-sm flex items-center gap-2">
                 <span>{user?.name?.split(' ')[0] || "Menu"}{user?.companyName ? ` - ${user.companyName}` : ""}</span>
                 {user?.role && (
-                  <Badge className={`${roleColors[user.role] || 'bg-gray-500'} text-white text-xs px-2 py-0.5`}>
+                  <Badge style={{ backgroundColor: roleColorHex[user.role] || '#6b7280' }} className="text-white text-xs px-2 py-0.5">
                     {roleLabels[user.role] || user.role}
                   </Badge>
                 )}

@@ -40,10 +40,10 @@ export default function SalesByResponsible() {
   // Apenas gerentes e admins podem acessar
   if (user.role !== "manager" && user.role !== "admin" && user.role !== "finance") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="border-0 shadow-lg">
           <CardContent className="pt-6">
-            <p className="text-slate-900 font-semibold mb-4">
+            <p className="text-foreground font-semibold mb-4">
               Acesso restrito a gerentes e financeiro
             </p>
             <Button onClick={() => setLocation("/dashboard")}>Voltar</Button>
@@ -91,7 +91,7 @@ export default function SalesByResponsible() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
 
       <div className="container mx-auto px-4 py-8">
@@ -99,11 +99,11 @@ export default function SalesByResponsible() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Users className="h-8 w-8 text-orange-600" />
-            <h1 className="text-3xl font-bold text-slate-900">
+            <h1 className="text-3xl font-bold text-foreground">
               Vendas por Responsável
             </h1>
           </div>
-          <p className="text-slate-600">
+          <p className="text-muted-foreground">
             Análise de vendas por responsável (Lucas - Lançamentos, Camila - Prontos)
           </p>
         </div>
@@ -117,13 +117,13 @@ export default function SalesByResponsible() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Ano
                 </label>
                 <select
                   value={year}
                   onChange={(e) => setYear(parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   {[2024, 2025, 2026, 2027].map((y) => (
                     <option key={y} value={y}>
@@ -133,7 +133,7 @@ export default function SalesByResponsible() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Mês
                 </label>
                 <select
@@ -141,7 +141,7 @@ export default function SalesByResponsible() {
                   onChange={(e) =>
                     setMonth(e.target.value === "all" ? "all" : parseInt(e.target.value))
                   }
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="all">Todos os meses</option>
                   {months.map((m, i) => (
@@ -158,7 +158,7 @@ export default function SalesByResponsible() {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
-            <p className="text-slate-600 mt-4">Carregando dados...</p>
+            <p className="text-muted-foreground mt-4">Carregando dados...</p>
           </div>
         ) : salesData ? (
           <>
@@ -167,16 +167,16 @@ export default function SalesByResponsible() {
               {/* Total Geral */}
               <Card className="border-l-4 border-l-purple-600">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                     <DollarSign className="h-4 w-4" />
                     VGV Total
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-slate-900">
+                  <div className="text-2xl font-bold text-foreground">
                     {formatCurrency(salesData.total.totalVGV)}
                   </div>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {salesData.total.quantity} vendas
                   </p>
                 </CardContent>
@@ -185,16 +185,16 @@ export default function SalesByResponsible() {
               {/* Lucas */}
               <Card className="border-l-4 border-l-orange-600">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                     <TrendingUp className="h-4 w-4" />
                     Lucas (Lançamentos)
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-slate-900">
+                  <div className="text-2xl font-bold text-foreground">
                     {formatCurrency(salesData.lucas.totalVGV)}
                   </div>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {salesData.lucas.quantity} vendas
                   </p>
                   <Badge className="mt-2 bg-orange-100 text-orange-700">
@@ -206,16 +206,16 @@ export default function SalesByResponsible() {
               {/* Camila */}
               <Card className="border-l-4 border-l-blue-600">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                     <FileText className="h-4 w-4" />
                     Camila (Prontos)
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-slate-900">
+                  <div className="text-2xl font-bold text-foreground">
                     {formatCurrency(salesData.camila.totalVGV)}
                   </div>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {salesData.camila.quantity} vendas
                   </p>
                   <Badge className="mt-2 bg-blue-100 text-blue-700">
@@ -248,7 +248,7 @@ export default function SalesByResponsible() {
                         }}
                       />
                       <Legend />
-                      <Bar dataKey="vgv" name="VGV" fill="#f97316" />
+                      <Bar dataKey="vgv" name="VGV" fill="#1d4ed8" />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -270,7 +270,7 @@ export default function SalesByResponsible() {
                         labelLine={false}
                         label={(entry) => `${entry.name}: ${((entry.value / salesData.total.totalVGV) * 100).toFixed(1)}%`}
                         outerRadius={80}
-                        fill="#8884d8"
+                        fill="#0b0bb5"
                         dataKey="value"
                       >
                         {pieData.map((entry, index) => (
@@ -294,89 +294,89 @@ export default function SalesByResponsible() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">
                           Responsável
                         </th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">
                           Tipo
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-right py-3 px-4 font-semibold text-foreground">
                           Quantidade
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-right py-3 px-4 font-semibold text-foreground">
                           VGV Total
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-right py-3 px-4 font-semibold text-foreground">
                           Ticket Médio
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-right py-3 px-4 font-semibold text-foreground">
                           % do Total
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 font-medium text-slate-900">Lucas</td>
-                        <td className="py-3 px-4 text-slate-600">
+                      <tr className="border-b border-slate-100 hover:bg-background">
+                        <td className="py-3 px-4 font-medium text-foreground">Lucas</td>
+                        <td className="py-3 px-4 text-muted-foreground">
                           <Badge className="bg-orange-100 text-orange-700">Lançamentos</Badge>
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-900">
+                        <td className="py-3 px-4 text-right text-foreground">
                           {salesData.lucas.quantity}
                         </td>
-                        <td className="py-3 px-4 text-right font-semibold text-slate-900">
+                        <td className="py-3 px-4 text-right font-semibold text-foreground">
                           {formatCurrency(salesData.lucas.totalVGV)}
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-600">
+                        <td className="py-3 px-4 text-right text-muted-foreground">
                           {formatCurrency(
                             salesData.lucas.quantity > 0
                               ? salesData.lucas.totalVGV / salesData.lucas.quantity
                               : 0
                           )}
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-600">
+                        <td className="py-3 px-4 text-right text-muted-foreground">
                           {((salesData.lucas.totalVGV / salesData.total.totalVGV) * 100).toFixed(1)}%
                         </td>
                       </tr>
-                      <tr className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 font-medium text-slate-900">Camila</td>
-                        <td className="py-3 px-4 text-slate-600">
+                      <tr className="border-b border-slate-100 hover:bg-background">
+                        <td className="py-3 px-4 font-medium text-foreground">Camila</td>
+                        <td className="py-3 px-4 text-muted-foreground">
                           <Badge className="bg-blue-100 text-blue-700">Prontos</Badge>
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-900">
+                        <td className="py-3 px-4 text-right text-foreground">
                           {salesData.camila.quantity}
                         </td>
-                        <td className="py-3 px-4 text-right font-semibold text-slate-900">
+                        <td className="py-3 px-4 text-right font-semibold text-foreground">
                           {formatCurrency(salesData.camila.totalVGV)}
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-600">
+                        <td className="py-3 px-4 text-right text-muted-foreground">
                           {formatCurrency(
                             salesData.camila.quantity > 0
                               ? salesData.camila.totalVGV / salesData.camila.quantity
                               : 0
                           )}
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-600">
+                        <td className="py-3 px-4 text-right text-muted-foreground">
                           {((salesData.camila.totalVGV / salesData.total.totalVGV) * 100).toFixed(1)}%
                         </td>
                       </tr>
-                      <tr className="bg-slate-100 font-semibold">
-                        <td className="py-3 px-4 text-slate-900">Total</td>
+                      <tr className="bg-muted font-semibold">
+                        <td className="py-3 px-4 text-foreground">Total</td>
                         <td className="py-3 px-4"></td>
-                        <td className="py-3 px-4 text-right text-slate-900">
+                        <td className="py-3 px-4 text-right text-foreground">
                           {salesData.total.quantity}
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-900">
+                        <td className="py-3 px-4 text-right text-foreground">
                           {formatCurrency(salesData.total.totalVGV)}
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-600">
+                        <td className="py-3 px-4 text-right text-muted-foreground">
                           {formatCurrency(
                             salesData.total.quantity > 0
                               ? salesData.total.totalVGV / salesData.total.quantity
                               : 0
                           )}
                         </td>
-                        <td className="py-3 px-4 text-right text-slate-600">100%</td>
+                        <td className="py-3 px-4 text-right text-muted-foreground">100%</td>
                       </tr>
                     </tbody>
                   </table>
@@ -388,7 +388,7 @@ export default function SalesByResponsible() {
           <Card>
             <CardContent className="py-12 text-center">
               <FileText className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600">Nenhuma venda encontrada para o período selecionado</p>
+              <p className="text-muted-foreground">Nenhuma venda encontrada para o período selecionado</p>
             </CardContent>
           </Card>
         )}

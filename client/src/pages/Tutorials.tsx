@@ -606,7 +606,7 @@ export default function Tutorials() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
 
       <div className="container mx-auto px-4 py-8">
@@ -616,11 +616,11 @@ export default function Tutorials() {
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-2">
                 <BookOpen className="h-8 w-8 text-orange-600" />
-                <h1 className="text-3xl font-bold text-slate-900">
+                <h1 className="text-3xl font-bold text-foreground">
                   Tutoriais e Guias
                 </h1>
               </div>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Aprenda a usar o sistema com guias passo a passo para {getRoleName(user.role)}
               </p>
             </div>
@@ -631,7 +631,7 @@ export default function Tutorials() {
                 onClick={() => setActiveTab("tutorials")}
                 className={activeTab === "tutorials" 
                   ? "bg-orange-600 hover:bg-orange-700" 
-                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                  : "bg-muted text-foreground hover:bg-slate-300"
                 }
               >
                 <BookOpen className="h-4 w-4 mr-2" />
@@ -641,7 +641,7 @@ export default function Tutorials() {
                 onClick={() => setActiveTab("faq")}
                 className={activeTab === "faq" 
                   ? "bg-orange-600 hover:bg-orange-700" 
-                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                  : "bg-muted text-foreground hover:bg-slate-300"
                 }
               >
                 <HelpCircle className="h-4 w-4 mr-2" />
@@ -671,7 +671,7 @@ export default function Tutorials() {
                       ? setSelectedCategory(e.target.value)
                       : setSelectedFaqCategory(e.target.value)
                     }
-                    className="px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     {(activeTab === "tutorials" ? categories : faqCategories).map((cat) => (
                       <option key={cat} value={cat}>
@@ -706,7 +706,7 @@ export default function Tutorials() {
                             {tutorial.category}
                           </Badge>
                         </div>
-                        <Badge variant="outline" className="text-slate-600">
+                        <Badge variant="outline" className="text-muted-foreground">
                           {tutorial.duration}
                         </Badge>
                       </div>
@@ -715,7 +715,7 @@ export default function Tutorials() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">
+                        <span className="text-sm text-muted-foreground">
                           {tutorial.steps.length} passos
                         </span>
                         <ChevronRight className="h-5 w-5 text-slate-400" />
@@ -730,7 +730,7 @@ export default function Tutorials() {
                   <Card>
                     <CardContent className="py-12 text-center">
                       <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                      <p className="text-slate-600">
+                      <p className="text-muted-foreground">
                         Nenhum tutorial encontrado com os filtros selecionados
                       </p>
                     </CardContent>
@@ -765,7 +765,7 @@ export default function Tutorials() {
                     </CardHeader>
                     {openFaqId === faq.id && (
                       <CardContent>
-                        <p className="text-slate-700 leading-relaxed">{faq.answer}</p>
+                        <p className="text-foreground leading-relaxed">{faq.answer}</p>
                       </CardContent>
                     )}
                   </Card>
@@ -775,7 +775,7 @@ export default function Tutorials() {
                   <Card>
                     <CardContent className="py-12 text-center">
                       <HelpCircle className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                      <p className="text-slate-600">
+                      <p className="text-muted-foreground">
                         Nenhuma pergunta encontrada com os filtros selecionados
                       </p>
                     </CardContent>
@@ -806,7 +806,7 @@ export default function Tutorials() {
                       <Badge className="bg-blue-100 text-blue-700">
                         {selectedTutorial.category}
                       </Badge>
-                      <Badge variant="outline" className="text-slate-600">
+                      <Badge variant="outline" className="text-muted-foreground">
                         {selectedTutorial.duration}
                       </Badge>
                     </div>
@@ -834,7 +834,7 @@ export default function Tutorials() {
                         {index + 1}
                       </div>
                       <div className="flex-1 pt-1">
-                        <p className="text-slate-700">{step}</p>
+                        <p className="text-foreground">{step}</p>
                       </div>
                     </div>
                   ))}

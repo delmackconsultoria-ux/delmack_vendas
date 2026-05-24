@@ -9,30 +9,9 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     <title>Delmack</title>
-    <script>
-      // Configurar variáveis de ambiente globais (valores padrão)
-      window.__VITE_APP_TITLE__ = 'Delmack';
-      window.__VITE_APP_LOGO__ = '';
-      window.__VITE_ANALYTICS_ENDPOINT__ = '';
-      window.__VITE_ANALYTICS_WEBSITE_ID__ = '';
-      
-      // Atualizar título da página
-      document.title = window.__VITE_APP_TITLE__;
-    </script>
   </head>
-
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Script de analytics - carrega dinamicamente se configurado
-      if (window.__VITE_ANALYTICS_ENDPOINT__ && window.__VITE_ANALYTICS_WEBSITE_ID__) {
-        const script = document.createElement('script');
-        script.defer = true;
-        script.src = window.__VITE_ANALYTICS_ENDPOINT__ + '/umami';
-        script.setAttribute('data-website-id', window.__VITE_ANALYTICS_WEBSITE_ID__);
-        document.body.appendChild(script);
-      }
-    </script>
   </body>
 </html>

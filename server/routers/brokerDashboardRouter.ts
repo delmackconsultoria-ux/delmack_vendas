@@ -2,14 +2,14 @@ import { protectedProcedure, router } from "../_core/trpc";
 import { z } from "zod";
 import { getDb } from "../db";
 import { sales, commissions } from "../../drizzle/schema";
-import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql, notInArray, or } from "drizzle-orm";
 
 export const brokerDashboardRouter = router({
-  // Obter resumo pessoal do corretor
+  // Obter resumo pessoal do corretor (acumulado anual usando saleDate)
   getSummary: protectedProcedure
     .input(
       z.object({
-        month: z.number().min(1).max(12).optional(),
+        month: z.number().min(0).max(12).optional(), // 0 = acumulado anual
         year: z.number().min(2020).optional(),
       })
     )
@@ -22,39 +22,58 @@ export const brokerDashboardRouter = router({
       if (!db) throw new Error("Database not available");
 
       const now = new Date();
-      const month = input.month || now.getMonth() + 1;
+      const month = input.month ?? 0; // 0 = acumulado anual por padrão
       const year = input.year || now.getFullYear();
 
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0, 23, 59, 59);
+      const isYearly = month === 0;
+      const startDate = isYearly ? new Date(year, 0, 1) : new Date(year, month - 1, 1);
+      const endDate = isYearly ? new Date(year, 11, 31, 23, 59, 59) : new Date(year, month, 0, 23, 59, 59);
 
-      // Vendas como vendedor
+      // Vendas como vendedor (usando saleDate)
       const vendedorSales = await db
-        .select()
+        .select({
+          id: sales.id,
+          saleValue: sales.saleValue,
+          totalCommission: sales.totalCommission,
+          status: sales.status,
+          saleDate: sales.saleDate,
+          saleType: sales.saleType,
+        })
         .from(sales)
         .where(
           and(
             eq(sales.brokerVendedor, ctx.user.id),
             eq(sales.companyId, ctx.user.companyId!),
-            gte(sales.createdAt, startDate),
-            lte(sales.createdAt, endDate)
+            gte(sales.saleDate, startDate),
+            lte(sales.saleDate, endDate),
+            notInArray(sales.status, ['draft', 'cancelled']),
+            sql`YEAR(${sales.saleDate}) > 1970`
           )
         );
 
-      // Vendas como angariador
+      // Vendas como angariador (usando saleDate)
       const angariadorSales = await db
-        .select()
+        .select({
+          id: sales.id,
+          saleValue: sales.saleValue,
+          totalCommission: sales.totalCommission,
+          status: sales.status,
+          saleDate: sales.saleDate,
+          saleType: sales.saleType,
+        })
         .from(sales)
         .where(
           and(
             eq(sales.brokerAngariador, ctx.user.id),
             eq(sales.companyId, ctx.user.companyId!),
-            gte(sales.createdAt, startDate),
-            lte(sales.createdAt, endDate)
+            gte(sales.saleDate, startDate),
+            lte(sales.saleDate, endDate),
+            notInArray(sales.status, ['draft', 'cancelled']),
+            sql`YEAR(${sales.saleDate}) > 1970`
           )
         );
 
-      // Comissões
+      // Comissões pagas ao corretor (usando createdAt pois são registros de pagamento)
       const myCommissions = await db
         .select()
         .from(commissions)
@@ -62,32 +81,32 @@ export const brokerDashboardRouter = router({
           and(
             eq(commissions.brokerId, ctx.user.id),
             eq(commissions.companyId, ctx.user.companyId!),
-            gte(commissions.createdAt, startDate),
-            lte(commissions.createdAt, endDate)
           )
         );
 
       const totalVendedorValue = vendedorSales.reduce(
-        (sum, s) => sum + Number(s.saleValue || 0),
-        0
+        (sum, s) => sum + Number(s.saleValue || 0), 0
       );
       const totalAngariadorValue = angariadorSales.reduce(
-        (sum, s) => sum + Number(s.saleValue || 0),
-        0
+        (sum, s) => sum + Number(s.saleValue || 0), 0
       );
+
+      // Comissões recebidas = vendas com status commission_paid
+      const paidCommissionValue = vendedorSales
+        .filter(s => s.status === 'commission_paid')
+        .reduce((sum, s) => sum + Number(s.totalCommission || 0), 0);
+
+      // Pendentes de aprovação = vendas em finance_review
+      const pendingApproval = vendedorSales.filter(s => 
+        s.status === 'finance_review' || s.status === 'manager_review'
+      ).length;
+
       const totalCommissionValue = myCommissions.reduce(
-        (sum, c) => sum + Number(c.commissionValue || 0),
-        0
+        (sum, c) => sum + Number(c.commissionValue || 0), 0
       );
-      const paidCommissionValue = myCommissions
-        .filter((c) => c.status === "paid")
-        .reduce((sum, c) => sum + Number(c.commissionValue || 0), 0);
-      const pendingCommissionValue = myCommissions
-        .filter((c) => c.status !== "paid")
-        .reduce((sum, c) => sum + Number(c.commissionValue || 0), 0);
 
       return {
-        period: { month, year },
+        period: { month, year, isYearly },
         sales: {
           asVendedor: vendedorSales.length,
           asAngariador: angariadorSales.length,
@@ -95,23 +114,26 @@ export const brokerDashboardRouter = router({
           valueAsVendedor: totalVendedorValue,
           valueAsAngariador: totalAngariadorValue,
           totalValue: totalVendedorValue + totalAngariadorValue,
+          pendingApproval,
+          paidCommissionValue,
+          recentSales: vendedorSales.slice(0, 5),
         },
         commissions: {
           total: myCommissions.length,
           totalValue: totalCommissionValue,
           paid: myCommissions.filter((c) => c.status === "paid").length,
-          paidValue: paidCommissionValue,
+          paidValue: myCommissions.filter(c => c.status === 'paid').reduce((sum, c) => sum + Number(c.commissionValue || 0), 0),
           pending: myCommissions.filter((c) => c.status !== "paid").length,
-          pendingValue: pendingCommissionValue,
+          pendingValue: myCommissions.filter(c => c.status !== 'paid').reduce((sum, c) => sum + Number(c.commissionValue || 0), 0),
         },
       };
     }),
 
-  // Listar vendas pessoais com histórico
+  // Listar vendas pessoais com histórico (usando saleDate)
   listMySales: protectedProcedure
     .input(
       z.object({
-        month: z.number().min(1).max(12).optional(),
+        month: z.number().min(0).max(12).optional(),
         year: z.number().min(2020).optional(),
         role: z.enum(["vendedor", "angariador", "all"]).optional(),
       })
@@ -125,34 +147,48 @@ export const brokerDashboardRouter = router({
       if (!db) throw new Error("Database not available");
 
       const now = new Date();
-      const month = input.month || now.getMonth() + 1;
+      const month = input.month ?? 0;
       const year = input.year || now.getFullYear();
 
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0, 23, 59, 59);
+      const isYearly = month === 0;
+      const startDate = isYearly ? new Date(year, 0, 1) : new Date(year, month - 1, 1);
+      const endDate = isYearly ? new Date(year, 11, 31, 23, 59, 59) : new Date(year, month, 0, 23, 59, 59);
 
       const role = input.role || "all";
 
-      const conditions = [
+      const baseConditions = [
         eq(sales.companyId, ctx.user.companyId!),
-        gte(sales.createdAt, startDate),
-        lte(sales.createdAt, endDate),
+        gte(sales.saleDate, startDate),
+        lte(sales.saleDate, endDate),
+        notInArray(sales.status, ['draft', 'cancelled']),
+        sql`YEAR(${sales.saleDate}) > 1970`,
       ];
 
+      let mySales;
       if (role === "vendedor") {
-        conditions.push(eq(sales.brokerVendedor, ctx.user.id));
+        mySales = await db.select().from(sales)
+          .where(and(...baseConditions, eq(sales.brokerVendedor, ctx.user.id)))
+          .orderBy(desc(sales.saleDate));
       } else if (role === "angariador") {
-        conditions.push(eq(sales.brokerAngariador, ctx.user.id));
+        mySales = await db.select().from(sales)
+          .where(and(...baseConditions, eq(sales.brokerAngariador, ctx.user.id)))
+          .orderBy(desc(sales.saleDate));
       } else {
-        // all - mostrar vendas onde é vendedor OU angariador
-        conditions.push(eq(sales.brokerVendedor, ctx.user.id));
+        // all - vendedor OU angariador
+        mySales = await db.select().from(sales)
+          .where(and(
+            eq(sales.companyId, ctx.user.companyId!),
+            gte(sales.saleDate, startDate),
+            lte(sales.saleDate, endDate),
+            notInArray(sales.status, ['draft', 'cancelled']),
+            sql`YEAR(${sales.saleDate}) > 1970`,
+            or(
+              eq(sales.brokerVendedor, ctx.user.id),
+              eq(sales.brokerAngariador, ctx.user.id)
+            )
+          ))
+          .orderBy(desc(sales.saleDate));
       }
-
-      const mySales = await db
-        .select()
-        .from(sales)
-        .where(and(...conditions))
-        .orderBy(desc(sales.createdAt));
 
       return mySales;
     }),
@@ -174,20 +210,11 @@ export const brokerDashboardRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
-      const now = new Date();
-      const month = input.month || now.getMonth() + 1;
-      const year = input.year || now.getFullYear();
-
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0, 23, 59, 59);
-
       const status = input.status || "all";
 
-      const conditions = [
+      const conditions: any[] = [
         eq(commissions.brokerId, ctx.user.id),
         eq(commissions.companyId, ctx.user.companyId!),
-        gte(commissions.createdAt, startDate),
-        lte(commissions.createdAt, endDate),
       ];
 
       if (status !== "all") {
@@ -206,61 +233,4 @@ export const brokerDashboardRouter = router({
   // Obter histórico completo (todos os meses/anos)
   getCompleteHistory: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.user.role !== "broker") {
-      throw new Error("Apenas corretores podem acessar este endpoint");
-    }
-
-    const db = await getDb();
-    if (!db) throw new Error("Database not available");
-
-    // Buscar todas as vendas do corretor
-    const allSales = await db
-      .select()
-      .from(sales)
-      .where(
-        and(
-          eq(sales.brokerVendedor, ctx.user.id),
-          eq(sales.companyId, ctx.user.companyId!)
-        )
-      )
-      .orderBy(desc(sales.createdAt));
-
-    // Buscar todas as comissões do corretor
-    const allCommissions = await db
-      .select()
-      .from(commissions)
-      .where(
-        and(
-          eq(commissions.brokerId, ctx.user.id),
-          eq(commissions.companyId, ctx.user.companyId!)
-        )
-      )
-      .orderBy(desc(commissions.createdAt));
-
-    // Agrupar por mês/ano
-    const salesByMonth: Record<string, typeof allSales> = {};
-    const commissionsByMonth: Record<string, typeof allCommissions> = {};
-
-    allSales.forEach((sale) => {
-      const key = `${sale.createdAt?.getFullYear()}-${String(
-        ((sale.createdAt?.getMonth() || 0) + 1)
-      ).padStart(2, "0")}`;
-      if (!salesByMonth[key]) salesByMonth[key] = [];
-      salesByMonth[key].push(sale);
-    });
-
-    allCommissions.forEach((commission) => {
-      const key = `${commission.createdAt?.getFullYear()}-${String(
-        ((commission.createdAt?.getMonth() || 0) + 1)
-      ).padStart(2, "0")}`;
-      if (!commissionsByMonth[key]) commissionsByMonth[key] = [];
-      commissionsByMonth[key].push(commission);
-    });
-
-    return {
-      salesByMonth,
-      commissionsByMonth,
-      totalSales: allSales.length,
-      totalCommissions: allCommissions.length,
-    };
-  }),
-});
+      throw new E

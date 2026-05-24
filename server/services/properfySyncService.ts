@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 const envUrl = process.env.PROPERFY_API_URL || 'https://sandbox.properfy.com.br/api';
 const PROPERFY_API_URL = envUrl.replace('/auth/token', '').replace(/\/$/, '');
-const PROPERFY_API_TOKEN = process.env.PROPERFY_API_TOKEN || '';
+const PROPERFY_API_TOKEN = process.env.PROPERFY_API_KEY || process.env.PROPERFY_API_TOKEN || '';
 
 interface ProperfyPropertyRaw {
   id: number;
@@ -83,7 +83,7 @@ export async function syncAllProperties(): Promise<{ success: boolean; message: 
     const firstPageResponse = await fetch(`${PROPERFY_API_URL}/property/property?page=1&size=100`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+        'Authorization': PROPERFY_API_TOKEN,
         'Content-Type': 'application/json'
       }
     });
@@ -123,7 +123,7 @@ export async function syncAllProperties(): Promise<{ success: boolean; message: 
           fetch(`${PROPERFY_API_URL}/property/property?page=${page}&size=100`, {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${PROPERFY_API_TOKEN}`,
+              'Authorization': PROPERFY_API_TOKEN,
               'Content-Type': 'application/json'
             }
           })

@@ -47,11 +47,11 @@ export default function SuperAdminUsers() {
   const roleLabels: Record<string, string> = { superadmin: "Super Admin", manager: "Gerente", broker: "Corretor", finance: "Financeiro" };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
       <main className="container py-6">
         <div className="flex items-center gap-4 mb-6">
-          <a href="/" className="text-slate-600 hover:text-slate-900"><ArrowLeft className="h-5 w-5" /></a>
+          <a href="/" className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></a>
           <h1 className="text-2xl font-bold flex items-center gap-2"><Users className="h-6 w-6" /> Gestão de Usuários</h1>
         </div>
 
@@ -69,7 +69,7 @@ export default function SuperAdminUsers() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-100">
+                <thead className="bg-muted">
                   <tr>
                     <th className="text-left p-3">Nome</th>
                     <th className="text-left p-3">E-mail</th>
@@ -81,7 +81,7 @@ export default function SuperAdminUsers() {
                 </thead>
                 <tbody>
                   {filteredUsers.map((u) => (
-                    <tr key={u.id} className="border-b hover:bg-slate-50">
+                    <tr key={u.id} className="border-b hover:bg-background">
                       <td className="p-3 font-medium">{u.name || "-"}</td>
                       <td className="p-3">{u.email}</td>
                       <td className="p-3"><Badge variant="outline">{roleLabels[u.role] || u.role}</Badge></td>
@@ -90,7 +90,7 @@ export default function SuperAdminUsers() {
                          isLocked(u) ? <Badge className="bg-orange-500">Bloqueado</Badge> : 
                          <Badge className="bg-green-500">Ativo</Badge>}
                       </td>
-                      <td className="p-3 text-slate-500">{u.lastSignedIn ? new Date(u.lastSignedIn).toLocaleString("pt-BR") : "Nunca"}</td>
+                      <td className="p-3 text-muted-foreground">{u.lastSignedIn ? new Date(u.lastSignedIn).toLocaleString("pt-BR") : "Nunca"}</td>
                       <td className="p-3">
                         <div className="flex gap-1">
                           <Button size="sm" variant="outline" onClick={() => { setSelectedUser(u); setConfirmAction("reset"); }} title="Redefinir Senha"><Key className="h-4 w-4" /></Button>
@@ -123,7 +123,7 @@ export default function SuperAdminUsers() {
                 {confirmAction === "activate" && "Ativar Usuário"}
               </DialogTitle>
             </DialogHeader>
-            <p className="text-slate-600">
+            <p className="text-muted-foreground">
               {confirmAction === "reset" && `A nova senha será gerada e enviada por notificação. Usuário: ${selectedUser?.email}`}
               {confirmAction === "block" && `O usuário ${selectedUser?.email} será bloqueado por 24 horas.`}
               {confirmAction === "unblock" && `O usuário ${selectedUser?.email} será desbloqueado imediatamente.`}

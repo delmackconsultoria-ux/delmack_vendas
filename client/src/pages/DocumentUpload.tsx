@@ -93,8 +93,8 @@ export default function DocumentUpload() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-background">
+      <header className="bg-background border-b border-border shadow-sm sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
           <Button
             variant="ghost"
@@ -106,8 +106,8 @@ export default function DocumentUpload() {
             Voltar
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Upload de Documentos</h1>
-            <p className="text-sm text-slate-600">
+            <h1 className="text-2xl font-bold text-foreground">Upload de Documentos</h1>
+            <p className="text-sm text-muted-foreground">
               Envie propostas e documentos assinados
             </p>
           </div>
@@ -146,12 +146,12 @@ export default function DocumentUpload() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Área de upload */}
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-blue-400 transition">
+            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-blue-400 transition">
               <Upload className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-              <p className="text-slate-900 font-semibold mb-2">
+              <p className="text-foreground font-semibold mb-2">
                 Clique para selecionar ou arraste arquivos
               </p>
-              <p className="text-sm text-slate-600 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 Máximo 10MB por arquivo
               </p>
               <input
@@ -180,20 +180,20 @@ export default function DocumentUpload() {
             {/* Lista de documentos */}
             {documents.length > 0 && (
               <div>
-                <h3 className="font-semibold text-slate-900 mb-4">
+                <h3 className="font-semibold text-foreground mb-4">
                   Documentos Enviados ({documents.length})
                 </h3>
                 <div className="space-y-3">
                   {documents.map((doc) => (
                     <div
                       key={doc.id}
-                      className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition"
+                      className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-background transition"
                     >
                       <div className="flex-1">
-                        <p className="font-medium text-slate-900">
+                        <p className="font-medium text-foreground">
                           {doc.name}
                         </p>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-muted-foreground">
                           {formatFileSize(doc.size)} • Enviado em{" "}
                           {doc.uploadedAt.toLocaleDateString("pt-BR")}
                         </p>
@@ -224,7 +224,7 @@ export default function DocumentUpload() {
             )}
 
             {documents.length === 0 && (
-              <div className="text-center py-8 text-slate-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>Nenhum documento enviado ainda</p>
               </div>
             )}

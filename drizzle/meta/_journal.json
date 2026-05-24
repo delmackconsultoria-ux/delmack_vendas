@@ -288,13 +288,6 @@
       "when": 1774150897854,
       "tag": "0040_confused_the_fury",
       "breakpoints": true
-    },
-    {
-      "idx": 41,
-      "version": "5",
-      "when": 1779144658650,
-      "tag": "0041_natural_hardball",
-      "breakpoints": true
     }
   ]
 }

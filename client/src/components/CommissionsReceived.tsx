@@ -126,10 +126,10 @@ export default function CommissionsReceived() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-slate-500" />
+              <DollarSign className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">{metrics.total}</p>
-                <p className="text-xs text-slate-500">Total de Comissões</p>
+                <p className="text-xs text-muted-foreground">Total de Comissões</p>
               </div>
             </div>
           </CardContent>
@@ -140,7 +140,7 @@ export default function CommissionsReceived() {
               <DollarSign className="h-5 w-5 text-green-500" />
               <div>
                 <p className="text-2xl font-bold text-green-600">{metrics.paid}</p>
-                <p className="text-xs text-slate-500">Comissões Pagas</p>
+                <p className="text-xs text-muted-foreground">Comissões Pagas</p>
               </div>
             </div>
           </CardContent>
@@ -151,7 +151,7 @@ export default function CommissionsReceived() {
               <DollarSign className="h-5 w-5 text-amber-500" />
               <div>
                 <p className="text-2xl font-bold text-amber-600">{metrics.pending}</p>
-                <p className="text-xs text-slate-500">Pendentes</p>
+                <p className="text-xs text-muted-foreground">Pendentes</p>
               </div>
             </div>
           </CardContent>
@@ -162,7 +162,7 @@ export default function CommissionsReceived() {
               <DollarSign className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-lg font-bold text-blue-600">{formatCurrency(metrics.totalReceived)}</p>
-                <p className="text-xs text-slate-500">Total Recebido</p>
+                <p className="text-xs text-muted-foreground">Total Recebido</p>
               </div>
             </div>
           </CardContent>
@@ -206,22 +206,22 @@ export default function CommissionsReceived() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-500">Carregando...</div>
+            <div className="text-center py-8 text-muted-foreground">Carregando...</div>
           ) : filteredCommissions.length === 0 ? (
-            <div className="text-center py-8 text-slate-500">Nenhuma comissão encontrada</div>
+            <div className="text-center py-8 text-muted-foreground">Nenhuma comissão encontrada</div>
           ) : (
             <div className="space-y-3">
               {filteredCommissions.map((sale: any) => (
-                <div key={sale.id} className="border rounded-lg p-4 hover:bg-slate-50 transition-colors">
+                <div key={sale.id} className="border rounded-lg p-4 hover:bg-background transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-slate-900">{sale.buyerName}</h3>
+                        <h3 className="font-semibold text-foreground">{sale.buyerName}</h3>
                         <Badge className={sale.hasPayment ? "bg-green-100 text-green-700 border-0" : "bg-amber-100 text-amber-700 border-0"}>
                           {sale.hasPayment ? "Paga" : "Pendente"}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-slate-600">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground">
                         <div>
                           <span className="text-slate-400">Comissão:</span> {formatCurrency(sale.totalCommission)}
                         </div>
@@ -278,7 +278,7 @@ export default function CommissionsReceived() {
               <DollarSign className="h-5 w-5" />
               Registrar Pagamento de Comissão
             </DialogTitle>
-            <p className="text-sm text-slate-500">Venda: {paymentDialog.saleBuyerName}</p>
+            <p className="text-sm text-muted-foreground">Venda: {paymentDialog.saleBuyerName}</p>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div>

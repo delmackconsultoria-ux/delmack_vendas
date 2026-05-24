@@ -436,6 +436,7 @@ export async function sendCommissionPaidNotification(data: {
   paymentMethod: string;
   bankName: string;
   proposalId: string;
+  allRecipients?: string[]; // Lista completa: todos os gerentes + financeiros + corretor
 }): Promise<boolean> {
   const referenceDisplay = data.propertyReference 
     ? `<div class="reference-badge">Ref. Properfy: ${data.propertyReference}</div>` 
@@ -521,8 +522,10 @@ export async function sendCommissionPaidNotification(data: {
     </center>
   `;
 
-  // Enviar para corretor + gerente + financeiro (apenas os envolvidos)
-  const recipients = [data.brokerEmail, data.managerEmail, data.financeEmail];
+  // Enviar para corretor + todos os gerentes + todos os financeiros
+  const recipients = (data.allRecipients && data.allRecipients.length > 0)
+    ? data.allRecipients
+    : [data.brokerEmail, data.managerEmail, data.financeEmail];
 
   return sendEmail({
     to: recipients,
@@ -1079,6 +1082,4 @@ export async function sendMonthlyReportNotification(data: {
     to: data.recipients,
     subject: `📊 Relatório Mensal: ${monthName} - ${data.companyName}`,
     html: getEmailTemplate(content),
-    text: `Relatório de vendas de ${monthName}. Total: ${data.totalSales} venda(s). Valor: R$ ${data.totalSalesValue.toFixed(2)}. Comissões: R$ ${data.totalCommissions.toFixed(2)}.`,
-  });
-}
+    text: `Relatório

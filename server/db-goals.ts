@@ -6,6 +6,7 @@ import { getDb } from "./db";
  * Mapeamento de nomes de indicadores (camelCase) para colunas do banco
  */
 const indicatorColumnMap: Record<string, keyof Goal> = {
+  "businessValue": "businessValue",
   "businessMonth": "businessMonth",
   "cancelledSales": "cancelledSales",
   "vsoRatio": "vsoRatio",
@@ -61,6 +62,7 @@ export async function getOrCreateGoals(managerId: string, companyId: string, yea
     managerId,
     companyId,
     year,
+    businessValue: null,
     businessMonth: null,
     cancelledSales: null,
     vsoRatio: null,
@@ -168,7 +170,4 @@ export async function getGoalById(goalId: string): Promise<Goal | null> {
     .select()
     .from(goals)
     .where(eq(goals.id, goalId))
-    .limit(1);
-
-  return result.length > 0 ? result[0] : null;
-}
+    

@@ -44,10 +44,10 @@ export default function ListingRejections() {
   // Apenas gerentes e admins podem acessar
   if (user.role !== "manager" && user.role !== "admin") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="border-0 shadow-lg">
           <CardContent className="pt-6">
-            <p className="text-slate-900 font-semibold mb-4">
+            <p className="text-foreground font-semibold mb-4">
               Acesso restrito a gerentes
             </p>
             <Button onClick={() => setLocation("/dashboard")}>Voltar</Button>
@@ -104,7 +104,7 @@ export default function ListingRejections() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
 
       <div className="container mx-auto px-4 py-8">
@@ -112,11 +112,11 @@ export default function ListingRejections() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <FileX className="h-8 w-8 text-orange-600" />
-            <h1 className="text-3xl font-bold text-slate-900">
+            <h1 className="text-3xl font-bold text-foreground">
               Baixas de Angariação
             </h1>
           </div>
-          <p className="text-slate-600">
+          <p className="text-muted-foreground">
             Relatório de imóveis recusados com motivos e estatísticas
           </p>
         </div>
@@ -175,23 +175,23 @@ export default function ListingRejections() {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
-            <p className="text-slate-600 mt-4">Carregando dados...</p>
+            <p className="text-muted-foreground mt-4">Carregando dados...</p>
           </div>
         ) : rejectionsData?.success && rejectionsData.rejections && rejectionsData.rejections.length > 0 ? (
           <>
             {/* KPI Card */}
             <Card className="mb-6 border-l-4 border-l-red-600">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <AlertCircle className="h-4 w-4" />
                   Total de Baixas
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-slate-900">
+                <div className="text-3xl font-bold text-foreground">
                   {rejectionsData.total || rejectionsData.rejections.length}
                 </div>
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Imóveis recusados no período
                 </p>
               </CardContent>
@@ -220,7 +220,7 @@ export default function ListingRejections() {
                           }}
                         />
                         <Legend />
-                        <Bar dataKey="count" name="Quantidade" fill="#f97316" />
+                        <Bar dataKey="count" name="Quantidade" fill="#1d4ed8" />
                       </BarChart>
                     </ResponsiveContainer>
                   </CardContent>
@@ -248,7 +248,7 @@ export default function ListingRejections() {
                           }}
                         />
                         <Legend />
-                        <Bar dataKey="count" name="Quantidade" fill="#3b82f6" />
+                        <Bar dataKey="count" name="Quantidade" fill="#0b0bb5" />
                       </BarChart>
                     </ResponsiveContainer>
                   </CardContent>
@@ -266,37 +266,37 @@ export default function ListingRejections() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">
                           Referência
                         </th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">
                           Endereço
                         </th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">
                           Corretor
                         </th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">
                           Motivo
                         </th>
-                        <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">
                           Data
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {rejectionsData.rejections.map((rejection) => (
-                        <tr key={rejection.id} className="border-b border-slate-100 hover:bg-slate-50">
-                          <td className="py-3 px-4 font-medium text-slate-900">
+                        <tr key={rejection.id} className="border-b border-slate-100 hover:bg-background">
+                          <td className="py-3 px-4 font-medium text-foreground">
                             {rejection.propertyReference}
                           </td>
-                          <td className="py-3 px-4 text-slate-600">
+                          <td className="py-3 px-4 text-muted-foreground">
                             <div className="flex items-start gap-2">
                               <MapPin className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
                               <span>{rejection.propertyAddress}</span>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-slate-600">
+                          <td className="py-3 px-4 text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <User className="h-4 w-4 text-slate-400" />
                               <span>{rejection.brokerName}</span>
@@ -307,7 +307,7 @@ export default function ListingRejections() {
                               {rejection.rejectionReason}
                             </Badge>
                           </td>
-                          <td className="py-3 px-4 text-slate-600">
+                          <td className="py-3 px-4 text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-slate-400" />
                               <span>{formatDate(rejection.rejectionDate)}</span>
@@ -325,7 +325,7 @@ export default function ListingRejections() {
           <Card>
             <CardContent className="py-12 text-center">
               <FileX className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 {rejectionsData?.error || "Nenhuma baixa encontrada para o período selecionado"}
               </p>
             </CardContent>

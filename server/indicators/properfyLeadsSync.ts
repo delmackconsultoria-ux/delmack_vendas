@@ -88,7 +88,7 @@ async function fetchLeadsFromPropertyfy(): Promise<any[]> {
   try {
     // Usar as credenciais do Properfy do ambiente
     const apiUrl = process.env.PROPERFY_API_URL || "https://api.properfy.com.br";
-    const apiToken = process.env.PROPERFY_API_TOKEN;
+    const apiToken = process.env.PROPERFY_API_KEY || process.env.PROPERFY_API_TOKEN;
     const email = process.env.PROPERFY_EMAIL;
     const password = process.env.PROPERFY_PASSWORD;
 

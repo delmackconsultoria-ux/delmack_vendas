@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, TrendingUp, Users, Target, Activity, AlertCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -22,8 +24,15 @@ export default function DashboardManager() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
+  const now = new Date();
+  const [periodMode, setPeriodMode] = useState<"anual" | "mensal">("anual");
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
+  const [selectedYear] = useState(now.getFullYear());
   // Buscar KPIs do dashboard
-  const { data: kpis, isLoading: isLoadingKPIs } = trpc.dashboard.getKPIs.useQuery();
+  const { data: kpis, isLoading: isLoadingKPIs } = trpc.dashboard.getKPIs.useQuery({
+    month: periodMode === "anual" ? 0 : selectedMonth,
+    year: selectedYear,
+  });
 
   if (!user) {
     return null;
@@ -50,15 +59,45 @@ export default function DashboardManager() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         {/* Main Content */}
         <div className="px-6 py-6 max-w-7xl mx-auto">
-          {/* Welcome Section */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">Painel de Gestão</h2>
-            <p className="text-slate-600 mt-1 text-sm">
-              Acompanhe a performance da sua equipe e evolução das vendas
-            </p>
+          {/* Welcome Section + Seletor de Período */}
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Painel de Gestão</h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Acompanhe a performance da sua equipe e evolução das vendas
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex rounded-lg border overflow-hidden">
+                <button
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${periodMode === "anual" ? "bg-primary text-white" : "bg-background text-muted-foreground hover:bg-muted"}`}
+                  onClick={() => setPeriodMode("anual")}
+                >
+                  Anual
+                </button>
+                <button
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${periodMode === "mensal" ? "bg-primary text-white" : "bg-background text-muted-foreground hover:bg-muted"}`}
+                  onClick={() => setPeriodMode("mensal")}
+                >
+                  Mensal
+                </button>
+              </div>
+              {periodMode === "mensal" && (
+                <Select value={String(selectedMonth)} onValueChange={(v) => setSelectedMonth(Number(v))}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"].map((m, i) => (
+                      <SelectItem key={i+1} value={String(i+1)}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
           </div>
 
           {/* Aviso de dados vazios - removido, agora mostra dados reais */}
@@ -68,7 +107,7 @@ export default function DashboardManager() {
             {/* VGV Mensal */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-purple-600" />
                   VGV Mensal
                 </CardTitle>
@@ -77,7 +116,7 @@ export default function DashboardManager() {
                 {isLoadingKPIs ? (
                   <p className="text-3xl font-bold text-slate-400">...</p>
                 ) : (
-                  <p className="text-3xl font-bold text-slate-900">
+                  <p className="text-3xl font-bold text-foreground">
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
@@ -86,14 +125,16 @@ export default function DashboardManager() {
                     }).format(kpis?.vgv || 0)}
                   </p>
                 )}
-                <p className="text-xs text-slate-600 mt-2">Este mês</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                </p>
               </CardContent>
             </Card>
 
             {/* Quantidade de Vendas */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-blue-600" />
                   Quantidade de Vendas
                 </CardTitle>
@@ -102,16 +143,18 @@ export default function DashboardManager() {
                 {isLoadingKPIs ? (
                   <p className="text-3xl font-bold text-slate-400">...</p>
                 ) : (
-                  <p className="text-3xl font-bold text-slate-900">{kpis?.salesCount || 0}</p>
+                  <p className="text-3xl font-bold text-foreground">{kpis?.salesCount || 0}</p>
                 )}
-                <p className="text-xs text-slate-600 mt-2">Este mês</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                </p>
               </CardContent>
             </Card>
 
             {/* Ticket Médio */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Target className="h-4 w-4 text-amber-600" />
                   Ticket Médio
                 </CardTitle>
@@ -120,7 +163,7 @@ export default function DashboardManager() {
                 {isLoadingKPIs ? (
                   <p className="text-3xl font-bold text-slate-400">...</p>
                 ) : (
-                  <p className="text-3xl font-bold text-slate-900">
+                  <p className="text-3xl font-bold text-foreground">
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
@@ -129,14 +172,16 @@ export default function DashboardManager() {
                     }).format(kpis?.averageTicket || 0)}
                   </p>
                 )}
-                <p className="text-xs text-slate-600 mt-2">Este mês</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                </p>
               </CardContent>
             </Card>
 
              {/* Comissões Recebidas */}
             <Card className="border-0 shadow-md hover:shadow-lg transition-all">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Activity className="h-4 w-4 text-green-600" />
                   Comissões Recebidas
                 </CardTitle>
@@ -145,7 +190,7 @@ export default function DashboardManager() {
                 {isLoadingKPIs ? (
                   <p className="text-3xl font-bold text-slate-400">...</p>
                 ) : (
-                  <p className="text-3xl font-bold text-slate-900">
+                  <p className="text-3xl font-bold text-foreground">
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
@@ -154,7 +199,9 @@ export default function DashboardManager() {
                     }).format(kpis?.receivedCommissions || 0)}
                   </p>
                 )}
-                <p className="text-xs text-slate-600 mt-2">Este mês</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {kpis?.isYearly ? `Acumulado ${kpis.activeYear}` : kpis?.activeMonth && kpis?.activeYear ? `${String(kpis.activeMonth).padStart(2,'0')}/${kpis.activeYear}` : 'Este ano'}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -181,8 +228,8 @@ export default function DashboardManager() {
                       <YAxis />
                       <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
                       <Legend />
-                      <Bar dataKey="comissoes" fill="#8b5cf6" name="Comissões" />
-                      <Bar dataKey="meta" fill="#d1d5db" name="Meta" />
+                      <Bar dataKey="comissoes" fill="#2563eb" name="Comissões" />
+                      <Bar dataKey="meta" fill="#f0f0f0" name="Meta" />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -210,100 +257,15 @@ export default function DashboardManager() {
                       <Line
                         type="monotone"
                         dataKey="vendas"
-                        stroke="#10b981"
+                        stroke="#3b82f6"
                         name="Vendas"
                         strokeWidth={2}
                       />
                       <Line
                         type="monotone"
                         dataKey="angariações"
-                        stroke="#60a5fa"
+                        stroke="#0b0bb5"
                         name="Angariações"
                         strokeWidth={2}
                       />
                       <Line
-                        type="monotone"
-                        dataKey="canceladas"
-                        stroke="#ef4444"
-                        name="Canceladas"
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-purple-600" />
-                  Gerenciar Equipe
-                </CardTitle>
-                <CardDescription>
-                  Visualize e gerencie seus corretores
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setLocation("/brokers")}
-                >
-                  Ir para Equipe
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
-                  Relatórios
-                </CardTitle>
-                <CardDescription>
-                  Análise detalhada de vendas
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setLocation("/reports")}
-                >
-                  Ver Relatórios
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-green-600" />
-                  Indicadores
-                </CardTitle>
-                <CardDescription>
-                  KPIs e métricas da equipe
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setLocation("/indicators")}
-                >
-                  Ver Indicadores
-                </Button>
-              </CardContent>
-            </Card>
-
-
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}

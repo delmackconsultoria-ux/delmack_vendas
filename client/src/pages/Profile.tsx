@@ -49,11 +49,11 @@ export default function Profile() {
   const roleLabels: Record<string, string> = { superadmin: "Super Administrador", manager: "Gerente", broker: "Corretor", finance: "Financeiro" };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="container py-6 max-w-2xl">
+      <main className="container py-6 max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
-          <a href="/" className="text-slate-600 hover:text-slate-900"><ArrowLeft className="h-5 w-5" /></a>
+          <a href="/" className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></a>
           <h1 className="text-2xl font-bold flex items-center gap-2"><User className="h-5 w-5" /> Meu Perfil</h1>
         </div>
 
@@ -62,21 +62,21 @@ export default function Profile() {
             <CardTitle>Informações da Conta</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-slate-500">Nome</label>
+                <label className="text-sm text-muted-foreground">Nome</label>
                 <p className="font-medium">{user?.name || "-"}</p>
               </div>
               <div>
-                <label className="text-sm text-slate-500">E-mail</label>
+                <label className="text-sm text-muted-foreground">E-mail</label>
                 <p className="font-medium">{user?.email}</p>
               </div>
               <div>
-                <label className="text-sm text-slate-500">Perfil</label>
+                <label className="text-sm text-muted-foreground">Perfil</label>
                 <p className="font-medium">{roleLabels[user?.role || ""] || user?.role}</p>
               </div>
               <div>
-                <label className="text-sm text-slate-500">Último acesso</label>
+                <label className="text-sm text-muted-foreground">Último acesso</label>
                 <p className="font-medium">{user?.lastSignedIn ? new Date(user.lastSignedIn).toLocaleString("pt-BR") : "-"}</p>
               </div>
             </div>

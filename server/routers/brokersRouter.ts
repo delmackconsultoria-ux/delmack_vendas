@@ -20,8 +20,8 @@ function generateStrongPassword(): string {
 export const brokersRouter = router({
   // Listar corretores da empresa do gerente
   list: protectedProcedure.query(async ({ ctx }) => {
-    // Permitir que gerentes, finance e viewers vejam os corretores
-    const allowedRoles = ["manager", "finance", "viewer"];
+    // Permitir que gerentes, finance, viewers e brokers vejam os corretores
+    const allowedRoles = ["manager", "finance", "viewer", "broker"];
     if (!allowedRoles.includes(ctx.user.role)) {
       throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
     }

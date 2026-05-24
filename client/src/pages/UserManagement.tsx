@@ -136,16 +136,16 @@ export default function UserManagement() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <AppHeader />
       <main className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Gestão de Usuários</h1>
-            <p className="text-slate-600">Gerencie os usuários da sua empresa</p>
+            <h1 className="text-2xl font-bold text-foreground">Gestão de Usuários</h1>
+            <p className="text-muted-foreground">Gerencie os usuários da sua empresa</p>
           </div>
           <div className="flex gap-2">
-            <a href="/template-usuarios.xlsx" download className="inline-flex items-center gap-2 px-4 py-2 border rounded-md text-sm hover:bg-slate-50">
+            <a href="/template-usuarios.xlsx" download className="inline-flex items-center gap-2 px-4 py-2 border rounded-md text-sm hover:bg-background">
               <Download className="h-4 w-4" /> Template
             </a>
             <Button onClick={() => setShowUploadModal(true)} variant="outline" className="gap-2">
@@ -164,7 +164,7 @@ export default function UserManagement() {
         <div className="grid grid-cols-3 gap-4 mb-6">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-500">Total de Usuários</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Total de Usuários</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{usersQuery.data?.length || 0}</div>
@@ -172,7 +172,7 @@ export default function UserManagement() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-500">Ativos</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Ativos</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
@@ -182,7 +182,7 @@ export default function UserManagement() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-500">Inativos</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Inativos</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
@@ -204,7 +204,7 @@ export default function UserManagement() {
             />
           </div>
           <select
-            className="px-4 py-2 border rounded-md bg-white"
+            className="px-4 py-2 border rounded-md bg-background"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "inactive")}
           >
@@ -218,20 +218,20 @@ export default function UserManagement() {
         <Card>
           <CardContent className="p-0">
             <table className="w-full">
-              <thead className="bg-slate-50 border-b">
+              <thead className="bg-background border-b">
                 <tr>
-                  <th className="text-left p-4 text-sm font-medium text-slate-600">Nome</th>
-                  <th className="text-left p-4 text-sm font-medium text-slate-600">Email</th>
-                  <th className="text-left p-4 text-sm font-medium text-slate-600">Perfil</th>
-                  <th className="text-left p-4 text-sm font-medium text-slate-600">Status</th>
-                  <th className="text-right p-4 text-sm font-medium text-slate-600">Ações</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Nome</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Email</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Perfil</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                  <th className="text-right p-4 text-sm font-medium text-muted-foreground">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.map((u: any) => (
-                  <tr key={u.id} className="border-b hover:bg-slate-50">
+                  <tr key={u.id} className="border-b hover:bg-background">
                     <td className="p-4 font-medium">{u.name}</td>
-                    <td className="p-4 text-slate-600">{u.email}</td>
+                    <td className="p-4 text-muted-foreground">{u.email}</td>
                     <td className="p-4">
                       <Badge variant="outline">{u.role}</Badge>
                     </td>
@@ -316,7 +316,7 @@ export default function UserManagement() {
             <CardContent className="space-y-4">
               <Input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} />
               {uploadedUsers.length > 0 && (
-                <div className="bg-slate-50 p-3 rounded text-sm">
+                <div className="bg-background p-3 rounded text-sm">
                   {uploadedUsers.length} usuários prontos para importar
                 </div>
               )}

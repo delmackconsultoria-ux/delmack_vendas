@@ -1,6 +1,6 @@
 import { getDb } from "../db";
 import { sales, commissions } from "../../drizzle/schema";
-import { eq, and, gte, lte, sql, ne } from "drizzle-orm";
+import { eq, and, gte, lte, sql, ne, notInArray } from "drizzle-orm";
 
 /**
  * Negócios no mês (valor)
@@ -24,7 +24,8 @@ export async function calculateSalesValueMonth(
       and(
         eq(sales.companyId, companyId),
         gte(sales.saleDate, startDate),
-        lte(sales.saleDate, endDate)
+        lte(sales.saleDate, endDate),
+        notInArray(sales.status, ['draft', 'cancelled'])
       )
     );
 
@@ -53,7 +54,8 @@ export async function calculateSalesCountMonth(
       and(
         eq(sales.companyId, companyId),
         gte(sales.saleDate, startDate),
-        lte(sales.saleDate, endDate)
+        lte(sales.saleDate, endDate),
+        notInArray(sales.status, ['draft', 'cancelled'])
       )
     );
 
@@ -118,7 +120,7 @@ export async function calculateCommissionReceived(
 
 /**
  * Comissão Vendida
- * Soma das comissões geradas pelas vendas registradas no mês
+ * Soma das comissões geradas pelas vendas registradas no mês (exceto draft e cancelled)
  */
 export async function calculateCommissionSold(
   companyId: string,
@@ -138,7 +140,8 @@ export async function calculateCommissionSold(
       and(
         eq(sales.companyId, companyId),
         gte(sales.saleDate, startDate),
-        lte(sales.saleDate, endDate)
+        lte(sales.saleDate, endDate),
+        notInArray(sales.status, ['draft', 'cancelled'])
       )
     );
 
@@ -147,7 +150,7 @@ export async function calculateCommissionSold(
 
 /**
  * Comissão Pendentes Final do mês
- * Soma das comissões com status = 'pending' geradas pelas vendas do mês
+ * Soma das comissões com status = 'pending' geradas pelas vendas do mês (exceto draft)
  */
 export async function calculateCommissionPending(
   companyId: string,
@@ -168,7 +171,8 @@ export async function calculateCommissionPending(
         eq(sales.companyId, companyId),
         eq(commissions.status, sql`'pending'`),
         gte(sales.saleDate, startDate),
-        lte(sales.saleDate, endDate)
+        lte(sales.saleDate, endDate),
+        ne(sales.status, 'draft')
       )
     );
 
@@ -211,7 +215,8 @@ export async function calculateSalesAbove1M(
         eq(sales.companyId, companyId),
         sql`CAST(${sales.saleValue} AS DECIMAL) >= 1000000`,
         sql`${sales.saleDate} >= ${startDate}`,
-        sql`${sales.saleDate} <= ${endDate}`
+        sql`${sales.saleDate} <= ${endDate}`,
+        notInArray(sales.status, ['draft', 'cancelled'])
       )
     );
 
@@ -265,7 +270,7 @@ export async function calculatePercentCancelledPending(
   // Contar vendas canceladas no mês
   const cancelled = await calculateCancelledSalesCount(companyId, startDate, endDate);
 
-  // Contar vendas pendentes (status ≠ 'commission_paid')
+  // Contar vendas pendentes (status ≠ 'commission_paid' e ≠ 'draft')
   const pendingResult = await db
     .select({ count: sql<number>`COUNT(${sales.id})` })
     .from(sales)
@@ -273,6 +278,7 @@ export async function calculatePercentCancelledPending(
       and(
         eq(sales.companyId, companyId),
         ne(sales.status, sql`'commission_paid'`),
+        ne(sales.status, 'draft'),
         gte(sales.saleDate, startDate),
         lte(sales.saleDate, endDate)
       )
@@ -431,17 +437,4 @@ export async function getSalesForYear(
 
   // Adicionar filtro de tipo de negócio se especificado
   if (businessType !== 'todos') {
-    conditions.push(eq(sales.businessType, businessType));
-  }
-
-  const result = await db
-    .select()
-    .from(sales)
-    .where(and(...conditions));
-
-  return {
-    success: true,
-    sales: result || [],
-    count: result?.length || 0,
-  };
-}
+    conditions.pus

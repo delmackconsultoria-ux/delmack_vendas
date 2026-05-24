@@ -19,6 +19,7 @@ import { rankingRouter } from "./routers/rankingRouter";
 import { financeRouter } from "./routers/financeRouter";
 import { uploadInvoiceRouter } from "./routers/uploadInvoiceRouter";
 import { managerUsersRouter } from "./routers/managerUsersRouter";
+import { backupRouter } from "./routers/backupRouter";
 import { router } from "./_core/trpc";
 
 export const appRouter = router({
@@ -43,6 +44,7 @@ export const appRouter = router({
   finance: financeRouter,
   uploadInvoice: uploadInvoiceRouter,
   managerUsers: managerUsersRouter,
+  backup: backupRouter,
   // TODO: add feature routers here
 });
 

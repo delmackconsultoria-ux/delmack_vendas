@@ -75,7 +75,7 @@ export default function Analytics() {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header Padrão */}
       <AppHeader />
 
@@ -83,8 +83,8 @@ export default function Analytics() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Welcome Section */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-900">Análise de Dados</h2>
-          <p className="text-slate-600 mt-1 text-sm">
+          <h2 className="text-2xl font-bold text-foreground">Análise de Dados</h2>
+          <p className="text-muted-foreground mt-1 text-sm">
             Visualize gráficos detalhados de vendas, comissões e performance da equipe
           </p>
         </div>
@@ -103,56 +103,56 @@ export default function Analytics() {
           {/* Team Sales */}
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-blue-600" />
                 Vendas da Equipe
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "55" : "0"}</p>
-              <p className="text-xs text-slate-600 mt-2">Este mês</p>
+              <p className="text-3xl font-bold text-foreground">{isTestCompany ? "55" : "0"}</p>
+              <p className="text-xs text-muted-foreground mt-2">Este mês</p>
             </CardContent>
           </Card>
 
           {/* Active Brokers */}
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4 text-green-600" />
                 Corretores Ativos
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "3" : "0"}</p>
-              <p className="text-xs text-slate-600 mt-2">Membros da equipe</p>
+              <p className="text-3xl font-bold text-foreground">{isTestCompany ? "3" : "0"}</p>
+              <p className="text-xs text-muted-foreground mt-2">Membros da equipe</p>
             </CardContent>
           </Card>
 
           {/* Total Commission */}
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Activity className="h-4 w-4 text-amber-600" />
                 Comissões Geradas
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "R$ 145k" : "R$ 0"}</p>
-              <p className="text-xs text-slate-600 mt-2">Este mês</p>
+              <p className="text-3xl font-bold text-foreground">{isTestCompany ? "R$ 145k" : "R$ 0"}</p>
+              <p className="text-xs text-muted-foreground mt-2">Este mês</p>
             </CardContent>
           </Card>
 
           {/* Goal Achievement */}
           <Card className="border-0 shadow-md hover:shadow-lg transition-all">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Target className="h-4 w-4 text-purple-600" />
                 Meta Realizada
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-slate-900">{isTestCompany ? "92%" : "0%"}</p>
-              <p className="text-xs text-slate-600 mt-2">Do objetivo mensal</p>
+              <p className="text-3xl font-bold text-foreground">{isTestCompany ? "92%" : "0%"}</p>
+              <p className="text-xs text-muted-foreground mt-2">Do objetivo mensal</p>
             </CardContent>
           </Card>
         </div>
@@ -179,8 +179,8 @@ export default function Analytics() {
                   <YAxis />
                   <Tooltip formatter={(value: any) => `R$ ${(value / 1000).toFixed(0)}k`} />
                   <Legend />
-                  <Bar dataKey="comissoes" fill="#3b82f6" name="Comissões" />
-                  <Bar dataKey="meta" fill="#d1d5db" name="Meta" />
+                  <Bar dataKey="comissoes" fill="#0b0bb5" name="Comissões" />
+                  <Bar dataKey="meta" fill="#f0f0f0" name="Meta" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -206,8 +206,8 @@ export default function Analytics() {
                   <Tooltip />
                   <Legend />
                   <Line type="monotone" dataKey="vendas" stroke="#3b82f6" strokeWidth={2} name="Vendas" />
-                  <Line type="monotone" dataKey="angariações" stroke="#10b981" strokeWidth={2} name="Angariações" />
-                  <Line type="monotone" dataKey="canceladas" stroke="#ef4444" strokeWidth={2} name="Canceladas" />
+                  <Line type="monotone" dataKey="angariações" stroke="#3b82f6" strokeWidth={2} name="Angariações" />
+                  <Line type="monotone" dataKey="canceladas" stroke="#dc2626" strokeWidth={2} name="Canceladas" />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -234,7 +234,7 @@ export default function Analytics() {
                     labelLine={false}
                     label={({ status, value }) => `${status}: R$ ${(value / 1000).toFixed(0)}k`}
                     outerRadius={80}
-                    fill="#8884d8"
+                    fill="#0b0bb5"
                     dataKey="value"
                   >
                     {commissionsByStatus.map((entry, index) => (

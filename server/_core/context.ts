@@ -14,35 +14,34 @@ export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
   let user: UserWithCompany | null = null;
-
   try {
     // Parse cookies from request
     const cookieHeader = opts.req.headers.cookie;
     console.log("[Context] Cookie header:", cookieHeader ? "EXISTS" : "MISSING");
     console.log("[Context] Cookie header value:", cookieHeader);
-
+    
     if (!cookieHeader) {
       console.log("[Context] No cookie header, returning null user");
       return { req: opts.req, res: opts.res, user: null };
     }
-
+    
     const cookies = parseCookieHeader(cookieHeader);
     console.log("[Context] Parsed cookies:", Object.keys(cookies));
     console.log("[Context] Looking for:", COOKIE_NAME);
-
+    
     const sessionCookie = cookies[COOKIE_NAME];
     console.log("[Context] Session cookie found:", sessionCookie ? "YES" : "NO");
-
+    
     if (!sessionCookie) {
       console.log("[Context] No session cookie, returning null user");
       return { req: opts.req, res: opts.res, user: null };
     }
-
+    
     // Parse session data from cookie
     try {
       const decodedCookie = decodeURIComponent(sessionCookie);
       console.log("[Context] Decoded cookie:", decodedCookie.substring(0, 100));
-
+      
       // Verificar se é um JWT (começa com eyJ)
       if (decodedCookie.startsWith('eyJ')) {
         // JWT token - decodificar payload
@@ -77,8 +76,8 @@ export async function createContext(
     console.warn("[Auth] Error in createContext:", error);
     user = null;
   }
-
-  console.log("[Context] Returning user:", user ? (user as any).email : "null");
+  
+  console.log("[Context] Returning user:", user ? user.email : "null");
   return {
     req: opts.req,
     res: opts.res,

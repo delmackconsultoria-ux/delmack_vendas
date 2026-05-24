@@ -187,7 +187,7 @@ export default function CommissionsCalendar() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <AppHeader />
         <div className="flex items-center justify-center h-96">
           <Loader className="h-8 w-8 animate-spin text-blue-600" />
@@ -200,17 +200,17 @@ export default function CommissionsCalendar() {
   const monthName = selectedMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <AppHeader />
 
       <main className="container mx-auto px-4 py-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <CalendarIcon className="h-6 w-6" />
               Calendário de Comissões
             </h1>
-            <p className="text-slate-600 mt-1">Gerencie pagamentos de comissões pendentes</p>
+            <p className="text-muted-foreground mt-1">Gerencie pagamentos de comissões pendentes</p>
           </div>
           <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "list" | "calendar")} className="w-auto">
             <TabsList>
@@ -290,40 +290,40 @@ export default function CommissionsCalendar() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Total Pendente</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pendente</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-bold text-foreground">
                 {pending.length}
               </div>
-              <p className="text-xs text-slate-500 mt-1">vendas aguardando pagamento</p>
+              <p className="text-xs text-muted-foreground mt-1">vendas aguardando pagamento</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Valor Total</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Valor Total</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-bold text-foreground">
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
                   pending.reduce((sum: number, c: PendingCommission) => sum + c.commissionAmount, 0)
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-1">em comissões pendentes</p>
+              <p className="text-xs text-muted-foreground mt-1">em comissões pendentes</p>
             </CardContent>
           </Card>
 
           <Link href="/paid-commissions">
             <Card className="cursor-pointer hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-600">Este Mês</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Este Mês</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
+                <div className="text-2xl font-bold text-foreground">
                   {getCommissionsForDay.length || 0}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">pagamentos previstos</p>
+                <p className="text-xs text-muted-foreground mt-1">pagamentos previstos</p>
               </CardContent>
             </Card>
           </Link>
@@ -334,7 +334,7 @@ export default function CommissionsCalendar() {
           <div className="space-y-6">
             {Object.keys(groupedByMonth).length === 0 ? (
               <Card>
-                <CardContent className="py-12 text-center text-slate-500">
+                <CardContent className="py-12 text-center text-muted-foreground">
                   Nenhuma comissão pendente
                 </CardContent>
               </Card>
@@ -349,11 +349,11 @@ export default function CommissionsCalendar() {
                       {commissions.map((commission: PendingCommission) => (
                         <div
                           key={commission.saleId}
-                          className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200"
+                          className="flex items-center justify-between p-4 bg-background rounded-lg border border-border"
                         >
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold text-slate-900">
+                              <span className="font-semibold text-foreground">
                                 Comprador: {commission.buyerName}
                               </span>
                               {commission.propertyReference && (
@@ -362,10 +362,10 @@ export default function CommissionsCalendar() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-sm text-slate-600">
+                            <div className="text-sm text-muted-foreground">
                               Corretor: {commission.brokerName}
                             </div>
-                            <div className="text-sm text-slate-500">
+                            <div className="text-sm text-muted-foreground">
                               Venda: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.saleValue)} • 
                               Comissão: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commission.commissionAmount)}
                             </div>
@@ -405,7 +405,7 @@ export default function CommissionsCalendar() {
               <div className="grid grid-cols-7 gap-2">
                 {/* Cabeçalho dos dias da semana */}
                 {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
-                  <div key={day} className="text-center font-semibold text-sm text-slate-600 py-2">
+                  <div key={day} className="text-center font-semibold text-sm text-muted-foreground py-2">
                     {day}
                   </div>
                 ))}
@@ -424,11 +424,11 @@ export default function CommissionsCalendar() {
                       key={day}
                       className={`
                         aspect-square border rounded-lg p-2 
-                        ${hasCommissions ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'}
+                        ${hasCommissions ? 'bg-blue-50 border-blue-200' : 'bg-background border-border'}
                         hover:border-blue-400 transition-colors cursor-pointer
                       `}
                     >
-                      <div className="text-sm font-medium text-slate-900 mb-1">{day}</div>
+                      <div className="text-sm font-medium text-foreground mb-1">{day}</div>
                       {hasCommissions && (
                         <div className="space-y-1">
                           {dayCommissions.slice(0, 2).map((c, i) => (
@@ -466,7 +466,7 @@ export default function CommissionsCalendar() {
           {selectedSale && (
             <div className="space-y-4">
               {/* Informações da Venda */}
-              <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+              <div className="bg-background p-4 rounded-lg space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">Comprador:</span>
                   <span>{selectedSale.buyerName}</span>
@@ -571,7 +571,7 @@ export default function CommissionsCalendar() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Formatos aceitos: PDF, JPG, PNG
                 </p>
               </div>

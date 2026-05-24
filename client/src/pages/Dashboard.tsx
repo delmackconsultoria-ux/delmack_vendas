@@ -25,7 +25,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header Padrão */}
       <AppHeader />
 
@@ -33,8 +33,8 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900">Bem-vindo ao Dashboard</h2>
-          <p className="text-slate-600 mt-2">
+          <h2 className="text-3xl font-bold text-foreground">Bem-vindo ao Dashboard</h2>
+          <p className="text-muted-foreground mt-2">
             Aqui você pode gerenciar suas vendas, comissões e visualizar insights sobre o negócio.
           </p>
         </div>
@@ -44,56 +44,56 @@ export default function Dashboard() {
           {/* Total Sales */}
           <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <FileText className="h-4 w-4 text-slate-400" />
                 Total de Vendas
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-slate-900">0</p>
-              <p className="text-xs text-slate-600 mt-1">Este mês</p>
+              <p className="text-2xl font-bold text-foreground">0</p>
+              <p className="text-xs text-muted-foreground mt-1">Este mês</p>
             </CardContent>
           </Card>
 
           {/* Total Commission */}
           <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-slate-400" />
                 Comissões Vendidas
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-slate-900">R$ 0,00</p>
-              <p className="text-xs text-slate-600 mt-1">Este mês</p>
+              <p className="text-2xl font-bold text-foreground">R$ 0,00</p>
+              <p className="text-xs text-muted-foreground mt-1">Este mês</p>
             </CardContent>
           </Card>
 
           {/* Commissions Received */}
           <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-slate-400" />
                 Comissões Recebidas
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-slate-900">R$ 0,00</p>
-              <p className="text-xs text-slate-600 mt-1">Este mês</p>
+              <p className="text-2xl font-bold text-foreground">R$ 0,00</p>
+              <p className="text-xs text-muted-foreground mt-1">Este mês</p>
             </CardContent>
           </Card>
 
           {/* Active Brokers */}
           <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4 text-slate-400" />
                 Corretores Ativos
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-slate-900">0</p>
-              <p className="text-xs text-slate-600 mt-1">Na empresa</p>
+              <p className="text-2xl font-bold text-foreground">0</p>
+              <p className="text-xs text-muted-foreground mt-1">Na empresa</p>
             </CardContent>
           </Card>
         </div>
@@ -103,7 +103,7 @@ export default function Dashboard() {
           <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-slate-600" />
+                <FileText className="h-5 w-5 text-muted-foreground" />
                 Nova Venda
               </CardTitle>
               <CardDescription>
@@ -123,7 +123,7 @@ export default function Dashboard() {
           <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-slate-600" />
+                <BarChart3 className="h-5 w-5 text-muted-foreground" />
                 Minhas Vendas
               </CardTitle>
               <CardDescription>
@@ -151,7 +151,7 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>✓ Integração com Properfy para imóveis da Baggio</li>
               <li>✓ Cálculo automático de comissões</li>
               <li>✓ Dashboards com insights detalhados</li>

@@ -98,7 +98,7 @@ export default function ManagerUsers() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600">Acesso Negado</h1>
-            <p className="text-gray-600 mt-2">Apenas gerentes podem acessar esta página.</p>
+            <p className="text-muted-foreground mt-2">Apenas gerentes podem acessar esta página.</p>
           </div>
         </div>
       </div>
@@ -106,15 +106,15 @@ export default function ManagerUsers() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
       
       <div className="flex-1 p-6">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Gerenciamento de Usuários</h1>
-            <p className="text-gray-600 mt-2">Crie e gerencie corretores e usuários financeiros da sua equipe</p>
+            <h1 className="text-3xl font-bold text-foreground">Gerenciamento de Usuários</h1>
+            <p className="text-muted-foreground mt-2">Crie e gerencie corretores e usuários financeiros da sua equipe</p>
           </div>
 
           {/* Create User Dialog */}
@@ -134,7 +134,7 @@ export default function ManagerUsers() {
               </DialogHeader>
               <form onSubmit={handleCreateUser} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Nome Completo
                   </label>
                   <Input
@@ -146,7 +146,7 @@ export default function ManagerUsers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Email
                   </label>
                   <Input
@@ -158,7 +158,7 @@ export default function ManagerUsers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Perfil
                   </label>
                   <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
@@ -189,7 +189,7 @@ export default function ManagerUsers() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   Tem certeza que deseja redefinir a senha deste usuário? Uma nova senha será gerada e enviada automaticamente.
                 </p>
                 <div className="flex gap-3">
@@ -223,13 +223,13 @@ export default function ManagerUsers() {
             {isLoading ? (
               <Card>
                 <CardContent className="pt-6">
-                  <p className="text-center text-gray-500">Carregando usuários...</p>
+                  <p className="text-center text-muted-foreground">Carregando usuários...</p>
                 </CardContent>
               </Card>
             ) : teamUsers.length === 0 ? (
               <Card>
                 <CardContent className="pt-6">
-                  <p className="text-center text-gray-500">Nenhum usuário na sua equipe ainda.</p>
+                  <p className="text-center text-muted-foreground">Nenhum usuário na sua equipe ainda.</p>
                 </CardContent>
               </Card>
             ) : (
@@ -242,12 +242,12 @@ export default function ManagerUsers() {
                           <Shield className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">{u.name}</h3>
+                          <h3 className="font-semibold text-foreground">{u.name}</h3>
                           <div className="flex items-center gap-2 mt-1">
-                            <Mail className="w-4 h-4 text-gray-400" />
-                            <p className="text-sm text-gray-600">{u.email}</p>
+                            <Mail className="w-4 h-4 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">{u.email}</p>
                           </div>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-sm text-muted-foreground mt-1">
                             Perfil: <span className="font-medium">{getRoleLabel(u.role)}</span>
                           </p>
                         </div>

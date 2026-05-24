@@ -17,7 +17,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-  draft: { label: "Rascunho", color: "text-slate-600", bgColor: "bg-slate-100" },
+  draft: { label: "Rascunho", color: "text-muted-foreground", bgColor: "bg-muted" },
   pending: { label: "Pendente", color: "text-amber-600", bgColor: "bg-amber-100" },
   sale: { label: "Venda", color: "text-blue-600", bgColor: "bg-blue-100" },
   manager_review: { label: "Em análise (Gerente)", color: "text-purple-600", bgColor: "bg-purple-100" },
@@ -60,29 +60,31 @@ export default function ProposalManagement() {
   // Métricas (sempre do mês atual, independente dos filtros)
   const metrics = useMemo(() => {
     const currentSales = salesData?.sales || [];
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1; // 1-12
-    const currentYear = now.getFullYear();
     
-    // Filtrar apenas vendas do mês atual
-    const currentMonthSales = currentSales.filter((s: any) => {
+    // Usar o filtro de mês/ano selecionado (ou todos se "all")
+    const baseSales = currentSales.filter((s: any) => {
+      if (selectedMonth === "all" && selectedYear === "all") return true;
       const saleDate = s.saleDate ? new Date(s.saleDate) : null;
       if (!saleDate) return false;
-      return saleDate.getMonth() + 1 === currentMonth && saleDate.getFullYear() === currentYear;
+      const saleMonth = saleDate.getMonth() + 1;
+      const saleYear = saleDate.getFullYear();
+      const matchesMonth = selectedMonth === "all" || saleMonth === parseInt(selectedMonth);
+      const matchesYear = selectedYear === "all" || saleYear === parseInt(selectedYear);
+      return matchesMonth && matchesYear;
     });
     
-    if (currentMonthSales.length === 0) {
+    if (baseSales.length === 0) {
       return { total: 0, sales: 0, approved: 0, cancelled: 0, pending: 0 };
     }
     
-    const total = currentMonthSales.length;
-    const salesCount = currentMonthSales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length;
-    const approved = currentMonthSales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length;
-    const cancelled = currentMonthSales.filter((s: any) => s.status === "cancelled").length;
-    const pending = currentMonthSales.filter((s: any) => ["draft", "pending", "sale", "manager_review", "finance_review"].includes(s.status)).length;
+    const total = baseSales.filter((s: any) => s.status !== 'draft').length;
+    const salesCount = baseSales.filter((s: any) => ["sale", "manager_review", "finance_review", "commission_paid"].includes(s.status)).length;
+    const approved = baseSales.filter((s: any) => ["finance_review", "commission_paid"].includes(s.status)).length;
+    const cancelled = baseSales.filter((s: any) => s.status === "cancelled").length;
+    const pending = baseSales.filter((s: any) => ["draft", "pending", "sale", "manager_review", "finance_review"].includes(s.status)).length;
     
     return { total, sales: salesCount, approved, cancelled, pending };
-  }, [salesData]);
+  }, [salesData, selectedMonth, selectedYear]);
 
   const filteredSales = useMemo(() => {
     const currentSales = salesData?.sales || [];
@@ -177,7 +179,6 @@ export default function ProposalManagement() {
       if (currentStatus === "pending") return ["sale", "cancelled"];
       if (currentStatus === "sale") return ["manager_review", "cancelled"];
       if (currentStatus === "manager_review") return ["finance_review", "cancelled"];
-      if (currentStatus === "commission_paid") return ["finance_review"]; // Reverter pagamento
       return [];
     }
     if (user?.role === "finance") {
@@ -188,17 +189,17 @@ export default function ProposalManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header Padrão */}
       <AppHeader />
       
       {/* Título da Página */}
-      <div className="bg-white">
+      <div className="bg-background">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Comissões</h1>
-              <p className="text-sm text-slate-500 mt-1">
+              <h1 className="text-2xl font-bold text-foreground">Comissões</h1>
+              <p className="text-sm text-muted-foreground mt-1">
                 {user?.role === "broker" ? "Suas comissões a receber" : "Gerenciamento de comissões"}
               </p>
             </div>
@@ -226,7 +227,7 @@ export default function ProposalManagement() {
                     <FileText className="h-6 w-6 text-slate-400" />
                     <div className="flex-1">
                       <p className="text-2xl font-bold">{metrics.total}</p>
-                      <p className="text-xs text-slate-500">Total de Vendas</p>
+                      <p className="text-xs text-muted-foreground">Total de Vendas</p>
                     </div>
                   </div>
                 </CardContent>
@@ -237,7 +238,7 @@ export default function ProposalManagement() {
                     <CheckCircle className="h-6 w-6 text-green-500" />
                     <div className="flex-1">
                       <p className="text-2xl font-bold text-green-600">{metrics.approved}</p>
-                      <p className="text-xs text-slate-500">Aprovadas</p>
+                      <p className="text-xs text-muted-foreground">Aprovadas</p>
                     </div>
                   </div>
                 </CardContent>
@@ -248,7 +249,7 @@ export default function ProposalManagement() {
                     <XCircle className="h-6 w-6 text-red-500" />
                     <div className="flex-1">
                       <p className="text-2xl font-bold text-red-600">{metrics.cancelled}</p>
-                      <p className="text-xs text-slate-500">Canceladas</p>
+                      <p className="text-xs text-muted-foreground">Canceladas</p>
                 </div>
               </div>
             </CardContent>
@@ -259,7 +260,7 @@ export default function ProposalManagement() {
                 <AlertCircle className="h-5 w-5 text-amber-500" />
                 <div>
                   <p className="text-2xl font-bold text-amber-600">{metrics.pending}</p>
-                  <p className="text-xs text-slate-500">Pendentes</p>
+                  <p className="text-xs text-muted-foreground">Pendentes</p>
                 </div>
               </div>
             </CardContent>
@@ -311,7 +312,7 @@ export default function ProposalManagement() {
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
+                className="px-2 py-1 text-sm border border-border rounded bg-background focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
               >
                 <option value="all">Todos os meses</option>
                 <option value="1">Janeiro</option>
@@ -332,7 +333,7 @@ export default function ProposalManagement() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-2 py-1 text-sm border border-slate-200 rounded bg-white focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
+                className="px-2 py-1 text-sm border border-border rounded bg-background focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
               >
                 <option value="all">Todos os anos</option>
                 <option value="2026">2026</option>
@@ -351,34 +352,29 @@ export default function ProposalManagement() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center pt-24 text-slate-500">Carregando...</div>
+              <div className="text-center pt-24 text-muted-foreground">Carregando...</div>
             ) : filteredSales.length === 0 ? (
-              <div className="text-center pt-24 text-slate-500">Nenhuma proposta encontrada</div>
+              <div className="text-center pt-24 text-muted-foreground">Nenhuma proposta encontrada</div>
             ) : (
               <div className="space-y-3">
                 {filteredSales.map((sale: any) => {
                   const statusConfig = STATUS_CONFIG[sale.status] || STATUS_CONFIG.pending;
                   return (
-                    <div key={sale.id} className={`border rounded-lg p-4 hover:bg-slate-50 transition-colors ${sale.isHistorical ? 'bg-amber-50/30 border-amber-200' : ''}`}>
+                    <div key={sale.id} className={`border rounded-lg p-4 hover:bg-background transition-colors ${sale.isHistorical ? 'bg-amber-50/30 border-amber-200' : ''}`}>
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-slate-900">
-                              {sale.propertyAddress || sale.propertyReference || sale.buyerName || "-"}
-                            </h3>
-                            {sale.propertyReference && (
-                              <span className="text-xs text-slate-400 font-mono">Ref: {sale.propertyReference}</span>
-                            )}
+                            <h3 className="font-semibold text-foreground">{sale.buyerName}</h3>
                             <Badge className={`${statusConfig.bgColor} ${statusConfig.color} border-0`}>
                               {statusConfig.label}
                             </Badge>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-slate-600">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground">
                             <div>
                               <span className="text-slate-400">Valor:</span> {formatCurrency(sale.saleValue)}
                             </div>
                             <div>
-                              <span className="text-slate-400">Comprador:</span> {sale.buyerName || "-"}
+                              <span className="text-slate-400">Ref:</span> {sale.propertyId?.slice(0, 8) || "-"}
                             </div>
                             <div>
                               <span className="text-slate-400">Data:</span> {sale.createdAt ? new Date(sale.createdAt).toLocaleDateString("pt-BR") : "-"}
@@ -469,7 +465,7 @@ export default function ProposalManagement() {
                 onChange={(e) => setStatusComment(e.target.value)}
                 rows={3}
               />
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 O comentário será registrado com seu nome e horário
               </p>
             </div>
@@ -479,11 +475,4 @@ export default function ProposalManagement() {
               Cancelar
             </Button>
             <Button onClick={handleStatusChange} disabled={!newStatus || updateStatusMutation.isPending}>
-              {updateStatusMutation.isPending ? "Salvando..." : "Confirmar"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
+              {u

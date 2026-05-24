@@ -9,7 +9,7 @@ import * as manualDataHelper from "../indicators/manualDataHelper";
 import * as auditLogHelper from "../indicators/auditLogHelper";
 import { syncProperfyCards } from "../services/properfyCardsSyncService";
 import { getDb } from "../db";
-import { indicatorGoals } from "../../drizzle/schema";
+import { indicatorGoals, monthlyIndicators } from "../../drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { TRPCError } from "@trpc/server";
@@ -184,6 +184,62 @@ export const indicatorsRouter = router({
           month
         );
 
+        // Buscar dados históricos da tabela monthlyIndicators
+        // SE existirem dados históricos importados, eles têm PRIORIDADE sobre os cálculos dinâmicos
+        // NOTA: Usando SQL raw pois o schema Drizzle de monthlyIndicators usa month varchar (legado)
+        // mas a tabela real no banco tem year int e month int com todos os campos de indicadores
+        const db2 = await getDb();
+        let historicalData: any = null;
+        if (db2) {
+          const rows = await db2.execute(
+            sql`SELECT * FROM \`monthlyIndicators\` WHERE \`companyId\` = ${companyId} AND \`year\` = ${year} AND \`month\` = ${month} LIMIT 1`
+          );
+          const rowsArray = rows[0] as any[];
+          if (rowsArray && rowsArray.length > 0) historicalData = rowsArray[0];
+        }
+
+        // Se há dados históricos importados, usá-los como fonte primária para TODOS os campos
+        if (historicalData) {
+          return {
+            isHistorical: true,
+            period: `${MONTH_NAMES[month - 1]}/${year}`,
+            negociosValor: Number(historicalData.negociosValor) || 0,
+            negociosUnidades: historicalData.negociosUnidades || 0,
+            vendidosCancelados: historicalData.vendidosCancelados || 0,
+            vsoVendaOferta: Number(historicalData.vsoVendaOferta) || 0,
+            comissaoRecebida: Number(historicalData.comissaoRecebida) || 0,
+            comissaoVendida: Number(historicalData.comissaoVendida) || 0,
+            comissaoPendente: Number(historicalData.comissaoPendente) || 0,
+            percentualComissaoVendida: Number(historicalData.percentualComissaoVendida) || 0,
+            negociosAcima1M: historicalData.negociosAcima1M || 0,
+            prazoMedioRecebimento: historicalData.prazoMedioRecebimento || 0,
+            percentualCanceladaPendente: Number(historicalData.percentualCanceladaPendente) || 0,
+            valorMedioImovel: Number(historicalData.valorMedioImovel) || 0,
+            negociosRede: historicalData.negociosRede || 0,
+            negociosInternos: historicalData.negociosInternos || 0,
+            negociosParceriaExterna: historicalData.negociosParceriaExterna || 0,
+            negociosLancamentos: historicalData.negociosLancamentos || 0,
+            carteiraAtiva: historicalData.carteiraAtiva || 0,
+            angariacesMes: historicalData.angariacesMes || 0,
+            baixasMes: historicalData.baixasMes || 0,
+            atendimentosProntos: historicalData.atendimentosProntos || 0,
+            atendimentosLancamentos: historicalData.atendimentosLancamentos || 0,
+            tempoMedioVendaAngVenda: 0,
+            despesaGeral: Number(historicalData.despesaGeral) || manualData.despesaGeral,
+            despesaImpostos: Number(historicalData.despesaImpostos) || manualData.despesaImpostos,
+            fundoInovacao: Number(historicalData.fundoInovacao) || manualData.fundoInovacao,
+            resultadoSocios: Number(historicalData.resultadoSocios) || manualData.resultadoSocios,
+            fundoEmergencial: Number(historicalData.fundoEmergencial) || manualData.fundoEmergencial,
+          };
+        }
+
+        // Sem dados históricos: usar cálculo dinâmico (mês atual ou meses sem importação)
+        const finalCarteiraAtiva = activeProperties > 0 ? activeProperties : 0;
+        const finalAngariacesMes = angariations > 0 ? angariations : 0;
+        const finalBaixasMes = removedProperties > 0 ? removedProperties : 0;
+        const finalAtendimentosProntos = readyAttendances > 0 ? readyAttendances : 0;
+        const finalAtendimentosLancamentos = launchAttendances > 0 ? launchAttendances : 0;
+
         return {
           isHistorical: false,
           period: `${MONTH_NAMES[month - 1]}/${year}`,
@@ -205,12 +261,12 @@ export const indicatorsRouter = router({
           negociosLancamentos: salesLaunch,
 
           // Properfy
-          carteiraAtiva: activeProperties,
-          angariacesMes: angariations,
-          baixasMes: removedProperties,
+          carteiraAtiva: finalCarteiraAtiva,
+          angariacesMes: finalAngariacesMes,
+          baixasMes: finalBaixasMes,
           vsoVendaOferta: vso,
-          atendimentosProntos: readyAttendances,
-          atendimentosLancamentos: launchAttendances,
+          atendimentosProntos: finalAtendimentosProntos,
+          atendimentosLancamentos: finalAtendimentosLancamentos,
           tempoMedioVendaAngVenda: averageSaleTime,
 
           // Manuais
@@ -327,11 +383,12 @@ export const indicatorsRouter = router({
             endDate
           );
 
-          // Indicadores do Properfy - APENAS para o mês corrente
+          // Indicadores do Properfy - para o mês corrente e meses anteriores com dados
           const today = new Date();
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth() + 1;
-          const isCurrentMonth = year === currentYear && month === currentMonth;
+          // Incluir mês atual e todos os meses passados do ano (dados já sincronizados no banco)
+          const isCurrentOrPastMonth = (year < currentYear) || (year === currentYear && month <= currentMonth);
           
           let activeProperties = 0;
           let angariations = 0;
@@ -342,8 +399,8 @@ export const indicatorsRouter = router({
           let launchAttendances = 0;
           let averageSaleTime = 0;
           
-          // Se for o mês corrente, puxar dados do Properfy
-          if (isCurrentMonth) {
+          // Buscar dados do Properfy para mês atual e meses passados (dados já estão no banco local)
+          if (isCurrentOrPastMonth) {
             activeProperties = await properfyIndicators.calculateActivePropertiesCount(
               startDate,
               endDate,
@@ -386,7 +443,7 @@ export const indicatorsRouter = router({
               companyId
             );
           }
-          // Se não for o mês corrente, todos os indicadores Properfy = 0
+          // Se for mês futuro, todos os indicadores Properfy = 0
 
           // Buscar dados manuais salvos para este mês
           const manualData = await manualDataHelper.getManualData(
@@ -395,41 +452,87 @@ export const indicatorsRouter = router({
             month
           );
 
-          monthlyData.push({
-            month,
-            // Sistema de Vendas
-            negociosValor: salesValue.value,
-            negociosUnidades: salesCount,
-            vendidosCancelados: cancelledSales,
-            comissaoRecebida: commissionReceived,
-            comissaoVendida: commissionSold,
-            comissaoPendente: commissionPending,
-            percentualComissaoVendida: percentCommission,
-            negociosAcima1M: salesAbove1M,
-            prazoMedioRecebimento: avgPaymentDays,
-            percentualCanceladaPendente: percentCancelledPending,
-            valorMedioImovel: avgPropertyValue,
-            negociosRede: salesUNA,
-            negociosInternos: salesInternal,
-            negociosParceriaExterna: salesExternalPartner,
-            negociosLancamentos: salesLaunch,
+          // Buscar dados históricos da tabela monthlyIndicators
+          // SE existirem dados históricos importados, eles têm PRIORIDADE
+          // NOTA: Usando SQL raw pois o schema Drizzle de monthlyIndicators usa month varchar (legado)
+          const db3 = await getDb();
+          let historicalMonthData: any = null;
+          if (db3) {
+            const histRows = await db3.execute(
+              sql`SELECT * FROM \`monthlyIndicators\` WHERE \`companyId\` = ${companyId} AND \`year\` = ${year} AND \`month\` = ${month} LIMIT 1`
+            );
+            const histRowsArray = histRows[0] as any[];
+            if (histRowsArray && histRowsArray.length > 0) historicalMonthData = histRowsArray[0];
+          }
 
-            // Properfy
-            carteiraAtiva: activeProperties,
-            angariacesMes: angariations,
-            baixasMes: removedProperties,
-            vsoVendaOferta: vso,
-            atendimentosProntos: readyAttendances,
-            atendimentosLancamentos: launchAttendances,
-            tempoMedioVendaAngVenda: averageSaleTime,
+          if (historicalMonthData) {
+            monthlyData.push({
+              month,
+              negociosValor: Number(historicalMonthData.negociosValor) || 0,
+              negociosUnidades: historicalMonthData.negociosUnidades || 0,
+              vendidosCancelados: historicalMonthData.vendidosCancelados || 0,
+              vsoVendaOferta: Number(historicalMonthData.vsoVendaOferta) || 0,
+              comissaoRecebida: Number(historicalMonthData.comissaoRecebida) || 0,
+              comissaoVendida: Number(historicalMonthData.comissaoVendida) || 0,
+              comissaoPendente: Number(historicalMonthData.comissaoPendente) || 0,
+              percentualComissaoVendida: Number(historicalMonthData.percentualComissaoVendida) || 0,
+              negociosAcima1M: historicalMonthData.negociosAcima1M || 0,
+              prazoMedioRecebimento: historicalMonthData.prazoMedioRecebimento || 0,
+              percentualCanceladaPendente: Number(historicalMonthData.percentualCanceladaPendente) || 0,
+              valorMedioImovel: Number(historicalMonthData.valorMedioImovel) || 0,
+              negociosRede: historicalMonthData.negociosRede || 0,
+              negociosInternos: historicalMonthData.negociosInternos || 0,
+              negociosParceriaExterna: historicalMonthData.negociosParceriaExterna || 0,
+              negociosLancamentos: historicalMonthData.negociosLancamentos || 0,
+              carteiraAtiva: historicalMonthData.carteiraAtiva || 0,
+              angariacesMes: historicalMonthData.angariacesMes || 0,
+              baixasMes: historicalMonthData.baixasMes || 0,
+              atendimentosProntos: historicalMonthData.atendimentosProntos || 0,
+              atendimentosLancamentos: historicalMonthData.atendimentosLancamentos || 0,
+              tempoMedioVendaAngVenda: 0,
+              despesaGeral: Number(historicalMonthData.despesaGeral) || manualData.despesaGeral,
+              despesaImpostos: Number(historicalMonthData.despesaImpostos) || manualData.despesaImpostos,
+              fundoInovacao: Number(historicalMonthData.fundoInovacao) || manualData.fundoInovacao,
+              resultadoSocios: Number(historicalMonthData.resultadoSocios) || manualData.resultadoSocios,
+              fundoEmergencial: Number(historicalMonthData.fundoEmergencial) || manualData.fundoEmergencial,
+            });
+          } else {
+            monthlyData.push({
+              month,
+              // Sistema de Vendas
+              negociosValor: salesValue.value,
+              negociosUnidades: salesCount,
+              vendidosCancelados: cancelledSales,
+              comissaoRecebida: commissionReceived,
+              comissaoVendida: commissionSold,
+              comissaoPendente: commissionPending,
+              percentualComissaoVendida: percentCommission,
+              negociosAcima1M: salesAbove1M,
+              prazoMedioRecebimento: avgPaymentDays,
+              percentualCanceladaPendente: percentCancelledPending,
+              valorMedioImovel: avgPropertyValue,
+              negociosRede: salesUNA,
+              negociosInternos: salesInternal,
+              negociosParceriaExterna: salesExternalPartner,
+              negociosLancamentos: salesLaunch,
 
-            // Manuais
-            despesaGeral: manualData.despesaGeral,
-            despesaImpostos: manualData.despesaImpostos,
-            fundoInovacao: manualData.fundoInovacao,
-            resultadoSocios: manualData.resultadoSocios,
-            fundoEmergencial: manualData.fundoEmergencial,
-          });
+              // Properfy
+              carteiraAtiva: activeProperties,
+              angariacesMes: angariations,
+              baixasMes: removedProperties,
+              vsoVendaOferta: vso,
+              atendimentosProntos: readyAttendances,
+              atendimentosLancamentos: launchAttendances,
+              tempoMedioVendaAngVenda: averageSaleTime,
+
+              // Manuais
+              despesaGeral: manualData.despesaGeral,
+              despesaImpostos: manualData.despesaImpostos,
+              fundoInovacao: manualData.fundoInovacao,
+              resultadoSocios: manualData.resultadoSocios,
+              fundoEmergencial: manualData.fundoEmergencial,
+            });
+          }
         } catch (error) {
           console.error(`[Indicators] Erro ao calcular indicadores para ${month}/${year}:`, error);
           monthlyData.push({
@@ -638,205 +741,10 @@ export const indicatorsRouter = router({
   }),
 
   /**
-   * Obter dados manuais de um mês
+   * Obter dados do Properfy para um período
+   * Retorna: Carteira de Divulgação, Angariações, Baixas
    */
-  getMonthlyManualData: publicProcedure
+  getProperfyData: publicProcedure
     .input(
       z.object({
-        companyId: z.string(),
-        year: z.number(),
-        month: z.number(),
-      })
-    )
-    .query(async ({ input }) => {
-      const { companyId, year, month } = input;
-      
-      // Buscar dados manuais usando manualDataHelper
-      const manualData = await manualDataHelper.getManualData(
-        companyId,
-        year,
-        month
-      );
-      
-      return {
-        despesaGeral: manualData.despesaGeral,
-        despesaImpostos: manualData.despesaImpostos,
-        fundoInovacao: manualData.fundoInovacao,
-        resultadoSocios: manualData.resultadoSocios,
-        fundoEmergencial: manualData.fundoEmergencial,
-      };
-    }),
-
-  /**
-   * Salvar dados manuais de um mês
-   */
-  saveMonthlyManualData: protectedProcedure
-    .input(
-      z.object({
-        companyId: z.string(),
-        year: z.number(),
-        month: z.number(),
-        generalExpense: z.number().optional(),
-        taxExpense: z.number().optional(),
-        innovationFund: z.number().optional(),
-        partnerResult: z.number().optional(),
-        emergencyFund: z.number().optional(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      const { companyId, year, month, ...data } = input;
-      const monthKey = `${year}-${String(month).padStart(2, '0')}`;
-      
-      const { upsertMonthlyIndicator } = await import('../db');
-      await upsertMonthlyIndicator(companyId, monthKey, ctx.user.id, data);
-      
-      return {
-        success: true,
-        message: "Dados salvos com sucesso",
-      };
-    }),
-
-  /**
-   * Salvar dados manuais de indicadores (apenas gerentes)
-   */
-  saveManualData: protectedProcedure
-    .input(
-      z.object({
-        companyId: z.string(),
-        year: z.number(),
-        month: z.number(),
-        despesaGeral: z.number().default(0),
-        despesaImpostos: z.number().default(0),
-        fundoInovacao: z.number().default(0),
-        resultadoSocios: z.number().default(0),
-        fundoEmergencial: z.number().default(0),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      if (ctx.user.role !== 'manager') {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Apenas gerentes podem editar dados manuais',
-        });
-      }
-
-      try {
-        await manualDataHelper.saveManualData(
-          input.companyId,
-          input.year,
-          input.month,
-          {
-            despesaGeral: input.despesaGeral,
-            despesaImpostos: input.despesaImpostos,
-            fundoInovacao: input.fundoInovacao,
-            resultadoSocios: input.resultadoSocios,
-            fundoEmergencial: input.fundoEmergencial,
-          },
-          ctx.user.id,
-          ctx.user.name || 'Unknown'
-        );
-
-        return {
-          success: true,
-          message: 'Dados manuais salvos com sucesso',
-        };
-      } catch (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Erro ao salvar dados manuais',
-        });
-      }
-    }),
-
-  /**
-   * Obter dados manuais de um mes
-   */
-  getManualData: publicProcedure
-    .input(
-      z.object({
-        companyId: z.string(),
-        year: z.number(),
-        month: z.number(),
-      })
-    )
-    .query(async ({ input }) => {
-      try {
-        const data = await manualDataHelper.getManualData(
-          input.companyId,
-          input.year,
-          input.month
-        );
-
-        return {
-          success: true,
-          data,
-        };
-      } catch (error) {
-        return {
-          success: false,
-          data: {
-            despesaGeral: 0,
-            despesaImpostos: 0,
-            fundoInovacao: 0,
-            resultadoSocios: 0,
-            fundoEmergencial: 0,
-          },
-        };
-      }
-    }),
-
-  /**
-   * Obter anos com historico salvo
-   */
-  getAvailableYears: publicProcedure
-    .input(
-      z.object({
-        companyId: z.string(),
-      })
-    )
-    .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      try {
-        // Buscar anos com dados na tabela monthlyIndicators
-        const result = await db.execute(
-          sql`SELECT DISTINCT YEAR(createdAt) as year FROM monthlyIndicators WHERE companyId = ${input.companyId} ORDER BY year DESC`
-        );
-
-        const years = (result as any[]).map((r: any) => r.year).filter((y: any) => y !== null);
-        const currentYear = new Date().getFullYear();
-        
-        // Sempre incluir o ano atual
-        const allYears = Array.from(new Set([currentYear, ...years]));
-        
-        return allYears.sort((a, b) => b - a);
-      } catch (error) {
-        console.error('[Indicators] Erro ao buscar anos disponiveis:', error);
-        const currentYear = new Date().getFullYear();
-        return [currentYear];
-      }
-    }),
-
-  /**
-   * Obter histórico de edições de dados manuais
-   */
-  getAuditHistory: protectedProcedure
-    .input(
-      z.object({
-        companyId: z.string(),
-        year: z.number(),
-        month: z.number(),
-        fieldName: z.string().optional(),
-      })
-    )
-    .query(async ({ input }) => {
-      const history = await auditLogHelper.getAuditHistory(
-        input.companyId,
-        input.year,
-        input.month,
-        input.fieldName
-      );
-      return history;
-    }),
-});
+       

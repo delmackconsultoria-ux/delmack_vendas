@@ -55,11 +55,11 @@ export default function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="shadow-lg border-0 max-w-md w-full">
           <CardContent className="pt-8 pb-8 text-center">
-            <h2 className="text-xl font-semibold text-slate-900 mb-2">Link inválido</h2>
-            <p className="text-slate-600 mb-6">
+            <h2 className="text-xl font-semibold text-foreground mb-2">Link inválido</h2>
+            <p className="text-muted-foreground mb-6">
               O link de recuperação de senha é inválido ou expirou.
             </p>
             <a href="/forgot-password">
@@ -73,14 +73,14 @@ export default function ResetPassword() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="shadow-lg border-0 max-w-md w-full">
           <CardContent className="pt-8 pb-8 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <h2 className="text-xl font-semibold text-slate-900 mb-2">Senha alterada!</h2>
-            <p className="text-slate-600 mb-6">
+            <h2 className="text-xl font-semibold text-foreground mb-2">Senha alterada!</h2>
+            <p className="text-muted-foreground mb-6">
               Sua senha foi alterada com sucesso. Você já pode fazer login.
             </p>
             <a href="/login">
@@ -93,11 +93,11 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Delmack</h1>
-          <p className="text-slate-600">Redefinir Senha</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Delmack</h1>
+          <p className="text-muted-foreground">Redefinir Senha</p>
         </div>
 
         <Card className="shadow-lg border-0">
@@ -117,7 +117,7 @@ export default function ResetPassword() {
               )}
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-slate-700">
+                <label htmlFor="password" className="text-sm font-medium text-foreground">
                   Nova senha
                 </label>
                 <div className="relative">
@@ -134,7 +134,7 @@ export default function ResetPassword() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-muted-foreground"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -142,7 +142,7 @@ export default function ResetPassword() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
                   Confirmar nova senha
                 </label>
                 <Input

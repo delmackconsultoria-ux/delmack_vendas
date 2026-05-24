@@ -70,7 +70,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo and Title */}
         <div className="text-center mb-8">
@@ -79,8 +79,8 @@ export default function Register() {
               D
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">Delmack</h1>
-          <p className="text-slate-600 mt-2">Sistema de Gestão de Vendas Imobiliárias</p>
+          <h1 className="text-3xl font-bold text-foreground">Delmack</h1>
+          <p className="text-muted-foreground mt-2">Sistema de Gestão de Vendas Imobiliárias</p>
         </div>
 
         {/* Register Card */}
@@ -114,7 +114,7 @@ export default function Register() {
 
               {/* Name Input */}
               <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium text-slate-700">
+                <label htmlFor="name" className="text-sm font-medium text-foreground">
                   Nome Completo
                 </label>
                 <Input
@@ -132,7 +132,7 @@ export default function Register() {
 
               {/* Email Input */}
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-slate-700">
+                <label htmlFor="email" className="text-sm font-medium text-foreground">
                   E-mail
                 </label>
                 <Input
@@ -150,7 +150,7 @@ export default function Register() {
 
               {/* Password Input */}
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-slate-700">
+                <label htmlFor="password" className="text-sm font-medium text-foreground">
                   Senha
                 </label>
                 <Input
@@ -168,7 +168,7 @@ export default function Register() {
 
               {/* Confirm Password Input */}
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
                   Confirmar Senha
                 </label>
                 <Input
@@ -201,12 +201,12 @@ export default function Register() {
               </Button>
 
               {/* Login Link */}
-              <div className="text-center text-sm text-slate-600">
+              <div className="text-center text-sm text-muted-foreground">
                 Já tem uma conta?{" "}
                 <button
                   type="button"
                   onClick={() => setLocation("/login")}
-                  className="text-slate-700 font-semibold hover:text-slate-900 underline"
+                  className="text-foreground font-semibold hover:text-foreground underline"
                 >
                   Faça login aqui
                 </button>
@@ -216,7 +216,7 @@ export default function Register() {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-xs text-slate-500 mt-8">
+        <p className="text-center text-xs text-muted-foreground mt-8">
           © 2025 Delmack. Todos os direitos reservados.
         </p>
       </div>

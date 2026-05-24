@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Users, Upload, Plus, Eye, EyeOff, FileSpreadsheet, UserPlus, Copy, Trash2, Ban, Key, Check, X, Pencil } from "lucide-react";
+import { Building2, Users, Upload, Plus, Eye, EyeOff, FileSpreadsheet, UserPlus, Copy, Trash2, Ban, Key, Check, X, Pencil, Search } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef } from "react";
@@ -48,6 +48,10 @@ export default function DashboardSuperAdmin() {
   const deleteCompanyMutation = trpc.superadmin.deleteCompany.useMutation();
   const [showEditCompanyModal, setShowEditCompanyModal] = useState(false);
   const [editingCompany, setEditingCompany] = useState<any>(null);
+  const [showDeleteSaleModal, setShowDeleteSaleModal] = useState(false);
+  const [deleteSaleRef, setDeleteSaleRef] = useState("");
+  const [deleteSaleConfirm, setDeleteSaleConfirm] = useState("");
+  const deleteSaleByRefMutation = trpc.sales.deleteSaleByReference.useMutation();
 
   const handleUpdateCompany = async (field: string, value: any) => {
     if (!selectedCompany) return;
@@ -211,6 +215,10 @@ export default function DashboardSuperAdmin() {
             <Upload className="h-4 w-4" />
             Upload de Usuários
           </Button>
+          <Button onClick={() => { setShowDeleteSaleModal(true); setDeleteSaleRef(""); setDeleteSaleConfirm(""); }} variant="outline" className="border-red-600 text-red-500 hover:bg-red-50 gap-2">
+            <Trash2 className="h-4 w-4" />
+            Excluir Venda
+          </Button>
         </div>
 
         {/* Companies List */}
@@ -312,7 +320,7 @@ export default function DashboardSuperAdmin() {
                     <span className="text-white font-medium">{log.userName || 'Sistema'}</span>
                     <span className="text-slate-400 ml-2">{log.action === 'create' ? 'criou' : log.action === 'update' ? 'atualizou' : log.action === 'delete' ? 'removeu' : log.action === 'activate' ? 'ativou' : log.action === 'deactivate' ? 'desativou' : log.action} {log.targetType}</span>
                   </div>
-                  <span className="text-slate-500 text-xs">{log.createdAt ? new Date(log.createdAt).toLocaleString() : ''}</span>
+                  <span className="text-muted-foreground text-xs">{log.createdAt ? new Date(log.createdAt).toLocaleString() : ''}</span>
                 </div>
               ))}
               {(!actionLogsQuery.data || actionLogsQuery.data.length === 0) && (
@@ -363,7 +371,7 @@ export default function DashboardSuperAdmin() {
                   {uploadedUsers.slice(0, 5).map((u, i) => (
                     <p key={i} className="text-xs text-slate-400">{u.name} {u.surname} - {u.email} ({u.role})</p>
                   ))}
-                  {uploadedUsers.length > 5 && <p className="text-xs text-slate-500">... e mais {uploadedUsers.length - 5}</p>}
+                  {uploadedUsers.length > 5 && <p className="text-xs text-muted-foreground">... e mais {uploadedUsers.length - 5}</p>}
                 </div>
               )}
               <div className="flex justify-end gap-2">
@@ -606,8 +614,8 @@ export default function DashboardSuperAdmin() {
               </div>
 
               {/* Métricas de Vendas */}
-              <div className="bg-white border border-slate-200 p-4 rounded-lg">
-                <h3 className="text-slate-700 font-medium mb-3">Métricas de Vendas</h3>
+              <div className="bg-background border border-border p-4 rounded-lg">
+                <h3 className="text-foreground font-medium mb-3">Métricas de Vendas</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
                     <div className="text-xl font-bold text-white">{companyStatsQuery.data?.totalSales || 0}</div>
@@ -802,6 +810,66 @@ export default function DashboardSuperAdmin() {
           onRefresh={() => { allUsersQuery.refetch(); companiesQuery.refetch(); statsQuery.refetch(); }}
         />
       )}
+
+      {/* Modal Excluir Venda por Referência */}
+      {showDeleteSaleModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white">Excluir Venda</h2>
+              <button onClick={() => setShowDeleteSaleModal(false)} className="text-slate-400 hover:text-white">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="text-slate-400 text-sm mb-4">Informe a referência, ID da venda ou parte do endereço para localizar e excluir permanentemente.</p>
+            <div className="space-y-3">
+              <div>
+                <label className="text-slate-300 text-sm font-medium">Referência / ID da Venda</label>
+                <input
+                  type="text"
+                  value={deleteSaleRef}
+                  onChange={(e) => setDeleteSaleRef(e.target.value)}
+                  placeholder="Ex: 97567001, sale_abc123..."
+                  className="mt-1 w-full bg-slate-700 border border-slate-600 text-white rounded-md px-3 py-2 text-sm focus:outline-none focus:border-red-500"
+                />
+              </div>
+              <div>
+                <label className="text-slate-300 text-sm font-medium">Confirmação</label>
+                <p className="text-slate-500 text-xs mb-1">Digite <span className="text-red-400 font-bold">EXCLUIR</span> para confirmar</p>
+                <input
+                  type="text"
+                  value={deleteSaleConfirm}
+                  onChange={(e) => setDeleteSaleConfirm(e.target.value)}
+                  placeholder="EXCLUIR"
+                  className="w-full bg-slate-700 border border-slate-600 text-white rounded-md px-3 py-2 text-sm focus:outline-none focus:border-red-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <Button variant="outline" onClick={() => setShowDeleteSaleModal(false)} className="border-slate-600 text-slate-300">
+                Cancelar
+              </Button>
+              <Button
+                disabled={deleteSaleConfirm !== "EXCLUIR" || !deleteSaleRef.trim() || deleteSaleByRefMutation.isPending}
+                onClick={async () => {
+                  try {
+                    const result = await deleteSaleByRefMutation.mutateAsync({ reference: deleteSaleRef.trim() });
+                    toast.success(result.message || "Venda excluída com sucesso");
+                    setShowDeleteSaleModal(false);
+                    setDeleteSaleRef("");
+                    setDeleteSaleConfirm("");
+                  } catch (err: any) {
+                    toast.error(err.message || "Erro ao excluir venda");
+                  }
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {deleteSaleByRefMutation.isPending ? "Excluindo..." : "Excluir Permanentemente"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -898,7 +966,7 @@ function UsersListModal({ company, onClose, onRefresh }: { company: any; onClose
                     </div>
                     <p className="text-sm text-slate-400">{user.email}</p>
                     {user.lastSignedIn && (
-                      <p className="text-xs text-slate-500">Último acesso: {new Date(user.lastSignedIn).toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Último acesso: {new Date(user.lastSignedIn).toLocaleString()}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
@@ -1141,7 +1209,7 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
                     </div>
                     <p className="text-sm text-slate-400">{user.email}</p>
                     {user.lastSignedIn && (
-                      <p className="text-xs text-slate-500">Último acesso: {new Date(user.lastSignedIn).toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Último acesso: {new Date(user.lastSignedIn).toLocaleString()}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
@@ -1219,70 +1287,4 @@ function AllUsersModal({ users, companies, isLoading, onClose, onRefresh }: {
                   type="email"
                   value={editForm.email}
                   onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-              <div>
-                <Label className="text-slate-300">Perfil</Label>
-                <Select value={editForm.role} onValueChange={(value) => setEditForm({ ...editForm, role: value })}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700">
-                    <SelectItem value="admin" className="text-white hover:bg-slate-700">Admin</SelectItem>
-                    <SelectItem value="manager" className="text-white hover:bg-slate-700">Gerente</SelectItem>
-                    <SelectItem value="broker" className="text-white hover:bg-slate-700">Corretor</SelectItem>
-                    <SelectItem value="finance" className="text-white hover:bg-slate-700">Financeiro</SelectItem>
-                    <SelectItem value="viewer" className="text-white hover:bg-slate-700">Visualizador</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {(editForm.role === "broker") && (
-                <div>
-                  <Label className="text-slate-300">Gerente Responsável</Label>
-                  <Select value={editForm.managerId || "none"} onValueChange={(value) => setEditForm({ ...editForm, managerId: value === "none" ? "" : value })}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                      <SelectValue placeholder="Selecione um gerente" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700">
-                      <SelectItem value="none" className="text-white hover:bg-slate-700">Sem gerente</SelectItem>
-                      {managers.map((manager: any) => (
-                        <SelectItem key={manager.id} value={manager.id} className="text-white hover:bg-slate-700">
-                          {manager.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              <div>
-                <Label className="text-slate-300">Empresa</Label>
-                <Select value={editForm.companyId || "none"} onValueChange={(value) => setEditForm({ ...editForm, companyId: value === "none" ? "" : value })}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue placeholder="Selecione uma empresa" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700">
-                    <SelectItem value="none" className="text-white hover:bg-slate-700">Sem empresa</SelectItem>
-                    {companies.map((company: any) => (
-                      <SelectItem key={company.id} value={company.id} className="text-white hover:bg-slate-700">
-                        {company.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setEditingUser(null)} className="border-slate-600 text-slate-300">
-                  Cancelar
-                </Button>
-                <Button onClick={handleSaveEdit} disabled={updateUserMutation.isPending} style={{ backgroundColor: '#0b0bb5' }} className="hover:opacity-90 text-white">
-                  {updateUserMutation.isPending ? "Salvando..." : "Salvar"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
-  );
-}
+                  className="bg-slate-700 border-s

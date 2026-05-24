@@ -282,14 +282,14 @@ export default function BrokerManagementPage() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <div className="px-6 py-6 max-w-7xl mx-auto">
           <div className="mb-6 flex justify-between items-start">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 Gerenciamento de Usuários
               </h1>
-              <p className="text-slate-600 mt-1 text-sm">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Gerencie os usuários da sua equipe (Corretores, Gerentes e Financeiro)
               </p>
             </div>
@@ -320,29 +320,20 @@ export default function BrokerManagementPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b bg-slate-50">
-                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                    <tr className="border-b bg-background">
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-foreground">
                         Nome
                       </th>
-                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-foreground">
                         Email
                       </th>
-                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-foreground">
                         Telefone
                       </th>
-                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
+                      <th className="py-4 px-4 text-left text-sm font-semibold text-foreground">
                         Perfil
                       </th>
-                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
-                        Vendas
-                      </th>
-                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
-                        Comissões
-                      </th>
-                      <th className="py-4 px-4 text-left text-sm font-semibold text-slate-900">
-                        Performance
-                      </th>
-                      <th className="py-4 px-4 text-center text-sm font-semibold text-slate-900">
+                      <th className="py-4 px-4 text-center text-sm font-semibold text-foreground">
                         Ações
                       </th>
                     </tr>
@@ -350,42 +341,23 @@ export default function BrokerManagementPage() {
                   <tbody>
                     {filteredBrokers.length > 0 ? (
                       filteredBrokers.map((broker) => (
-                        <tr key={broker.id} className="border-b hover:bg-slate-50 transition-colors">
+                        <tr key={broker.id} className="border-b hover:bg-background transition-colors">
                           <td className="py-4 px-4">
                             <div>
-                              <p className="text-sm font-medium text-slate-900">{broker.name}</p>
+                              <p className="text-sm font-medium text-foreground">{broker.name}</p>
                               {broker.teamMembers && broker.teamMembers.length > 0 && (
-                                <p className="text-xs text-slate-500 mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                   {broker.teamMembers.length} membro(s) na equipe
                                 </p>
                               )}
                             </div>
                           </td>
-                          <td className="py-4 px-4 text-sm text-slate-600">{broker.email}</td>
-                          <td className="py-4 px-4 text-sm text-slate-600">{broker.phone}</td>
+                          <td className="py-4 px-4 text-sm text-muted-foreground">{broker.email}</td>
+                          <td className="py-4 px-4 text-sm text-muted-foreground">{broker.phone}</td>
                           <td className="py-4 px-4">
                             <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               {getRoleLabel(broker.role)}
                             </span>
-                          </td>
-                          <td className="py-4 px-4 text-sm font-medium text-slate-900">
-                            {broker.sales}
-                          </td>
-                          <td className="py-4 px-4 text-sm font-medium text-green-600">
-                            R$ {(broker.commissions / 1000).toFixed(1)}k
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 bg-slate-200 rounded-full h-2">
-                                <div
-                                  style={{ backgroundColor: '#0b0bb5', width: `${broker.performance}%` }}
-                                  className="h-2 rounded-full"
-                                ></div>
-                              </div>
-                              <span className="text-sm font-medium text-slate-900 w-8">
-                                {broker.performance}%
-                              </span>
-                            </div>
                           </td>
                           <td className="py-4 px-4">
                             <div className="flex justify-center gap-2">
@@ -419,7 +391,7 @@ export default function BrokerManagementPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={8} className="pt-24 text-center text-slate-500">
+                        <td colSpan={7} className="pt-24 text-center text-muted-foreground">
                           Nenhum corretor encontrado
                         </td>
                       </tr>
@@ -442,7 +414,7 @@ export default function BrokerManagementPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Tem certeza que deseja redefinir a senha deste usuário? Uma nova senha será gerada e enviada automaticamente.
             </p>
             <div className="flex gap-3">
@@ -479,14 +451,14 @@ export default function BrokerManagementPage() {
               <CardTitle>Adicionar Membro da Equipe</CardTitle>
               <button
                 onClick={() => setShowTeamModal(false)}
-                className="p-1 hover:bg-slate-100 rounded-lg"
+                className="p-1 hover:bg-muted rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-700">Nome</label>
+                <label className="text-sm font-medium text-foreground">Nome</label>
                 <Input
                   value={teamFormData.name}
                   onChange={(e) => setTeamFormData({ ...teamFormData, name: e.target.value })}
@@ -495,7 +467,7 @@ export default function BrokerManagementPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700">Email</label>
+                <label className="text-sm font-medium text-foreground">Email</label>
                 <Input
                   type="email"
                   value={teamFormData.email}
@@ -505,7 +477,7 @@ export default function BrokerManagementPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700">Funcao/Cargo</label>
+                <label className="text-sm font-medium text-foreground">Funcao/Cargo</label>
                 <Input
                   value={teamFormData.role}
                   onChange={(e) => setTeamFormData({ ...teamFormData, role: e.target.value })}
@@ -537,20 +509,20 @@ export default function BrokerManagementPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 sticky top-0 bg-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 sticky top-0 bg-background">
               <CardTitle>
                 {editingBroker ? "Editar Usuário" : "Adicionar Novo Usuário"}
               </CardTitle>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 hover:bg-slate-100 rounded-lg"
+                className="p-1 hover:bg-muted rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-700">Nome</label>
+                <label className="text-sm font-medium text-foreground">Nome</label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -559,7 +531,7 @@ export default function BrokerManagementPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700">Email</label>
+                <label className="text-sm font-medium text-foreground">Email</label>
                 <Input
                   type="email"
                   value={formData.email}
@@ -569,7 +541,7 @@ export default function BrokerManagementPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700">Telefone</label>
+                <label className="text-sm font-medium text-foreground">Telefone</label>
                 <Input
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -578,7 +550,7 @@ export default function BrokerManagementPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700">Perfil</label>
+                <label className="text-sm font-medium text-foreground">Perfil</label>
                 <select
                   value={formData.role}
                   onChange={(e) =>
@@ -587,7 +559,7 @@ export default function BrokerManagementPage() {
                       role: e.target.value as "broker" | "finance" | "manager",
                     })
                   }
-                  className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-md"
+                  className="w-full mt-1 px-3 py-2 border border-border rounded-md"
                 >
                   <option value="broker">Corretor</option>
                   <option value="finance">Financeiro</option>
@@ -620,3 +592,4 @@ export default function BrokerManagementPage() {
   );
 }
 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               

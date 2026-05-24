@@ -1,0 +1,334 @@
+// Serviço de integração com API Properfy
+// Suporta busca por referência, endereço ou CEP
+// Usar URL base de produção (remover /auth/token se presente no env)
+import { getDb } from '../db';
+// DEBUG: Versão do código backend - 2026-02-10 02:35 UTC
+console.log('[properfyService] Módulo carregado! Versão: 2026-02-10 02:35 UTC - Correções aplicadas');
+import { properfyProperties } from '../../drizzle/schema';
+import { eq } from 'drizzle-orm';
+
+const envUrl = process.env.PROPERFY_API_URL || 'https://adm.baggioimoveis.com.br/api/';
+const PROPERFY_API_URL = envUrl.replace('/auth/token', '').replace(/\/$/, '');
+const PROPERFY_API_TOKEN = process.env.PROPERFY_API_KEY || process.env.PROPERFY_API_TOKEN || '';
+
+// IMPORTANTE: Desabilitar mock - usar apenas API real
+const USE_MOCK = false;
+
+export interface ProperfyProperty {
+  id: number;
+  reference: string;
+  address: string;
+  number: string;
+  city: string;
+  state: string;
+  district: string;
+  postalCode: string;
+  propertyType: string;
+  value: number;
+  area: number;
+  totalArea: number;
+  bedrooms: number;
+  bathrooms: number;
+  parkingSpaces: number;
+  description: string;
+  condominiumName: string;
+  pricePerSqm: number;
+  propertyAge: number;
+}
+
+export interface ProperfySearchResult {
+  success: boolean;
+  property?: ProperfyProperty;
+  properties?: ProperfyProperty[];
+  error?: string;
+  searchType?: 'reference' | 'address' | 'cep' | 'auto';
+}
+
+function translatePropertyType(type: string): string {
+  const types: Record<string, string> = {
+    'APARTMENT': 'apartamento',
+    'HOUSE': 'casa',
+    'RESIDENTIAL_HOUSE': 'casa',
+    'LAND': 'terreno',
+    'COMMERCIAL': 'comercial',
+    'RURAL': 'rural',
+    'CONDO': 'apartamento',
+    'OFFICE': 'comercial',
+    'WAREHOUSE': 'comercial',
+    'STORE': 'comercial',
+  };
+  return types[type?.toUpperCase()] || 'outro';
+}
+
+function translatePropertyTypeInt(typeInt: number): string {
+  const types: Record<number, string> = {
+    1: 'casa',
+    2: 'apartamento',
+    3: 'terreno',
+    4: 'comercial',
+    5: 'rural',
+    6: 'galpao',
+    7: 'loja',
+    8: 'escritorio',
+  };
+  return types[typeInt] || 'outro';
+}
+
+function normalizeString(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function mapPropertyData(property: any, searchRef: string): ProperfyProperty {
+  console.log('[mapPropertyData] Mapeando dados do imóvel...');
+  return {
+    id: property.id,
+    reference: property.chrDocument || property.chrReference || property.chrInnerReference || searchRef,
+    address: property.chrAddressStreet || '',
+    number: property.chrAddressNumber || 'S/N',
+    city: property.chrAddressCity || '',
+    state: property.chrAddressState || '',
+    district: property.chrAddressNeighborhood || property.chrAddressDistrict || '',
+    postalCode: property.chrAddressPostalCode?.replace(/\D/g, '') || property.chrAddressCityCode?.replace(/\D/g, '') || '',
+    propertyType: translatePropertyTypeInt(property.intPropertyType) || translatePropertyType(property.chrType || ''),
+    value: property.dcmSale || 0,
+    area: property.dcmAreaPrivate || 0,
+    totalArea: property.dcmAreaTotal || property.dcmAreaPrivate || 0,
+    bedrooms: property.intBedrooms || property.intRooms || 0,
+    bathrooms: property.intBathrooms || 0,
+    parkingSpaces: property.intGarages || 0,
+    description: property.chrDescription || '',
+    condominiumName: property.chrCondominiumName || '',
+    pricePerSqm: property.dcmAreaPrivate ? property.dcmSale / property.dcmAreaPrivate : 0,
+    propertyAge: property.intPropertyAge || 0,
+  };
+}
+
+/**
+ * Buscar imóvel por referência (ex: BG66206001)
+ */
+export async function searchByReference(reference: string): Promise<ProperfySearchResult> {
+  try {
+    console.log('[Properfy] Buscando imóvel por referência:', reference);
+
+    if (!PROPERFY_API_URL || !PROPERFY_API_TOKEN) {
+      return {
+        success: false,
+        error: 'Credenciais do Properfy não configuradas',
+      };
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': PROPERFY_API_TOKEN,
+    };
+
+    // Buscar pela API real
+    const response = await fetch(`${PROPERFY_API_URL}/properties/search?reference=${encodeURIComponent(reference)}`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      console.error('[Properfy] Erro na resposta:', response.status, response.statusText);
+      return {
+        success: false,
+        error: `Erro ao buscar imóvel: ${response.statusText}`,
+      };
+    }
+
+    const data = await response.json();
+    console.log('[Properfy] Resposta recebida:', data);
+
+    if (!data.data || data.data.length === 0) {
+      return {
+        success: false,
+        error: 'Imóvel não encontrado',
+      };
+    }
+
+    const property = mapPropertyData(data.data[0], reference);
+    console.log('[Properfy] ✅ Imóvel encontrado:', property.reference);
+
+    return {
+      success: true,
+      property,
+      searchType: 'reference',
+    };
+  } catch (error) {
+    console.error('[Properfy] Erro ao buscar por referência:', error);
+    return {
+      success: false,
+      error: `Erro ao buscar imóvel: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+    };
+  }
+}
+
+/**
+ * Buscar imóvel por endereço
+ */
+export async function searchByAddress(address: string): Promise<ProperfySearchResult> {
+  try {
+    console.log('[Properfy] Buscando imóvel por endereço:', address);
+
+    if (!PROPERFY_API_URL || !PROPERFY_API_TOKEN) {
+      return {
+        success: false,
+        error: 'Credenciais do Properfy não configuradas',
+      };
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': PROPERFY_API_TOKEN,
+    };
+
+    const response = await fetch(`${PROPERFY_API_URL}/properties/search?address=${encodeURIComponent(address)}`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `Erro ao buscar imóvel: ${response.statusText}`,
+      };
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return {
+        success: false,
+        error: 'Imóvel não encontrado',
+      };
+    }
+
+    const properties = data.data.map((prop: any) => mapPropertyData(prop, prop.chrReference));
+    console.log('[Properfy] ✅ Imóveis encontrados:', properties.length);
+
+    return {
+      success: true,
+      properties,
+      searchType: 'address',
+    };
+  } catch (error) {
+    console.error('[Properfy] Erro ao buscar por endereço:', error);
+    return {
+      success: false,
+      error: `Erro ao buscar imóvel: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+    };
+  }
+}
+
+/**
+ * Buscar imóvel por CEP
+ */
+export async function searchByCep(cep: string): Promise<ProperfySearchResult> {
+  try {
+    console.log('[Properfy] Buscando imóvel por CEP:', cep);
+
+    if (!PROPERFY_API_URL || !PROPERFY_API_TOKEN) {
+      return {
+        success: false,
+        error: 'Credenciais do Properfy não configuradas',
+      };
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': PROPERFY_API_TOKEN,
+    };
+
+    const response = await fetch(`${PROPERFY_API_URL}/properties/search?cep=${encodeURIComponent(cep)}`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `Erro ao buscar imóvel: ${response.statusText}`,
+      };
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return {
+        success: false,
+        error: 'Imóvel não encontrado',
+      };
+    }
+
+    const properties = data.data.map((prop: any) => mapPropertyData(prop, prop.chrReference));
+    console.log('[Properfy] ✅ Imóveis encontrados:', properties.length);
+
+    return {
+      success: true,
+      properties,
+      searchType: 'cep',
+    };
+  } catch (error) {
+    console.error('[Properfy] Erro ao buscar por CEP:', error);
+    return {
+      success: false,
+      error: `Erro ao buscar imóvel: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+    };
+  }
+}
+
+/**
+ * Busca inteligente (tenta referência, depois endereço, depois CEP)
+ */
+export async function smartSearch(query: string): Promise<ProperfySearchResult> {
+  console.log('[Properfy] Iniciando busca inteligente para:', query);
+
+  // Tentar como referência (ex: BG66206001)
+  if (/^[A-Z]{2}\d+$/.test(query)) {
+    const result = await searchByReference(query);
+    if (result.success) return result;
+  }
+
+  // Tentar como CEP (ex: 30130100)
+  if (/^\d{8}$/.test(query)) {
+    const result = await searchByCep(query);
+    if (result.success) return result;
+  }
+
+  // Tentar como endereço
+  const result = await searchByAddress(query);
+  return result;
+}
+
+/**
+ * Aliases para compatibilidade com código existente
+ */
+export const searchPropertyByReference = searchByReference;
+export const searchPropertyByAddress = searchByAddress;
+export const searchPropertyByCEP = searchByCep;
+
+/**
+ * Obter rejeições de listagem (para compatibilidade)
+ */
+export async function getListingRejections(query: any): Promise<any> {
+  console.log('[Properfy] getListingRejections chamado');
+  return {
+    success: true,
+    rejections: [],
+  };
+}
+
+export default {
+  searchByReference,
+  searchByAddress,
+  searchByCep,
+  smartSearch,
+  searchPropertyByReference,
+  searchPropertyByAddress,
+  searchPropertyByCEP,
+  getListingRejections,
+};

@@ -98,7 +98,7 @@ export function IndicatorHistoryModal({
   const getTrendColor = (trend: number): string => {
     if (trend > 0) return "text-green-600";
     if (trend < 0) return "text-red-600";
-    return "text-gray-600";
+    return "text-muted-foreground";
   };
 
   return (
@@ -106,7 +106,7 @@ export function IndicatorHistoryModal({
       {/* Modal customizado que ocupa quase toda a tela */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg shadow-2xl w-[98vw] h-[96vh] flex flex-col">
+          <div className="bg-background rounded-lg shadow-2xl w-[98vw] h-[96vh] flex flex-col">
             {/* Header com título e fechar */}
             <div className="flex justify-between items-center p-6 border-b">
               <div>
@@ -117,7 +117,7 @@ export function IndicatorHistoryModal({
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+                className="text-muted-foreground hover:text-muted-foreground text-2xl font-light"
               >
                 ×
               </button>
@@ -209,7 +209,7 @@ export function IndicatorHistoryModal({
                 {/* Gráfico */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Evolução Mensal</h3>
-                  <div className="bg-gray-50 rounded-lg p-4" style={{ height: "300px" }}>
+                  <div className="bg-background rounded-lg p-4" style={{ height: "300px" }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={data.monthlyData}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -236,7 +236,7 @@ export function IndicatorHistoryModal({
                   <h3 className="text-lg font-semibold mb-4">Detalhes por Mês</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-100">
+                      <thead className="bg-muted">
                         <tr>
                           <th className="px-4 py-2 text-left">Mês</th>
                           <th className="px-4 py-2 text-right">Valor</th>
@@ -246,7 +246,7 @@ export function IndicatorHistoryModal({
                       </thead>
                       <tbody>
                         {data.monthlyData.map((item: any, idx: number) => (
-                          <tr key={idx} className="border-b hover:bg-gray-50">
+                          <tr key={idx} className="border-b hover:bg-background">
                             <td className="px-4 py-2">{item.month}</td>
                             <td className="px-4 py-2 text-right">{formatCurrency(item.value)}</td>
                             <td className="px-4 py-2 text-right">-</td>

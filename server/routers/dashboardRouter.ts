@@ -1,56 +1,41 @@
+import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import {
-  calculateMonthlyVGV,
-  calculateMonthlySalesCount,
-  calculateMonthlyAverageTicket,
-  calculateReceivedCommissions,
   calculateActivePortfolio,
 } from "../dashboardHelpers";
 import * as properfyIndicators from "../indicators/properfyIndicators";
+import { getDb } from "../db";
+import { sales } from "../../drizzle/schema";
+import { sql } from "drizzle-orm";
 
-export const dashboardRouter = router({
-  getKPIs: protectedProcedure.query(async ({ ctx }) => {
-    const companyId = ctx.user.companyId;
-    
-    if (!companyId) {
-      return {
-        vgv: 0,
-        salesCount: 0,
-        averageTicket: 0,
-        receivedCommissions: 0,
-        activePortfolio: 0,
-        carteiraAtiva: 0,
-        angariacesMes: 0,
-        baixasMes: 0,
-      };
-    }
+/**
+ * Calcula KPIs anuais acumulados (ano corrente)
+ */
+async function calculateYearlyKPIs(companyId: string, year: number) {
+  const db = await getDb();
+  if (!db) return { vgv: 0, salesCount: 0, averageTicket: 0, receivedCommissions: 0 };
 
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0);
+  const result = await db
+    .select({
+      vgv: sql<string>`SUM(CASE WHEN status NOT IN ('draft', 'cancelled') AND YEAR(saleDate) = ${year} AND YEAR(saleDate) > 1970 THEN saleValue ELSE 0 END)`,
+      salesCount: sql<string>`COUNT(CASE WHEN status NOT IN ('draft', 'cancelled') AND YEAR(saleDate) = ${year} AND YEAR(saleDate) > 1970 THEN 1 END)`,
+      receivedCommissions: sql<string>`SUM(CASE WHEN status = 'commission_paid' AND YEAR(saleDate) = ${year} AND YEAR(saleDate) > 1970 THEN totalCommission ELSE 0 END)`,
+    })
+    .from(sales)
+    .where(sql`${sales.companyId} = ${companyId}`);
 
-    const [vgv, salesCount, averageTicket, receivedCommissions, activePortfolio, carteiraAtiva, angariacesMes, baixasMes] = await Promise.all([
-      calculateMonthlyVGV(companyId, month, year),
-      calculateMonthlySalesCount(companyId, month, year),
-      calculateMonthlyAverageTicket(companyId, month, year),
-      calculateReceivedCommissions(companyId, month, year),
-      calculateActivePortfolio(companyId),
-      properfyIndicators.calculateActivePropertiesCount(startDate, endDate, companyId),
-      properfyIndicators.calculateAngariationsCount(startDate, endDate, companyId),
-      properfyIndicators.calculateRemovedPropertiesCount(startDate, endDate, companyId),
-    ]);
+  const vgv = Number(result[0]?.vgv || 0);
+  const salesCount = Number(result[0]?.salesCount || 0);
+  const receivedCommissions = Number(result[0]?.receivedCommissions || 0);
+  const averageTicket = salesCount > 0 ? vgv / salesCount : 0;
 
-    return {
-      vgv,
-      salesCount,
-      averageTicket,
-      receivedCommissions,
-      activePortfolio,
-      carteiraAtiva,
-      angariacesMes,
-      baixasMes,
-    };
-  }),
-});
+  console.log('[Dashboard] KPIs anuais:', { vgv, salesCount, averageTicket, receivedCommissions, year });
+  return { vgv, salesCount, averageTicket, receivedCommissions };
+}
+
+/**
+ * Calcula KPIs mensais
+ */
+async function calculateMonthlyKPIs(companyId: string, month: number, year: number) {
+  const db = await getDb();
+  if (!db) return { vgv: 0, salesCount: 0, averageTick

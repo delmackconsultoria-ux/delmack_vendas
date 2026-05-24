@@ -23,12 +23,27 @@ const MONTH_NAMES = [
 const CURRENT_YEAR = new Date().getFullYear();
 const CURRENT_MONTH = new Date().getMonth() + 1;
 
+// Determinar mês padrão inteligente: se estamos em Abril/2026 ou posterior sem dados,
+// usar Fevereiro/2026 (último mês com dados importados)
+function getDefaultMonth(): { month: number; year: number } {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  // Se estamos em 2026 e no mês 3 (Março) ou posterior, usar Fevereiro como padrão
+  if (year === 2026 && month >= 3) {
+    return { month: 2, year: 2026 };
+  }
+  return { month, year };
+}
+
+const DEFAULT_PERIOD = getDefaultMonth();
+
 export default function Indicators() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const utils = trpc.useUtils();
-  const [selectedMonth, setSelectedMonth] = useState<string>(String(CURRENT_MONTH));
-  const [selectedYear, setSelectedYear] = useState<string>(String(CURRENT_YEAR));
+  const [selectedMonth, setSelectedMonth] = useState<string>(String(DEFAULT_PERIOD.month));
+  const [selectedYear, setSelectedYear] = useState<string>(String(DEFAULT_PERIOD.year));
   const [isSyncing, setIsSyncing] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,6 +100,19 @@ export default function Indicators() {
   const { data: availableYears = [] } = trpc.indicators.getAvailableYears.useQuery(
     {
       companyId: user?.companyId || "",
+    },
+    {
+      enabled: !!user?.companyId,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Buscar dados do Properfy (Baixas, Angariações, Carteira de Divulgação)
+  const { data: properfyData } = trpc.indicators.getProperfyData.useQuery(
+    {
+      companyId: user?.companyId || "",
+      month: parseInt(selectedMonth),
+      year: parseInt(selectedYear),
     },
     {
       enabled: !!user?.companyId,
@@ -184,201 +212,204 @@ export default function Indicators() {
     };
 
     // Mapeamento de indicadores com suas metas (dinâmicas do banco)
+    // Para campos de R$: meta mensal = valor anual / 12, meta anual = valor anual
+    // Para campos de %: meta mensal = valor (% é igual todo mês), meta anual = valor
+    // Para campos de número: meta mensal = valor anual / 12, meta anual = valor anual
     const indicatorsList = [
       {
         title: "Negócios no mês (valor)",
-        monthlyGoal: (getGoalValue("businessMonth") || 1200000) / 12,
-        annualAverage: getGoalValue("businessMonth") || 1200000,
+        monthlyGoal: (getGoalValue("businessValue") || 0) / 12,
+        annualAverage: getGoalValue("businessValue") || 0,
         fieldName: "negociosValor",
       },
       {
         title: "Negócios no mês (unidades)",
-        monthlyGoal: (getGoalValue("businessMonth") || 120) / 12,
-        annualAverage: getGoalValue("businessMonth") || 120,
+        monthlyGoal: (getGoalValue("businessMonth") || 0) / 12,
+        annualAverage: getGoalValue("businessMonth") || 0,
         fieldName: "negociosUnidades",
         isCurrency: false,
         isInteger: true,
       },
       {
-        title: "Vendas Canceladas",
-        monthlyGoal: (getGoalValue("cancelledSales") || 24) / 12,
-        annualAverage: getGoalValue("cancelledSales") || 24,
+        title: "Vendas canceladas",
+        monthlyGoal: (getGoalValue("cancelledSales") || 0) / 12,
+        annualAverage: getGoalValue("cancelledSales") || 0,
         fieldName: "vendidosCancelados",
         isCurrency: false,
         isInteger: true,
       },
       {
         title: "VSO - venda/oferta",
-        monthlyGoal: getGoalValue("vsoRatio") || 0.6,
-        annualAverage: getGoalValue("vsoRatio") || 0.6,
+        monthlyGoal: getGoalValue("vsoRatio") || 0,
+        annualAverage: getGoalValue("vsoRatio") || 0,
         fieldName: "vsoVendaOferta",
         isCurrency: false,
         isPercentage: true,
       },
       {
-        title: "Comissão Recebida",
-        monthlyGoal: (getGoalValue("commissionReceived") || 600000) / 12,
-        annualAverage: getGoalValue("commissionReceived") || 600000,
+        title: "Comissão recebida",
+        monthlyGoal: (getGoalValue("commissionReceived") || 0) / 12,
+        annualAverage: getGoalValue("commissionReceived") || 0,
         fieldName: "comissaoRecebida",
       },
       {
-        title: "Comissão Vendida",
-        monthlyGoal: (getGoalValue("commissionSold") || 900000) / 12,
-        annualAverage: getGoalValue("commissionSold") || 900000,
+        title: "Comissão vendida",
+        monthlyGoal: (getGoalValue("commissionSold") || 0) / 12,
+        annualAverage: getGoalValue("commissionSold") || 0,
         fieldName: "comissaoVendida",
       },
       {
-        title: "Comissão Pendente Final do mês",
-        monthlyGoal: (getGoalValue("commissionPending") || 1200000) / 12,
-        annualAverage: getGoalValue("commissionPending") || 1200000,
+        title: "Comissão pendente final do mês",
+        monthlyGoal: (getGoalValue("commissionPending") || 0) / 12,
+        annualAverage: getGoalValue("commissionPending") || 0,
         fieldName: "comissaoPendente",
       },
       {
-        title: "Carteira de Divulgação (em número)",
-        monthlyGoal: (getGoalValue("portfolioDisclosure") || 4800) / 12,
-        annualAverage: getGoalValue("portfolioDisclosure") || 4800,
+        title: "Carteira de divulgação (em número)",
+        monthlyGoal: (getGoalValue("portfolioDisclosure") || 0) / 12,
+        annualAverage: getGoalValue("portfolioDisclosure") || 0,
         fieldName: "carteiraAtiva",
         isCurrency: false,
       },
       {
         title: "Angariações mês",
-        monthlyGoal: (getGoalValue("prospectingMonth") || 600) / 12,
-        annualAverage: getGoalValue("prospectingMonth") || 600,
+        monthlyGoal: (getGoalValue("prospectingMonth") || 0) / 12,
+        annualAverage: getGoalValue("prospectingMonth") || 0,
         fieldName: "angariacesMes",
         isCurrency: false,
       },
       {
         title: "Baixas no mês (em quantidade)",
-        monthlyGoal: (getGoalValue("removalsMonth") || 180) / 12,
-        annualAverage: getGoalValue("removalsMonth") || 180,
+        monthlyGoal: (getGoalValue("removalsMonth") || 0) / 12,
+        annualAverage: getGoalValue("removalsMonth") || 0,
         fieldName: "baixasMes",
         isCurrency: false,
       },
       {
         title: "% comissão vendida",
-        monthlyGoal: getGoalValue("commissionPercentage") || 0.6,
-        annualAverage: getGoalValue("commissionPercentage") || 0.6,
+        monthlyGoal: getGoalValue("commissionPercentage") || 0,
+        annualAverage: getGoalValue("commissionPercentage") || 0,
         fieldName: "percentualComissaoVendida",
         isCurrency: false,
         isPercentage: true,
       },
       {
         title: "Negócios acima de 1 milhão",
-        monthlyGoal: (getGoalValue("businessAboveOneMillion") || 60) / 12,
-        annualAverage: getGoalValue("businessAboveOneMillion") || 60,
-        fieldName: "negociosAcimaMilhao",
+        monthlyGoal: (getGoalValue("businessOver1m") || 0) / 12,
+        annualAverage: getGoalValue("businessOver1m") || 0,
+        fieldName: "negociosAcima1M",
         isCurrency: false,
       },
       {
         title: "Prazo médio recebimento de venda",
-        monthlyGoal: (getGoalValue("averageReceiptTime") || 90) / 12,
-        annualAverage: getGoalValue("averageReceiptTime") || 90,
+        monthlyGoal: getGoalValue("avgReceiptTime") || 0,
+        annualAverage: getGoalValue("avgReceiptTime") || 0,
         fieldName: "prazoMedioRecebimento",
         isCurrency: false,
       },
       {
         title: "% Com cancelada / com pendente",
-        monthlyGoal: getGoalValue("cancelledVsPending") || 0.2,
-        annualAverage: getGoalValue("cancelledVsPending") || 0.2,
-        fieldName: "percentualCancelada",
+        monthlyGoal: getGoalValue("cancelledPendingRatio") || 0,
+        annualAverage: getGoalValue("cancelledPendingRatio") || 0,
+        fieldName: "percentualCanceladaPendente",
         isCurrency: false,
         isPercentage: true,
       },
       {
         title: "Valor médio do imóvel de venda",
-        monthlyGoal: (getGoalValue("averagePropertyValue") || 500000) / 12,
-        annualAverage: getGoalValue("averagePropertyValue") || 500000,
+        monthlyGoal: (getGoalValue("avgPropertyValue") || 0) / 12,
+        annualAverage: getGoalValue("avgPropertyValue") || 0,
         fieldName: "valorMedioImovel",
       },
       {
-        title: "Negócios na Rede",
-        monthlyGoal: (getGoalValue("businessNetwork") || 30) / 12,
-        annualAverage: getGoalValue("businessNetwork") || 30,
+        title: "Negócios na rede",
+        monthlyGoal: (getGoalValue("networkBusiness") || 0) / 12,
+        annualAverage: getGoalValue("networkBusiness") || 0,
         fieldName: "negociosRede",
         isCurrency: false,
         isInteger: true,
       },
       {
-        title: "Negócios Internos",
-        monthlyGoal: (getGoalValue("businessInternal") || 30) / 12,
-        annualAverage: getGoalValue("businessInternal") || 30,
+        title: "Negócios internos",
+        monthlyGoal: (getGoalValue("internalBusiness") || 0) / 12,
+        annualAverage: getGoalValue("internalBusiness") || 0,
         fieldName: "negociosInternos",
         isCurrency: false,
         isInteger: true,
       },
       {
-        title: "Negócios Parceria Externa",
-        monthlyGoal: (getGoalValue("businessExternalPartnership") || 30) / 12,
-        annualAverage: getGoalValue("businessExternalPartnership") || 30,
-        fieldName: "negociosParcerias",
+        title: "Negócios parceria externa",
+        monthlyGoal: (getGoalValue("externalPartnership") || 0) / 12,
+        annualAverage: getGoalValue("externalPartnership") || 0,
+        fieldName: "negociosParceriaExterna",
         isCurrency: false,
         isInteger: true,
       },
       {
-        title: "Negócios Lançamentos",
-        monthlyGoal: (getGoalValue("businessLaunches") || 30) / 12,
-        annualAverage: getGoalValue("businessLaunches") || 30,
+        title: "Negócios lançamentos",
+        monthlyGoal: (getGoalValue("launchBusiness") || 0) / 12,
+        annualAverage: getGoalValue("launchBusiness") || 0,
         fieldName: "negociosLancamentos",
         isCurrency: false,
         isInteger: true,
       },
       {
-        title: "Número de atendimentos Prontos",
-        monthlyGoal: (getGoalValue("attendanceReady") || 300) / 12,
-        annualAverage: getGoalValue("attendanceReady") || 300,
+        title: "Número de atendimentos prontos",
+        monthlyGoal: (getGoalValue("readyCalls") || 0) / 12,
+        annualAverage: getGoalValue("readyCalls") || 0,
         fieldName: "atendimentosProntos",
         isCurrency: false,
       },
       {
-        title: "Número de atendimentos Lançamentos",
-        monthlyGoal: (getGoalValue("attendanceLaunches") || 300) / 12,
-        annualAverage: getGoalValue("attendanceLaunches") || 300,
+        title: "Número de atendimentos lançamentos",
+        monthlyGoal: (getGoalValue("launchCalls") || 0) / 12,
+        annualAverage: getGoalValue("launchCalls") || 0,
         fieldName: "atendimentosLancamentos",
         isCurrency: false,
       },
       {
         title: "Tempo médio de venda ang X venda",
-        monthlyGoal: (getGoalValue("averageSaleTime") || 90) / 12,
-        annualAverage: getGoalValue("averageSaleTime") || 90,
-        fieldName: "tempoMedioVenda",
+        monthlyGoal: getGoalValue("avgSaleTime") || 0,
+        annualAverage: getGoalValue("avgSaleTime") || 0,
+        fieldName: "tempoMedioVendaAngVenda",
         isCurrency: false,
       },
       {
-        title: "Despesa Geral",
-        monthlyGoal: (getGoalValue("generalExpense") || 50000) / 12,
-        annualAverage: getGoalValue("generalExpense") || 50000,
+        title: "Despesa geral",
+        monthlyGoal: (getGoalValue("generalExpense") || 0) / 12,
+        annualAverage: getGoalValue("generalExpense") || 0,
         fieldName: "despesaGeral",
         manualField: "despesaGeral",
         isManualData: true,
       },
       {
-        title: "Despesa com Impostos",
-        monthlyGoal: (getGoalValue("taxExpense") || 30000) / 12,
-        annualAverage: getGoalValue("taxExpense") || 30000,
+        title: "Despesa com impostos",
+        monthlyGoal: (getGoalValue("taxExpense") || 0) / 12,
+        annualAverage: getGoalValue("taxExpense") || 0,
         fieldName: "despesaImpostos",
         manualField: "despesaImpostos",
         isManualData: true,
       },
       {
-        title: "Fundo Inovação",
-        monthlyGoal: (getGoalValue("innovationFund") || 20000) / 12,
-        annualAverage: getGoalValue("innovationFund") || 20000,
+        title: "Fundo inovação",
+        monthlyGoal: (getGoalValue("innovationFund") || 0) / 12,
+        annualAverage: getGoalValue("innovationFund") || 0,
         fieldName: "fundoInovacao",
         manualField: "fundoInovacao",
         isManualData: true,
       },
       {
-        title: "Resultado Sócios",
-        monthlyGoal: (getGoalValue("partnersResult") || 100000) / 12,
-        annualAverage: getGoalValue("partnersResult") || 100000,
+        title: "Resultado sócios",
+        monthlyGoal: (getGoalValue("partnersResult") || 0) / 12,
+        annualAverage: getGoalValue("partnersResult") || 0,
         fieldName: "resultadoSocios",
         manualField: "resultadoSocios",
         isManualData: true,
       },
       {
-        title: "Fundo Emergencial",
-        monthlyGoal: (getGoalValue("emergencyFund") || 10000) / 12,
-        annualAverage: getGoalValue("emergencyFund") || 10000,
+        title: "Fundo emergencial",
+        monthlyGoal: (getGoalValue("emergencyFund") || 0) / 12,
+        annualAverage: getGoalValue("emergencyFund") || 0,
         fieldName: "fundoEmergencial",
         manualField: "fundoEmergencial",
         isManualData: true,
@@ -413,15 +444,20 @@ export default function Indicators() {
         }
       }
 
-      // Calcular percentual
-      const percentage = indicator.monthlyGoal > 0 
-        ? ((totalValue / (indicator.monthlyGoal * 12)) * 100).toFixed(1)
+      // Calcular média mensal real (apenas meses com dados > 0)
+      const monthsWithData = Object.values(monthlyValues).filter((v) => v > 0).length;
+      const realAnnualAverage = monthsWithData > 0 ? totalValue / monthsWithData : 0;
+
+      // Calcular % atingido com base na meta anual (annualAverage = meta anual)
+      const annualGoal = indicator.annualAverage; // meta anual configurada
+      const percentage = annualGoal > 0
+        ? ((totalValue / annualGoal) * 100).toFixed(1)
         : "0.0";
 
       indicators.push({
         title: indicator.title,
         monthlyGoal: indicator.monthlyGoal,
-        annualAverage: indicator.annualAverage,
+        annualAverage: realAnnualAverage,
         percentageAchieved: percentage,
         total: totalValue,
         months: monthlyValues as any,
@@ -494,37 +530,4 @@ export default function Indicators() {
           </Card>
         ) : (
           <Card>
-            <CardHeader>
-              <CardTitle>Tabela Consolidada de Indicadores</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <IndicatorsConsolidatedTable indicators={consolidatedData} />
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Modais */}
-        {selectedIndicator && (
-          <IndicatorHistoryModal
-            isOpen={isModalOpen}
-            onClose={closeIndicatorModal}
-            indicatorName={selectedIndicator}
-          />
-        )}
-
-        {/* Drawer para edição de dados manuais */}
-        <ManualDataDrawer
-          isOpen={isDrawerOpen}
-          onClose={handleDrawerClose}
-          month={parseInt(selectedMonth)}
-          year={parseInt(selectedYear)}
-          onSaveSuccess={() => {
-            refetchYear();
-            refetch();
-            refetchMonthlyManualData();
-          }}
-        />
-      </div>
-    </AppLayout>
-  );
-}
+         

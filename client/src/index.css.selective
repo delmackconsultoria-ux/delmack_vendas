@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS seletivo - apenas para melhorar visibilidade */
+:root {
+  --primary: #0b0bb5;
+  --primary-foreground: #ffffff;
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+}
+
+/* Garantir que o body tem fundo branco */
+body {
+  @apply bg-white text-gray-900;
+}
+
+/* Melhorar visibilidade de inputs */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  @apply bg-white border-gray-300;
+}
+
+/* Melhorar visibilidade de tabelas */
+table {
+  @apply border-collapse;
+}
+
+th {
+  @apply bg-gray-100 border-gray-300;
+}
+
+td {
+  @apply border-gray-300;
+}

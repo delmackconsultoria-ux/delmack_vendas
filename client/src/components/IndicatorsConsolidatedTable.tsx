@@ -61,11 +61,11 @@ const formatInteger = (value: number): string => {
 };
 
 const formatPercentage = (value: number): string => {
+  // O valor já é o percentual (ex: 5.77 = 5,77%), não usar style:percent que multiplicaria por 100
   return new Intl.NumberFormat("pt-BR", {
-    style: "percent",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(value) + "%";
 };
 
 export function IndicatorsConsolidatedTable({
@@ -117,30 +117,36 @@ export function IndicatorsConsolidatedTable({
     return "text-red-600 font-semibold";
   };
 
-  const getMonthColor = (monthValue: number, monthlyGoal: number | string): string => {
+  const getMonthColorStyle = (monthValue: number, monthlyGoal: number | string): React.CSSProperties => {
     const goal = typeof monthlyGoal === "string" ? parseFloat(monthlyGoal) : monthlyGoal;
     // Não colorir se o valor for 0 ou se a meta for 0
-    if (monthValue === 0 || goal === 0) return "";
+    if (monthValue === 0 || goal === 0) return {};
     
     if (monthValue >= goal) {
-      return "bg-green-100 text-green-900";
+      return {
+        backgroundColor: '#dcfce7',
+        color: '#14532d',
+      };
     } else {
-      return "bg-red-100 text-red-900";
+      return {
+        backgroundColor: '#fee2e2',
+        color: '#7f1d1d',
+      };
     }
   };
 
   return (
     <div className="overflow-x-auto">
-      <Table className="text-sm">
+      <Table className="text-xs">
         <TableHeader className="sticky top-0 z-20">
           <TableRow className="bg-muted/50">
-            <TableHead className="sticky left-0 top-0 bg-muted/50 z-30 min-w-[200px]">Título</TableHead>
-            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Meta Mensal</TableHead>
-            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Média Anual</TableHead>
-            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[80px]">%</TableHead>
-            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[100px]">Total</TableHead>
+            <TableHead className="sticky left-0 top-0 bg-muted/50 z-30 min-w-[140px]">Título</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[65px]">Meta Mensal</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[65px]">Média Anual</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[45px]">%</TableHead>
+            <TableHead className="sticky top-0 bg-muted/50 z-20 text-right min-w-[65px]">Total</TableHead>
             {MONTH_ABBREVIATIONS.map((month) => (
-              <TableHead key={month} className="sticky top-0 bg-muted/50 z-20 text-right min-w-[70px]">
+              <TableHead key={month} className="sticky top-0 bg-muted/50 z-20 text-right min-w-[55px] w-[55px]">
                 {month}
               </TableHead>
             ))}
@@ -148,7 +154,7 @@ export function IndicatorsConsolidatedTable({
         </TableHeader>
         <TableBody>
           {indicators.map((indicator, idx) => (
-            <TableRow key={idx} className={indicator.isManualData ? "bg-blue-50" : idx % 2 === 0 ? "bg-white" : "bg-muted/30"}>
+            <TableRow key={idx} className={indicator.isManualData ? "bg-blue-50" : idx % 2 === 0 ? "bg-background" : "bg-muted/30"}>
               <TableCell className={`sticky left-0 z-10 font-medium ${indicator.isManualData ? "bg-blue-50" : "bg-inherit"}`}>
                 {indicator.title}
               </TableCell>
@@ -158,22 +164,15 @@ export function IndicatorsConsolidatedTable({
                 {parseFloat(String(indicator.percentageAchieved)).toFixed(1)}%
               </TableCell>
               <TableCell className="text-right font-semibold">{formatValue(indicator.total, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jan, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jan, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.fev, indicator.monthlyGoal)}`}>{formatValue(indicator.months.fev, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.mar, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mar, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.abr, indicator.monthlyGoal)}`}>{formatValue(indicator.months.abr, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.mai, indicator.monthlyGoal)}`}>{formatValue(indicator.months.mai, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jun, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jun, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.jul, indicator.monthlyGoal)}`}>{formatValue(indicator.months.jul, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.ago, indicator.monthlyGoal)}`}>{formatValue(indicator.months.ago, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.set, indicator.monthlyGoal)}`}>{formatValue(indicator.months.set, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.out, indicator.monthlyGoal)}`}>{formatValue(indicator.months.out, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.nov, indicator.monthlyGoal)}`}>{formatValue(indicator.months.nov, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-              <TableCell className={`text-right ${getMonthColor(indicator.months.dez, indicator.monthlyGoal)}`}>{formatValue(indicator.months.dez, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.jan, indicator.monthlyGoal)}>{formatValue(indicator.months.jan, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.fev, indicator.monthlyGoal)}>{formatValue(indicator.months.fev, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.mar, indicator.monthlyGoal)}>{formatValue(indicator.months.mar, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.abr, indicator.monthlyGoal)}>{formatValue(indicator.months.abr, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.mai, indicator.monthlyGoal)}>{formatValue(indicator.months.mai, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.jun, indicator.monthlyGoal)}>{formatValue(indicator.months.jun, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.jul, indicator.monthlyGoal)}>{formatValue(indicator.months.jul, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.ago, indicator.monthlyGoal)}>{formatValue(indicator.months.ago, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.set, indicator.monthlyGoal)}>{formatValue(indicator.months.set, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.out, indicator.monthlyGoal)}>{formatValue(indicator.months.out, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.nov, indicator.monthlyGoal)}>{formatValue(indicator.months.nov, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>
+              <TableCell className="text-right" style={getMonthColorStyle(indicator.months.dez, indicator.monthlyGoal)}>{formatValue(indicator.months.dez, indicator.isCurrency !== false, indicator.isPercentage, indicator.isInteger)}</TableCell>

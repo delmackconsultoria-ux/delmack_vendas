@@ -18,7 +18,7 @@ function getLoginUrlFallback(): string {
 }
 
 export function useAuth(options?: UseAuthOptions) {
-  const { redirectOnUnauthenticated = false, redirectPath = getLoginUrl() } =
+  const { redirectOnUnauthenticated = false, redirectPath = "/login" } =
     options ?? {};
   const utils = trpc.useUtils();
 
@@ -41,15 +41,16 @@ export function useAuth(options?: UseAuthOptions) {
         error instanceof TRPCClientError &&
         error.data?.code === "UNAUTHORIZED"
       ) {
-        return;
+        // Usuário já estava deslogado, apenas limpar dados
+      } else {
+        throw error;
       }
-      throw error;
     } finally {
+      // Limpar dados do usuário
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
-      // Redirecionar para página de login após logout
-      // Usar window.location.href com URL absoluta para garantir redirecionamento correto
-      window.location.href = `${window.location.origin}/login`;
+      // NÃO redirecionar aqui - deixar o useEffect fazer isso
+      // Isso evita renderizar 404 durante a transição
     }
   }, [logoutMutation, utils]);
 
@@ -73,15 +74,19 @@ export function useAuth(options?: UseAuthOptions) {
   ]);
 
   useEffect(() => {
-    if (!redirectOnUnauthenticated) return;
     if (meQuery.isLoading || logoutMutation.isPending) return;
     if (state.user) return;
     if (typeof window === "undefined") return;
     if (window.location.pathname === redirectPath) return;
 
-    window.location.href = redirectPath
+    // Redirecionar para login quando não autenticado
+    // Usar setTimeout para dar tempo do App renderizar as rotas públicas
+    const timer = setTimeout(() => {
+      window.location.href = redirectPath;
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [
-    redirectOnUnauthenticated,
     redirectPath,
     logoutMutation.isPending,
     meQuery.isLoading,
