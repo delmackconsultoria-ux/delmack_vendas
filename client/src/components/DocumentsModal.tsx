@@ -19,6 +19,8 @@ interface DocumentsModalProps {
   saleId: string;
   canUpload?: boolean;
   onUpload?: (documentType: string, file: File) => Promise<void>;
+  proposalDocumentUrl?: string | null; // URL do Anexo de Proposta salvo pelo corretor
+  sinalComprovanteUrl?: string | null; // URL do Comprovante de Sinal salvo pelo corretor
 }
 
 const DOCUMENT_TYPES: Record<string, string> = {
@@ -29,9 +31,11 @@ const DOCUMENT_TYPES: Record<string, string> = {
   outro: "Outro Documento",
 };
 
-export function DocumentsModal({ open, onClose, documents, saleId, canUpload = false, onUpload }: DocumentsModalProps) {
+export function DocumentsModal({ open, onClose, documents, saleId, canUpload = false, onUpload, proposalDocumentUrl, sinalComprovanteUrl }: DocumentsModalProps) {
   const [uploading, setUploading] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewFileName, setPreviewFileName] = useState<string>('');
+  const [loadingPreview, setLoadingPreview] = useState(false);
 
   const handleFileSelect = async (documentType: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -71,15 +75,31 @@ export function DocumentsModal({ open, onClose, documents, saleId, canUpload = f
     }
   };
 
-  const handlePreview = (url: string) => {
-    setPreviewUrl(url);
+  // Usa a URL direta agora que a rota /api/uploads é pública e não exige cookie
+  const getDirectUrl = (url: string) => {
+    // Data URLs (base64) não devem receber query string
+    if (url.startsWith('data:')) return url;
+    const cleanUrl = url.split('?')[0];
+    const urlWithCacheBust = cleanUrl + '?t=' + Date.now();
+    return urlWithCacheBust.startsWith('/') ? window.location.origin + urlWithCacheBust : urlWithCacheBust;
+  };
+
+  const handlePreview = (url: string, fileName: string) => {
+    // Para garantir compatibilidade com Windows 8.1 / Chrome antigo,
+    // abrimos a imagem em uma nova aba em vez de tentar renderizar no modal
+    const directUrl = getDirectUrl(url);
+    window.open(directUrl, '_blank');
   };
 
   const handleDownload = (url: string, fileName: string) => {
-    const link = document.createElement("a");
-    link.href = url;
+    const directUrl = getDirectUrl(url);
+    const link = document.createElement('a');
+    link.href = directUrl;
     link.download = fileName;
+    link.target = '_blank';
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -92,7 +112,31 @@ export function DocumentsModal({ open, onClose, documents, saleId, canUpload = f
 
           <div className="space-y-4">
             {Object.entries(DOCUMENT_TYPES).map(([type, label]) => {
-              const doc = documents?.[type];
+              // Para 'proposta', usar proposalDocumentUrl como fallback se não houver doc no JSON
+              let doc = documents?.[type];
+              if (!doc && type === 'sinal_comprovante' && sinalComprovanteUrl) {
+                const isImage = sinalComprovanteUrl.startsWith('data:image');
+                const ext = isImage ? 'jpg' : 'pdf';
+                doc = {
+                  url: sinalComprovanteUrl,
+                  fileName: `comprovante_sinal.${ext}`,
+                  uploadedBy: 'Corretor',
+                  uploadedAt: new Date().toISOString(),
+                  mimeType: isImage ? 'image/jpeg' : 'application/pdf',
+                };
+              }
+              if (!doc && type === 'proposta' && proposalDocumentUrl) {
+                // Remover query string (?t=...) do nome do arquivo
+                const rawFileName = proposalDocumentUrl.split('/').pop() || 'proposta';
+                const fileName = rawFileName.split('?')[0];
+                doc = {
+                  url: proposalDocumentUrl,
+                  fileName,
+                  uploadedBy: 'Corretor',
+                  uploadedAt: new Date().toISOString(),
+                  mimeType: fileName.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
+                };
+              }
               
               return (
                 <div key={type} className="border rounded-lg p-4">
@@ -123,22 +167,23 @@ export function DocumentsModal({ open, onClose, documents, saleId, canUpload = f
                   </div>
 
                   {doc ? (
-                    <div className="bg-slate-50 rounded p-3 space-y-2">
+                    <div className="bg-background rounded p-3 space-y-2">
                       <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-slate-500" />
+                        <FileText className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm font-medium">{doc.fileName}</span>
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-muted-foreground">
                         Enviado em {new Date(doc.uploadedAt).toLocaleString("pt-BR")}
                       </div>
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handlePreview(doc.url)}
+                          disabled={loadingPreview}
+                          onClick={() => handlePreview(doc.url, doc.fileName)}
                         >
                           <Eye className="w-4 h-4 mr-2" />
-                          Visualizar
+                          {loadingPreview ? "Carregando..." : "Visualizar"}
                         </Button>
                         <Button
                           size="sm"
@@ -151,7 +196,7 @@ export function DocumentsModal({ open, onClose, documents, saleId, canUpload = f
                       </div>
                     </div>
                   ) : (
-                    <div className="text-sm text-slate-500">Nenhum documento anexado</div>
+                    <div className="text-sm text-muted-foreground">Nenhum documento anexado</div>
                   )}
                 </div>
               );
@@ -160,40 +205,7 @@ export function DocumentsModal({ open, onClose, documents, saleId, canUpload = f
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Preview */}
-      {previewUrl && (
-        <Dialog open={!!previewUrl} onOpenChange={() => setPreviewUrl(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh]">
-            <DialogHeader>
-              <DialogTitle className="flex items-center justify-between">
-                <span>Visualização do Documento</span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setPreviewUrl(null)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </DialogTitle>
-            </DialogHeader>
-            <div className="w-full h-[70vh]">
-              {previewUrl.endsWith(".pdf") ? (
-                <iframe
-                  src={previewUrl}
-                  className="w-full h-full border rounded"
-                  title="Preview do documento"
-                />
-              ) : (
-                <img
-                  src={previewUrl}
-                  alt="Preview do documento"
-                  className="w-full h-full object-contain"
-                />
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+      {/* Modal de Preview removido: a visualização agora abre em nova aba para garantir compatibilidade */}
     </>
   );
 }

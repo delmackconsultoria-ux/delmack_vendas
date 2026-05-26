@@ -9,7 +9,7 @@ import * as manualDataHelper from "../indicators/manualDataHelper";
 import * as auditLogHelper from "../indicators/auditLogHelper";
 import { syncProperfyCards } from "../services/properfyCardsSyncService";
 import { getDb } from "../db";
-import { indicatorGoals } from "../../drizzle/schema";
+import { indicatorGoals, monthlyIndicators } from "../../drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { TRPCError } from "@trpc/server";
@@ -184,6 +184,63 @@ export const indicatorsRouter = router({
           month
         );
 
+        // Buscar dados históricos da tabela monthlyIndicators
+        // SE existirem dados históricos importados, eles têm PRIORIDADE sobre os cálculos dinâmicos
+        const db2 = await getDb();
+        let historicalData: any = null;
+        if (db2) {
+          const rows = await db2.select().from(monthlyIndicators)
+            .where(and(
+              eq(monthlyIndicators.companyId, companyId),
+              sql`${monthlyIndicators.year} = ${year}`,
+              sql`${monthlyIndicators.month} = ${month}`
+            ))
+            .limit(1);
+          if (rows.length > 0) historicalData = rows[0];
+        }
+
+        // Se há dados históricos importados, usá-los como fonte primária para TODOS os campos
+        if (historicalData) {
+          return {
+            isHistorical: true,
+            period: `${MONTH_NAMES[month - 1]}/${year}`,
+            negociosValor: Number(historicalData.negociosValor) || 0,
+            negociosUnidades: historicalData.negociosUnidades || 0,
+            vendidosCancelados: historicalData.vendidosCancelados || 0,
+            vsoVendaOferta: Number(historicalData.vsoVendaOferta) || 0,
+            comissaoRecebida: Number(historicalData.comissaoRecebida) || 0,
+            comissaoVendida: Number(historicalData.comissaoVendida) || 0,
+            comissaoPendente: Number(historicalData.comissaoPendente) || 0,
+            percentualComissaoVendida: Number(historicalData.percentualComissaoVendida) || 0,
+            negociosAcima1M: historicalData.negociosAcima1M || 0,
+            prazoMedioRecebimento: historicalData.prazoMedioRecebimento || 0,
+            percentualCanceladaPendente: Number(historicalData.percentualCanceladaPendente) || 0,
+            valorMedioImovel: Number(historicalData.valorMedioImovel) || 0,
+            negociosRede: historicalData.negociosRede || 0,
+            negociosInternos: historicalData.negociosInternos || 0,
+            negociosParceriaExterna: historicalData.negociosParceriaExterna || 0,
+            negociosLancamentos: historicalData.negociosLancamentos || 0,
+            carteiraAtiva: historicalData.carteiraAtiva || 0,
+            angariacesMes: historicalData.angariacesMes || 0,
+            baixasMes: historicalData.baixasMes || 0,
+            atendimentosProntos: historicalData.atendimentosProntos || 0,
+            atendimentosLancamentos: historicalData.atendimentosLancamentos || 0,
+            tempoMedioVendaAngVenda: 0,
+            despesaGeral: Number(historicalData.despesaGeral) || manualData.despesaGeral,
+            despesaImpostos: Number(historicalData.despesaImpostos) || manualData.despesaImpostos,
+            fundoInovacao: Number(historicalData.fundoInovacao) || manualData.fundoInovacao,
+            resultadoSocios: Number(historicalData.resultadoSocios) || manualData.resultadoSocios,
+            fundoEmergencial: Number(historicalData.fundoEmergencial) || manualData.fundoEmergencial,
+          };
+        }
+
+        // Sem dados históricos: usar cálculo dinâmico (mês atual ou meses sem importação)
+        const finalCarteiraAtiva = activeProperties > 0 ? activeProperties : 0;
+        const finalAngariacesMes = angariations > 0 ? angariations : 0;
+        const finalBaixasMes = removedProperties > 0 ? removedProperties : 0;
+        const finalAtendimentosProntos = readyAttendances > 0 ? readyAttendances : 0;
+        const finalAtendimentosLancamentos = launchAttendances > 0 ? launchAttendances : 0;
+
         return {
           isHistorical: false,
           period: `${MONTH_NAMES[month - 1]}/${year}`,
@@ -205,12 +262,12 @@ export const indicatorsRouter = router({
           negociosLancamentos: salesLaunch,
 
           // Properfy
-          carteiraAtiva: activeProperties,
-          angariacesMes: angariations,
-          baixasMes: removedProperties,
+          carteiraAtiva: finalCarteiraAtiva,
+          angariacesMes: finalAngariacesMes,
+          baixasMes: finalBaixasMes,
           vsoVendaOferta: vso,
-          atendimentosProntos: readyAttendances,
-          atendimentosLancamentos: launchAttendances,
+          atendimentosProntos: finalAtendimentosProntos,
+          atendimentosLancamentos: finalAtendimentosLancamentos,
           tempoMedioVendaAngVenda: averageSaleTime,
 
           // Manuais
@@ -327,11 +384,12 @@ export const indicatorsRouter = router({
             endDate
           );
 
-          // Indicadores do Properfy - APENAS para o mês corrente
+          // Indicadores do Properfy - para o mês corrente e meses anteriores com dados
           const today = new Date();
           const currentYear = today.getFullYear();
           const currentMonth = today.getMonth() + 1;
-          const isCurrentMonth = year === currentYear && month === currentMonth;
+          // Incluir mês atual e todos os meses passados do ano (dados já sincronizados no banco)
+          const isCurrentOrPastMonth = (year < currentYear) || (year === currentYear && month <= currentMonth);
           
           let activeProperties = 0;
           let angariations = 0;
@@ -342,8 +400,8 @@ export const indicatorsRouter = router({
           let launchAttendances = 0;
           let averageSaleTime = 0;
           
-          // Se for o mês corrente, puxar dados do Properfy
-          if (isCurrentMonth) {
+          // Buscar dados do Properfy para mês atual e meses passados (dados já estão no banco local)
+          if (isCurrentOrPastMonth) {
             activeProperties = await properfyIndicators.calculateActivePropertiesCount(
               startDate,
               endDate,
@@ -386,7 +444,7 @@ export const indicatorsRouter = router({
               companyId
             );
           }
-          // Se não for o mês corrente, todos os indicadores Properfy = 0
+          // Se for mês futuro, todos os indicadores Properfy = 0
 
           // Buscar dados manuais salvos para este mês
           const manualData = await manualDataHelper.getManualData(
@@ -395,41 +453,89 @@ export const indicatorsRouter = router({
             month
           );
 
-          monthlyData.push({
-            month,
-            // Sistema de Vendas
-            negociosValor: salesValue.value,
-            negociosUnidades: salesCount,
-            vendidosCancelados: cancelledSales,
-            comissaoRecebida: commissionReceived,
-            comissaoVendida: commissionSold,
-            comissaoPendente: commissionPending,
-            percentualComissaoVendida: percentCommission,
-            negociosAcima1M: salesAbove1M,
-            prazoMedioRecebimento: avgPaymentDays,
-            percentualCanceladaPendente: percentCancelledPending,
-            valorMedioImovel: avgPropertyValue,
-            negociosRede: salesUNA,
-            negociosInternos: salesInternal,
-            negociosParceriaExterna: salesExternalPartner,
-            negociosLancamentos: salesLaunch,
+          // Buscar dados históricos da tabela monthlyIndicators
+          // SE existirem dados históricos importados, eles têm PRIORIDADE
+          const db3 = await getDb();
+          let historicalMonthData: any = null;
+          if (db3) {
+            const histRows = await db3.select().from(monthlyIndicators)
+              .where(and(
+                eq(monthlyIndicators.companyId, companyId),
+                sql`${monthlyIndicators.year} = ${year}`,
+                sql`${monthlyIndicators.month} = ${month}`
+              ))
+              .limit(1);
+            if (histRows.length > 0) historicalMonthData = histRows[0];
+          }
 
-            // Properfy
-            carteiraAtiva: activeProperties,
-            angariacesMes: angariations,
-            baixasMes: removedProperties,
-            vsoVendaOferta: vso,
-            atendimentosProntos: readyAttendances,
-            atendimentosLancamentos: launchAttendances,
-            tempoMedioVendaAngVenda: averageSaleTime,
+          if (historicalMonthData) {
+            monthlyData.push({
+              month,
+              negociosValor: Number(historicalMonthData.negociosValor) || 0,
+              negociosUnidades: historicalMonthData.negociosUnidades || 0,
+              vendidosCancelados: historicalMonthData.vendidosCancelados || 0,
+              vsoVendaOferta: Number(historicalMonthData.vsoVendaOferta) || 0,
+              comissaoRecebida: Number(historicalMonthData.comissaoRecebida) || 0,
+              comissaoVendida: Number(historicalMonthData.comissaoVendida) || 0,
+              comissaoPendente: Number(historicalMonthData.comissaoPendente) || 0,
+              percentualComissaoVendida: Number(historicalMonthData.percentualComissaoVendida) || 0,
+              negociosAcima1M: historicalMonthData.negociosAcima1M || 0,
+              prazoMedioRecebimento: historicalMonthData.prazoMedioRecebimento || 0,
+              percentualCanceladaPendente: Number(historicalMonthData.percentualCanceladaPendente) || 0,
+              valorMedioImovel: Number(historicalMonthData.valorMedioImovel) || 0,
+              negociosRede: historicalMonthData.negociosRede || 0,
+              negociosInternos: historicalMonthData.negociosInternos || 0,
+              negociosParceriaExterna: historicalMonthData.negociosParceriaExterna || 0,
+              negociosLancamentos: historicalMonthData.negociosLancamentos || 0,
+              carteiraAtiva: historicalMonthData.carteiraAtiva || 0,
+              angariacesMes: historicalMonthData.angariacesMes || 0,
+              baixasMes: historicalMonthData.baixasMes || 0,
+              atendimentosProntos: historicalMonthData.atendimentosProntos || 0,
+              atendimentosLancamentos: historicalMonthData.atendimentosLancamentos || 0,
+              tempoMedioVendaAngVenda: 0,
+              despesaGeral: Number(historicalMonthData.despesaGeral) || manualData.despesaGeral,
+              despesaImpostos: Number(historicalMonthData.despesaImpostos) || manualData.despesaImpostos,
+              fundoInovacao: Number(historicalMonthData.fundoInovacao) || manualData.fundoInovacao,
+              resultadoSocios: Number(historicalMonthData.resultadoSocios) || manualData.resultadoSocios,
+              fundoEmergencial: Number(historicalMonthData.fundoEmergencial) || manualData.fundoEmergencial,
+            });
+          } else {
+            monthlyData.push({
+              month,
+              // Sistema de Vendas
+              negociosValor: salesValue.value,
+              negociosUnidades: salesCount,
+              vendidosCancelados: cancelledSales,
+              comissaoRecebida: commissionReceived,
+              comissaoVendida: commissionSold,
+              comissaoPendente: commissionPending,
+              percentualComissaoVendida: percentCommission,
+              negociosAcima1M: salesAbove1M,
+              prazoMedioRecebimento: avgPaymentDays,
+              percentualCanceladaPendente: percentCancelledPending,
+              valorMedioImovel: avgPropertyValue,
+              negociosRede: salesUNA,
+              negociosInternos: salesInternal,
+              negociosParceriaExterna: salesExternalPartner,
+              negociosLancamentos: salesLaunch,
 
-            // Manuais
-            despesaGeral: manualData.despesaGeral,
-            despesaImpostos: manualData.despesaImpostos,
-            fundoInovacao: manualData.fundoInovacao,
-            resultadoSocios: manualData.resultadoSocios,
-            fundoEmergencial: manualData.fundoEmergencial,
-          });
+              // Properfy
+              carteiraAtiva: activeProperties,
+              angariacesMes: angariations,
+              baixasMes: removedProperties,
+              vsoVendaOferta: vso,
+              atendimentosProntos: readyAttendances,
+              atendimentosLancamentos: launchAttendances,
+              tempoMedioVendaAngVenda: averageSaleTime,
+
+              // Manuais
+              despesaGeral: manualData.despesaGeral,
+              despesaImpostos: manualData.despesaImpostos,
+              fundoInovacao: manualData.fundoInovacao,
+              resultadoSocios: manualData.resultadoSocios,
+              fundoEmergencial: manualData.fundoEmergencial,
+            });
+          }
         } catch (error) {
           console.error(`[Indicators] Erro ao calcular indicadores para ${month}/${year}:`, error);
           monthlyData.push({
@@ -636,6 +742,67 @@ export const indicatorsRouter = router({
       };
     }
   }),
+
+  /**
+   * Obter dados do Properfy para um período
+   * Retorna: Carteira de Divulgação, Angariações, Baixas
+   */
+  getProperfyData: publicProcedure
+    .input(
+      z.object({
+        companyId: z.string(),
+        year: z.number(),
+        month: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { companyId, year, month } = input;
+      
+      // Calcular datas do mês
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0);
+      
+      try {
+        // Buscar dados do Properfy
+        const activeProperties = await properfyIndicators.calculateActivePropertiesCount(
+          startDate,
+          endDate,
+          companyId
+        );
+        
+        const angariations = await properfyIndicators.calculateAngariationsCount(
+          startDate,
+          endDate,
+          companyId
+        );
+        
+        const removedProperties = await properfyIndicators.calculateRemovedPropertiesCount(
+          startDate,
+          endDate,
+          companyId
+        );
+        
+        return {
+          success: true,
+          data: {
+            carteiraDeDiv: activeProperties,
+            angariations: angariations,
+            baixas: removedProperties,
+          }
+        };
+      } catch (error) {
+        console.error('[Indicators] Erro ao buscar dados Properfy:', error);
+        return {
+          success: false,
+          message: 'Erro ao buscar dados Properfy',
+          data: {
+            carteiraDeDiv: 0,
+            angariations: 0,
+            baixas: 0,
+          }
+        };
+      }
+    }),
 
   /**
    * Obter dados manuais de um mês

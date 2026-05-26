@@ -10,7 +10,7 @@ import { protectedProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
 import { sales, commissions, properties, companies, users, type InsertSale } from "../drizzle/schema";
 import { notifyOwner } from "./_core/notification";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { calculateCommission } from "./commissionService";
 import { searchPropertyByReference, searchPropertyByCEP, searchPropertyByAddress, smartSearch, ProperfySearchResult } from "./services/properfyService";
@@ -18,6 +18,7 @@ import { storagePut, storageGet } from "./storage";
 import { logSaleCreation, getSaleHistory, logSaleUpdate } from "./salesHistoryService";
 
 import { sendNewSaleNotification, sendSaleApprovedNotification, sendSaleRejectedNotification, sendCommissionPaidNotification } from "./_core/emailService";
+import { addObservationEntry, parseObservations } from "../utils/observationHistoryHelper";
 
 // Zod schema para validação de entrada
 const createSaleSchema = z.object({
@@ -95,9 +96,6 @@ const createSaleSchema = z.object({
   brokerVendedorName: z.string().optional(),
   brokerVendedorCreci: z.string().optional(),
   brokerVendedorEmail: z.string().optional(),
-  brokerVendedorImobiliaria: z.string().optional(), // Imobiliária do corretor vendedor externo
-  despachangeNomeEmpresa: z.string().optional(), // Nome da empresa quando despachante = "Outro"
-  despachangeTelefone: z.string().optional(), // Telefone quando despachante = "Outro"
   businessType: z.string().min(1, "Tipo de negócio é obrigatório"),
   
   // Commissions (Sistema Antigo - manter para compatibilidade)
@@ -134,7 +132,7 @@ const createSaleSchema = z.object({
   sinalNegocioComprovanteUrl: z.string().optional(),
   
   // Status
-  status: z.enum(["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]).optional(),
+  status: z.enum(["draft", "sale", "finance_review", "commission_paid", "cancelled"]).optional(),
 
   // Observations
   observations: z.string().optional(),
@@ -241,11 +239,11 @@ export const salesRouter = router({
           return { success: false, url: null };
         }
         
-        // Gerar URL presigned para download
-        const key = sale[0].proposalDocumentUrl.split('/').slice(-3).join('/');
-        const { url } = await storageGet(key, 3600); // 1 hora
+        // Retornar a URL salva diretamente (storage local usa URL relativa /api/uploads/...)
+        // O frontend faz fetch com credentials: 'include' para autenticar
+        const savedUrl = sale[0].proposalDocumentUrl;
         
-        return { success: true, url };
+        return { success: true, url: savedUrl };
       } catch (error) {
         console.error('[Sales Router] Erro ao obter documento:', error);
         return { success: false, url: null };
@@ -320,8 +318,14 @@ export const salesRouter = router({
           brokerAngariador: input.brokerAngariador,
           brokerVendedor: input.brokerVendedor || ctx.user.id,
           businessType: input.businessType,
-          status: input.status || "pending",
-          observation: input.observations || null,
+          status: input.status || "sale",
+          observations: input.observations ? addObservationEntry(null, {
+            userId: ctx.user.id,
+            userName: ctx.user.name || 'Usuário',
+            statusFrom: 'novo',
+            statusTo: input.status || 'pending',
+            text: input.observations,
+          }) : null,
           proposalDocumentUrl: null,
           // Novos campos do documento Word
           condominiumName: input.condominiumName || null,
@@ -340,9 +344,6 @@ export const salesRouter = router({
           brokerVendedorName: input.brokerVendedorName || null,
           brokerVendedorCreci: input.brokerVendedorCreci || null,
           brokerVendedorEmail: input.brokerVendedorEmail || null,
-          brokerVendedorImobiliaria: input.brokerVendedorImobiliaria || null,
-          despachangeNomeEmpresa: input.despachangeNomeEmpresa || null,
-          despachangeTelefone: input.despachangeTelefone || null,
           realEstateCommission: input.realEstateCommission?.toString() || null,
           // Campos adicionais
           propertyType: input.typeOfProperty || null,
@@ -548,18 +549,8 @@ export const salesRouter = router({
     }),
 
   updateSale: protectedProcedure
-    .input(z.object({
+    .input(createSaleSchema.extend({
       saleId: z.string(),
-      buyerName: z.string().optional(),
-      buyerCpfCnpj: z.string().optional(),
-      buyerPhone: z.string().optional(),
-      sellerName: z.string().optional(),
-      sellerCpfCnpj: z.string().optional(),
-      sellerPhone: z.string().optional(),
-      saleValue: z.string().optional(),
-      saleDate: z.date().optional(),
-      businessType: z.string().optional(),
-      observation: z.string().optional(),
       changeReason: z.string().optional(), // Motivo da alteração
     }))
     .mutation(async ({ ctx, input }) => {
@@ -569,61 +560,49 @@ export const salesRouter = router({
       const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
       if (!sale.length) throw new Error("Venda não encontrada");
       
-      // Apenas rascunhos podem ser editados por corretor
-      if (ctx.user.role === "broker" && sale[0].status !== "draft") {
+      // Apenas rascunhos e pendentes podem ser editados por corretor
+      if (ctx.user.role === "broker" && !["draft", "sale"].includes(sale[0].status)) {
         throw new Error("Apenas rascunhos podem ser editados");
       }
       
       const { saleId, changeReason, ...updateData } = input;
-      const oldSale = sale[0];
+      const oldStatus = sale[0].status;
+      const newStatus = updateData.status || oldStatus;
       
-      // Detectar campos alterados para auditoria
-      const changes: Array<{ field: string; oldValue: any; newValue: any }> = [];
+      // Converter strings ISO para Date objects para campos de timestamp
+      const processedData: any = { ...updateData };
+      const dateFields = ['saleDate', 'angariationDate', 'expectedPaymentDate', 'contractSignatureDate', 'sinalNegocioDataPagamento'];
       
-      if (updateData.buyerName !== undefined && updateData.buyerName !== oldSale.buyerName) {
-        changes.push({ field: 'buyerName', oldValue: oldSale.buyerName, newValue: updateData.buyerName });
-      }
-      if (updateData.buyerCpfCnpj !== undefined && updateData.buyerCpfCnpj !== oldSale.buyerCpfCnpj) {
-        changes.push({ field: 'buyerCpfCnpj', oldValue: oldSale.buyerCpfCnpj, newValue: updateData.buyerCpfCnpj });
-      }
-      if (updateData.buyerPhone !== undefined && updateData.buyerPhone !== oldSale.buyerPhone) {
-        changes.push({ field: 'buyerPhone', oldValue: oldSale.buyerPhone, newValue: updateData.buyerPhone });
-      }
-      if (updateData.sellerName !== undefined && updateData.sellerName !== oldSale.sellerName) {
-        changes.push({ field: 'sellerName', oldValue: oldSale.sellerName, newValue: updateData.sellerName });
-      }
-      if (updateData.sellerCpfCnpj !== undefined && updateData.sellerCpfCnpj !== oldSale.sellerCpfCnpj) {
-        changes.push({ field: 'sellerCpfCnpj', oldValue: oldSale.sellerCpfCnpj, newValue: updateData.sellerCpfCnpj });
-      }
-      if (updateData.sellerPhone !== undefined && updateData.sellerPhone !== oldSale.sellerPhone) {
-        changes.push({ field: 'sellerPhone', oldValue: oldSale.sellerPhone, newValue: updateData.sellerPhone });
-      }
-      if (updateData.saleValue !== undefined && updateData.saleValue !== oldSale.saleValue) {
-        changes.push({ field: 'saleValue', oldValue: oldSale.saleValue, newValue: updateData.saleValue });
-      }
-      if (updateData.saleDate !== undefined && updateData.saleDate?.getTime() !== oldSale.saleDate?.getTime()) {
-        changes.push({ field: 'saleDate', oldValue: oldSale.saleDate, newValue: updateData.saleDate });
-      }
-      if (updateData.businessType !== undefined && updateData.businessType !== oldSale.businessType) {
-        changes.push({ field: 'businessType', oldValue: oldSale.businessType, newValue: updateData.businessType });
-      }
-      if (updateData.observation !== undefined && updateData.observation !== oldSale.observation) {
-        changes.push({ field: 'observation', oldValue: oldSale.observation, newValue: updateData.observation });
+      for (const field of dateFields) {
+        if (processedData[field] && typeof processedData[field] === 'string') {
+          try {
+            processedData[field] = new Date(processedData[field]);
+          } catch (e) {
+            delete processedData[field];
+          }
+        }
       }
       
-      // Atualizar venda
-      await db.update(sales).set({ ...updateData, updatedAt: new Date() }).where(eq(sales.id, saleId));
+      // Se houver mudança de status ou observação, adicionar ao histórico
+      if (oldStatus !== newStatus || updateData.observations) {
+        const currentObservations = sale[0].observations;
+        const observationText = updateData.observations || changeReason || `Status alterado de ${oldStatus} para ${newStatus}`;
+        
+        processedData.observations = addObservationEntry(currentObservations, {
+          userId: ctx.user.id,
+          userName: ctx.user.name || 'Usuário',
+          statusFrom: oldStatus,
+          statusTo: newStatus,
+          text: observationText,
+        });
+      }
       
-      // Registrar alterações no histórico
-      if (changes.length > 0) {
-        await logSaleUpdate(
-          saleId,
-          oldSale.companyId || '',
-          ctx.user.id,
-          ctx.user.name || 'Usuário',
-          changes,
-          changeReason || 'Edição manual da venda'
-        );
+      // Atualizar venda - apenas sobrescrever os campos fornecidos
+      try {
+        await db.update(sales).set({ ...processedData, updatedAt: new Date() }).where(eq(sales.id, saleId));
+      } catch (error) {
+        console.error('[updateSale] Erro ao atualizar:', error);
+        throw new Error('Erro ao atualizar venda. Tente novamente.');
       }
       
       return { success: true, message: "Proposta atualizada" };
@@ -721,18 +700,18 @@ export const salesRouter = router({
       }
 
       console.log('[DEBUG listMySales] Retornando', result.length, 'vendas');
-      
-      // Enriquecer com endereço e referência do imóvel para exibição no histórico
-      const enriched = await Promise.all(result.map(async (sale) => {
-        if (sale.propertyId) {
-          const prop = await db!.select().from(properties).where(eq(properties.id, sale.propertyId)).limit(1);
-          if (prop[0]) {
-            return { ...sale, propertyAddress: prop[0].address, propertyReference: prop[0].propertyReference };
-          }
+      // Enrich com endereço da tabela properties
+      const enriched = await Promise.all(result.map(async (s: any) => {
+        if (!s.propertyAddress && s.propertyId) {
+          try {
+            const props = await db.select().from(properties).where(eq(properties.id, s.propertyId)).limit(1);
+            if (props.length > 0) {
+              return { ...s, propertyAddressFromDb: props[0].address };
+            }
+          } catch {}
         }
-        return { ...sale, propertyAddress: null, propertyReference: null };
+        return s;
       }));
-      
       return { sales: enriched };
     } catch (error) {
       console.error("[Sales Router] Erro ao listar vendas:", error);
@@ -774,7 +753,7 @@ export const salesRouter = router({
     .input(
       z.object({
         saleId: z.string(),
-        status: z.enum(["draft", "pending", "sale", "manager_review", "finance_review", "commission_paid", "cancelled"]),
+        status: z.enum(["draft", "sale", "finance_review", "commission_paid", "cancelled"]),
         observation: z.string().optional(),
       })
     )
@@ -793,16 +772,14 @@ export const salesRouter = router({
         
         // Corretor pode: draft/pending->sale, draft/pending/sale->cancelled
         if (ctx.user.role === "broker") {
-          const allowed = (["draft", "pending"].includes(currentStatus || "") && ["sale", "cancelled"].includes(input.status)) ||
+          const allowed = (["draft"].includes(currentStatus || "") && ["sale", "cancelled"].includes(input.status)) ||
                           (currentStatus === "sale" && input.status === "cancelled");
           if (!allowed) throw new Error("Permissão negada");
         }
-        // Gerente pode: draft/pending->sale, sale->manager_review, manager_review->finance_review, *->cancelled, commission_paid->finance_review (reverter)
+        // Gerente pode: draft/pending->sale, sale->manager_review, manager_review->finance_review, *->cancelled
         else if (ctx.user.role === "manager") {
-          const allowed = (["draft", "pending"].includes(currentStatus || "") && ["sale", "cancelled"].includes(input.status)) ||
-                          (currentStatus === "sale" && ["manager_review", "cancelled"].includes(input.status)) ||
-                          (currentStatus === "manager_review" && ["finance_review", "cancelled"].includes(input.status)) ||
-                          (currentStatus === "commission_paid" && input.status === "finance_review") || // Reverter comissão paga
+          const allowed = (["draft"].includes(currentStatus || "") && ["sale", "cancelled"].includes(input.status)) ||
+                          (currentStatus === "sale" && ["finance_review", "cancelled"].includes(input.status)) ||
                           input.status === "cancelled";
           if (!allowed) throw new Error("Permissão negada");
         }
@@ -824,18 +801,6 @@ export const salesRouter = router({
           })
           .where(eq(sales.id, input.saleId));
 
-        // Reverter comissões para pending quando commission_paid for revertido
-        if (currentStatus === "commission_paid" && input.status === "finance_review") {
-          await db
-            .update(commissions)
-            .set({
-              status: "pending",
-              paymentDate: null,
-              updatedAt: new Date(),
-            })
-            .where(eq(commissions.saleId, input.saleId));
-        }
-        
         // Atualizar comissões associadas
         if (input.status === "commission_paid") {
           // Validar se há comprovante de pagamento
@@ -881,10 +846,10 @@ export const salesRouter = router({
           const financeEmails = finance.map(f => f.email).filter((e): e is string => !!e);
 
           // Email de aprovação (manager_review ou finance_review)
-          if (input.status === "manager_review" || input.status === "finance_review") {
+          if (input.status === "finance_review") {
             const recipients = [];
             if (brokerEmail) recipients.push(brokerEmail);
-            if (input.status === "manager_review") recipients.push(...financeEmails);
+            
             if (input.status === "finance_review") recipients.push(...managerEmails);
 
             if (recipients.length > 0) {
@@ -1012,18 +977,10 @@ export const salesRouter = router({
   getSaleHistory: protectedProcedure
     .input(z.object({ saleId: z.string() }))
     .query(async ({ ctx, input }) => {
-      try {
-        // Gerentes, financeiro, admin e viewer podem ver histórico
-        if (ctx.user.role !== "manager" && ctx.user.role !== "finance" && ctx.user.role !== "admin" && ctx.user.role !== "viewer") {
-          throw new Error("Permissão negada para visualizar histórico");
-        }
-
-        const history = await getSaleHistory(input.saleId);
-        return history;
-      } catch (error) {
-        console.error("[Sales Router] Erro ao obter histórico:", error);
-        throw new Error("Erro ao obter histórico da venda");
-      }
+      // Todos os roles autenticados podem ver histórico
+      console.log('[getSaleHistory] User role:', ctx.user?.role);
+      const history = await getSaleHistory(input.saleId);
+      return history;
     }),
 
   /**
@@ -1189,7 +1146,7 @@ export const salesRouter = router({
           })
           .where(eq(commissions.saleId, input.saleId));
 
-        // Enviar email de comissão paga para corretor + gerente + financeiro
+        // Enviar email de comissão paga para corretor + todos os gerentes + todos os financeiros
         try {
           const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
           if (sale.length > 0) {
@@ -1201,16 +1158,28 @@ export const salesRouter = router({
                 eq(users.role, "manager")
               )
             );
+            const finances = await db.select().from(users).where(
+              and(
+                eq(users.companyId, ctx.user.companyId || "1"),
+                eq(users.role, "finance")
+              )
+            );
 
             const brokerEmail = broker[0]?.email || "";
-            const managerEmail = managers[0]?.email || "";
-            const financeEmail = ctx.user.email || "";
+            const managerEmails = managers.map(m => m.email).filter((e): e is string => !!e);
+            const financeEmails = finances.map(f => f.email).filter((e): e is string => !!e);
+            // Incluir o usuário atual (financeiro que registrou) se não estiver na lista
+            if (ctx.user.email && !financeEmails.includes(ctx.user.email)) {
+              financeEmails.push(ctx.user.email);
+            }
 
-            if (brokerEmail && managerEmail && financeEmail) {
+            const allRecipients = [brokerEmail, ...managerEmails, ...financeEmails].filter(Boolean);
+
+            if (allRecipients.length > 0) {
               await sendCommissionPaidNotification({
                 brokerEmail,
-                managerEmail,
-                financeEmail,
+                managerEmail: managerEmails[0] || "",
+                financeEmail: financeEmails[0] || "",
                 brokerName: broker[0]?.name || "Corretor",
                 buyerName: sale[0].buyerName || "N/A",
                 propertyAddress: property[0]?.address || "N/A",
@@ -1222,6 +1191,7 @@ export const salesRouter = router({
                 paymentMethod: input.commissionPaymentMethod || "N/A",
                 bankName: input.commissionPaymentBank || "N/A",
                 proposalId: sale[0].id,
+                allRecipients,
               });
             }
           }
@@ -1317,6 +1287,116 @@ export const salesRouter = router({
       } catch (error) {
         console.error("[Sales Router] Erro ao fazer upload de documento:", error);
         throw new Error("Erro ao fazer upload de documento");
+      }
+    }),
+
+  /**
+   * Verificar e enviar notificações de progresso de meta
+   * Chamado após cada venda registrada
+   */
+  /**
+   * Deletar um rascunho de venda
+   */
+  deleteSale: protectedProcedure
+    .input(z.object({ saleId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const sale = await db.select().from(sales).where(eq(sales.id, input.saleId)).limit(1);
+      
+      if (!sale.length) {
+        throw new Error("Venda não encontrada");
+      }
+      
+      // Validar se pertence à mesma empresa
+      if (sale[0].companyId !== ctx.user.companyId && ctx.user.companyId !== "1") {
+        throw new Error("Sem permissão para excluir esta venda");
+      }
+      
+      // Apenas rascunhos podem ser excluídos, ou super admins podem excluir qualquer uma
+      if (sale[0].status !== "draft" && ctx.user.role !== "superadmin") {
+        throw new Error("Apenas rascunhos podem ser excluídos");
+      }
+      
+      try {
+        await db.delete(sales).where(eq(sales.id, input.saleId));
+        return { success: true, message: "Venda excluída com sucesso" };
+      } catch (error) {
+        console.error("[Sales Router] Erro ao excluir venda:", error);
+        throw new Error("Erro ao excluir venda");
+      }
+    }),
+
+  /**
+   * Deletar venda por referência (Super Admin e Manager)
+   */
+  deleteSaleByReference: protectedProcedure
+    .input(z.object({ reference: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // Apenas superadmin e manager podem usar este endpoint
+      if (ctx.user.role !== "superadmin" && ctx.user.role !== "manager") {
+        throw new Error("Sem permissão para excluir vendas por referência");
+      }
+
+      // Buscar venda pelo ID direto ou pelo propertyReference da propriedade vinculada
+      const saleById = await db
+        .select()
+        .from(sales)
+        .where(eq(sales.id, input.reference))
+        .limit(1);
+
+      let targetSale = saleById[0] || null;
+
+      // Se não encontrou por ID, buscar pela referência da propriedade
+      if (!targetSale) {
+        const propResult = await db
+          .select()
+          .from(properties)
+          .where(eq(properties.propertyReference, input.reference))
+          .limit(1);
+
+        if (propResult.length > 0) {
+          const saleByProp = await db
+            .select()
+            .from(sales)
+            .where(eq(sales.propertyId, propResult[0].id))
+            .limit(1);
+          targetSale = saleByProp[0] || null;
+        }
+      }
+
+      // Se ainda não encontrou, buscar por observações (importadas)
+      if (!targetSale) {
+        const salesByObs = await db
+          .select()
+          .from(sales)
+          .where(sql`${sales.observations} LIKE ${`%${input.reference}%`}`)
+          .limit(1);
+        targetSale = salesByObs[0] || null;
+      }
+
+      if (!targetSale) {
+        throw new Error(`Venda com referência "${input.reference}" não encontrada`);
+      }
+
+      // Validar permissão de empresa (manager só pode excluir da sua empresa)
+      if (ctx.user.role === "manager" && targetSale.companyId !== ctx.user.companyId) {
+        throw new Error("Sem permissão para excluir esta venda");
+      }
+
+      try {
+        // Deletar comissões vinculadas
+        await db.delete(commissions).where(eq(commissions.saleId, targetSale.id));
+        // Deletar a venda
+        await db.delete(sales).where(eq(sales.id, targetSale.id));
+        return { success: true, message: `Venda "${targetSale.id}" excluída com sucesso`, saleId: targetSale.id };
+      } catch (error) {
+        console.error("[Sales Router] Erro ao excluir venda por referência:", error);
+        throw new Error("Erro ao excluir venda");
       }
     }),
 

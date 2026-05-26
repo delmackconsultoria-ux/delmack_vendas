@@ -38,6 +38,7 @@ export const brokerDashboardRouter = router({
           status: sales.status,
           saleDate: sales.saleDate,
           saleType: sales.saleType,
+          propertyAddress: sales.propertyAddress,
         })
         .from(sales)
         .where(
@@ -60,6 +61,7 @@ export const brokerDashboardRouter = router({
           status: sales.status,
           saleDate: sales.saleDate,
           saleType: sales.saleType,
+          propertyAddress: sales.propertyAddress,
         })
         .from(sales)
         .where(
@@ -233,4 +235,43 @@ export const brokerDashboardRouter = router({
   // Obter histórico completo (todos os meses/anos)
   getCompleteHistory: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.user.role !== "broker") {
-      throw new E
+      throw new Error("Apenas corretores podem acessar este endpoint");
+    }
+
+    const db = await getDb();
+    if (!db) throw new Error("Database not available");
+
+    const allSales = await db
+      .select()
+      .from(sales)
+      .where(
+        and(
+          or(
+            eq(sales.brokerVendedor, ctx.user.id),
+            eq(sales.brokerAngariador, ctx.user.id)
+          ),
+          eq(sales.companyId, ctx.user.companyId!),
+          notInArray(sales.status, ['draft', 'cancelled']),
+          sql`YEAR(${sales.saleDate}) > 1970`
+        )
+      )
+      .orderBy(desc(sales.saleDate));
+
+    const allCommissions = await db
+      .select()
+      .from(commissions)
+      .where(
+        and(
+          eq(commissions.brokerId, ctx.user.id),
+          eq(commissions.companyId, ctx.user.companyId!)
+        )
+      )
+      .orderBy(desc(commissions.createdAt));
+
+    return {
+      totalSales: allSales.length,
+      totalCommissions: allCommissions.length,
+      recentSales: allSales.slice(0, 10),
+    };
+  }),
+});
